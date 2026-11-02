@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.actionanand.metropocket.app',
-  appName: 'MetroPocket',
+  appId: 'com.actionanand.radiobee.app',
+  appName: 'Radio Bee',
   webDir: 'www',
 };
 
