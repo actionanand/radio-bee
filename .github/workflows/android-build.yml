@@ -1,0 +1,112 @@
+name: RadioBee Android APK and AAB
+
+on:
+  push:
+    branches: [main-android]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radiobee-android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main-android'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main-android
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.16.0'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android SDK and artwork tools
+        run: |
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:ci
+      - run: npm run test:android-scripts
+      - name: Reserve and persist the next Android version
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          node scripts/reserve-android-version.mjs
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import versioning from './scripts/android-version.cjs';
+          const version = versioning.readVersion();
+          fs.appendFileSync(process.env.GITHUB_ENV, `VERSION_NAME=${version.versionName}\nVERSION_CODE=${version.versionCode}\nRELEASE_FILE=${versioning.releaseName(version)}\n`);
+          NODE
+          echo "BUILD_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - run: npm run build -- --configuration=production --base-href=/
+      - name: Generate, sync, patch and brand Android
+        run: npm run android:sync:only
+      - name: Build unsigned APK, AAB and R8 mapping
+        run: node scripts/build-android.mjs
+      - name: Sign and verify APK and AAB
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: node scripts/sign-android.mjs
+      - name: Validate release assets and summarize
+        run: |
+          set -euo pipefail
+          test -s "releases/${RELEASE_FILE}.apk"
+          test -s "releases/${RELEASE_FILE}.aab"
+          test -s "releases/${RELEASE_FILE}-mapping.txt"
+          node --input-type=module -e "import {pngDimensions} from './scripts/generate-android-assets.mjs'; if(pngDimensions('releases/playstore-icon.png').some(n => n !== 512)) process.exit(1);"
+          {
+            echo "## RadioBee Android release"
+            echo "- VersionName: ${VERSION_NAME}"
+            echo "- VersionCode: ${VERSION_CODE}"
+            echo "- Build branch: main-android"
+            echo "- Commit SHA: ${BUILD_SHA}"
+            echo "- APK: ${RELEASE_FILE}.apk"
+            echo "- AAB: ${RELEASE_FILE}.aab"
+            echo "- Signing status: Signed and verified (APK and AAB)"
+            echo "- R8 mapping: ${RELEASE_FILE}-mapping.txt"
+            echo "- Artwork: Launcher, adaptive and splash generated; playstore-icon.png validated at 512 x 512"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: radiobee-android-${{ env.VERSION_NAME }}-${{ env.VERSION_CODE }}
+          path: |
+            releases/${{ env.RELEASE_FILE }}.apk
+            releases/${{ env.RELEASE_FILE }}.aab
+            releases/${{ env.RELEASE_FILE }}-mapping.txt
+            releases/playstore-icon.png
+          if-no-files-found: error
+          retention-days: 30
+      - name: Commit approved release outputs to main-android
+        run: |
+          set -euo pipefail
+          git add "releases/${RELEASE_FILE}.apk" "releases/${RELEASE_FILE}.aab" "releases/${RELEASE_FILE}-mapping.txt" releases/playstore-icon.png
+          git -c core.hooksPath=/dev/null commit -m "build: RadioBee ${VERSION_NAME} (${VERSION_CODE}) [skip ci]"
+          # Rebase only the release-output commit; conflicts abort without overwriting changes.
+          git fetch origin main-android
+          git -c core.hooksPath=/dev/null rebase origin/main-android
+          git push origin HEAD:main-android
+      - name: Clean signing material and candidates
+        if: always()
+        run: |
+          rm -rf -- "${RUNNER_TEMP}/radiobee-signing"
+          find releases -maxdepth 1 -type f \( -name '*.candidate*' -o -name '*.idsig' -o -name '*-unsigned.apk' -o -name '*-unsigned.aab' \) -delete 2>/dev/null || true
