@@ -68,3 +68,30 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Generated native platform and local native caches
+/android/
+.gradle/
+.kotlin/
+local.properties
+
+# Private signing material and environment secrets
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+*.crt
+*.cer
+*keystore*.b64*
+*keystore*base64*
+.env
+.env.*
+/radiobee-signing/
+*.candidate*
+*.idsig
+*-unsigned.apk
+*-unsigned.aab
+
+# Verified releases/ APK, AAB, mapping and store icon remain trackable.
