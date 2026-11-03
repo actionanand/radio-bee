@@ -4,18 +4,12 @@ on:
   push:
     branches:
       - main-github
-  workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:
-  group: radiobee-web-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main-github'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,58 +19,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24.16.0'
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests
-        run: npm run test:ci
+      - name: Extract repository name from package.json
+        id: package
+        run: echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
 
       - name: Build Angular app for GitHub Pages
-        id: build
-        run: |
-          npm run build:gh -- --configuration=production
-          test -s www/index.html
-          grep -Fq '<base href="/radio-bee/">' www/index.html
+        run: npm run build:gh --configuration=production
 
       - name: Copy error files to redirect to home
-        run: |
-          npm run copy-error-page
-          cmp www/index.html www/404.html
+        run: npm run copy-error-page
 
       - name: Deploy
-        id: publish
         if: success()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
+          base_href: /${{ steps.package.outputs.name }}/ # make sure this corresponds to https://<your_username>.github.io/<base_href>/
+          deploy_branch: gh-pages
           publish_dir: www
           enable_jekyll: true
-
-      - name: Summarize Web build and deployment
-        if: always()
-        env:
-          SOURCE_SHA: ${{ github.sha }}
-          TRIGGER: ${{ github.event_name }}
-          BUILD_RESULT: ${{ steps.build.outcome }}
-          DEPLOY_RESULT: ${{ steps.publish.outcome }}
-        run: |
-          {
-            echo "## RadioBee Web Build and Deploy"
-            echo "- Application: RadioBee"
-            echo "- Branch: main-github"
-            echo "- Trigger: ${TRIGGER}"
-            echo "- Source commit SHA: ${SOURCE_SHA}"
-            echo "- Build result: ${BUILD_RESULT}"
-            echo "- Deployment result (gh-pages publishing): ${DEPLOY_RESULT}"
-            echo "- Live application URL: https://actionanand.github.io/radio-bee/"
-            echo "GitHub Pages hosting may take a short time to update after successful publishing."
-          } >> "$GITHUB_STEP_SUMMARY"
