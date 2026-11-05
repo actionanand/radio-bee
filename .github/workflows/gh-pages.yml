@@ -4,13 +4,22 @@ on:
   push:
     branches:
       - main-github
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: radiobee-pages-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
+    if: github.ref == 'refs/heads/main-github'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,26 +28,92 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24.16.0'
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Extract repository name from package.json
-        id: package
-        run: echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:ci
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
 
       - name: Build Angular app for GitHub Pages
-        run: npm run build:gh --configuration=production
+        id: angular
+        run: npm run build:gh -- --configuration=production
 
-      - name: Copy error files to redirect to home
-        run: npm run copy-error-page
+      - name: Validate site and routing fallback
+        run: |
+          test -s www/index.html
+          grep -Fq '<base href="/radio-bee/">' www/index.html
+          npm run copy-error-page
+          test -s www/404.html
+          cmp www/index.html www/404.html
 
-      - name: Deploy
-        if: success()
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        id: artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          base_href: /${{ steps.package.outputs.name }}/ # make sure this corresponds to https://<your_username>.github.io/<base_href>/
-          deploy_branch: gh-pages
-          publish_dir: www
-          enable_jekyll: true
+          name: github-pages
+          path: www
+
+      - name: Summarize build
+        if: always()
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          TRIGGER: ${{ github.event_name }}
+          BUILD_RESULT: ${{ steps.angular.outcome }}
+          ARTIFACT_RESULT: ${{ steps.artifact.outcome }}
+        run: |
+          {
+            echo "## RadioBee Pages build"
+            echo "- Branch: main-github"
+            echo "- Trigger: ${TRIGGER}"
+            echo "- Source commit SHA: ${SOURCE_SHA}"
+            echo "- Angular build: ${BUILD_RESULT}"
+            echo "- Pages artifact upload: ${ARTIFACT_RESULT}"
+            echo "- Site directory: www (base href /radio-bee/)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main-github'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
+
+      - name: Summarize deployment
+        if: always()
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          DEPLOY_RESULT: ${{ steps.deployment.outcome }}
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          {
+            echo "## RadioBee Pages deployment"
+            echo "- Branch: main-github"
+            echo "- Source commit SHA: ${SOURCE_SHA}"
+            echo "- Deployment result: ${DEPLOY_RESULT}"
+            if [ "$DEPLOY_RESULT" = "success" ]; then
+              echo "- Deployed URL: ${PAGE_URL}"
+            fi
+            echo "- Expected live URL: https://actionanand.github.io/radio-bee/"
+            echo "Verify the github-pages deployment record and URL; this workflow creates no gh-pages commits."
+          } >> "$GITHUB_STEP_SUMMARY"
