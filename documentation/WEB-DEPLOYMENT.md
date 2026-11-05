@@ -2,23 +2,13 @@
 
 RadioBee — Stay tuned. Stay buzzing.
 
-The **RadioBee Web Build and Deploy** workflow automatically publishes pushes to `main-github`. You can also rebuild and deploy that branch manually, without an empty commit. The workflow runs only when `github.ref` is `refs/heads/main-github`; dispatches selecting any other branch skip the deployment job.
+**RadioBee Web Build and Deploy** uses GitHub's official Pages artifact pipeline. Pushes to `main-github` deploy automatically, and `workflow_dispatch` supports manual builds. Both jobs require `github.ref == 'refs/heads/main-github'`; selecting another branch skips them.
 
-## Manual deployment
+The application still displays the **Ionic starter page**, including “Blank” and “Ready to create an app?”. This infrastructure fix adds no radio player or new home interface. Seeing that starter content after a verified deployment is expected.
 
-1. Open the repository on GitHub → **Actions**.
-2. Select **RadioBee Web Build and Deploy**.
-3. Click **Run workflow**.
-4. Select **main-github**.
-5. Click **Run workflow** to trigger deployment.
-6. Open the completed run, check all validation/publishing steps and read its summary.
-7. Visit [RadioBee](https://actionanand.github.io/radio-bee/).
+## Build and deployment
 
-GitHub requires the workflow definition with `workflow_dispatch` to exist on the default branch before showing the manual control. This repository's default branch is `master`: integrate the workflow there and into `main-github`. The guard still allows deployment only from `main-github`; adding the definition to `master` does not enable deployments from `master`. See [GitHub's manual workflow instructions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
-
-## Validation and publishing
-
-The workflow uses Node 24.16.0, installs the unchanged lockfile with `npm ci`, and runs:
+The build job checks out the triggering commit, configures Node **24.16.0**, installs the unchanged lockfile with `npm ci`, and runs:
 
 ```bash
 npm run lint
@@ -27,39 +17,60 @@ npm run test:ci
 npm run build:gh -- --configuration=production
 ```
 
-The existing `build:gh` script supplies `/radio-bee/` once. npm's `--` separator forwards the production flag to Angular. The workflow checks that `www/index.html` is nonempty and has the correct base href, then runs the existing `copy-error-page` command and checks `www/404.html` matches the index for the routing fallback.
+`actions/configure-pages@v5` reads the existing Pages configuration. Automatic enablement remains disabled; repository settings must already select GitHub Actions. Angular's existing `build:gh` script supplies `/radio-bee/` exactly once, and npm's `--` separator passes the production flag to Angular.
 
-Publishing continues through `peaceiris/actions-gh-pages@v3`, using `GITHUB_TOKEN`, `publish_dir: www`, `publish_branch: gh-pages` and the existing Jekyll setting. The unsupported old `deploy_branch` input is replaced by `publish_branch`; the unsupported `base_href` input and its package-name extraction are removed. Angular controls the base href. Action versions are unchanged.
+Before uploading, the workflow checks that `www/index.html` is nonempty and contains `<base href="/radio-bee/">`. It runs the existing `copy-error-page` script, checks `www/404.html` is nonempty, and compares both files byte-for-byte to preserve Angular's routing fallback.
 
-Web runs share a branch-specific concurrency group with cancellation disabled, preventing overlapping publishes. The summary always reports the actual build and publishing step outcomes, trigger and checked-out event SHA. A skipped or failed publishing step is never reported as successful. Publishing success means the generated branch was updated; GitHub's subsequent Pages hosting process may take time or fail independently, so also check the Pages deployment and live URL.
+`actions/upload-pages-artifact@v4` archives the contents of **`www/`**, with `index.html`, `404.html`, JavaScript, CSS and assets at the site root. The artifact is named `github-pages`. The repository root and a `dist` directory are never uploaded.
 
-## Branch policy and history-preserving integration
+The separate deploy job has an explicit `needs: build` dependency, so validation or artifact-upload failure prevents deployment. It uses `actions/deploy-pages@v4` with the `github-pages` artifact and environment. The environment URL comes from `steps.deployment.outputs.page_url`.
 
-| Branch         | Responsibility                                                  |
-| -------------- | --------------------------------------------------------------- |
-| `master`       | Primary source and default-branch workflow definitions          |
-| `main-github`  | Web builds and publishing                                       |
-| `gh-pages`     | Generated hosting content; do not merge it into source branches |
-| `main-android` | Android APK/AAB builds only, when created                       |
+Permissions are scoped to each job: the build has `contents: read` and `pages: read`; deployment has `pages: write` and `id-token: write`. No contents-write permission or publishing-token secret is required. Branch-specific workflow concurrency with cancellation disabled prevents competing runs from publishing simultaneously.
 
-The Web workflow never invokes Android scripts or changes `android-version.json`. The Android workflow and dependencies are unchanged.
+The summaries report the actual source SHA, Angular build/artifact outcomes and deployment outcome. A deployed URL appears only after the deployment action succeeds. Check the **github-pages deployment record and its URL**, then visit [RadioBee](https://actionanand.github.io/radio-bee/).
 
-At implementation inspection, `main-github` contained empty deployment-trigger commit `9284183` on top of `master` (`c4cb082`); their source trees were identical. Preserve that commit. Do not reset branches, force-push, squash it away or cherry-pick it (which would give it a different identity).
+**This workflow creates no commits in `gh-pages`.** That branch remains unchanged as legacy generated content; it is no longer the deployment source. An unchanged branch is expected and does not indicate a failed artifact deployment. The workflow contains no third-party publisher, branch-publishing inputs or Git push steps.
 
-After reviewing and committing this change on the implementation branch, use the following procedure in a clean checkout **only when you are ready to integrate and push**. These are instructions; the implementation does not execute them:
+See GitHub's [custom Pages workflow requirements](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
+## Run manually
+
+1. Open the repository on GitHub → **Actions**.
+2. Select **RadioBee Web Build and Deploy**.
+3. Click **Run workflow**.
+4. Select **main-github**.
+5. Click **Run workflow** and open the resulting run.
+6. Confirm the build job uploads `github-pages`, then the deploy job succeeds in the `github-pages` environment.
+7. Open its deployment URL and check [the live application](https://actionanand.github.io/radio-bee/).
+
+GitHub requires the workflow definition with `workflow_dispatch` on the default branch before manual dispatch is available. The default branch is **`master`**. The updated definition must be integrated into both `master` and `main-github`; the branch guard still prevents deployment from `master`. See [GitHub's manual workflow instructions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
+
+## Inspected source and safe integration
+
+Remote inspection on **6 November 2026** found:
+
+| Ref                           | Commit    | State                                                                     |
+| ----------------------------- | --------- | ------------------------------------------------------------------------- |
+| `master`                      | `b69c31a` | Default branch; legacy publishing workflow, no manual trigger             |
+| `main-github`                 | `c5f857d` | One merge commit behind master; identical source tree and legacy workflow |
+| Local implementation checkout | `b69c31a` | Matches current remote master before this fix                             |
+
+The official workflow is prepared locally. **It is not yet on remote `master` or `main-github`** until the reviewed change is committed and integrated with approval. The previous empty trigger commit `9284183` is already in the inspected source history and must remain there. Future manual deployments need no empty commit.
+
+The following commands are instructions for a clean checkout **after approval**, not actions performed by this implementation. First review and commit the two changed files on the current implementation branch through the repository's normal process. Then integrate while preserving history:
 
 ```bash
 git fetch origin
 git switch master
 git pull --ff-only origin master
 
-# Preserve the complete Web-branch history, including 9284183.
+# Preserve any Web-branch commits added since inspection.
 git merge origin/main-github
 
-# Integrate the reviewed implementation; use the appropriate reviewed branch.
+# Integrate the reviewed change from the current implementation branch.
 git merge feature/1-basic-radio
 
-# Check ancestry and run the validations above before publishing source changes.
+# Confirm both histories are retained, then run the validations listed above.
 git merge-base --is-ancestor 9284183 HEAD
 git merge-base --is-ancestor origin/main-github HEAD
 git push origin master
@@ -70,28 +81,34 @@ git merge --ff-only master
 git push origin main-github
 ```
 
-When `master` has not otherwise advanced, the first merge simply fast-forwards it through the empty commit. If both branches have advanced, a normal merge preserves both histories; review and resolve any conflicts. Required pull requests/protection rules take precedence: use an approved merge commit that preserves ancestry instead of a squash or rebase merge. The feature integration above may likewise be performed through the repository's required PR process.
+At the inspected history, incorporating `origin/main-github` into `master` is already up to date. If branches advance, normal merges preserve both histories. If a fast-forward or push fails, fetch and inspect the new commits, incorporate them into `master` with a reviewed normal merge, then retry the fast-forward. Do not reset, rebase away existing shared commits, force-push or delete branches. Where protection requires PRs, use an approved merge process that preserves ancestry. Leave `gh-pages` and `main-android` untouched.
 
-If a fast-forward check or push fails because someone changed a branch, fetch and inspect the new history, then incorporate the new commits through a normal merge on `master` before retrying. Never reset or force-push. Once the Web-only history is incorporated into `master`, future releases can fast-forward `main-github` to `master` while `main-github` has no new divergent commits. Manual dispatch removes the need for further empty trigger commits. No new work is required on `main-android` for this Web change.
+After integration, confirm both remote branch versions of `.github/workflows/gh-pages.yml` contain the official actions and `workflow_dispatch` before running a manual deployment.
 
-## Repository settings
+## Repository settings to check
 
-- Ensure the updated workflow exists on default branch `master` and deployment branch `main-github`.
-- Under **Settings → Actions → General**, ensure repository/organization policy permits these actions and a token with `contents: write`. The workflow declares that permission; repository rules must also permit its publishing commit to `gh-pages`.
-- Preserve the existing **Settings → Pages** branch-publishing configuration: **Deploy from a branch**, branch **gh-pages**, folder **/(root)**. This workflow uses the existing branch-publishing mechanism rather than the separate Pages artifact deployment mechanism.
-- Follow source-branch protection and PR requirements during integration. No additional secret is required; publishing uses the automatically supplied `GITHUB_TOKEN`.
+- **Settings → Pages → Build and deployment → Source: GitHub Actions.** The user has already switched this setting; verify it remains selected. Do not select branch publishing.
+- **Settings → Environments → github-pages:** allow deployments from **main-github**. Replace an old restriction that permits only the default branch or `gh-pages`; retain any intentional reviewer approvals.
+- **Settings → Actions → General:** ensure repository/organization policy permits the official actions and the job-declared Pages/OIDC permissions. The workflow needs no `contents: write`, personal token, deploy key or additional secret.
+- Integrate the manual-trigger definition onto default branch **master** as well as **main-github**, observing source-branch protections.
+- Disable any separately configured legacy Web publisher if one exists. Retain the generated `gh-pages` branch without using it as a source or altering its history.
 
-The implementation does not modify repository settings or remote history. After integration, verify one real manual run on `main-github` and optionally dispatch another branch to confirm it is skipped. Local validation cannot prove that remote publishing permissions or GitHub Pages hosting succeed.
+The Android workflow, signing scripts, application ID, dependencies and Android version file are outside this change. `main-android` remains the only Android release branch; `main-github` remains the only Web deployment branch.
 
-## Local verification
+## Verification limits
 
-Validated on 3 November 2026:
+Local checks on **6 November 2026** passed:
 
-- `npm ci`, lint, typecheck and both existing app tests passed.
-- `npm run build:gh -- --configuration=production` passed and expanded to `ng build --base-href /radio-bee/ --configuration=production`, with each flag present once.
-- The output contains a nonempty HTML index with `/radio-bee/` as its base href. The existing `copy-error-page` command passed under Git Bash; `www/404.html` is byte-for-byte identical to `www/index.html`.
-- YAML structure and branch guards were checked: push/dispatch support, only `main-github` allowed for Web publishing, and only `main-android` allowed by the untouched Android workflow.
-- Every workflow shell command passed Bash syntax validation. The summary was executed with simulated success, failure and skipped outcomes and reported each accurately.
-- Dependency files, Angular configuration, Android workflow and Android version file were verified byte-for-byte unchanged from the source commit. Formatting and Git whitespace checks passed.
+- `npm ci`, lint, TypeScript checks, both app tests and the production `build:gh` command.
+- actionlint 1.7.12 validation of workflow YAML, action inputs, GitHub expressions, step references, permissions and job dependencies; all shell blocks also passed Bash syntax checks.
+- Structural checks for both branch guards, exact artifact-name matching, build-before-deploy ordering, and absence of legacy publishers or Git push commands.
+- The index/base-href checks and existing 404-generation command. The fallback was byte-for-byte identical to the index.
+- Packaging and extraction of a local archive using the official action's tar rules: **27 entries, 829440 bytes**, including root `index.html`, `404.html`, artwork, and all **7 referenced JavaScript/CSS files**. Repository sources and Android files were absent from the archive. This verifies local packaging, not an upload to GitHub.
+- Summary simulations for success, failure and skipped deployment outcomes; only success displayed a deployed URL.
+- Byte-for-byte checks that dependency files, Angular/Capacitor configuration, Android workflow, version file and all existing scripts were untouched. Formatting and Git whitespace checks passed.
 
-The local host uses Node 24.22.1; CI remains pinned to the requested 24.16.0. Because npm is absent from the host PATH, checks used an isolated npm runtime under ignored `tmp/`. The temporary structural/summary validation scripts are also ignored local checks; no application dependencies or permanent test scaffolding were added. No Android compilation or version bump was run. Actual GitHub event dispatch, branch publishing and Pages hosting remain to be verified after the approved changes are integrated.
+The host used Node 24.22.1 and an isolated npm runtime; CI keeps Node 24.16.0. Validation tools and archives are under ignored `tmp/`, with no new application dependency or permanent test scaffolding.
+
+A pre-existing resource issue was discovered: `src/index.html` references `assets/icon/favicon.png`, but the available favicon files are `favicon.ico` and `favicon (1).png`. That link was not changed by this infrastructure fix; the JavaScript/CSS, routing files and existing artwork were verified separately.
+
+Local validation can prove build output, artifact contents, YAML/action expressions, branch guards and summary behavior. It cannot establish a new live Pages deployment without an approved integration and workflow run. After integration, verify the deployment record and URL rather than looking for a new `gh-pages` commit. A manual dispatch targeting another branch should have both jobs skipped.
