@@ -1,18 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { HomePage } from './home.page';
-
+import { CATALOG_FETCH, CATALOG_STORAGE } from '../catalog/catalog.service';
 describe('HomePage', () => {
-  let component: HomePage;
-  let fixture: ComponentFixture<HomePage>;
-
-  beforeEach(async () => {
-    fixture = TestBed.createComponent(HomePage);
-    component = fixture.componentInstance;
+  it('retains RadioBee branding and renders the discovery browser without playback', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: CATALOG_FETCH,
+          useValue: async () => {
+            throw new Error('Offline test');
+          },
+        },
+        { provide: CATALOG_STORAGE, useValue: { get: async () => ({ value: null }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(HomePage);
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('Stay tuned. Stay buzzing.');
+    expect(fixture.nativeElement.querySelector('app-station-browser')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('audio')).toBeNull();
   });
 });

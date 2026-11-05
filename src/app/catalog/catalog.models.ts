@@ -1,0 +1,131 @@
+export interface Manifest {
+  schemaVersion: number;
+  catalogVersion: string;
+  publishedOn: string;
+  defaultLocale: string;
+  locales: string[];
+  countries: string[];
+  files: Record<string, string>;
+  localizationRoot: string;
+  counts: { networks: number; stations: number; locations: number; streams: number; verifiedStreams: number };
+}
+export interface Named {
+  id: string;
+  name: string;
+}
+export interface Network extends Named {
+  aliases: string[];
+  countryCodes: string[];
+  kind: string;
+  website: string | null;
+}
+export interface Location extends Named {
+  type: 'country' | 'state' | 'district' | 'locality';
+  parentId: string | null;
+  countryCode: string;
+}
+export interface Language {
+  code: string;
+  name: string;
+  nativeName: string;
+}
+export interface Source {
+  id: string;
+  title: string;
+  url: string | null;
+  kind: string;
+  notes: string;
+}
+export interface Stream {
+  id: string;
+  url: string;
+  format: string;
+  verificationStatus: 'verified' | 'unverified' | 'unavailable';
+  lastVerifiedAt: string | null;
+  sourceId: string;
+  rightsStatus: string;
+}
+export interface Station extends Named {
+  networkId: string;
+  countryCode: string;
+  regionId: string | null;
+  districtId: string | null;
+  localityId: string | null;
+  broadcastLanguages: string[];
+  genres: string[];
+  delivery: string;
+  coverage: string;
+  listingStatus: 'candidate' | 'reviewed';
+  frequencyMHz: number | null;
+  website: string | null;
+  sourceIds: string[];
+  streams: Stream[];
+  notes: string | null;
+}
+export type Dictionary = Record<string, Record<string, string>>;
+export interface Catalog {
+  manifest: Manifest;
+  networks: Network[];
+  stations: Station[];
+  locations: Location[];
+  languages: Language[];
+  categories: Named[];
+  sources: Source[];
+  localization: Record<string, Dictionary>;
+}
+export interface Filters {
+  search: string;
+  country: string;
+  region: string;
+  district: string;
+  locality: string;
+  language: string;
+  genre: string;
+}
+export const emptyFilters: Filters = {
+  search: '',
+  country: '',
+  region: '',
+  district: '',
+  locality: '',
+  language: '',
+  genre: '',
+};
+export function filterStations(c: Catalog, f: Filters): Station[] {
+  const query = f.search.trim().toLocaleLowerCase();
+  return c.stations.filter(
+    s =>
+      (!f.country || s.countryCode === f.country) &&
+      (!f.region || s.regionId === f.region) &&
+      (!f.district || s.districtId === f.district) &&
+      (!f.locality || s.localityId === f.locality) &&
+      (!f.language || s.broadcastLanguages.includes(f.language)) &&
+      (!f.genre || s.genres.includes(f.genre)) &&
+      (!query ||
+        [
+          s.name,
+          c.networks.find(n => n.id === s.networkId)?.name,
+          ...c.locations.filter(l => [s.regionId, s.districtId, s.localityId].includes(l.id)).map(l => l.name),
+        ]
+          .join(' ')
+          .toLocaleLowerCase()
+          .includes(query)),
+  );
+}
+export function groups(c: Catalog, f: Filters) {
+  const stations = filterStations(c, f);
+  return c.networks
+    .map(network => ({ network, stations: stations.filter(s => s.networkId === network.id) }))
+    .filter(g => g.stations.length);
+}
+export function translated(c: Catalog | null, locale: string, section: string, key: string, fallback = key): string {
+  return c?.localization[locale]?.[section]?.[key] || c?.localization['en']?.[section]?.[key] || fallback;
+}
+export function streamLabel(station: Station): string {
+  if (!station.streams.length) return 'noStream';
+  return station.streams.some(s => s.verificationStatus === 'unverified')
+    ? 'streamUnverified'
+    : station.streams.every(s => s.verificationStatus === 'unavailable')
+      ? 'streamUnavailable'
+      : 'availableStreams';
+}

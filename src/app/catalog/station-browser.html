@@ -1,0 +1,92 @@
+<section aria-labelledby="catalog-title" [attr.lang]="data.locale()">
+  <header>
+    <div>
+      <p class="eyebrow">DISCOVER / STAGE 2</p>
+      <h2 id="catalog-title">{{ data.t('catalog','title','Radio stations') }}</h2>
+    </div>
+    <label
+      >{{ ui('uiLanguage') }}
+      <select [value]="data.locale()" (change)="data.setLocale(value($event))">
+        <option value="en">English</option>
+        <option value="ta">தமிழ்</option>
+        <option value="sa">संस्कृतम्</option>
+      </select></label
+    >
+    <button type="button" [disabled]="data.loading()" (click)="data.refresh()">{{ ui('refresh') }}</button>
+  </header>
+  @if (data.loading()) {
+  <p role="status">{{ ui('loading') }}</p>
+  } @if (data.error()) {
+  <p role="alert" class="notice">{{ data.error() }}</p>
+  } @if (data.storageWarning()) {
+  <p role="status">{{ data.storageWarning() }}</p>
+  } @if (data.catalog(); as catalog) {
+  <p class="metadata">
+    Catalogue {{ catalog.manifest.catalogVersion }} · Published {{ catalog.manifest.publishedOn }} @if
+    (data.developmentSeed()) { · DEVELOPMENT SEED — not live data } @else { · Last successful update {{ data.updatedAt()
+    | date:'medium' }} } @if (data.cached()) { · Saved copy }
+  </p>
+  <p>{{ ui('discovery') }}</p>
+  <div class="filters">
+    <label class="search"
+      >{{ data.t('catalog','search') }}<input
+        type="search"
+        [value]="filters().search"
+        (input)="change('search', value($event))"
+    /></label>
+    @for (control of controls; track control.key) {
+    <label
+      >{{ data.t('catalog', control.label) }}<select
+        [value]="filters()[control.key]"
+        (change)="change(control.key,value($event))">
+        <option value="">{{ data.t('catalog','allStations') }}</option>
+        @for (option of options(control.key); track option.id) {
+        <option [value]="option.id">{{ option.name }}</option>
+        }
+      </select></label
+    >
+    }
+    <button type="button" (click)="clear()">{{ ui('clear') }}</button>
+  </div>
+  <p role="status">
+    {{ count() }} {{ data.t('catalog','stations') }} · {{ grouped().length }} {{ data.t('catalog','networks') }}
+  </p>
+  @for (group of grouped(); track group.network.id) {
+  <details class="network">
+    <summary>{{ group.network.name }} <span>({{ group.stations.length }})</span></summary>
+    <div class="stations">
+      @for (station of group.stations; track station.id) {
+      <article>
+        <h3>{{ station.name }}</h3>
+        <p>{{ data.t('catalog',station.listingStatus) }}</p>
+        <p>{{ location(station) }}</p>
+        <p>
+          {{ data.t('catalog','coverage') }}: {{ station.coverage }} · {{ station.delivery }} @if (station.frequencyMHz)
+          { · {{ station.frequencyMHz }} MHz }
+        </p>
+        <p>{{ data.t('catalog','languages') }}: {{ station.broadcastLanguages.join(', ') || ui('unspecified') }}</p>
+        <p>{{ data.t('catalog',status(station)) }}</p>
+        <details>
+          <summary>{{ ui('details') }}</summary>
+          <p>{{ station.notes }}</p>
+          <p>
+            {{ data.t('catalog','genres') }}: @for (genre of station.genres; track genre) { {{
+            data.t('categories',genre) }} }
+          </p>
+          <p>District / locality not listed means unspecified, not nationwide city coverage.</p>
+          @for (source of catalog.sources; track source.id) { @if (station.sourceIds.includes(source.id)) {
+          <p>{{ data.t('catalog','source') }}: {{ source.title }}</p>
+          } }
+        </details>
+        <p class="metadata">{{ ui('unavailable') }}</p>
+      </article>
+      }
+    </div>
+  </details>
+  } @empty {
+  <p class="notice">
+    {{ data.t('catalog','noResults') }}. Clear filters or choose a broader region. Unspecified locations do not match a
+    selected city.
+  </p>
+  } }
+</section>
