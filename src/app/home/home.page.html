@@ -1,20 +1,41 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<ion-content>
+  <div class="shell">
+    <header class="brand">
+      <img ngSrc="assets/icon/radio-bee.png" width="56" height="56" alt="" priority />
+      <span>RadioBee<span class="brand-note">YOUR WORLD. YOUR FREQUENCY.</span></span>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="intro">
+          <p class="eyebrow">A LITTLE CURIOSITY. A WORLD OF SOUND.</p>
+          <h1 id="hero-title">Find your<br />next frequency<span class="accent">.</span></h1>
+          <p class="tagline">Stay tuned. Stay buzzing.</p>
+          <p class="description">
+            A new home for internet radio. Discover the sounds that move you, from familiar rhythms to something
+            wonderfully unexpected.
+          </p>
+          <a class="next-link" href="#coming-next">See what’s coming <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="radio-art" aria-hidden="true">
+          <div class="dial-ring">
+            <img ngSrc="assets/icon/radio-bee.png" width="240" height="240" priority alt="" />
+          </div>
+          <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p>GOOD THINGS ARE ON THE AIR</p>
+        </div>
+      </section>
+      <section class="coming" id="coming-next" aria-labelledby="coming-title" tabindex="-1">
+        <span class="step">UP NEXT / 02</span>
+        <div>
+          <h2 id="coming-title">Your listening journey starts here.</h2>
+          <p>
+            Station browsing is coming next. We’re preparing a thoughtful way to explore internet radio. Listening will
+            arrive in a future stage.
+          </p>
+        </div>
+        <span class="badge">In the making</span>
+      </section>
+    </main>
+    <footer><span>RadioBee Web Preview — Stage 1</span><span>Made for curious ears.</span></footer>
   </div>
 </ion-content>
