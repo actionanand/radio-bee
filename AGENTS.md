@@ -56,3 +56,15 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the `providedIn: 'root'` option for singleton services
 - Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
 - Use the `inject()` function instead of constructor injection
+
+## WSL2 environment protection
+
+- This repository uses WSL2 Linux for Node.js development.
+- Before Node/npm commands, verify process.platform is "linux".
+- NEVER execute Windows npm commands against this working copy.
+- NEVER reinstall, delete, or replace node_modules without user approval.
+- NEVER run npm audit fix or update package-lock.json without approval.
+- If native esbuild dependencies are incompatible, report the issue and stop.
+- Do not silently repair dependencies from Windows.
+- Run lint, TypeScript, tests and builds through WSL2 only.
+- Do not commit, push or merge without explicit user approval.
