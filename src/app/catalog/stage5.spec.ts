@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { StationArtworkComponent, artworkCandidates, FALLBACK_ARTWORK, logoUrl } from './station-artwork';
-import { CATALOG_STORAGE, CatalogService, CATALOG_URL } from './catalog.service';
+import { CATALOG_STORAGE, CatalogService, CATALOG_URL, CATALOG_FETCH } from './catalog.service';
+import { StationCardComponent } from './station-card';
+import { uiLabel } from './catalog.ui';
 import { validateCatalog } from './catalog.validation';
 import { fixture } from './catalog.fixture';
 import { FAVORITES_STORAGE, FavoritesService } from './favorites.service';
@@ -14,6 +16,71 @@ import { PlayerService } from '../player/player.service';
 
 const base = 'https://actionanand.github.io/radio-bee-data/v1/';
 describe('Station artwork', () => {
+  it('retries once per successful catalogue snapshot, not on locale changes, stale errors or failed refreshes', async () => {
+    const snapshot = validateCatalog(structuredClone(fixture));
+    snapshot.stations[0].logoPath = 'assets/logos/stations/retry.webp';
+    snapshot.networks.find(network => network.id === snapshot.stations[0].networkId)!.logoPath =
+      'assets/logos/networks/retry.png';
+    let offline = true;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CATALOG_URL, useValue: base },
+        { provide: CATALOG_STORAGE, useValue: { get: async () => ({ value: null }), set: async () => undefined } },
+        {
+          provide: CATALOG_FETCH,
+          useValue: async (url: string) => {
+            if (offline) throw Error('Offline');
+            const file = url.slice(base.length);
+            if (file === 'index.json') return snapshot.manifest;
+            if (file.startsWith('i18n/')) return snapshot.localization[file.slice(5, -5)];
+            return snapshot[
+              file.replace('.json', '') as
+                'networks' | 'stations' | 'locations' | 'languages' | 'categories' | 'sources'
+            ];
+          },
+        },
+      ],
+    });
+    const data = TestBed.inject(CatalogService);
+    data.catalog.set(snapshot);
+    const view = TestBed.createComponent(StationArtworkComponent);
+    view.componentRef.setInput('station', snapshot.stations[0]);
+    view.detectChanges();
+    const image = () => view.nativeElement.querySelector('img') as HTMLImageElement;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      expect(image().src).toBe(base + 'assets/logos/stations/retry.webp');
+      image().dispatchEvent(new Event('error'));
+      view.detectChanges();
+      const network = image().src;
+      view.componentInstance.failed(base + 'assets/logos/stations/retry.webp');
+      view.detectChanges();
+      expect(image().src).toBe(network);
+      image().dispatchEvent(new Event('error'));
+      view.detectChanges();
+      expect(view.componentInstance.source()).toBe(FALLBACK_ARTWORK);
+      for (let repeat = 0; repeat < 3; repeat++) {
+        image().dispatchEvent(new Event('error'));
+        view.detectChanges();
+      }
+      expect(view.componentInstance.source()).toBe(FALLBACK_ARTWORK);
+      if (attempt === 0) {
+        await data.setLocale('ta');
+        await data.refresh();
+        view.detectChanges();
+        expect(data.catalog()).toBe(snapshot);
+        expect(view.componentInstance.source()).toBe(FALLBACK_ARTWORK);
+        const recreated = TestBed.createComponent(StationArtworkComponent);
+        recreated.componentRef.setInput('station', snapshot.stations[0]);
+        recreated.detectChanges();
+        expect(recreated.componentInstance.source()).toBe(FALLBACK_ARTWORK);
+        recreated.destroy();
+        offline = false;
+        await data.refresh();
+        view.detectChanges();
+        expect(data.catalog()).not.toBe(snapshot);
+      }
+    }
+  });
   it('selects station, network and bundled artwork in order, supporting old data', () => {
     expect(
       artworkCandidates(
@@ -75,6 +142,36 @@ describe('Station artwork', () => {
     expect(view.nativeElement.textContent).toContain('AN');
     expect(station.logoPath).toBe('assets/logos/stations/station.webp');
   });
+});
+
+describe('Localized station presentation', () => {
+  for (const locale of ['en', 'ta', 'sa'])
+    it(`localizes radio, delivery and coverage labels in ${locale}`, () => {
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: MEDIA_ENGINE, useValue: null },
+          { provide: FAVORITES_STORAGE, useValue: { get: async () => ({ value: null }), set: async () => undefined } },
+        ],
+      });
+      const catalog = validateCatalog(structuredClone(fixture));
+      const data = TestBed.inject(CatalogService);
+      data.catalog.set(catalog);
+      data.locale.set(locale);
+      const view = TestBed.createComponent(StationCardComponent);
+      const station = { ...catalog.stations[0], delivery: 'online', frequencyMHz: null };
+      view.componentRef.setInput('station', station);
+      view.detectChanges();
+      expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'onlineRadio'));
+      expect(view.nativeElement.textContent).toContain(uiLabel(locale, 'localCoverage'));
+      view.componentRef.setInput('station', { ...station, delivery: 'fm' });
+      view.detectChanges();
+      expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'radioLabel'));
+      if (locale !== 'en')
+        expect(view.nativeElement.querySelector('.frequency').textContent).not.toMatch(/ONLINE RADIO|\bRadio\b/);
+      expect(view.nativeElement.textContent).toContain(
+        catalog.networks.find(network => network.id === station.networkId)!.name,
+      );
+    });
 });
 describe('Persistent favorites', () => {
   it('restores IDs across service instances and persists additions/removals', async () => {
@@ -238,15 +335,21 @@ describe('Mini-player controls', () => {
         button => button.textContent!.trim() === name,
       )!;
     expect(view.nativeElement.querySelector('app-station-artwork')).toBeTruthy();
-    button('Pause').click();
+    const primary = button('Pause');
+    primary.focus();
+    primary.click();
     view.detectChanges();
     expect(player.state()).toBe('paused');
+    expect(button('Play')).toBe(primary);
+    expect(document.activeElement).toBe(primary);
     button('Play').click();
     await Promise.resolve();
     await Promise.resolve();
     audio.dispatchEvent(new Event('playing'));
     view.detectChanges();
     expect(player.state()).toBe('playing');
+    expect(button('Pause')).toBe(primary);
+    expect(document.activeElement).toBe(primary);
     button('Mute').click();
     expect(audio.muted).toBe(true);
     const volume = view.nativeElement.querySelector('input') as HTMLInputElement;

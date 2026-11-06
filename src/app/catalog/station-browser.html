@@ -1,11 +1,12 @@
-<section aria-labelledby="catalog-title" [attr.lang]="data.locale()">
+<section class="rb-ui" aria-labelledby="catalog-title" [attr.lang]="data.locale()">
   <header class="browse-header">
     <div>
-      <p class="eyebrow">RADIOBEE / DISCOVER</p>
+      <p class="eyebrow rb-eyebrow">RADIOBEE / {{ ui('discover') }}</p>
       <h2 id="catalog-title">{{ ui('explore') }}</h2>
     </div>
     <label class="language-label"
-      >{{ ui('uiLanguage') }}<select [value]="data.locale()" (change)="data.setLocale(value($event))">
+      ><span class="language-name">{{ ui('uiLanguage') }}</span
+      ><select [attr.aria-label]="ui('uiLanguage')" [value]="data.locale()" (change)="data.setLocale(value($event))">
         <option value="en">English</option>
         <option value="ta">தமிழ்</option>
         <option value="sa">संस्कृतम्</option>
@@ -83,12 +84,13 @@
   <details class="catalogue-info">
     <summary>{{ ui('catalogueInfo') }} · {{ catalog.manifest.catalogVersion }}</summary>
     <p>
-      Catalogue {{ catalog.manifest.catalogVersion }} · {{ catalog.manifest.publishedOn }} · {{ catalog.stations.length
-      }} {{ data.t('catalog','stations') }} · {{ catalog.networks.length }} {{ data.t('catalog','networks') }}
+      {{ ui('catalogue') }} {{ catalog.manifest.catalogVersion }} · {{ catalog.manifest.publishedOn }} · {{
+      catalog.stations.length }} {{ data.t('catalog','stations') }} · {{ catalog.networks.length }} {{
+      data.t('catalog','networks') }}
     </p>
     <p>
-      {{ data.updatedAt() | date:'medium' }} @if (data.cached()) { · Saved copy } @if (data.developmentSeed()) { ·
-      DEVELOPMENT SEED — not live data }
+      {{ data.updatedAt() | date:'medium' }} @if (data.cached()) { · {{ ui('savedCopy') }} } @if
+      (data.developmentSeed()) { · {{ ui('developmentSeed') }} }
     </p>
     <p>{{ ui('discovery') }}</p>
     <button type="button" [disabled]="data.loading()" (click)="data.refresh()">{{ ui('refresh') }}</button>

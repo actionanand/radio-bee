@@ -1,0 +1,46 @@
+name: RadioBee PR Validation
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: radiobee-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout PR merge result
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.16.0'
+          cache: npm
+      - name: Verify Linux runtime
+        run: node -e "if (process.platform !== 'linux') process.exit(1)"
+      - name: Install CI dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Complete unit tests
+        run: npm run test:ci
+      - name: Check PR validation contract
+        run: node --test scripts/pr-validation.test.mjs
+      - name: Build production Pages output
+        run: npm run build:gh -- --configuration=production
+      - name: Check Pages base href and routing fallback
+        run: |
+          test -s www/index.html
+          grep -Fq '<base href="/radio-bee/">' www/index.html
+          npm run copy-error-page
+          cmp www/index.html www/404.html

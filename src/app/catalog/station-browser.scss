@@ -16,11 +16,7 @@ h2 {
   font-weight: 750;
 }
 .eyebrow {
-  font-size: 10px;
-  letter-spacing: 2px;
-  font-weight: 700;
-  color: var(--muted);
-  margin: 0 0 8px;
+  margin-bottom: 8px;
 }
 label {
   display: flex;
@@ -29,30 +25,6 @@ label {
   font-size: 12px;
   font-weight: 600;
   min-width: 0;
-}
-input,
-select,
-button {
-  font: inherit;
-  min-height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-  background: var(--paper);
-  color: var(--ink);
-  max-width: 100%;
-}
-button,
-summary {
-  cursor: pointer;
-}
-button:disabled {
-  opacity: 0.65;
-  cursor: wait;
-}
-:focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 3px;
 }
 .search {
   flex-direction: row;
@@ -226,8 +198,12 @@ button:disabled {
   }
   .categories {
     gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
   }
   .categories button {
+    flex: none;
     font-size: 11px;
     padding: 9px 13px;
   }
@@ -237,13 +213,19 @@ button:disabled {
   .language-label {
     font-size: 10px;
   }
+  .language-name {
+    display: none;
+  }
+  h2 {
+    font-size: 18px;
+  }
   .language-label select {
     max-width: 112px;
     padding: 8px;
     font-size: 12px;
   }
   .eyebrow {
-    font-size: 9px;
+    display: none;
   }
   .search input {
     font-size: 14px;
@@ -252,11 +234,28 @@ button:disabled {
     padding-left: 14px;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
+@media (max-width: 559px) {
+  .browse-header {
+    margin-bottom: 12px;
+  }
+  .categories {
+    padding: 12px 0;
+  }
+  .results-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 8px 0;
+  }
+  .group-toggle {
+    max-width: 160px;
+    font-size: 10px;
+    text-align: right;
+  }
+  .search input {
+    min-height: 48px;
+  }
+  .advanced > summary {
+    min-height: 44px;
+    padding: 12px 2px;
   }
 }

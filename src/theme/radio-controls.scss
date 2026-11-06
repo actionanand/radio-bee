@@ -1,0 +1,38 @@
+// Shared feature controls are emitted once, rather than repeated in component bundles.
+// Low-specificity selectors let component-specific states keep their existing appearance.
+:where(.rb-ui) :is(button, select, input[type='search']) {
+  font: inherit;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  max-width: 100%;
+}
+:where(.rb-ui) :where(button, summary) {
+  cursor: pointer;
+}
+:where(.rb-ui) :focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+:where(.rb-ui) button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+:where(.rb-ui) .rb-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.rb-ui) *,
+  :where(.rb-ui) *::before,
+  :where(.rb-ui) *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

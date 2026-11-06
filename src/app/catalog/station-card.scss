@@ -94,7 +94,6 @@ app-station-artwork {
   color: var(--muted);
 }
 .card-actions {
-  min-height: 48px;
   display: flex;
   align-items: center;
 }
@@ -157,12 +156,6 @@ app-station-artwork {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
   .station-card:hover {
     transform: none;
   }
@@ -175,17 +168,6 @@ app-station-artwork {
 :host {
   display: block;
   min-width: 0;
-}
-:focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 3px;
-}
-button {
-  font: inherit;
-  min-height: 44px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: inherit;
 }
 .play {
   padding: 10px;

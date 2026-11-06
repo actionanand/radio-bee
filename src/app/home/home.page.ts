@@ -1,4 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
+import { RadioIllustrationComponent } from './radio-illustration';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CatalogService } from '../catalog/catalog.service';
@@ -11,7 +12,14 @@ import { LiveStreamLabComponent } from '../live-test/live-stream-lab';
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  imports: [IonContent, NgOptimizedImage, RouterLink, StationBrowserComponent, LiveStreamLabComponent],
+  imports: [
+    IonContent,
+    NgOptimizedImage,
+    RouterLink,
+    StationBrowserComponent,
+    LiveStreamLabComponent,
+    RadioIllustrationComponent,
+  ],
 })
 export class HomePage {
   readonly data = inject(CatalogService);

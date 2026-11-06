@@ -1,5 +1,8 @@
 # Stage 5 — RadioBee station interface
 
+For the subsequent review of commit `03efe47c4e`, see [Stage 5 refinements](STAGE-5-REFINEMENTS.md).
+The validation figures below describe the initial Stage 5 implementation.
+
 Client branch: `feature/5-radio-thumbnail-ui`. This work is confined to
 `radio-bee`; the adjacent data repository is being handled separately.
 

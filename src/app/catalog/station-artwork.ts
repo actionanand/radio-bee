@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, Service, computed, inject, input, linkedSignal } from '@angular/core';
 import { CatalogService, CATALOG_URL } from './catalog.service';
 import { Network, Station } from './catalog.models';
 
@@ -34,11 +34,30 @@ export function artworkCandidates(
     ),
   ];
 }
+@Service()
+export class ArtworkFailures {
+  private readonly catalog = inject(CatalogService);
+  // Keep failures across filtered-out/recreated cards and the mini-player, until a new validated snapshot arrives.
+  private readonly urls = linkedSignal({ source: () => this.catalog.catalog(), computation: () => new Set<string>() });
+  has(url: string) {
+    return this.urls().has(url);
+  }
+  remember(url: string) {
+    this.urls.update(previous => (previous.has(url) ? previous : new Set([...previous, url])));
+  }
+}
 @Component({
   selector: 'app-station-artwork',
   imports: [NgOptimizedImage],
   template: ` <span class="artwork" [class]="'artwork tone-' + tone()" [class.fallback]="source() === fallback">
-    <img [ngSrc]="source()" width="240" height="240" alt="" loading="lazy" (error)="failed(source())" />
+    <img
+      #image
+      [ngSrc]="source()"
+      width="240"
+      height="240"
+      alt=""
+      loading="lazy"
+      (error)="failed(image.currentSrc || image.src)" />
     @if (source() === fallback) {
       <span class="initials" aria-hidden="true">{{ initials() }}</span
       ><span class="wordmark" aria-hidden="true">RADIOBEE</span>
@@ -112,7 +131,7 @@ export class StationArtworkComponent {
   readonly station = input.required<Station>();
   private readonly catalog = inject(CatalogService);
   private readonly base = inject(CATALOG_URL);
-  private readonly errors = signal<string[]>([]);
+  private readonly failures = inject(ArtworkFailures);
   readonly fallback = FALLBACK_ARTWORK;
   readonly source = computed(
     () =>
@@ -120,7 +139,7 @@ export class StationArtworkComponent {
         this.base,
         this.station(),
         this.catalog.catalog()?.networks.find(n => n.id === this.station().networkId),
-      ).find(url => !this.errors().includes(url)) ?? FALLBACK_ARTWORK,
+      ).find(url => !this.failures.has(url)) ?? FALLBACK_ARTWORK,
   );
   readonly initials = computed(() =>
     this.station()
@@ -134,6 +153,7 @@ export class StationArtworkComponent {
   );
   readonly tone = computed(() => Array.from(this.station().id).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 6);
   failed(url: string) {
-    this.errors.update(previous => (previous.includes(url) ? previous : [...previous, url]));
+    if (url !== this.source() || url === FALLBACK_ARTWORK) return;
+    this.failures.remember(url);
   }
 }

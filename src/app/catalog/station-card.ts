@@ -30,6 +30,25 @@ export class StationCardComponent {
   networkName(station: Station) {
     return this.data.catalog()?.networks.find(network => network.id === station.networkId)?.name ?? '';
   }
+  delivery(station: Station) {
+    return station.delivery === 'online' ? this.ui('onlineRadio') : station.delivery.toUpperCase();
+  }
+  coverage(station: Station) {
+    const keys: Record<string, UiKey> = {
+      local: 'localCoverage',
+      regional: 'regionalCoverage',
+      national: 'nationalCoverage',
+      global: 'globalCoverage',
+    };
+    return this.ui(keys[station.coverage] ?? 'unspecified');
+  }
+  languages(station: Station) {
+    return (
+      station.broadcastLanguages
+        .map(code => this.data.catalog()?.languages.find(language => language.code === code)?.nativeName ?? code)
+        .join(', ') || this.ui('unspecified')
+    );
+  }
   listeningPage(station: Station): string | null {
     const page = broadcasterPages[station.id] ?? station.website;
     try {

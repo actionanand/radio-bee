@@ -20,8 +20,8 @@
     <h3>{{ station().name }}</h3>
     <p class="location">{{ shortLocation(station()) }}</p>
     <p class="frequency">
-      @if (station().frequencyMHz) { {{ station().frequencyMHz }} <span>MHz</span> } @else { {{ station().delivery ===
-      'online' ? 'ONLINE RADIO' : 'RADIO' }} }
+      @if (station().frequencyMHz) { {{ station().frequencyMHz }} <span>MHz</span> } @else { {{ ui(station().delivery
+      === 'online' ? 'onlineRadio' : 'radioLabel') }} }
     </p>
     <div class="card-actions">
       @if (eligibility.status === 'ready') {
@@ -48,8 +48,8 @@
       <p>{{ ui(eligibility.status) }}</p>
       <p>{{ ui('network') }}: {{ networkName(station()) }}</p>
       <p>{{ location(station()) }}</p>
-      <p>{{ data.t('catalog',station().listingStatus) }} · {{ station().coverage }} · {{ station().delivery }}</p>
-      <p>{{ data.t('catalog','languages') }}: {{ station().broadcastLanguages.join(', ') || ui('unspecified') }}</p>
+      <p>{{ data.t('catalog',station().listingStatus) }} · {{ coverage(station()) }} · {{ delivery(station()) }}</p>
+      <p>{{ data.t('catalog','languages') }}: {{ languages(station()) }}</p>
       <p>{{ station().notes }}</p>
       <p>
         {{ data.t('catalog','genres') }}: @for (genre of station().genres; track genre) { {{ data.t('categories',genre)

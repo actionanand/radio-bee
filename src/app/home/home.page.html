@@ -1,5 +1,5 @@
 <ion-content
-  ><div class="shell">
+  ><div class="shell rb-ui">
     <div class="brand-bar">
       <a class="brand" routerLink="/home"
         ><img ngSrc="assets/icon/radio-bee.png" width="48" height="48" alt="" priority />
@@ -7,12 +7,12 @@
           <strong>RadioBee<span class="brand-dot">.</span></strong>
           <p>Stay tuned. Stay buzzing.</p>
         </div></a
-      ><span class="edition">INTERNET RADIO, WITH A LITTLE BUZZ.</span>
+      ><span class="edition">{{ ui('edition') }}</span>
     </div>
     <div class="home-content">
       <section class="hero" aria-labelledby="home-title" [attr.lang]="data.locale()">
         <div class="hero-copy">
-          <p class="eyebrow">TURN UP THE EVERYDAY</p>
+          <p class="eyebrow rb-eyebrow">{{ ui('heroEyebrow') }}</p>
           <h1 id="home-title">{{ ui('heroTitle') }}</h1>
           <p class="hero-description">{{ ui('heroDescription') }}</p>
           <div class="hero-signature">
@@ -20,23 +20,11 @@
             Stay buzzing.
           </div>
         </div>
-        <div class="radio-scene" aria-hidden="true">
-          <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
-          <div class="radio-body">
-            <div class="radio-speaker"></div>
-            <div class="radio-controls">
-              <span class="radio-display"
-                >RADIOBEE<br /><b>ON YOUR<br />WAVELENGTH.</b></span
-              >
-              <div class="knobs"><span></span><span></span></div>
-            </div>
-          </div>
-          <span class="frequency-stamp">FM / AM / ONLINE</span>
-        </div>
+        <app-radio-illustration aria-hidden="true" />
       </section>
       <app-station-browser />
       <details class="development-lab" [hidden]="!liveTests">
-        <summary>Local technical tests</summary>
+        <summary>{{ ui('technicalTests') }}</summary>
         <app-live-stream-lab />
       </details>
     </div>
