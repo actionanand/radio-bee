@@ -7,18 +7,47 @@ export interface MediaEngine {
   load(stream: Stream): Promise<void>;
   clear(): void;
 }
-export function createMediaEngine(): MediaEngine | null {
+export interface HlsAdapter {
+  onAttached(callback: () => void): void;
+  onManifest(callback: () => void): void;
+  onFatal(callback: () => void): void;
+  loadSource(url: string): void;
+  attachMedia(audio: HTMLAudioElement): void;
+  destroy(): void;
+}
+export interface HlsFactory {
+  isSupported(): boolean;
+  create(): HlsAdapter;
+}
+export const defaultHlsFactory: HlsFactory = {
+  isSupported: () => Hls.isSupported(),
+  create: () => {
+    const instance = new Hls({ enableWorker: true });
+    return {
+      onAttached: callback => instance.on(Hls.Events.MEDIA_ATTACHED, callback),
+      onManifest: callback => instance.on(Hls.Events.MANIFEST_PARSED, callback),
+      onFatal: callback =>
+        instance.on(Hls.Events.ERROR, (_event, data) => {
+          if (data.fatal) callback();
+        }),
+      loadSource: url => instance.loadSource(url),
+      attachMedia: audio => instance.attachMedia(audio),
+      destroy: () => instance.destroy(),
+    };
+  },
+};
+export function createMediaEngine(factory: HlsFactory = defaultHlsFactory): MediaEngine | null {
   if (typeof Audio === 'undefined') return null;
   const audio = new Audio();
   if (
     !audio.canPlayType('audio/mpeg') &&
     !audio.canPlayType('audio/aac') &&
     !audio.canPlayType('application/vnd.apple.mpegurl') &&
-    !Hls.isSupported()
+    !factory.isSupported()
   )
     return null;
   audio.preload = 'none';
-  let hls: Hls | null = null;
+  let hls: HlsAdapter | null = null;
   let cancel: (() => void) | null = null;
   const nativeHls = () => !!audio.canPlayType('application/vnd.apple.mpegurl');
   const clear = () => {
@@ -37,7 +66,7 @@ export function createMediaEngine(): MediaEngine | null {
         ? !!audio.canPlayType('audio/mpeg')
         : format === 'aac'
           ? !!audio.canPlayType('audio/aac')
-          : format === 'hls' && (nativeHls() || Hls.isSupported()),
+          : format === 'hls' && (nativeHls() || factory.isSupported()),
     clear,
     load: async stream => {
       clear();
@@ -48,19 +77,17 @@ export function createMediaEngine(): MediaEngine | null {
       }
       await new Promise<void>((resolve, reject) => {
         cancel = () => reject(new DOMException('Cancelled', 'AbortError'));
-        const instance = new Hls({ enableWorker: true });
+        const instance = factory.create();
         hls = instance;
-        instance.on(Hls.Events.MEDIA_ATTACHED, () => instance.loadSource(stream.url));
-        instance.on(Hls.Events.MANIFEST_PARSED, () => {
+        instance.onAttached(() => instance.loadSource(stream.url));
+        instance.onManifest(() => {
           cancel = null;
           resolve();
         });
-        instance.on(Hls.Events.ERROR, (_event, data) => {
-          if (data.fatal) {
-            cancel = null;
-            reject(new Error('HLS failure'));
-            audio.dispatchEvent(new Event('error'));
-          }
+        instance.onFatal(() => {
+          cancel = null;
+          reject(new Error('HLS failure'));
+          audio.dispatchEvent(new Event('error'));
         });
         instance.attachMedia(audio);
       });
@@ -69,5 +96,5 @@ export function createMediaEngine(): MediaEngine | null {
 }
 export const MEDIA_ENGINE = new InjectionToken<MediaEngine | null>('MEDIA_ENGINE', {
   providedIn: 'root',
-  factory: createMediaEngine,
+  factory: () => createMediaEngine(),
 });
