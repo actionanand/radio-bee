@@ -84,6 +84,7 @@ export function validateCatalog(value: unknown): Catalog {
     return table(key).get(id)!;
   };
   for (const n of table('networks').values()) {
+    check(n['logoPath'] === undefined || typeof n['logoPath'] === 'string', 'network logoPath');
     check(strings(n['aliases']) && strings(n['countryCodes']), 'network arrays');
     check(
       n['countryCodes'].every(c => manifest.countries.includes(c)),
@@ -114,6 +115,7 @@ export function validateCatalog(value: unknown): Catalog {
   let verified = 0;
   const streamIds = new Set<string>();
   for (const s of table('stations').values()) {
+    check(s['logoPath'] === undefined || typeof s['logoPath'] === 'string', 'station logoPath');
     const network = ref('networks', s['networkId']);
     check(
       text(s['countryCode']) &&

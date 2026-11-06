@@ -1,97 +1,99 @@
-<section aria-labelledby="catalog-title" [attr.lang]="data.locale()">
-  <header>
+<section class="rb-ui" aria-labelledby="catalog-title" [attr.lang]="data.locale()">
+  <header class="browse-header">
     <div>
-      <p class="eyebrow">DISCOVER / RADIOBEE</p>
-      <h2 id="catalog-title">{{ data.t('catalog','title','Radio stations') }}</h2>
+      <p class="eyebrow rb-eyebrow">RADIOBEE / {{ ui('discover') }}</p>
+      <h2 id="catalog-title">{{ ui('explore') }}</h2>
     </div>
-    <label
-      >{{ ui('uiLanguage') }}
-      <select [value]="data.locale()" (change)="data.setLocale(value($event))">
+    <label class="language-label"
+      ><span class="language-name">{{ ui('uiLanguage') }}</span
+      ><select [attr.aria-label]="ui('uiLanguage')" [value]="data.locale()" (change)="data.setLocale(value($event))">
         <option value="en">English</option>
         <option value="ta">தமிழ்</option>
         <option value="sa">संस्कृतम्</option>
       </select></label
     >
-    <button type="button" [disabled]="data.loading()" (click)="data.refresh()">{{ ui('refresh') }}</button>
   </header>
+  <label class="search"
+    ><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">{{ ui('searchStations') }}</span
+    ><input
+      type="search"
+      [placeholder]="ui('searchStations')"
+      [value]="filters().search"
+      (input)="change('search', value($event))"
+  /></label>
+  <nav class="categories" [attr.aria-label]="ui('explore')">
+    @for (item of categories; track item) {
+    <button
+      type="button"
+      [class.active]="category() === item"
+      [attr.data-category]="item"
+      [attr.aria-pressed]="category() === item"
+      (click)="selectCategory(item)">
+      @if (item === 'favorites') { <span aria-hidden="true">♡ </span> }{{ ui(item) }}
+    </button>
+    }
+  </nav>
   @if (data.loading()) {
   <p role="status">{{ ui('loading') }}</p>
   } @if (data.error()) {
   <p role="alert" class="notice">{{ data.error() }}</p>
   } @if (data.storageWarning()) {
   <p role="status">{{ data.storageWarning() }}</p>
+  } @if (favorites.warning()) {
+  <p role="status">{{ ui('favoritesWarning') }}</p>
   } @if (data.catalog(); as catalog) {
-  <p class="metadata">
-    Catalogue {{ catalog.manifest.catalogVersion }} · Published {{ catalog.manifest.publishedOn }} @if
-    (data.developmentSeed()) { · DEVELOPMENT SEED — not live data } @else { · Last successful update {{ data.updatedAt()
-    | date:'medium' }} } @if (data.cached()) { · Saved copy }
-  </p>
-  <p>{{ ui('discovery') }}</p>
-  <div class="filters">
-    <label class="search"
-      >{{ data.t('catalog','search') }}<input
-        type="search"
-        [value]="filters().search"
-        (input)="change('search', value($event))"
-    /></label>
-    @for (control of controls(); track control.key) {
-    <label
-      >{{ controlLabel(control.label) }}<select
-        [value]="filters()[control.key]"
-        (change)="change(control.key,value($event))">
-        <option value="">{{ data.t('catalog','allStations') }}</option>
-        @for (option of options(control.key); track option.id) {
-        <option [value]="option.id">{{ option.name }}</option>
-        }
-      </select></label
-    >
-    }
-    <button type="button" (click)="clear()">{{ ui('clear') }}</button>
-  </div>
-  <p role="status">
-    {{ count() }} {{ data.t('catalog','stations') }} · {{ grouped().length }} {{ data.t('catalog','networks') }}
-  </p>
-  @for (group of grouped(); track group.network.id) {
-  <details class="network">
-    <summary>{{ group.network.name }} <span>({{ group.stations.length }})</span></summary>
-    <div class="stations">
-      @for (station of group.stations; track station.id) {
-      <article>
-        <h3>{{ station.name }}</h3>
-        <p>{{ data.t('catalog',station.listingStatus) }}</p>
-        <p>{{ location(station) }}</p>
-        <p>
-          {{ data.t('catalog','coverage') }}: {{ station.coverage }} · {{ station.delivery }} @if (station.frequencyMHz)
-          { · {{ station.frequencyMHz }} MHz }
-        </p>
-        <p>{{ data.t('catalog','languages') }}: {{ station.broadcastLanguages.join(', ') || ui('unspecified') }}</p>
-        @let eligibility = player.eligibility(station);
-        <p>{{ ui(eligibility.status) }}</p>
-        @if (eligibility.status === 'ready') {
-        <button type="button" (click)="player.play(station)">{{ ui('play') }} · {{ station.name }}</button>
-        } @if (eligibility.status !== 'ready' && broadcasterPages[station.id]; as page) {
-        <p><a [href]="page" target="_blank" rel="noopener noreferrer">{{ ui('broadcasterPage') }}</a></p>
-        }
-        <details>
-          <summary>{{ ui('details') }}</summary>
-          <p>{{ station.notes }}</p>
-          <p>
-            {{ data.t('catalog','genres') }}: @for (genre of station.genres; track genre) { {{
-            data.t('categories',genre) }} }
-          </p>
-          <p>District / locality not listed means unspecified, not nationwide city coverage.</p>
-          @for (source of catalog.sources; track source.id) { @if (station.sourceIds.includes(source.id)) {
-          <p>{{ data.t('catalog','source') }}: {{ source.title }}</p>
-          } }
-        </details>
-      </article>
+  <details class="advanced">
+    <summary>{{ ui('advanced') }}<span aria-hidden="true"> +</span></summary>
+    <div class="filters">
+      @for (control of controls(); track control.key) {
+      <label
+        >{{ controlLabel(control.label) }}<select
+          [value]="filters()[control.key]"
+          (change)="change(control.key,value($event))">
+          <option value="">{{ data.t('catalog','allStations') }}</option>
+          @for (option of options(control.key); track option.id) {
+          <option [value]="option.id">{{ option.name }}</option>
+          }
+        </select></label
+      >
       }
+      <button type="button" (click)="clear()">{{ ui('clear') }}</button>
     </div>
   </details>
-  } @empty {
-  <p class="notice">
-    {{ data.t('catalog','noResults') }}. Clear filters or choose a broader region. Unspecified locations do not match a
-    selected city.
-  </p>
-  } }
+  <div class="results-toolbar">
+    <p role="status" aria-live="polite"><strong>{{ count() }}</strong> {{ ui('stationsFound') }}</p>
+    <button class="group-toggle" type="button" [attr.aria-pressed]="byNetwork()" (click)="byNetwork.update(toggle)">
+      {{ ui('groupNetworks') }}<span aria-hidden="true"> {{ byNetwork() ? '✓' : '☷' }}</span>
+    </button>
+  </div>
+  @for (section of sections(); track section.id) { @if (section.name) {
+  <h3 class="network-title">{{ section.name }} <span>{{ section.stations.length }}</span></h3>
+  }
+  <div class="stations">
+    @for (station of section.stations; track station.id) { <app-station-card [station]="station" />
+    }
+  </div>
+  } @if (!count()) {
+  <div class="empty">
+    <span aria-hidden="true">⌕</span>
+    <h3>{{ category() === 'favorites' ? ui('favoritesEmpty') : data.t('catalog','noResults') }}</h3>
+    <p>{{ ui('noResultsHelp') }}</p>
+    <button type="button" (click)="selectCategory('all')">{{ ui('all') }}</button>
+  </div>
+  }
+  <details class="catalogue-info">
+    <summary>{{ ui('catalogueInfo') }} · {{ catalog.manifest.catalogVersion }}</summary>
+    <p>
+      {{ ui('catalogue') }} {{ catalog.manifest.catalogVersion }} · {{ catalog.manifest.publishedOn }} · {{
+      catalog.stations.length }} {{ data.t('catalog','stations') }} · {{ catalog.networks.length }} {{
+      data.t('catalog','networks') }}
+    </p>
+    <p>
+      {{ data.updatedAt() | date:'medium' }} @if (data.cached()) { · {{ ui('savedCopy') }} } @if
+      (data.developmentSeed()) { · {{ ui('developmentSeed') }} }
+    </p>
+    <p>{{ ui('discovery') }}</p>
+    <button type="button" [disabled]="data.loading()" (click)="data.refresh()">{{ ui('refresh') }}</button>
+  </details>
+  }
 </section>

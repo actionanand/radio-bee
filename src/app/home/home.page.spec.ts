@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { HomePage } from './home.page';
 import { CATALOG_FETCH, CATALOG_STORAGE } from '../catalog/catalog.service';
 describe('HomePage', () => {
   it('retains RadioBee branding and renders the discovery browser without playback', () => {
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         {
           provide: CATALOG_FETCH,
           useValue: async () => {

@@ -14,6 +14,7 @@ export interface Named {
   name: string;
 }
 export interface Network extends Named {
+  logoPath?: string;
   aliases: string[];
   countryCodes: string[];
   kind: string;
@@ -46,6 +47,7 @@ export interface Stream {
   rightsStatus: string;
 }
 export interface Station extends Named {
+  logoPath?: string;
   networkId: string;
   countryCode: string;
   regionId: string | null;

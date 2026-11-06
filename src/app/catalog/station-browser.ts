@@ -2,18 +2,32 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CatalogService } from './catalog.service';
 import { UiKey, uiLabel } from './catalog.ui';
-import { Filters, Location, Station, emptyFilters, groups } from './catalog.models';
-import { PlayerService } from '../player/player.service';
-import { broadcasterPages } from './broadcaster-pages';
+import { Filters, Location, emptyFilters, groups } from './catalog.models';
+import { StationCardComponent } from './station-card';
+import { FavoritesService } from './favorites.service';
+import { DiscoveryCategory, discoveryCategories, inCategory } from './discovery';
 @Component({
   selector: 'app-station-browser',
-  imports: [DatePipe],
+  imports: [DatePipe, StationCardComponent],
   templateUrl: './station-browser.html',
   styleUrl: './station-browser.scss',
 })
 export class StationBrowserComponent {
-  readonly broadcasterPages = broadcasterPages;
-  readonly player = inject(PlayerService);
+  readonly toggle = (value: boolean) => !value;
+  readonly favorites = inject(FavoritesService);
+  readonly categories = discoveryCategories;
+  readonly category = signal<DiscoveryCategory>('all');
+  readonly byNetwork = signal(false);
+  readonly stations = computed(() => this.grouped().flatMap(group => group.stations));
+  readonly sections = computed(() =>
+    this.byNetwork()
+      ? this.grouped().map(group => ({ id: group.network.id, name: group.network.name, stations: group.stations }))
+      : [{ id: 'all', name: '', stations: this.stations() }],
+  );
+  selectCategory(category: DiscoveryCategory) {
+    this.category.set(category);
+    this.clear();
+  }
   ui(key: UiKey): string {
     return uiLabel(this.data.locale(), key);
   }
@@ -25,7 +39,16 @@ export class StationBrowserComponent {
   readonly filters = signal<Filters>({ ...emptyFilters });
   readonly grouped = computed(() => {
     const catalog = this.data.catalog();
-    return catalog ? groups(catalog, this.filters()) : [];
+    return catalog
+      ? groups(catalog, this.filters())
+          .map(group => ({
+            ...group,
+            stations: group.stations.filter(station =>
+              inCategory(station, this.category(), this.favorites.has(station.id)),
+            ),
+          }))
+          .filter(group => group.stations.length)
+      : [];
   });
   readonly count = computed(() => this.grouped().reduce((total, g) => total + g.stations.length, 0));
   readonly controls = computed(() =>
@@ -77,7 +100,7 @@ export class StationBrowserComponent {
       .filter(
         l =>
           l.type === types[key] &&
-          (!f.country || l.countryCode === f.country) &&
+          (key === 'country' || !f.country || l.countryCode === f.country) &&
           (key !== 'district' || !f.region || l.parentId === f.region) &&
           (key !== 'locality' ||
             ((!f.district || l.parentId === f.district) &&
@@ -91,15 +114,5 @@ export class StationBrowserComponent {
       l.type === 'country' ? l.countryCode : l.id,
       l.name,
     );
-  }
-  location(s: Station): string {
-    const c = this.data.catalog();
-    return [s.countryCode, s.regionId, s.districtId, s.localityId]
-      .map(id => {
-        const l = c?.locations.find(l => l.id === id || (l.type === 'country' && l.countryCode === id));
-        return l ? this.placeName(l) : '';
-      })
-      .filter(Boolean)
-      .join(' / ');
   }
 }

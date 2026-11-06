@@ -1,5 +1,10 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
+import { RadioIllustrationComponent } from './radio-illustration';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CatalogService } from '../catalog/catalog.service';
+import { UiKey, uiLabel } from '../catalog/catalog.ui';
+import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
 import { IonContent } from '@ionic/angular';
 import { StationBrowserComponent } from '../catalog/station-browser';
 import { LiveStreamLabComponent } from '../live-test/live-stream-lab';
@@ -7,6 +12,19 @@ import { LiveStreamLabComponent } from '../live-test/live-stream-lab';
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  imports: [IonContent, NgOptimizedImage, StationBrowserComponent, LiveStreamLabComponent],
+  imports: [
+    IonContent,
+    NgOptimizedImage,
+    RouterLink,
+    StationBrowserComponent,
+    LiveStreamLabComponent,
+    RadioIllustrationComponent,
+  ],
 })
-export class HomePage {}
+export class HomePage {
+  readonly data = inject(CatalogService);
+  readonly liveTests = inject(LIVE_TEST_ENABLED);
+  ui(key: UiKey) {
+    return uiLabel(this.data.locale(), key);
+  }
+}
