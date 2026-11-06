@@ -1,11 +1,14 @@
 import { Service, inject, signal, effect, OnDestroy } from '@angular/core';
 import { CatalogService } from '../catalog/catalog.service';
 import { Station, Stream } from '../catalog/catalog.models';
-import { streamEligibility } from '../catalog/stream-eligibility';
+import { streamEligibility, technicalStreamEligibility } from '../catalog/stream-eligibility';
+import { LIVE_TEST_ENABLED, liveLeads } from '../live-test/live-test.config';
 import { MEDIA_ENGINE } from './media-engine';
 export type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 @Service()
 export class PlayerService implements OnDestroy {
+  private readonly testsEnabled = inject(LIVE_TEST_ENABLED);
+  readonly technicalTest = signal(false);
   private readonly engine = inject(MEDIA_ENGINE);
   private readonly catalog = inject(CatalogService);
   private attempt = 0;
@@ -24,6 +27,7 @@ export class PlayerService implements OnDestroy {
   constructor() {
     effect(() => {
       const active = this.station();
+      if (this.technicalTest()) return;
       const selected = this.selectedStream();
       const catalog = this.catalog.catalog();
       if (!active || !selected || !catalog || this.state() === 'error' || this.state() === 'idle') return;
@@ -76,16 +80,39 @@ export class PlayerService implements OnDestroy {
     const current = this.catalog.catalog()?.stations.find(s => s.id === station.id);
     const eligibility = current ? this.eligibility(current) : null;
     if (!current || !eligibility?.stream || eligibility.status !== 'ready' || !this.engine) return;
+    this.technicalTest.set(false);
+    await this.start(current, eligibility.stream);
+  }
+  technicalEligibility(id: string) {
+    const station = this.testsEnabled ? liveLeads.find(lead => lead.id === id) : null;
+    return technicalStreamEligibility(station ?? { streams: [] }, this.capabilities);
+  }
+  async playTechnical(id: string): Promise<void> {
+    const station = this.testsEnabled ? liveLeads.find(lead => lead.id === id) : null;
+    const result = this.technicalEligibility(id);
+    if (!station || result.status !== 'ready' || !result.stream) return;
+    this.technicalTest.set(true);
+    await this.start(station, result.stream);
+  }
+  canResume(): boolean {
+    const station = this.station();
+    return (
+      !!station &&
+      (this.technicalTest() ? this.technicalEligibility(station.id) : this.eligibility(station)).status === 'ready'
+    );
+  }
+  private async start(current: Station, stream: Stream): Promise<void> {
+    if (!this.engine) return;
     const attempt = ++this.attempt;
     this.clearTimer();
     this.engine.clear();
     this.station.set(current);
-    this.selectedStream.set(eligibility.stream);
+    this.selectedStream.set(stream);
     this.error.set('');
     this.state.set('loading');
     this.watchdog();
     try {
-      await this.engine.load(eligibility.stream);
+      await this.engine.load(stream);
       if (attempt !== this.attempt) return;
       await this.engine.audio.play();
       // The playing event, rather than a fulfilled request alone, confirms actual playback.
@@ -106,12 +133,16 @@ export class PlayerService implements OnDestroy {
   }
   async resume(): Promise<void> {
     const station = this.station();
-    if (station) await this.play(station);
+    if (station) {
+      if (this.technicalTest()) await this.playTechnical(station.id);
+      else await this.play(station);
+    }
   }
   stop(): void {
     ++this.attempt;
     this.clearTimer();
     this.station.set(null);
+    this.technicalTest.set(false);
     this.selectedStream.set(null);
     this.state.set('idle');
     this.error.set('');

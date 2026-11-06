@@ -1,5 +1,6 @@
 // Client-only controls supplement the catalogue-owned dictionaries; broadcaster names are never translated here.
 const english = {
+  broadcasterPage: 'Listen on the broadcaster’s website (external)',
   playbackPermissionChanged: 'Playback stopped because the catalogue no longer permits this stream.',
   noStream: 'No online stream available',
   verificationPending: 'Stream verification pending',
@@ -38,6 +39,7 @@ export type UiKey = keyof typeof english;
 const labels: Record<string, Partial<Record<UiKey, string>>> = {
   en: english,
   ta: {
+    broadcasterPage: 'ஒலிபரப்பாளரின் இணையதளத்தில் கேளுங்கள் (வெளி இணைப்பு)',
     playbackPermissionChanged: 'பட்டியலில் இந்த ஒலிபரப்பிற்கு இனி அனுமதி இல்லாததால் நிறுத்தப்பட்டது.',
     noStream: 'இணைய ஒலிபரப்பு இல்லை',
     verificationPending: 'ஒலிபரப்பு சரிபார்ப்பு நிலுவையில் உள்ளது',
@@ -74,6 +76,7 @@ const labels: Record<string, Partial<Record<UiKey, string>>> = {
       'வடிகட்டிகளை நீக்கவும் அல்லது பெரிய பகுதியைத் தேர்வுசெய்யவும். குறிப்பிடப்படாத இடங்கள் தேர்ந்தெடுத்த நகரத்துடன் பொருந்தாது.',
   },
   sa: {
+    broadcasterPage: 'प्रसारकस्य जालस्थले शृणुत (बाह्यसम्बन्धः)',
     playbackPermissionChanged: 'सूच्यां प्रसारानुमतेः अभावात् श्रवणं निरुद्धम्।',
     noStream: 'अन्तर्जालप्रसारः न उपलब्धः',
     verificationPending: 'प्रसारस्य सत्यापनं प्रतीक्ष्यते',

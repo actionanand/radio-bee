@@ -1,4 +1,5 @@
-import { InjectionToken } from '@angular/core';
+import { InjectionToken, inject } from '@angular/core';
+import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
 import Hls from 'hls.js';
 import { Stream } from '../catalog/catalog.models';
 export interface MediaEngine {
@@ -36,7 +37,7 @@ export const defaultHlsFactory: HlsFactory = {
     };
   },
 };
-export function createMediaEngine(factory: HlsFactory = defaultHlsFactory): MediaEngine | null {
+export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, preferHlsJs = false): MediaEngine | null {
   if (typeof Audio === 'undefined') return null;
   const audio = new Audio();
   if (
@@ -70,7 +71,7 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory): Medi
     clear,
     load: async stream => {
       clear();
-      if (stream.format !== 'hls' || nativeHls()) {
+      if (stream.format !== 'hls' || (nativeHls() && (!preferHlsJs || !factory.isSupported()))) {
         audio.src = stream.url;
         audio.load();
         return;
@@ -96,5 +97,5 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory): Medi
 }
 export const MEDIA_ENGINE = new InjectionToken<MediaEngine | null>('MEDIA_ENGINE', {
   providedIn: 'root',
-  factory: () => createMediaEngine(),
+  factory: () => createMediaEngine(defaultHlsFactory, inject(LIVE_TEST_ENABLED)),
 });

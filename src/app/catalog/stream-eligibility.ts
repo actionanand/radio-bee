@@ -20,11 +20,24 @@ export interface StreamEligibility {
 
 /** One policy for cards and the player boundary. Listing review never grants playback permission. */
 export function streamEligibility(station: Pick<Station, 'streams'>, player: PlayerCapabilities): StreamEligibility {
+  return selectStream(station, player, true);
+}
+export function technicalStreamEligibility(
+  station: Pick<Station, 'streams'>,
+  player: PlayerCapabilities,
+): StreamEligibility {
+  return selectStream(station, player, false);
+}
+function selectStream(
+  station: Pick<Station, 'streams'>,
+  player: PlayerCapabilities,
+  editorial: boolean,
+): StreamEligibility {
   if (!station.streams.length) return { status: 'noStream', stream: null };
   const evaluate = (stream: Stream): StreamStatus => {
-    if (stream.verificationStatus === 'unavailable') return 'streamUnavailable';
-    if (stream.verificationStatus !== 'verified') return 'verificationPending';
-    if (stream.rightsStatus !== 'permission-granted') return 'permissionPending';
+    if (editorial && stream.verificationStatus === 'unavailable') return 'streamUnavailable';
+    if (editorial && stream.verificationStatus !== 'verified') return 'verificationPending';
+    if (editorial && stream.rightsStatus !== 'permission-granted') return 'permissionPending';
     try {
       const url = new URL(stream.url);
       if (url.protocol !== 'https:' || url.username || url.password || !url.hostname) return 'invalidStream';
