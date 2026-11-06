@@ -2,7 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CatalogService } from './catalog.service';
 import { UiKey, uiLabel } from './catalog.ui';
-import { Filters, Location, Station, emptyFilters, groups, streamLabel } from './catalog.models';
+import { Filters, Location, Station, emptyFilters, groups } from './catalog.models';
+import { PlayerService } from '../player/player.service';
 @Component({
   selector: 'app-station-browser',
   imports: [DatePipe],
@@ -10,6 +11,7 @@ import { Filters, Location, Station, emptyFilters, groups, streamLabel } from '.
   styleUrl: './station-browser.scss',
 })
 export class StationBrowserComponent {
+  readonly player = inject(PlayerService);
   ui(key: UiKey): string {
     return uiLabel(this.data.locale(), key);
   }
@@ -98,5 +100,4 @@ export class StationBrowserComponent {
       .filter(Boolean)
       .join(' / ');
   }
-  readonly status = streamLabel;
 }

@@ -22,7 +22,10 @@ export const CATALOG_FETCH = new InjectionToken<(url: string) => Promise<unknown
 });
 export const CATALOG_STORAGE = new InjectionToken('CATALOG_STORAGE', {
   providedIn: 'root',
-  factory: () => Preferences,
+  factory: () => ({
+    get: (options: { key: string }) => Preferences.get(options),
+    set: (options: { key: string; value: string }) => Preferences.set(options),
+  }),
 });
 export const CATALOG_SEED_URL = new InjectionToken<string | null>('CATALOG_SEED_URL', {
   providedIn: 'root',

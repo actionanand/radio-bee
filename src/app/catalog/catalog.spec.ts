@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { streamEligibility } from './stream-eligibility';
 import { fixture } from './catalog.fixture';
-import { Catalog, emptyFilters, filterStations, groups, streamLabel, translated } from './catalog.models';
+import { Catalog, emptyFilters, filterStations, groups, translated } from './catalog.models';
 import { validateCatalog, validateManifest, relativePath } from './catalog.validation';
 import { CatalogService, CATALOG_FETCH, CATALOG_STORAGE, CATALOG_URL, CATALOG_SEED_URL } from './catalog.service';
 import { environment as production } from '../../environments/environment.prod';
@@ -70,8 +71,13 @@ describe('Catalogue contract', () => {
     expect(translated(c, 'ta', 'catalog', 'title')).toBe(c.localization['en']['catalog']['title']);
     expect(c.stations[0].name).toBe('Akashvani Nagercoil');
     expect(c.stations.every(s => s.streams.every(s => s.verificationStatus !== 'verified'))).toBe(true);
-    expect(streamLabel(c.stations.find(s => s.streams.length)!)).toBe('streamUnverified');
-    expect(streamLabel(c.stations[0])).toBe('noStream');
+    expect(
+      streamEligibility(
+        c.stations.find(s => s.streams.length)!,
+        { available: false, supports: () => false },
+      ).status,
+    ).toBe('verificationPending');
+    expect(streamEligibility(c.stations[0], { available: false, supports: () => false }).status).toBe('noStream');
   });
 });
 describe('Catalogue loading and cache', () => {
@@ -178,8 +184,8 @@ describe('Catalogue loading and cache', () => {
     view.detectChanges();
     expect(view.nativeElement.querySelector('audio')).toBeNull();
     expect(view.nativeElement.querySelector('video')).toBeNull();
-    expect(view.nativeElement.textContent).toContain('Stage 3');
-    expect(view.nativeElement.textContent).toContain('Stream not verified');
+    expect(view.nativeElement.textContent).not.toContain('Playback is not available in this preview.');
+    expect(view.nativeElement.textContent).toContain('Stream verification pending');
   });
   it('rejects corrupt cache and incomplete localization without publishing partial data', async () => {
     saved.set('radiobee.catalog.v1:https://catalog.test/v1/', 'broken JSON');

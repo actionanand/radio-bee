@@ -120,11 +120,3 @@ export function groups(c: Catalog, f: Filters) {
 export function translated(c: Catalog | null, locale: string, section: string, key: string, fallback = key): string {
   return c?.localization[locale]?.[section]?.[key] || c?.localization['en']?.[section]?.[key] || fallback;
 }
-export function streamLabel(station: Station): string {
-  if (!station.streams.length) return 'noStream';
-  return station.streams.some(s => s.verificationStatus === 'unverified')
-    ? 'streamUnverified'
-    : station.streams.every(s => s.verificationStatus === 'unavailable')
-      ? 'streamUnavailable'
-      : 'availableStreams';
-}
