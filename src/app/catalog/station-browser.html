@@ -69,6 +69,8 @@
         <p>{{ ui(eligibility.status) }}</p>
         @if (eligibility.status === 'ready') {
         <button type="button" (click)="player.play(station)">{{ ui('play') }} · {{ station.name }}</button>
+        } @if (eligibility.status !== 'ready' && broadcasterPages[station.id]; as page) {
+        <p><a [href]="page" target="_blank" rel="noopener noreferrer">{{ ui('broadcasterPage') }}</a></p>
         }
         <details>
           <summary>{{ ui('details') }}</summary>

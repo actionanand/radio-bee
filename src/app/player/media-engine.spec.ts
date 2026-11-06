@@ -139,4 +139,15 @@ describe('Browser media adapter', () => {
   it('returns null on unsupported platforms regardless of host MediaSource', () => {
     expect(createMediaEngine(fakeHls(false).factory)).toBeNull();
   });
+  it('can explicitly exercise hls.js in a local test even when native HLS exists', async () => {
+    vi.mocked(HTMLMediaElement.prototype.canPlayType).mockReturnValue('probably');
+    const fake = fakeHls();
+    const engine = existing(createMediaEngine(fake.factory, true));
+    const loading = engine.load({ ...stream, format: 'hls' });
+    expect(fake.factory.create).toHaveBeenCalledOnce();
+    fake.attached();
+    fake.manifest();
+    await loading;
+    engine.clear();
+  });
 });

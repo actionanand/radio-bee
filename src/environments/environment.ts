@@ -3,6 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  liveStreamTests: false,
   production: false,
   catalogSeedUrl: 'assets/catalog-development-seed.json',
   catalogUrl: 'https://actionanand.github.io/radio-bee-data/v1/',

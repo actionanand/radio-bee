@@ -59,6 +59,16 @@
               ],
               "outputHashing": "all"
             },
+            "live-test": {
+              "optimization": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.live-test.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -76,6 +86,9 @@
           "configurations": {
             "production": {
               "buildTarget": "app:build:production"
+            },
+            "live-test": {
+              "buildTarget": "app:build:live-test"
             },
             "development": {
               "buildTarget": "app:build:development"

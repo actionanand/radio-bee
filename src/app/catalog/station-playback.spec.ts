@@ -48,7 +48,7 @@ describe('Station card playback availability', () => {
         const data = TestBed.inject(CatalogService);
         vi.spyOn(data, 'start').mockResolvedValue();
         const c = validateCatalog(structuredClone(fixture));
-        const station: Station = { ...c.stations[0], streams: scenario.streams };
+        const station: Station = { ...c.stations[0], id: 'sooriyan-srilanka', streams: scenario.streams };
         c.stations = [station];
         data.catalog.set(c);
         data.locale.set(locale);
@@ -59,12 +59,17 @@ describe('Station card playback availability', () => {
         const article = view.nativeElement.querySelector('article') as HTMLElement;
         expect(article.textContent).toContain(uiLabel(locale, scenario.status));
         const buttons = article.querySelectorAll('button');
+        const broadcaster = article.querySelector<HTMLAnchorElement>('a');
         if (scenario.status === 'ready') {
+          expect(broadcaster).toBeNull();
           expect(buttons.length).toBe(1);
           expect(buttons[0].disabled).toBe(false);
           buttons[0].click();
           expect(play).toHaveBeenCalledWith(station);
         } else {
+          expect(broadcaster?.href).toBe('https://www.sooriyanfm.lk/');
+          expect(broadcaster?.textContent).toContain(uiLabel(locale, 'broadcasterPage'));
+          expect(broadcaster?.rel).toContain('noopener');
           expect(buttons.length).toBe(0);
           expect(play).not.toHaveBeenCalled();
         }

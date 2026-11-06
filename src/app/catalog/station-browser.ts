@@ -4,6 +4,7 @@ import { CatalogService } from './catalog.service';
 import { UiKey, uiLabel } from './catalog.ui';
 import { Filters, Location, Station, emptyFilters, groups } from './catalog.models';
 import { PlayerService } from '../player/player.service';
+import { broadcasterPages } from './broadcaster-pages';
 @Component({
   selector: 'app-station-browser',
   imports: [DatePipe],
@@ -11,6 +12,7 @@ import { PlayerService } from '../player/player.service';
   styleUrl: './station-browser.scss',
 })
 export class StationBrowserComponent {
+  readonly broadcasterPages = broadcasterPages;
   readonly player = inject(PlayerService);
   ui(key: UiKey): string {
     return uiLabel(this.data.locale(), key);
