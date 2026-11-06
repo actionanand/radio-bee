@@ -1,0 +1,556 @@
+[
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "browse",
+    "firstThumbnail": 497,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "browse",
+    "firstThumbnail": 512.59375,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "browse",
+    "firstThumbnail": 502,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "browse",
+    "firstThumbnail": 745.1875,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "browse",
+    "firstThumbnail": 747.1875,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "browse",
+    "firstThumbnail": 751.1875,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "browse",
+    "firstThumbnail": 693.1875,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "browse",
+    "firstThumbnail": 695.1875,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "browse",
+    "firstThumbnail": 699.1875,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "browse",
+    "firstThumbnail": 497,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "browse",
+    "firstThumbnail": 512.59375,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "browse",
+    "firstThumbnail": 502,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "browse",
+    "firstThumbnail": 745.1875,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "browse",
+    "firstThumbnail": 747.1875,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "browse",
+    "firstThumbnail": 751.1875,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "browse",
+    "firstThumbnail": 693.1875,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "browse",
+    "firstThumbnail": 695.1875,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "browse",
+    "firstThumbnail": 699.1875,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "favorites",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "en",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "ta",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "locale": "sa",
+    "state": "actual-production-player",
+    "continuity": 20.001829,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "details",
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "en",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "ta",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 820,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "locale": "sa",
+    "state": "actual-production-player",
+    "continuity": 20.005375,
+    "violations": []
+  }
+]

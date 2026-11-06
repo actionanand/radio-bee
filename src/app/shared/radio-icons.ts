@@ -1,0 +1,38 @@
+import {
+  play,
+  pause,
+  stop,
+  heart,
+  heartOutline,
+  informationCircleOutline,
+  close,
+  searchOutline,
+  chevronDownOutline,
+  checkmarkOutline,
+  listOutline,
+  radioOutline,
+  syncOutline,
+  openOutline,
+  volumeHigh,
+  volumeMute,
+} from 'ionicons/icons';
+
+// Genuine Ionicons SVGs, passed directly to IonIcon; no character-based icon substitutes.
+export const radioIcons = {
+  play,
+  pause,
+  stop,
+  heart,
+  heartOutline,
+  informationCircleOutline,
+  close,
+  searchOutline,
+  chevronDownOutline,
+  checkmarkOutline,
+  listOutline,
+  radioOutline,
+  syncOutline,
+  openOutline,
+  volumeHigh,
+  volumeMute,
+};

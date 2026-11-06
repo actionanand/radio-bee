@@ -1,15 +1,17 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Location, Station } from './catalog.models';
+import { IonIcon } from '@ionic/angular';
+import { Station } from './catalog.models';
 import { CatalogService } from './catalog.service';
 import { StationArtworkComponent } from './station-artwork';
 import { FavoritesService } from './favorites.service';
 import { PlayerService } from '../player/player.service';
-import { broadcasterPages } from './broadcaster-pages';
 import { uiLabel, UiKey } from './catalog.ui';
+import { StationDetailsService } from './station-details.service';
+import { radioIcons } from '../shared/radio-icons';
 @Component({
   selector: 'app-station-card',
-  imports: [StationArtworkComponent],
+  imports: [StationArtworkComponent, IonIcon],
   templateUrl: './station-card.html',
   styleUrl: './station-card.scss',
 })
@@ -18,74 +20,46 @@ export class StationCardComponent {
   readonly data = inject(CatalogService);
   readonly player = inject(PlayerService);
   readonly favorites = inject(FavoritesService);
+  readonly details = inject(StationDetailsService);
+  readonly icons = radioIcons;
   private readonly document = inject(DOCUMENT);
-  toggleFavorite() {
-    void this.favorites.toggle(this.station().id);
-    // Removing the focused card from Favorites must leave keyboard focus in the discovery controls.
-    this.document.querySelector<HTMLButtonElement>('[data-category="favorites"][aria-pressed="true"]')?.focus();
-  }
+  readonly state = computed(() => this.player.stateFor(this.station()));
+  readonly action = computed<UiKey>(() =>
+    this.state() === 'playing'
+      ? 'pause'
+      : this.state() === 'loading'
+        ? 'connecting'
+        : this.state() === 'error'
+          ? 'retry'
+          : 'play',
+  );
+  readonly actionIcon = computed(() =>
+    this.state() === 'playing'
+      ? this.icons.pause
+      : this.state() === 'loading'
+        ? this.icons.syncOutline
+        : this.icons.play,
+  );
   ui(key: UiKey) {
     return uiLabel(this.data.locale(), key);
   }
-  networkName(station: Station) {
-    return this.data.catalog()?.networks.find(network => network.id === station.networkId)?.name ?? '';
-  }
-  delivery(station: Station) {
-    return station.delivery === 'online' ? this.ui('onlineRadio') : station.delivery.toUpperCase();
-  }
-  coverage(station: Station) {
-    const keys: Record<string, UiKey> = {
-      local: 'localCoverage',
-      regional: 'regionalCoverage',
-      national: 'nationalCoverage',
-      global: 'globalCoverage',
-    };
-    return this.ui(keys[station.coverage] ?? 'unspecified');
-  }
-  languages(station: Station) {
-    return (
-      station.broadcastLanguages
-        .map(code => this.data.catalog()?.languages.find(language => language.code === code)?.nativeName ?? code)
-        .join(', ') || this.ui('unspecified')
-    );
-  }
-  listeningPage(station: Station): string | null {
-    const page = broadcasterPages[station.id] ?? station.website;
-    try {
-      const url = new URL(page ?? '');
-      return url.protocol === 'https:' && !url.username && !url.password ? url.href : null;
-    } catch {
-      return null;
-    }
-  }
-  private places(station: Station) {
-    const catalog = this.data.catalog();
-    return [station.localityId, station.districtId, station.regionId, station.countryCode]
-      .map(id =>
-        catalog?.locations.find(
-          location => location.id === id || (location.type === 'country' && location.countryCode === id),
-        ),
-      )
-      .filter(location => location !== undefined);
-  }
-  private placeName(location: Location) {
-    return this.data.t(
-      location.type === 'country' ? 'countries' : 'regions',
-      location.type === 'country' ? location.countryCode : location.id,
-      location.name,
-    );
-  }
-  location(station: Station) {
-    return this.places(station)
-      .map(location => this.placeName(location))
-      .reverse()
-      .join(' / ');
+  toggleFavorite() {
+    void this.favorites.toggle(this.station().id);
+    this.document.querySelector<HTMLButtonElement>('[data-category="favorites"][aria-pressed="true"]')?.focus();
   }
   shortLocation(station: Station) {
-    const places = this.places(station);
-    return [places[0], places.length > 1 ? places[places.length - 1] : undefined]
-      .filter(location => location !== undefined)
-      .map(location => this.placeName(location))
+    const catalog = this.data.catalog();
+    const country = catalog?.locations.find(
+      location => location.type === 'country' && location.countryCode === station.countryCode,
+    );
+    const id =
+      station.listingStatus === 'reviewed' ? (station.localityId ?? station.districtId ?? station.regionId) : null;
+    const location = catalog?.locations.find(location => location.id === id);
+    return [
+      location ? this.data.t('regions', location.id, location.name) : '',
+      country ? this.data.t('countries', station.countryCode, country.name) : station.countryCode,
+    ]
+      .filter(Boolean)
       .join(' · ');
   }
 }

@@ -1,13 +1,24 @@
-<div class="radio-scene" aria-hidden="true">
-  <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
-  <div class="radio-body">
-    <div class="radio-speaker"></div>
-    <div class="radio-controls">
-      <span class="radio-display"
-        >RADIOBEE<br /><b>ON YOUR<br />WAVELENGTH.</b></span
-      >
-      <div class="knobs"><span></span><span></span></div>
+<div class="tuner" [class.is-playing]="player.state()==='playing'" [attr.lang]="data.locale()">
+  <header>
+    <div class="tuner-brand">
+      <ion-icon [icon]="icons.radioOutline" aria-hidden="true" />
+      <div>
+        <h1 id="home-title">RadioBee</h1>
+        <p>Stay tuned. Stay buzzing.</p>
+      </div>
+    </div>
+    <span class="tuner-state"
+      >{{ player.station() ? ui(player.state()==='loading'?'connecting':player.state()) : ui('onlineRadio') }}</span
+    >
+  </header>
+  <div class="segments" aria-hidden="true">
+    @for(segment of segments;track segment){<span [class.amber]="segment>=16" [class.red]="segment>=21"></span>}
+  </div>
+  <div class="dial" aria-hidden="true">
+    <div class="ticks"></div>
+    <span class="marker"></span>
+    <div class="scale">
+      <span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span>
     </div>
   </div>
-  <span class="frequency-stamp">FM / AM / ONLINE</span>
 </div>

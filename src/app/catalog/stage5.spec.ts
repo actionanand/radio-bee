@@ -162,15 +162,12 @@ describe('Localized station presentation', () => {
       view.componentRef.setInput('station', station);
       view.detectChanges();
       expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'onlineRadio'));
-      expect(view.nativeElement.textContent).toContain(uiLabel(locale, 'localCoverage'));
+
       view.componentRef.setInput('station', { ...station, delivery: 'fm' });
       view.detectChanges();
       expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'radioLabel'));
       if (locale !== 'en')
         expect(view.nativeElement.querySelector('.frequency').textContent).not.toMatch(/ONLINE RADIO|\bRadio\b/);
-      expect(view.nativeElement.textContent).toContain(
-        catalog.networks.find(network => network.id === station.networkId)!.name,
-      );
     });
 });
 describe('Persistent favorites', () => {
@@ -297,7 +294,8 @@ describe('Published 1.2 catalogue discovery', () => {
     view.detectChanges();
     expect(view.nativeElement.querySelectorAll('.network-title')).toHaveLength(1);
     expect(view.nativeElement.querySelector('button.play')).toBeNull();
-    expect(view.nativeElement.querySelector('.external')).toBeTruthy();
+    expect(view.nativeElement.querySelector('.external')).toBeNull();
+    expect(view.nativeElement.querySelector('.details-button')).toBeTruthy();
     browser.selectCategory('all');
     browser.change('country', 'IN');
     browser.change('region', 'in-tn');
@@ -318,6 +316,7 @@ describe('Mini-player controls', () => {
     };
     const audio = document.createElement('audio');
     vi.spyOn(audio, 'play').mockResolvedValue();
+    vi.spyOn(audio, 'pause').mockImplementation(() => undefined);
     const clear = vi.fn();
     TestBed.configureTestingModule({
       providers: [

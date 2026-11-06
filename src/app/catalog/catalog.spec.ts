@@ -185,7 +185,7 @@ describe('Catalogue loading and cache', () => {
     expect(view.nativeElement.querySelector('audio')).toBeNull();
     expect(view.nativeElement.querySelector('video')).toBeNull();
     expect(view.nativeElement.textContent).not.toContain('Playback is not available in this preview.');
-    expect(view.nativeElement.textContent).toContain('Stream verification pending');
+    expect(view.nativeElement.textContent).toContain('Listening unavailable');
   });
   it('rejects corrupt cache and incomplete localization without publishing partial data', async () => {
     saved.set('radiobee.catalog.v1:https://catalog.test/v1/', 'broken JSON');

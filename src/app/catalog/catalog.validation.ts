@@ -170,6 +170,18 @@ export function validateCatalog(value: unknown): Catalog {
       choice(stream['format'], ['mp3', 'aac', 'hls', 'unknown']);
       choice(stream['verificationStatus'], ['verified', 'unverified', 'unavailable']);
       choice(stream['rightsStatus'], ['unconfirmed', 'permission-granted']);
+      if (stream['directListening'] !== undefined) {
+        const listening = record(stream['directListening']);
+        choice(listening['status'], ['needs-review', 'restricted', 'allowed']);
+        check(
+          text(listening['reviewedAt']) && Number.isFinite(Date.parse(listening['reviewedAt'])),
+          'listening review timestamp',
+        );
+        ref('sources', listening['sourceId']);
+        check(text(listening['notes']), 'listening review notes');
+        choice(listening['recording'], ['unconfirmed', 'prohibited', 'permission-granted']);
+        choice(listening['redistribution'], ['unconfirmed', 'prohibited', 'permission-granted']);
+      }
       nullable(stream['lastVerifiedAt']);
       if (stream['verificationStatus'] === 'verified') {
         check(

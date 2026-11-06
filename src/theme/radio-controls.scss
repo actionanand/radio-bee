@@ -36,3 +36,25 @@
     transition: none !important;
   }
 }
+ion-popover.station-details-popover {
+  --width: 360px;
+  --max-width: calc(100vw - 32px);
+  --max-height: 80dvh;
+  --background: var(--surface);
+  --color: var(--ink);
+  --border-radius: 16px;
+  --box-shadow: 0 16px 48px #10251f30;
+  --backdrop-opacity: 0.25;
+}
+@media (max-width: 559px) {
+  ion-popover.station-details-popover::part(content) {
+    position: fixed;
+    inset: auto 12px max(12px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-height: 80dvh;
+    transform: none !important;
+  }
+  ion-popover.station-details-popover::part(arrow) {
+    display: none;
+  }
+}

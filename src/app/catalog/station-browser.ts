@@ -6,13 +6,18 @@ import { Filters, Location, emptyFilters, groups } from './catalog.models';
 import { StationCardComponent } from './station-card';
 import { FavoritesService } from './favorites.service';
 import { DiscoveryCategory, discoveryCategories, inCategory } from './discovery';
+import { PlayerService } from '../player/player.service';
+import { IonIcon } from '@ionic/angular';
+import { radioIcons } from '../shared/radio-icons';
 @Component({
   selector: 'app-station-browser',
-  imports: [DatePipe, StationCardComponent],
+  imports: [DatePipe, StationCardComponent, IonIcon],
   templateUrl: './station-browser.html',
   styleUrl: './station-browser.scss',
 })
 export class StationBrowserComponent {
+  readonly icons = radioIcons;
+  readonly player = inject(PlayerService);
   readonly toggle = (value: boolean) => !value;
   readonly favorites = inject(FavoritesService);
   readonly categories = discoveryCategories;
@@ -26,7 +31,6 @@ export class StationBrowserComponent {
   );
   selectCategory(category: DiscoveryCategory) {
     this.category.set(category);
-    this.clear();
   }
   ui(key: UiKey): string {
     return uiLabel(this.data.locale(), key);
@@ -43,8 +47,10 @@ export class StationBrowserComponent {
       ? groups(catalog, this.filters())
           .map(group => ({
             ...group,
-            stations: group.stations.filter(station =>
-              inCategory(station, this.category(), this.favorites.has(station.id)),
+            stations: group.stations.filter(
+              station =>
+                inCategory(station, this.category(), this.favorites.has(station.id)) &&
+                (this.category() !== 'listenNow' || this.player.eligibility(station).status === 'ready'),
             ),
           }))
           .filter(group => group.stations.length)

@@ -1,4 +1,4 @@
-import { streamEligibility, PlayerCapabilities } from './stream-eligibility';
+import { streamEligibility, technicalStreamEligibility, PlayerCapabilities } from './stream-eligibility';
 import { Station, Stream, emptyFilters, filterStations } from './catalog.models';
 import { fixture } from './catalog.fixture';
 import { validateCatalog } from './catalog.validation';
@@ -14,6 +14,29 @@ const approved: Stream = {
 const supported: PlayerCapabilities = { available: true, supports: () => true };
 describe('Shared stream eligibility', () => {
   it('reports no streams', () => expect(streamEligibility({ streams: [] }, supported).status).toBe('noStream'));
+  for (const status of ['needs-review', 'restricted', 'allowed'] as const)
+    for (const rightsStatus of ['unconfirmed', 'permission-granted']) {
+      it(`preserves direct-listening ${status} and separately enforces rights ${rightsStatus}`, () => {
+        const stream: Stream = {
+          ...approved,
+          rightsStatus,
+          directListening: {
+            status,
+            reviewedAt: '2026-11-06T00:00:00Z',
+            sourceId: 'test',
+            notes: 'Unit policy scenario',
+            recording: 'prohibited',
+            redistribution: 'prohibited',
+          },
+        };
+        expect(streamEligibility({ streams: [stream] }, supported).status).toBe(
+          status === 'allowed' && rightsStatus === 'permission-granted' ? 'ready' : 'permissionPending',
+        );
+        expect(technicalStreamEligibility({ streams: [stream] }, supported).status).toBe(
+          status === 'restricted' ? 'permissionPending' : 'ready',
+        );
+      });
+    }
   for (const verificationStatus of ['unverified', 'unavailable', 'verified'] as const)
     for (const rightsStatus of ['unconfirmed', 'permission-granted']) {
       it(`${verificationStatus} / ${rightsStatus}`, () => {

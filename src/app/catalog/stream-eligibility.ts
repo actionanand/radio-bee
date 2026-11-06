@@ -35,6 +35,12 @@ function selectStream(
 ): StreamEligibility {
   if (!station.streams.length) return { status: 'noStream', stream: null };
   const evaluate = (stream: Stream): StreamStatus => {
+    // Explicit restrictions also apply to controlled technical probes. A review label never grants rights.
+    if (
+      stream.directListening?.status === 'restricted' ||
+      (editorial && stream.directListening && stream.directListening.status !== 'allowed')
+    )
+      return 'permissionPending';
     if (editorial && stream.verificationStatus === 'unavailable') return 'streamUnavailable';
     if (editorial && stream.verificationStatus !== 'verified') return 'verificationPending';
     if (editorial && stream.rightsStatus !== 'permission-granted') return 'permissionPending';

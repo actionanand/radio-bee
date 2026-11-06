@@ -1,0 +1,179 @@
+[
+  {
+    "op": "add",
+    "path": "/networks/-",
+    "value": {
+      "id": "j1-radio",
+      "name": "J1 Radio",
+      "aliases": ["REC Networks"],
+      "countryCodes": ["CA"],
+      "kind": "online",
+      "website": "https://www.j1fm.tokyo/"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/stations/-",
+    "value": {
+      "id": "j1-hits",
+      "name": "J1 HITS",
+      "countryCode": "CA",
+      "networkId": "j1-radio",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ja", "en"],
+      "genres": ["music"],
+      "delivery": "online",
+      "coverage": "global",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://www.j1fm.tokyo/j1/developers/",
+      "sourceIds": ["j1-developer-terms-2026", "j1-origin-2026"],
+      "notes": "Stage 6 proposed reference addition; not in published 1.2.0. Canada origin per official legal page. Permission applies only to the listed direct streams under developer conditions. No official logos copied.",
+      "streams": [
+        {
+          "id": "j1-hits-mp3",
+          "url": "https://jenny.torontocast.com:2000/stream/J1HITS",
+          "format": "mp3",
+          "verificationStatus": "verified",
+          "rightsStatus": "permission-granted",
+          "lastVerifiedAt": "2026-11-06T16:42:17.710Z",
+          "sourceId": "j1-developer-terms-2026",
+          "directListening": {
+            "status": "allowed",
+            "reviewedAt": "2026-11-06T16:42:17.710Z",
+            "sourceId": "j1-developer-terms-2026",
+            "notes": "The broadcaster explicitly encourages the listed J1 streams in third-party websites and apps. No inserted or interrupting audio ads; J1 HD excluded. See official developer policy. Recording and redistribution are separate and are not performed by RadioBee.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/stations/-",
+    "value": {
+      "id": "j1-gold",
+      "name": "J1 GOLD",
+      "countryCode": "CA",
+      "networkId": "j1-radio",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ja"],
+      "genres": ["music"],
+      "delivery": "online",
+      "coverage": "global",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://www.j1fm.tokyo/j1/developers/",
+      "sourceIds": ["j1-developer-terms-2026", "j1-origin-2026"],
+      "notes": "Stage 6 proposed reference addition; not in published 1.2.0. Canada origin per official legal page. Permission applies only to the listed direct streams under developer conditions. No official logos copied.",
+      "streams": [
+        {
+          "id": "j1-gold-mp3",
+          "url": "https://jenny.torontocast.com:2000/stream/J1GOLD",
+          "format": "mp3",
+          "verificationStatus": "verified",
+          "rightsStatus": "permission-granted",
+          "lastVerifiedAt": "2026-11-06T17:00:58.201Z",
+          "sourceId": "j1-developer-terms-2026",
+          "directListening": {
+            "status": "allowed",
+            "reviewedAt": "2026-11-06T17:00:58.201Z",
+            "sourceId": "j1-developer-terms-2026",
+            "notes": "The broadcaster explicitly encourages the listed J1 streams in third-party websites and apps. No inserted or interrupting audio ads; J1 HD excluded. See official developer policy. Recording and redistribution are separate and are not performed by RadioBee.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/locations/-",
+    "value": {
+      "id": "ca",
+      "name": "Canada",
+      "type": "country",
+      "parentId": null,
+      "countryCode": "CA"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/languages/-",
+    "value": {
+      "code": "ja",
+      "name": "Japanese",
+      "nativeName": "日本語"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/sources/-",
+    "value": {
+      "id": "j1-developer-terms-2026",
+      "title": "J1 Radio official app developer permission and HTTPS streams",
+      "url": "https://www.j1fm.tokyo/j1/developers/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Explicitly encourages listed J1 HITS/XTRA/GOLD streams in third-party apps/websites. No J1 HD; no in-stream ads or ads that interrupt playback; RadioBee must not impersonate J1. Direct user-initiated listening only; no RadioBee relay/recording. Technical verification remains separate."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/sources/-",
+    "value": {
+      "id": "j1-origin-2026",
+      "title": "J1 Radio official history and legal origin",
+      "url": "https://www.j1fm.tokyo/about-j1-radio/",
+      "kind": "official",
+      "notes": "Official legal section states all J1 streams originate from Canada through Torontocast. No city inferred. Japanese-music services, not local Indian broadcasts."
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/manifest/catalogVersion",
+    "value": "1.3.1"
+  },
+  {
+    "op": "replace",
+    "path": "/manifest/publishedOn",
+    "value": "2026-11-06"
+  },
+  {
+    "op": "replace",
+    "path": "/manifest/countries",
+    "value": ["IN", "LK", "CA"]
+  },
+  {
+    "op": "replace",
+    "path": "/manifest/counts",
+    "value": {
+      "networks": 19,
+      "stations": 90,
+      "locations": 90,
+      "streams": 28,
+      "verifiedStreams": 3
+    }
+  },
+  {
+    "op": "add",
+    "path": "/localization/en/countries/CA",
+    "value": "Canada"
+  },
+  {
+    "op": "add",
+    "path": "/localization/ta/countries/CA",
+    "value": "கனடா"
+  },
+  {
+    "op": "add",
+    "path": "/localization/sa/countries/CA",
+    "value": "कनाडादेशः"
+  }
+]

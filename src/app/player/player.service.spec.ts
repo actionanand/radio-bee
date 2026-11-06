@@ -26,6 +26,7 @@ describe('Functional player service', () => {
     };
     audio = document.createElement('audio');
     vi.spyOn(audio, 'play').mockResolvedValue();
+    vi.spyOn(audio, 'pause').mockImplementation(() => undefined);
     load = vi.fn().mockResolvedValue(undefined);
     clear = vi.fn();
     catalog = { catalog: signal(c) };
@@ -52,6 +53,8 @@ describe('Functional player service', () => {
     expect(player.state()).toBe('paused');
     await player.resume();
     expect(audio.play).toHaveBeenCalledTimes(2);
+    expect(load).toHaveBeenCalledOnce();
+    expect(audio.pause).toHaveBeenCalledOnce();
     player.stop();
     expect(player.station()).toBeNull();
   });
@@ -103,5 +106,44 @@ describe('Functional player service', () => {
     catalog.catalog.set(next);
     TestBed.tick();
     expect(player.error()).toBe('playbackPermissionChanged');
+  });
+  it('preserves mute and volume when switching stations, using one audio element', async () => {
+    player.setVolume(0.35);
+    player.toggleMute();
+    await player.play(station);
+    audio.dispatchEvent(new Event('playing'));
+    await player.toggle(station);
+    expect(player.stateFor(station)).toBe('paused');
+    await player.toggle(station);
+    expect(load).toHaveBeenCalledOnce();
+    const next = { ...structuredClone(station), id: 'second-approved' };
+    catalog.catalog.set({ ...c, stations: [...c.stations, next] });
+    await player.play(next);
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(audio.volume).toBe(0.35);
+    expect(audio.muted).toBe(true);
+    expect(player.station()?.id).toBe(next.id);
+    player.toggleMute();
+    expect(audio.volume).toBe(0.35);
+    expect(audio.muted).toBe(false);
+  });
+  it('stops when a refreshed catalogue removes the selected stream', async () => {
+    await player.play(station);
+    audio.dispatchEvent(new Event('playing'));
+    const next = structuredClone(c);
+    next.stations.find(candidate => candidate.id === station.id)!.streams = [];
+    catalog.catalog.set(next);
+    TestBed.tick();
+    expect(player.error()).toBe('playbackPermissionChanged');
+    expect(clear).toHaveBeenCalledTimes(2);
+  });
+  it('ignores a late playing event after pause or stop', async () => {
+    await player.play(station);
+    player.pause();
+    audio.dispatchEvent(new Event('playing'));
+    expect(player.state()).toBe('paused');
+    player.stop();
+    audio.dispatchEvent(new Event('playing'));
+    expect(player.state()).toBe('idle');
   });
 });
