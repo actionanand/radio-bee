@@ -67,9 +67,9 @@
         <p>{{ data.t('catalog','languages') }}: {{ station.broadcastLanguages.join(', ') || ui('unspecified') }}</p>
         @let eligibility = player.eligibility(station);
         <p>{{ ui(eligibility.status) }}</p>
-        <button type="button" [disabled]="eligibility.status !== 'ready'" (click)="player.play(station)">
-          {{ ui('play') }} · {{ station.name }}
-        </button>
+        @if (eligibility.status === 'ready') {
+        <button type="button" (click)="player.play(station)">{{ ui('play') }} · {{ station.name }}</button>
+        }
         <details>
           <summary>{{ ui('details') }}</summary>
           <p>{{ station.notes }}</p>
