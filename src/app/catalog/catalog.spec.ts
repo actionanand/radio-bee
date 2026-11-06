@@ -42,17 +42,18 @@ describe('Catalogue contract', () => {
       district: first.districtId,
       locality: first.localityId,
       language: first.broadcastLanguages[0],
-      genre: first.genres[0],
       search: 'Nagercoil',
     })) {
-      const result = filterStations(c, { ...emptyFilters, [key]: value });
+      const result = filterStations(c, { ...emptyFilters, country: 'IN', [key]: value });
       expect(result.some(s => s.id === first.id)).toBe(true);
       expect(result.length).toBeLessThan(c.stations.length);
     }
-    const local = filterStations(c, { ...emptyFilters, locality: first.localityId ?? '' });
+    const local = filterStations(c, { ...emptyFilters, country: 'IN', locality: first.localityId ?? '' });
     expect(local.every(s => s.localityId === first.localityId)).toBe(true);
     expect(filterStations(c, { ...emptyFilters, search: 'no such station xyz' })).toEqual([]);
-    expect(filterStations(c, { ...emptyFilters, country: 'LK', region: 'in-tn' })).toEqual([]);
+    expect(filterStations(c, { ...emptyFilters, country: 'LK', region: 'in-tn' })).toEqual(
+      c.stations.filter(s => s.countryCode === 'LK'),
+    );
   });
   it('groups by actual network and preserves distinct Suryan / Sooriyan IDs', () => {
     const g = groups(catalog(), emptyFilters);

@@ -24,14 +24,23 @@ export class StationBrowserComponent {
     return catalog ? groups(catalog, this.filters()) : [];
   });
   readonly count = computed(() => this.grouped().reduce((total, g) => total + g.stations.length, 0));
-  readonly controls = [
-    { key: 'country', label: 'countries' },
-    { key: 'region', label: 'states' },
-    { key: 'district', label: 'districts' },
-    { key: 'locality', label: 'localities' },
-    { key: 'language', label: 'languages' },
-    { key: 'genre', label: 'genres' },
-  ] as const;
+  readonly controls = computed(() =>
+    this.filters().country === 'IN'
+      ? ([
+          { key: 'country', label: 'countries' },
+          { key: 'region', label: 'indiaStates' },
+          { key: 'district', label: 'districts' },
+          { key: 'locality', label: 'localities' },
+          { key: 'language', label: 'languages' },
+        ] as const)
+      : ([
+          { key: 'country', label: 'countries' },
+          { key: 'language', label: 'languages' },
+        ] as const),
+  );
+  controlLabel(label: string): string {
+    return label === 'indiaStates' ? this.ui('indiaStates') : this.data.t('catalog', label);
+  }
   constructor() {
     void this.data.start();
   }
@@ -42,6 +51,7 @@ export class StationBrowserComponent {
       ...(key === 'country' ? { region: '', district: '', locality: '' } : {}),
       ...(key === 'region' ? { district: '', locality: '' } : {}),
       ...(key === 'district' ? { locality: '' } : {}),
+      ...((key === 'country' ? value : previous.country) !== 'IN' ? { region: '', district: '', locality: '' } : {}),
     }));
   }
   clear() {
@@ -52,7 +62,7 @@ export class StationBrowserComponent {
     if (!c) return [];
     const f = this.filters();
     if (key === 'language') return c.languages.map(l => ({ id: l.code, name: l.nativeName }));
-    if (key === 'genre') return c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) }));
+    if (key !== 'country' && f.country !== 'IN') return [];
     const types: Record<string, string> = {
       country: 'country',
       region: 'state',

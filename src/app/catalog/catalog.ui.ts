@@ -1,5 +1,6 @@
 // Client-only controls supplement the catalogue-owned dictionaries; broadcaster names are never translated here.
 const english = {
+  indiaStates: 'State / Union Territory',
   refresh: 'Refresh catalogue',
   clear: 'Clear filters',
   uiLanguage: 'UI language',
@@ -14,6 +15,7 @@ export type UiKey = keyof typeof english;
 const labels: Record<string, Partial<Record<UiKey, string>>> = {
   en: english,
   ta: {
+    indiaStates: 'மாநிலம் / ஒன்றியப் பகுதி',
     refresh: 'பட்டியலைப் புதுப்பி',
     clear: 'வடிகட்டிகளை நீக்கு',
     uiLanguage: 'இடைமுக மொழி',
@@ -27,6 +29,7 @@ const labels: Record<string, Partial<Record<UiKey, string>>> = {
       'வடிகட்டிகளை நீக்கவும் அல்லது பெரிய பகுதியைத் தேர்வுசெய்யவும். குறிப்பிடப்படாத இடங்கள் தேர்ந்தெடுத்த நகரத்துடன் பொருந்தாது.',
   },
   sa: {
+    indiaStates: 'राज्यम् / केन्द्रशासितप्रदेशः',
     refresh: 'सूचीं नवीकुरुत',
     clear: 'चयनानि निरस्यत',
     uiLanguage: 'अन्तरफलकभाषा',
