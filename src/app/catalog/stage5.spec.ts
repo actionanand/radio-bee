@@ -1,0 +1,267 @@
+import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { StationArtworkComponent, artworkCandidates, FALLBACK_ARTWORK, logoUrl } from './station-artwork';
+import { CATALOG_STORAGE, CatalogService, CATALOG_URL } from './catalog.service';
+import { validateCatalog } from './catalog.validation';
+import { fixture } from './catalog.fixture';
+import { FAVORITES_STORAGE, FavoritesService } from './favorites.service';
+import { inCategory } from './discovery';
+import { StationBrowserComponent } from './station-browser';
+import { publishedFixture } from './testing/published-1.2.fixture';
+import { PlayerComponent } from '../player/player';
+import { MEDIA_ENGINE } from '../player/media-engine';
+import { PlayerService } from '../player/player.service';
+
+const base = 'https://actionanand.github.io/radio-bee-data/v1/';
+describe('Station artwork', () => {
+  it('selects station, network and bundled artwork in order, supporting old data', () => {
+    expect(
+      artworkCandidates(
+        base,
+        { logoPath: 'assets/logos/stations/station.webp' },
+        { logoPath: 'assets/logos/networks/network.png' },
+      ),
+    ).toEqual([
+      base + 'assets/logos/stations/station.webp',
+      base + 'assets/logos/networks/network.png',
+      FALLBACK_ARTWORK,
+    ]);
+    expect(artworkCandidates(base, {}, { logoPath: 'assets/logos/networks/network.png' })).toEqual([
+      base + 'assets/logos/networks/network.png',
+      FALLBACK_ARTWORK,
+    ]);
+    expect(artworkCandidates(base, {})).toEqual([FALLBACK_ARTWORK]);
+    expect(validateCatalog(structuredClone(fixture)).stations.length).toBe(81);
+  });
+  it('rejects injection, traversal, unsupported image formats and untrusted origins', () => {
+    for (const path of [
+      '../logo.png',
+      'assets/logos/../logo.png',
+      'assets/logos/%2e%2e/logo.png',
+      '//evil.test/a.png',
+      'https://evil.test/a.png',
+      'data:image/png;base64,a',
+      'assets/logos/a.svg',
+      'assets/logos/a.png?url=evil',
+      'assets\\logos\\a.png',
+      'assets/logos/a.png#x',
+    ])
+      expect(logoUrl(base, path)).toBeNull();
+    expect(logoUrl('http://unsafe.test/', 'assets/logos/a.png')).toBeNull();
+  });
+  it('falls through actual loading errors without changing station metadata', () => {
+    const catalog = validateCatalog(structuredClone(fixture));
+    const station = { ...catalog.stations[0], logoPath: 'assets/logos/stations/station.webp' };
+    catalog.networks.find(network => network.id === station.networkId)!.logoPath = 'assets/logos/networks/network.png';
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CatalogService, useValue: { catalog: signal(catalog) } },
+        { provide: CATALOG_URL, useValue: base },
+      ],
+    });
+    const view = TestBed.createComponent(StationArtworkComponent);
+    view.componentRef.setInput('station', station);
+    view.detectChanges();
+    const image = () => view.nativeElement.querySelector('img') as HTMLImageElement;
+    expect(image().src).toContain('station.webp');
+    image().dispatchEvent(new Event('error'));
+    view.detectChanges();
+    expect(image().src).toContain('network.png');
+    image().dispatchEvent(new Event('error'));
+    view.detectChanges();
+    expect(image().src).toContain(FALLBACK_ARTWORK);
+    expect(image().getAttribute('width')).toBe('240');
+    expect(image().getAttribute('loading')).toBe('lazy');
+    expect(view.nativeElement.textContent).toContain('AN');
+    expect(station.logoPath).toBe('assets/logos/stations/station.webp');
+  });
+});
+describe('Persistent favorites', () => {
+  it('restores IDs across service instances and persists additions/removals', async () => {
+    let value: string | null = null;
+    const storage = {
+      get: async () => ({ value }),
+      set: async (options: { value: string }) => {
+        value = options.value;
+      },
+    };
+    TestBed.configureTestingModule({ providers: [{ provide: FAVORITES_STORAGE, useValue: storage }] });
+    let service = TestBed.inject(FavoritesService);
+    await service.loaded;
+    await service.toggle('sooriyan-srilanka');
+    await service.toggle('air-nagercoil');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [{ provide: FAVORITES_STORAGE, useValue: storage }] });
+    service = TestBed.inject(FavoritesService);
+    await service.loaded;
+    expect(service.has('sooriyan-srilanka')).toBe(true);
+    expect(service.has('air-nagercoil')).toBe(true);
+    await service.toggle('air-nagercoil');
+    expect(JSON.parse(value!)).toEqual(['sooriyan-srilanka']);
+  });
+  it('keeps session favorites and warns when storage fails', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: FAVORITES_STORAGE,
+          useValue: {
+            get: async () => ({ value: 'invalid' }),
+            set: async () => {
+              throw Error('quota');
+            },
+          },
+        },
+      ],
+    });
+    const service = TestBed.inject(FavoritesService);
+    await service.loaded;
+    await service.toggle('station');
+    expect(service.has('station')).toBe(true);
+    expect(service.warning()).toBe(true);
+  });
+  it('preserves toggles performed while the saved favorites are still loading', async () => {
+    let finish!: (value: { value: string }) => void;
+    const set = vi.fn(async () => undefined);
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: FAVORITES_STORAGE,
+          useValue: {
+            get: () =>
+              new Promise(resolve => {
+                finish = resolve;
+              }),
+            set,
+          },
+        },
+      ],
+    });
+    const service = TestBed.inject(FavoritesService);
+    const first = service.toggle('new');
+    const second = service.toggle('new');
+    finish({ value: JSON.stringify(['old', 'new']) });
+    await Promise.all([first, second]);
+    expect(service.has('old')).toBe(true);
+    expect(service.has('new')).toBe(false);
+    expect(set).toHaveBeenLastCalledWith({ key: 'radiobee.favorites.v1', value: '["old"]' });
+  });
+});
+describe('Published 1.2 catalogue discovery', () => {
+  it('validates 88 stations and 18 networks with optional logos and unchanged stream permissions', () => {
+    const catalog = validateCatalog(structuredClone(publishedFixture));
+    expect(catalog.manifest.catalogVersion).toBe('1.2.0');
+    expect(catalog.stations).toHaveLength(88);
+    expect(catalog.networks).toHaveLength(18);
+    const original = JSON.stringify(catalog.stations.map(station => station.streams));
+    catalog.stations[0].logoPath = 'assets/logos/stations/station.webp';
+    catalog.networks[0].logoPath = 'assets/logos/networks/network.png';
+    expect(() => validateCatalog(catalog)).not.toThrow();
+    expect(JSON.stringify(catalog.stations.map(station => station.streams))).toBe(original);
+  });
+  it('builds categories from geography/language without confusing Sri Lanka with Indian regions', () => {
+    const catalog = validateCatalog(structuredClone(publishedFixture));
+    for (const category of ['kanyakumari', 'sriLanka', 'chennai', 'otherTamil'] as const)
+      expect(catalog.stations.filter(station => inCategory(station, category, false)).length).toBeGreaterThan(0);
+    const sooriyan = catalog.stations.find(station => station.id === 'sooriyan-srilanka')!;
+    expect(inCategory(sooriyan, 'sriLanka', false)).toBe(true);
+    expect(inCategory(sooriyan, 'otherTamil', false)).toBe(false);
+    expect(inCategory(sooriyan, 'favorites', true)).toBe(true);
+  });
+  it('keeps search, favorites, grouping and India-only advanced filtering integrated', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CATALOG_STORAGE, useValue: { get: async () => ({ value: null }), set: async () => undefined } },
+        { provide: FAVORITES_STORAGE, useValue: { get: async () => ({ value: null }), set: async () => undefined } },
+      ],
+    });
+    const data = TestBed.inject(CatalogService);
+    vi.spyOn(data, 'start').mockResolvedValue();
+    data.catalog.set(validateCatalog(structuredClone(publishedFixture)));
+    const view = TestBed.createComponent(StationBrowserComponent);
+    view.detectChanges();
+    const browser = view.componentInstance;
+    expect(view.nativeElement.querySelectorAll('.station-card')).toHaveLength(88);
+    browser.selectCategory('sriLanka');
+    browser.change('search', 'Sooriyan');
+    view.detectChanges();
+    expect(browser.stations().map(station => station.id)).toEqual(['sooriyan-srilanka']);
+    await browser.favorites.toggle('sooriyan-srilanka');
+    browser.selectCategory('favorites');
+    view.detectChanges();
+    expect(browser.count()).toBe(1);
+    const favorite = view.nativeElement.querySelector('button.favorite') as HTMLButtonElement;
+    favorite.focus();
+    favorite.click();
+    view.detectChanges();
+    expect(browser.count()).toBe(0);
+    expect(document.activeElement).toBe(view.nativeElement.querySelector('[data-category="favorites"]'));
+    await browser.favorites.toggle('sooriyan-srilanka');
+    browser.byNetwork.set(true);
+    view.detectChanges();
+    expect(view.nativeElement.querySelectorAll('.network-title')).toHaveLength(1);
+    expect(view.nativeElement.querySelector('button.play')).toBeNull();
+    expect(view.nativeElement.querySelector('.external')).toBeTruthy();
+    browser.selectCategory('all');
+    browser.change('country', 'IN');
+    browser.change('region', 'in-tn');
+    browser.change('country', 'LK');
+    expect(browser.filters().region).toBe('');
+    expect(browser.controls()).toHaveLength(2);
+  });
+});
+describe('Mini-player controls', () => {
+  it('shows artwork and invokes the existing player for play, pause, stop, mute and volume', async () => {
+    const catalog = validateCatalog(structuredClone(fixture));
+    const station = catalog.stations.find(station => station.streams.length)!;
+    station.streams[0] = {
+      ...station.streams[0],
+      verificationStatus: 'verified',
+      rightsStatus: 'permission-granted',
+      format: 'mp3',
+    };
+    const audio = document.createElement('audio');
+    vi.spyOn(audio, 'play').mockResolvedValue();
+    const clear = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CatalogService, useValue: { catalog: signal(catalog), locale: signal('en') } },
+        { provide: MEDIA_ENGINE, useValue: { audio, clear, supports: () => true, load: async () => undefined } },
+      ],
+    });
+    const player = TestBed.inject(PlayerService);
+    await player.play(station);
+    audio.dispatchEvent(new Event('playing'));
+    const view = TestBed.createComponent(PlayerComponent);
+    view.detectChanges();
+    const button = (name: string) =>
+      Array.from(view.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>).find(
+        button => button.textContent!.trim() === name,
+      )!;
+    expect(view.nativeElement.querySelector('app-station-artwork')).toBeTruthy();
+    button('Pause').click();
+    view.detectChanges();
+    expect(player.state()).toBe('paused');
+    button('Play').click();
+    await Promise.resolve();
+    await Promise.resolve();
+    audio.dispatchEvent(new Event('playing'));
+    view.detectChanges();
+    expect(player.state()).toBe('playing');
+    button('Mute').click();
+    expect(audio.muted).toBe(true);
+    const volume = view.nativeElement.querySelector('input') as HTMLInputElement;
+    volume.value = '0.3';
+    volume.dispatchEvent(new Event('input'));
+    expect(audio.volume).toBe(0.3);
+    const search = document.createElement('input');
+    search.type = 'search';
+    document.body.append(search);
+    button('Stop').click();
+    view.detectChanges();
+    expect(player.state()).toBe('idle');
+    expect(view.nativeElement.querySelector('section')).toBeNull();
+    expect(clear).toHaveBeenCalled();
+    expect(document.activeElement).toBe(search);
+    search.remove();
+  });
+});

@@ -1,0 +1,64 @@
+@let eligibility = player.eligibility(station());
+<article
+  class="station-card"
+  [attr.data-station-id]="station().id"
+  [class.is-playing]="player.station()?.id === station().id && player.state() === 'playing'"
+  [class.is-loading]="player.station()?.id === station().id && player.state() === 'loading'">
+  <div class="thumbnail">
+    <app-station-artwork [station]="station()" /><button
+      class="favorite"
+      type="button"
+      [attr.aria-pressed]="favorites.has(station().id)"
+      [attr.aria-label]="ui(favorites.has(station().id) ? 'removeFavorite' : 'addFavorite') + ' · ' + station().name"
+      (click)="toggleFavorite()">
+      <span aria-hidden="true">{{ favorites.has(station().id) ? '♥' : '♡' }}</span>
+    </button>
+    @if (player.station()?.id === station().id && (player.state() === 'playing' || player.state() === 'loading')) {
+    <span class="on-air">{{ ui(player.state() === 'playing' ? 'playing' : 'buffering') }}</span> }
+  </div>
+  <div class="card-copy">
+    <h3>{{ station().name }}</h3>
+    <p class="location">{{ shortLocation(station()) }}</p>
+    <p class="frequency">
+      @if (station().frequencyMHz) { {{ station().frequencyMHz }} <span>MHz</span> } @else { {{ station().delivery ===
+      'online' ? 'ONLINE RADIO' : 'RADIO' }} }
+    </p>
+    <div class="card-actions">
+      @if (eligibility.status === 'ready') {
+      <button
+        class="play"
+        type="button"
+        (click)="player.play(station())"
+        [attr.aria-label]="ui('play') + ' · ' + station().name">
+        <span aria-hidden="true">▶</span> {{ ui('play') }}
+      </button>
+      } @else if (listeningPage(station()); as page) {
+      <a
+        class="external"
+        [href]="page"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="ui('offlineLink') + ' · ' + station().name + ' · ' + ui('broadcasterPage')"
+        >{{ ui('offlineLink') }} <span aria-hidden="true">↗</span></a
+      >
+      } @else { <span class="unavailable">{{ ui(eligibility.status) }}</span> }
+    </div>
+    <details class="station-details">
+      <summary>{{ ui('details') }}</summary>
+      <p>{{ ui(eligibility.status) }}</p>
+      <p>{{ ui('network') }}: {{ networkName(station()) }}</p>
+      <p>{{ location(station()) }}</p>
+      <p>{{ data.t('catalog',station().listingStatus) }} · {{ station().coverage }} · {{ station().delivery }}</p>
+      <p>{{ data.t('catalog','languages') }}: {{ station().broadcastLanguages.join(', ') || ui('unspecified') }}</p>
+      <p>{{ station().notes }}</p>
+      <p>
+        {{ data.t('catalog','genres') }}: @for (genre of station().genres; track genre) { {{ data.t('categories',genre)
+        }} }
+      </p>
+      @for (source of (data.catalog()?.sources ?? []); track source.id) { @if (station().sourceIds.includes(source.id))
+      {
+      <p>{{ data.t('catalog','source') }}: {{ source.title }}</p>
+      } }
+    </details>
+  </div>
+</article>

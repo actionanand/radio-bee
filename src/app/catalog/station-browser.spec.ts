@@ -48,12 +48,14 @@ describe('India-only detailed geography', () => {
       ]);
       expect(browser.options('region').some(o => o.id === 'in-tn')).toBe(true);
       browser.change('region', stale.region);
+      expect(browser.options('country').map(option => option.id)).toEqual(['IN', 'LK']);
       expect(browser.options('district').some(o => o.id === stale.district)).toBe(true);
       browser.change('district', stale.district);
       expect(browser.options('locality').some(o => o.id === stale.locality)).toBe(true);
       browser.change('locality', stale.locality);
       browser.change('language', 'ta');
       browser.change('country', 'LK');
+      expect(browser.options('country').map(option => option.id)).toEqual(['IN', 'LK']);
       expect(renderedLabels()).toEqual(basicLabels);
       expect(browser.filters()).toEqual({ ...emptyFilters, country: 'LK', language: 'ta' });
       const ids = browser.grouped().flatMap(g => g.stations.map(s => s.id));

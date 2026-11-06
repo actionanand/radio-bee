@@ -58,7 +58,8 @@ describe('Station card playback availability', () => {
         view.detectChanges();
         const article = view.nativeElement.querySelector('article') as HTMLElement;
         expect(article.textContent).toContain(uiLabel(locale, scenario.status));
-        const buttons = article.querySelectorAll('button');
+        const buttons = article.querySelectorAll<HTMLButtonElement>('button.play');
+        expect(article.querySelector('button.favorite')).toBeTruthy();
         const broadcaster = article.querySelector<HTMLAnchorElement>('a');
         if (scenario.status === 'ready') {
           expect(broadcaster).toBeNull();
@@ -68,7 +69,7 @@ describe('Station card playback availability', () => {
           expect(play).toHaveBeenCalledWith(station);
         } else {
           expect(broadcaster?.href).toBe('https://www.sooriyanfm.lk/');
-          expect(broadcaster?.textContent).toContain(uiLabel(locale, 'broadcasterPage'));
+          expect(broadcaster?.getAttribute('aria-label')).toContain(uiLabel(locale, 'broadcasterPage'));
           expect(broadcaster?.rel).toContain('noopener');
           expect(buttons.length).toBe(0);
           expect(play).not.toHaveBeenCalled();

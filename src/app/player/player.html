@@ -1,6 +1,8 @@
 @if (player.station(); as station) {
-<section aria-label="RadioBee player" [attr.lang]="catalog.locale()">
-  <div>
+<section aria-label="RadioBee player" [attr.lang]="catalog.locale()" [class.loading]="player.state() === 'loading'">
+  <app-station-artwork [station]="station" />
+  <div class="track">
+    <span class="player-eyebrow">{{ ui('nowPlaying') }}</span>
     <strong>{{ station.name }}</strong>
     @if (player.technicalTest()) {
     <p>LOCAL TECHNICAL TEST — permissions unconfirmed</p>
@@ -14,7 +16,7 @@
     {{ ui(player.state() === 'error' ? 'retry' : 'play') }}
   </button>
   }
-  <button type="button" (click)="player.stop()">{{ ui('stop') }}</button>
+  <button type="button" (click)="stop()">{{ ui('stop') }}</button>
   <label
     >{{ ui('volume') }}<input
       type="range"

@@ -1,21 +1,58 @@
 :host {
   display: block;
   flex: none;
+  z-index: 10;
 }
 section {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #faf8f1;
-  color: #173a32;
-  border-top: 2px solid #738879;
-  max-height: 40vh;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px clamp(18px, 4vw, 64px);
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  background: var(--surface);
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 28px #10251f0d;
+  max-height: 42vh;
   overflow: auto;
+}
+app-station-artwork {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.track {
+  min-width: 0;
+  width: clamp(140px, 25vw, 350px);
+  margin-right: auto;
+}
+.track strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.player-eyebrow {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
 }
 p {
   margin: 4px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+p[role='alert'] {
+  flex-basis: 100%;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  line-height: 1.5;
 }
 button,
 input {
@@ -23,32 +60,64 @@ input {
 }
 button {
   padding: 8px 16px;
-  border: 1px solid currentColor;
-  border-radius: 8px;
-  background: transparent;
-  color: inherit;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper);
+  color: var(--ink);
   font: inherit;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
+}
+button:first-of-type {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  min-width: 80px;
 }
 label {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
 }
 input {
-  max-width: 120px;
+  width: 90px;
+  max-width: 100%;
+  accent-color: var(--accent-ink);
 }
 :focus-visible {
-  outline: 3px solid currentColor;
+  outline: 3px solid var(--ink);
   outline-offset: 3px;
 }
 button:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: default;
 }
-@media (prefers-color-scheme: dark) {
+.loading {
+  border-top: 2px solid var(--accent-ink);
+}
+@media (max-width: 599px) {
   section {
-    background: #12251f;
-    color: #eef3df;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  .track {
+    width: calc(100% - 70px);
+    margin: 0;
+  }
+  button {
+    flex: 1;
+    padding: 8px 12px;
+  }
+  label {
+    order: 1;
+    flex-basis: 100%;
+    justify-content: flex-end;
+  }
+  app-station-artwork {
+    width: 48px;
+    height: 48px;
   }
 }

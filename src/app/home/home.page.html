@@ -1,21 +1,49 @@
 <ion-content
   ><div class="shell">
-    <div class="brand">
-      <img ngSrc="assets/icon/radio-bee.png" width="64" height="64" alt="" priority />
-      <div>
-        RadioBee
-        <p>Stay tuned. Stay buzzing.</p>
-      </div>
+    <div class="brand-bar">
+      <a class="brand" routerLink="/home"
+        ><img ngSrc="assets/icon/radio-bee.png" width="48" height="48" alt="" priority />
+        <div>
+          <strong>RadioBee<span class="brand-dot">.</span></strong>
+          <p>Stay tuned. Stay buzzing.</p>
+        </div></a
+      ><span class="edition">INTERNET RADIO, WITH A LITTLE BUZZ.</span>
     </div>
-    <div>
-      <section class="hero" aria-labelledby="home-title">
-        <p>YOUR WORLD. YOUR FREQUENCY.</p>
-        <h1 id="home-title">A world of sound,<br />ready to discover.</h1>
-        <p>Explore the people, places and networks behind internet radio.</p>
+    <div class="home-content">
+      <section class="hero" aria-labelledby="home-title" [attr.lang]="data.locale()">
+        <div class="hero-copy">
+          <p class="eyebrow">TURN UP THE EVERYDAY</p>
+          <h1 id="home-title">{{ ui('heroTitle') }}</h1>
+          <p class="hero-description">{{ ui('heroDescription') }}</p>
+          <div class="hero-signature">
+            <span class="signal-dot" aria-hidden="true"></span> RadioBee <span aria-hidden="true">/</span> Stay tuned.
+            Stay buzzing.
+          </div>
+        </div>
+        <div class="radio-scene" aria-hidden="true">
+          <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
+          <div class="radio-body">
+            <div class="radio-speaker"></div>
+            <div class="radio-controls">
+              <span class="radio-display"
+                >RADIOBEE<br /><b>ON YOUR<br />WAVELENGTH.</b></span
+              >
+              <div class="knobs"><span></span><span></span></div>
+            </div>
+          </div>
+          <span class="frequency-stamp">FM / AM / ONLINE</span>
+        </div>
       </section>
-      <app-live-stream-lab />
       <app-station-browser />
+      <details class="development-lab" [hidden]="!liveTests">
+        <summary>Local technical tests</summary>
+        <app-live-stream-lab />
+      </details>
     </div>
-    <p class="footer">RadioBee — Station discovery and approved streams</p>
+    <div class="site-footer">
+      <strong>RadioBee<span class="brand-dot">.</span></strong>
+      <p>Stay tuned. Stay buzzing.</p>
+      <span>© RadioBee</span>
+    </div>
   </div></ion-content
 >
