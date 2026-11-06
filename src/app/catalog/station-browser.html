@@ -34,9 +34,9 @@
         [value]="filters().search"
         (input)="change('search', value($event))"
     /></label>
-    @for (control of controls; track control.key) {
+    @for (control of controls(); track control.key) {
     <label
-      >{{ data.t('catalog', control.label) }}<select
+      >{{ controlLabel(control.label) }}<select
         [value]="filters()[control.key]"
         (change)="change(control.key,value($event))">
         <option value="">{{ data.t('catalog','allStations') }}</option>

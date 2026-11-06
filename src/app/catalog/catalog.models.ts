@@ -80,7 +80,6 @@ export interface Filters {
   district: string;
   locality: string;
   language: string;
-  genre: string;
 }
 export const emptyFilters: Filters = {
   search: '',
@@ -89,18 +88,18 @@ export const emptyFilters: Filters = {
   district: '',
   locality: '',
   language: '',
-  genre: '',
 };
 export function filterStations(c: Catalog, f: Filters): Station[] {
   const query = f.search.trim().toLocaleLowerCase();
   return c.stations.filter(
     s =>
       (!f.country || s.countryCode === f.country) &&
-      (!f.region || s.regionId === f.region) &&
-      (!f.district || s.districtId === f.district) &&
-      (!f.locality || s.localityId === f.locality) &&
+      (f.country !== 'IN' ||
+        s.countryCode !== 'IN' ||
+        ((!f.region || s.regionId === f.region) &&
+          (!f.district || s.districtId === f.district) &&
+          (!f.locality || s.localityId === f.locality))) &&
       (!f.language || s.broadcastLanguages.includes(f.language)) &&
-      (!f.genre || s.genres.includes(f.genre)) &&
       (!query ||
         [
           s.name,
