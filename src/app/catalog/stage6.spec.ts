@@ -83,7 +83,7 @@ describe('Stage 6 catalogue controls', () => {
     data.catalog.set(next);
     expect(browser.count()).toBe(0);
   });
-  it('toggles one details selection and restores the trigger focus after dismissal', () => {
+  it('toggles one details selection and restores the trigger focus after dismissal', async () => {
     const { station } = setup();
     const service = TestBed.inject(StationDetailsService);
     const trigger = document.createElement('button');
@@ -93,7 +93,8 @@ describe('Stage 6 catalogue controls', () => {
     expect(service.isOpen()).toBe(true);
     trigger.click();
     expect(service.isOpen()).toBe(false);
-    service.dismissed();
+    service.dismissed(service.sessions()[0].token);
+    await Promise.resolve();
     expect(document.activeElement).toBe(trigger);
     expect(service.station()).toBeNull();
     trigger.remove();
@@ -121,6 +122,50 @@ describe('Stage 6 catalogue controls', () => {
 });
 
 describe('Metadata-only website validation', () => {
+  for (const locale of ['en', 'ta', 'sa'])
+    it(`keeps broadcaster links exclusively inside details for named and future stations in ${locale}`, () => {
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: MEDIA_ENGINE, useValue: null },
+          { provide: FAVORITES_STORAGE, useValue: { get: async () => ({ value: null }), set: async () => undefined } },
+        ],
+      });
+      const catalog = validateCatalog(structuredClone(currentPublishedFixture));
+      // UI-only shapes test the universal rule; these are not proposed catalogue records or rights grants.
+      const cases = [
+        { id: 'air-nagercoil', website: 'https://akashvani.gov.in/' },
+        { id: 'sooriyan-srilanka', website: 'https://www.sooriyanfm.lk/' },
+        { id: 'vasantham-srilanka', website: 'https://www.vasanthamfm.lk/' },
+        { id: 'j1-hits', website: 'https://www.j1fm.tokyo/' },
+        { id: 'j1-gold', website: 'https://www.j1fm.tokyo/' },
+        { id: 'future-station', website: 'https://future.example/listen' },
+      ];
+      const stations = cases.map(item => ({
+        ...(catalog.stations.find(station => station.id === item.id) ?? catalog.stations[0]),
+        ...item,
+      }));
+      catalog.stations = stations;
+      const data = TestBed.inject(CatalogService);
+      data.catalog.set(catalog);
+      data.locale.set(locale);
+      for (const station of stations) {
+        const card = TestBed.createComponent(StationCardComponent);
+        card.componentRef.setInput('station', station);
+        card.detectChanges();
+        expect(card.nativeElement.querySelector('a')).toBeNull();
+        expect(card.nativeElement.textContent).not.toContain(station.website);
+        expect(card.nativeElement.querySelector('button.play')).toBeNull();
+        expect(card.nativeElement.querySelector('.unavailable')).toBeTruthy();
+        const details = TestBed.createComponent(StationDetailsContentComponent);
+        details.componentRef.setInput('station', station);
+        details.detectChanges();
+        const link = details.nativeElement.querySelector('a') as HTMLAnchorElement;
+        expect(link.href).toBe(station.website);
+        expect(link.rel).toContain('noopener');
+        card.destroy();
+        details.destroy();
+      }
+    });
   it('accepts HTTPS broadcaster pages and rejects credentials, media and API endpoints', () => {
     expect(stationWebsite({ website: 'https://www.sooriyanfm.lk/' })).toBe('https://www.sooriyanfm.lk/');
     for (const website of [

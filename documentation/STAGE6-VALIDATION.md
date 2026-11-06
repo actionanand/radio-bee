@@ -1,4 +1,6 @@
-# Stage 6 validation — 2026-11-06
+# Stage 6 validation — 2026-11-06 (historical run)
+
+> Superseded by [final review corrections](STAGE6-REVIEW-CORRECTIONS.md). The J1 Web-permission conclusion below is withdrawn; see [the joint developer/FAQ review](J1-PUBLICATION-REVIEW.md). Historic 23/26 event arrays had attribution contamination and have been replaced by fresh, per-attempt evidence. Current results and counts belong to the corrections report.
 
 Branch: `feature/6-in-app-radio-playback`. Implementation is ready for client review, but **Stage 6 public-release acceptance remains unmet**: the public 1.3.0 catalogue has zero production-eligible stations. No deployment or data publication was performed.
 
@@ -35,7 +37,7 @@ The optional browser report is [browser-validation-results.json](stage6/browser-
 | Published production-eligible stations | **0** — rights unconfirmed and directListening needs-review                                                                                                                                                        |
 | Stations without stream candidates     | **63**; no claim that no online service exists elsewhere                                                                                                                                                           |
 | Confirmed station identity mismatches  | **0**; unconfirmed on-air identity is not counted as a match                                                                                                                                                       |
-| Separate permitted references          | J1 HITS and J1 GOLD: actual direct MP3 playback, explicit third-party-app policy; proposed metadata only                                                                                                           |
+| Historical technical references        | J1 HITS and J1 GOLD: actual direct MP3 playback, explicit third-party-app policy; proposed metadata only                                                                                                           |
 | Human listening                        | User explicitly confirmed **audible J1 HITS audio** in the corrected local review preview; prior session also confirmed audible Sooriyan technical playback. No new on-air announcement identification was claimed |
 
 The [complete 88-record audit](stage6/catalogue-audit.md) provides source availability, identity confidence, browser result, policy status and next data work for every record. [Raw technical evidence](stage6/technical-playback-results.json) includes redirects, final audio URL, MIME/CORS, playing/buffering/error events, decoded bytes, HLS manifest/segment access, continuity and retries. Audio was not recorded or relayed.
@@ -46,7 +48,7 @@ The browser suite served the normal production `www/` bundle, with the technical
 
 Both themes sustained J1 HITS playback for approximately 20 seconds. Card Pause/Play and mini-player Pause/Play stayed synchronized. Switching J1 HITS → J1 GOLD → J1 HITS reused one audio element and preserved volume. Mute/unmute, stop and cleanup passed. Search/filter changes and details opening during actual playback did not interrupt the stream or navigate away.
 
-This proves the production player path with suitable reviewed data. It **does not** make the current public app playable: the separate data session must review/publish an authorized stream, followed by the normal client review/release. The [review-only RFC 6902 proposal](stage6/catalogue-proposal.patch.json) adds two explicitly permitted sources and changes none of the original 88 station records. It is rebased on 1.3.0; its proposed 1.3.1 label is not reserved or published.
+This historical exercise tested the engine path, but J1 website permission is unresolved and must not be inferred from it. It **does not** make the current public app playable: the separate data session must review/publish an authorized stream, followed by the normal client review/release. The [review-only RFC 6902 proposal](stage6/catalogue-proposal.patch.json) proposes two review-only sources with unconfirmed rights and changes none of the original 88 station records. It is rebased on 1.3.0; its proposed 1.3.1 label is not reserved or published.
 
 ## Interface checks
 

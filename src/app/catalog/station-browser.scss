@@ -91,9 +91,6 @@ label {
 .advanced > summary::-webkit-details-marker {
   display: none;
 }
-.advanced[open] > summary span {
-  transform: rotate(45deg);
-}
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
@@ -166,9 +163,6 @@ label {
   background: var(--panel);
   border-radius: 16px;
 }
-.empty > span {
-  font-size: 40px;
-}
 .empty h3 {
   font-size: 20px;
 }
@@ -236,8 +230,6 @@ label {
   .search-icon {
     padding-left: 14px;
   }
-}
-@media (max-width: 559px) {
   .browse-header {
     margin-bottom: 12px;
   }

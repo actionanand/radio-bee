@@ -4,6 +4,12 @@ const fs = require('fs'),
   path = require('path');
 if (process.platform !== 'linux') throw Error('Run through WSL2 Linux Node');
 const args = process.argv.slice(2);
+const external = args.includes('--allow-external');
+const host = external ? '0.0.0.0' : '127.0.0.1';
+if (external)
+  console.warn(
+    'WARNING: --allow-external exposes this development preview, including any injected review catalogue, to other network interfaces. Do not use on an untrusted network.',
+  );
 const option = name => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
 const port = Number(option('--port') || 3063);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw Error('Invalid preview port');
@@ -76,7 +82,7 @@ const server = http.createServer((req, res) => {
   const body = fs.readFileSync(file);
   res.end(ext === '.html' ? body.toString().replace('<head>', '<head>' + harness) : body);
 });
-server.listen(port, '0.0.0.0', () =>
+server.listen(port, host, () =>
   console.log(
     `RadioBee ${snapshotPath ? 'LOCAL REVIEW' : 'published catalogue'} preview: http://localhost:${port}/radio-bee/home`,
   ),
