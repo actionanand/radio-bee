@@ -6,6 +6,8 @@ Automatic and manual GitHub Pages deployment: [RadioBee Web deployment guide](do
 
 Station discovery, catalogue configuration and offline behavior: [Client catalogue integration](documentation/CATALOGUE.md).
 
+Stream eligibility and the persistent Web player: [Stage 3 player](documentation/PLAYER.md).
+
 This project was generated using Ionic CLI version 7.2.1 for Angular version 22.0.1 with Ionic Angular version 9.0.0.
 
 ## Development server

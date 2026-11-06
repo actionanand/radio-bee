@@ -4,7 +4,7 @@ RadioBee — Stay tuned. Stay buzzing.
 
 **RadioBee Web Build and Deploy** uses GitHub's official Pages artifact pipeline. Pushes to `main-github` deploy automatically, and `workflow_dispatch` supports manual builds. Both jobs require `github.ref == 'refs/heads/main-github'`; selecting another branch skips them.
 
-The application now has the branded RadioBee home and Stage 2 station-discovery browser. Playback is reserved for Stage 3. Catalogue availability is independent of client deployment; see the [catalogue integration guide](CATALOGUE.md) for data-host status and development fallback behavior.
+The application has the branded RadioBee home, station-discovery browser and [Stage 3 Web player](PLAYER.md). Playback controls are enabled only for eligible, approved streams on a supported platform. Catalogue availability is independent of client deployment; see the [catalogue integration guide](CATALOGUE.md) for data-host configuration and development fallback behavior.
 
 ## Build and deployment
 

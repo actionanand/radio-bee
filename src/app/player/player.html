@@ -1,0 +1,32 @@
+@if (player.station(); as station) {
+<section aria-label="RadioBee player" [attr.lang]="catalog.locale()">
+  <div>
+    <strong>{{ station.name }}</strong>
+    <p role="status">{{ ui(player.state() === 'loading' ? 'buffering' : player.state()) }}</p>
+  </div>
+  @if (player.state() === 'playing' || player.state() === 'loading') {
+  <button type="button" (click)="player.pause()">{{ ui('pause') }}</button>
+  } @else {
+  <button type="button" (click)="player.resume()" [disabled]="player.eligibility(station).status !== 'ready'">
+    {{ ui(player.state() === 'error' ? 'retry' : 'play') }}
+  </button>
+  }
+  <button type="button" (click)="player.stop()">{{ ui('stop') }}</button>
+  <label
+    >{{ ui('volume') }}<input
+      type="range"
+      min="0"
+      max="1"
+      step="0.05"
+      [value]="player.volume()"
+      (input)="volume($event)"
+  /></label>
+  <button type="button" [attr.aria-pressed]="player.muted()" (click)="player.toggleMute()">{{ ui('mute') }}</button>
+  @if (player.error(); as error) {
+  <p role="alert">
+    {{ ui(error === 'playbackPermissionChanged' ? 'playbackPermissionChanged' : error === 'playbackTimeout' ?
+    'playbackTimeout' : error === 'playbackBlocked' ? 'playbackBlocked' : 'playbackError') }}
+  </p>
+  }
+</section>
+}

@@ -1,7 +1,7 @@
 <section aria-labelledby="catalog-title" [attr.lang]="data.locale()">
   <header>
     <div>
-      <p class="eyebrow">DISCOVER / STAGE 2</p>
+      <p class="eyebrow">DISCOVER / RADIOBEE</p>
       <h2 id="catalog-title">{{ data.t('catalog','title','Radio stations') }}</h2>
     </div>
     <label
@@ -65,7 +65,11 @@
           { · {{ station.frequencyMHz }} MHz }
         </p>
         <p>{{ data.t('catalog','languages') }}: {{ station.broadcastLanguages.join(', ') || ui('unspecified') }}</p>
-        <p>{{ data.t('catalog',status(station)) }}</p>
+        @let eligibility = player.eligibility(station);
+        <p>{{ ui(eligibility.status) }}</p>
+        <button type="button" [disabled]="eligibility.status !== 'ready'" (click)="player.play(station)">
+          {{ ui('play') }} · {{ station.name }}
+        </button>
         <details>
           <summary>{{ ui('details') }}</summary>
           <p>{{ station.notes }}</p>
@@ -78,7 +82,6 @@
           <p>{{ data.t('catalog','source') }}: {{ source.title }}</p>
           } }
         </details>
-        <p class="metadata">{{ ui('unavailable') }}</p>
       </article>
       }
     </div>

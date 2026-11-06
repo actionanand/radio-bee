@@ -1,6 +1,6 @@
 # RadioBee catalogue integration — Stage 2
 
-RadioBee consumes the independent [radio-bee-data](https://github.com/actionanand/radio-bee-data) static JSON catalogue. Playback, recording, background media services and station stream requests are outside this stage.
+RadioBee consumes the independent [radio-bee-data](https://github.com/actionanand/radio-bee-data) static JSON catalogue. The [Stage 3 Web player](PLAYER.md) applies separate permission and compatibility gates; discovery remains independent of playback. Recording and native background media services are not implemented.
 
 ## Data and compatibility
 
@@ -42,7 +42,7 @@ Catalogue-owned labels, category labels and approved country/region names come f
 
 UI language is saved separately from broadcast-language filters and sets the browser section's `lang` attribute. Changing it never changes which station languages are selected. Language options display their Unicode native names.
 
-`listingStatus: reviewed` means metadata review only; candidates show the catalogue's needs-review label. Stream status displays no direct stream, unverified, unavailable or available metadata as applicable. **No station has a Play action in Stage 2, including future verified records.** There are no audio elements, autoplay, stream fetches, or conversion of broadcaster websites into audio URLs. Actual playback and rights checks belong to a later stage.
+`listingStatus: reviewed` means metadata review only; candidates show the catalogue's needs-review label. The shared Stage 3 policy checks verification, rights, URL, format and actual platform support before enabling Play. Unverified, unavailable and unapproved listings remain visible with their specific blocker messages. Only explicit user playback of an eligible stream creates media requests; broadcaster websites are never substituted for audio endpoints. There is no autoplay or recording.
 
 ## Future upstream updates
 
