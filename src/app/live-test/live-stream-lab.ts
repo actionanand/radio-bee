@@ -1,65 +1,45 @@
 import { Component, inject } from '@angular/core';
 import { PlayerService } from '../player/player.service';
-import { LIVE_TEST_ENABLED, liveLeads } from './live-test.config';
+import { CatalogService } from '../catalog/catalog.service';
+import { LIVE_TEST_ENABLED } from './live-test.config';
 @Component({
   selector: 'app-live-stream-lab',
-  template: ` @if (enabled) {
+  template: `@if (enabled) {
     <section aria-labelledby="lab-title">
-      <h2 id="lab-title">Local live-radio technical tests</h2>
-      <p>
-        <strong>Development tests only — rights remain unconfirmed.</strong> These controls test real direct audio
-        without changing catalogue verification or production permissions. No recording or proxy is used.
-      </p>
-      @for (lead of leads; track lead.id) {
-        <article>
-          <h3>{{ lead.name }}</h3>
-          <p>{{ lead.streams[0].format }} · {{ player.technicalEligibility(lead.id).status }}</p>
+      <h2 id="lab-title">Local stream verification</h2>
+      <p>Technical research only. This does not grant production permission, record audio or proxy a stream.</p>
+      @for (station of data.catalog()?.stations ?? []; track station.id) {
+        @for (stream of station.streams; track stream.id) {
           <button
             type="button"
-            [disabled]="player.technicalEligibility(lead.id).status !== 'ready'"
-            (click)="player.playTechnical(lead.id)">
-            Test live audio · {{ lead.name }}
+            [disabled]="player.technicalEligibility(station.id, stream.id).status !== 'ready'"
+            (click)="player.playTechnical(station.id, stream.id)">
+            Test live audio · {{ station.name }} · {{ stream.id }}
           </button>
-          @if (lead.website) {
-            <p>
-              <a [href]="lead.website" target="_blank" rel="noopener noreferrer"
-                >Broadcaster listening page (outside RadioBee)</a
-              >
-            </p>
-          }
-        </article>
+        }
       }
     </section>
   }`,
   styles: `
     section {
-      border: 2px solid var(--ink);
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-    article {
-      margin: 20px 0;
+      padding: 16px;
+      border: 1px solid var(--line);
     }
     button {
+      display: block;
+      margin: 8px 0;
       min-height: 44px;
-      padding: 10px;
-      background: var(--paper);
-      color: var(--ink);
-      border: 1px solid currentColor;
       font: inherit;
-      cursor: pointer;
-    }
-    a {
       color: var(--ink);
-    }
-    :focus-visible {
-      outline: 3px solid currentColor;
-      outline-offset: 3px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 10px;
+      max-width: 100%;
     }
   `,
 })
 export class LiveStreamLabComponent {
   readonly enabled = inject(LIVE_TEST_ENABLED);
   readonly player = inject(PlayerService);
-  readonly leads = liveLeads;
+  readonly data = inject(CatalogService);
 }

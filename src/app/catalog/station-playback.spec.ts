@@ -8,6 +8,7 @@ import { StreamStatus } from './stream-eligibility';
 import { uiLabel } from './catalog.ui';
 import { MEDIA_ENGINE } from '../player/media-engine';
 import { PlayerService } from '../player/player.service';
+import { StationDetailsService } from './station-details.service';
 
 const approved: Stream = {
   id: 'test',
@@ -48,7 +49,10 @@ describe('Station card playback availability', () => {
         const data = TestBed.inject(CatalogService);
         vi.spyOn(data, 'start').mockResolvedValue();
         const c = validateCatalog(structuredClone(fixture));
-        const station: Station = { ...c.stations[0], id: 'sooriyan-srilanka', streams: scenario.streams };
+        const station: Station = {
+          ...c.stations.find(station => station.id === 'sooriyan-srilanka')!,
+          streams: scenario.streams,
+        };
         c.stations = [station];
         data.catalog.set(c);
         data.locale.set(locale);
@@ -57,7 +61,9 @@ describe('Station card playback availability', () => {
         const view = TestBed.createComponent(StationBrowserComponent);
         view.detectChanges();
         const article = view.nativeElement.querySelector('article') as HTMLElement;
-        expect(article.textContent).toContain(uiLabel(locale, scenario.status));
+        expect(article.textContent).toContain(
+          uiLabel(locale, scenario.status === 'ready' ? 'play' : 'listeningUnavailable'),
+        );
         const buttons = article.querySelectorAll<HTMLButtonElement>('button.play');
         expect(article.querySelector('button.favorite')).toBeTruthy();
         const broadcaster = article.querySelector<HTMLAnchorElement>('a');
@@ -68,16 +74,15 @@ describe('Station card playback availability', () => {
           buttons[0].click();
           expect(play).toHaveBeenCalledWith(station);
         } else {
-          expect(broadcaster?.href).toBe('https://www.sooriyanfm.lk/');
-          expect(broadcaster?.getAttribute('aria-label')).toContain(uiLabel(locale, 'broadcasterPage'));
-          expect(broadcaster?.rel).toContain('noopener');
+          expect(broadcaster).toBeNull();
+
           expect(buttons.length).toBe(0);
           expect(play).not.toHaveBeenCalled();
         }
-        const details = article.querySelector('details')!;
-        expect(details).toBeTruthy();
-        details.querySelector('summary')!.click();
-        expect(details.open).toBe(true);
+        expect(article.querySelector('details')).toBeNull();
+        (article.querySelector('button.details-button') as HTMLButtonElement).click();
+        expect(TestBed.inject(StationDetailsService).station()?.id).toBe(station.id);
+        expect(TestBed.inject(StationDetailsService).isOpen()).toBe(true);
       });
     }
 });

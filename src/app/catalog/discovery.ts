@@ -1,7 +1,9 @@
 import { Station } from './catalog.models';
-export type DiscoveryCategory = 'all' | 'favorites' | 'kanyakumari' | 'sriLanka' | 'chennai' | 'otherTamil';
+export type DiscoveryCategory =
+  'all' | 'listenNow' | 'favorites' | 'kanyakumari' | 'sriLanka' | 'chennai' | 'otherTamil';
 export const discoveryCategories: DiscoveryCategory[] = [
   'all',
+  'listenNow',
   'favorites',
   'kanyakumari',
   'sriLanka',

@@ -4,13 +4,16 @@ import { PlayerService } from './player.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { UiKey, uiLabel } from '../catalog/catalog.ui';
 import { StationArtworkComponent } from '../catalog/station-artwork';
+import { IonIcon } from '@ionic/angular';
+import { radioIcons } from '../shared/radio-icons';
 @Component({
   selector: 'app-player',
-  imports: [StationArtworkComponent],
+  imports: [StationArtworkComponent, IonIcon],
   templateUrl: './player.html',
   styleUrl: './player.scss',
 })
 export class PlayerComponent {
+  readonly icons = radioIcons;
   private readonly document = inject(DOCUMENT);
   stop() {
     const id = this.player.station()?.id;

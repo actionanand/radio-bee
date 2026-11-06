@@ -14,7 +14,8 @@
     >
   </header>
   <label class="search"
-    ><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">{{ ui('searchStations') }}</span
+    ><ion-icon class="search-icon" [icon]="icons.searchOutline" aria-hidden="true" /><span class="sr-only"
+      >{{ ui('searchStations') }}</span
     ><input
       type="search"
       [placeholder]="ui('searchStations')"
@@ -29,7 +30,7 @@
       [attr.data-category]="item"
       [attr.aria-pressed]="category() === item"
       (click)="selectCategory(item)">
-      @if (item === 'favorites') { <span aria-hidden="true">♡ </span> }{{ ui(item) }}
+      @if (item === 'favorites') { <ion-icon [icon]="icons.heartOutline" aria-hidden="true" /> }{{ ui(item) }}
     </button>
     }
   </nav>
@@ -43,7 +44,7 @@
   <p role="status">{{ ui('favoritesWarning') }}</p>
   } @if (data.catalog(); as catalog) {
   <details class="advanced">
-    <summary>{{ ui('advanced') }}<span aria-hidden="true"> +</span></summary>
+    <summary>{{ ui('advanced') }}<ion-icon [icon]="icons.chevronDownOutline" aria-hidden="true" /></summary>
     <div class="filters">
       @for (control of controls(); track control.key) {
       <label
@@ -63,7 +64,9 @@
   <div class="results-toolbar">
     <p role="status" aria-live="polite"><strong>{{ count() }}</strong> {{ ui('stationsFound') }}</p>
     <button class="group-toggle" type="button" [attr.aria-pressed]="byNetwork()" (click)="byNetwork.update(toggle)">
-      {{ ui('groupNetworks') }}<span aria-hidden="true"> {{ byNetwork() ? '✓' : '☷' }}</span>
+      {{ ui('groupNetworks') }}<ion-icon
+        [icon]="byNetwork()?icons.checkmarkOutline:icons.listOutline"
+        aria-hidden="true" />
     </button>
   </div>
   @for (section of sections(); track section.id) { @if (section.name) {
@@ -75,8 +78,11 @@
   </div>
   } @if (!count()) {
   <div class="empty">
-    <span aria-hidden="true">⌕</span>
-    <h3>{{ category() === 'favorites' ? ui('favoritesEmpty') : data.t('catalog','noResults') }}</h3>
+    <ion-icon [icon]="icons.searchOutline" aria-hidden="true" />
+    <h3>
+      {{ category() === 'favorites' ? ui('favoritesEmpty') : category() === 'listenNow' ? ui('noPlayableStations') :
+      data.t('catalog','noResults') }}
+    </h3>
     <p>{{ ui('noResultsHelp') }}</p>
     <button type="button" (click)="selectCategory('all')">{{ ui('all') }}</button>
   </div>

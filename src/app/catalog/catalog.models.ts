@@ -37,6 +37,14 @@ export interface Source {
   kind: string;
   notes: string;
 }
+export interface DirectListening {
+  status: 'needs-review' | 'restricted' | 'allowed';
+  reviewedAt: string;
+  sourceId: string;
+  notes: string;
+  recording: 'unconfirmed' | 'prohibited' | 'permission-granted';
+  redistribution: 'unconfirmed' | 'prohibited' | 'permission-granted';
+}
 export interface Stream {
   id: string;
   url: string;
@@ -45,6 +53,7 @@ export interface Stream {
   lastVerifiedAt: string | null;
   sourceId: string;
   rightsStatus: string;
+  directListening?: DirectListening;
 }
 export interface Station extends Named {
   logoPath?: string;

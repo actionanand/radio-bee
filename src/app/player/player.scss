@@ -121,3 +121,23 @@ button:disabled {
     height: 48px;
   }
 }
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+button ion-icon {
+  font-size: 18px;
+  flex: none;
+}
+@media (max-width: 599px) {
+  section {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  button {
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+}
