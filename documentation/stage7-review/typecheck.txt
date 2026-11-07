@@ -1,0 +1,4 @@
+
+> radio-bee@0.0.1 typecheck
+> tsc --noEmit -p tsconfig.app.json
+

@@ -1,0 +1,493 @@
+{
+  "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+  "startedAt": "2026-11-07T13:44:39.102Z",
+  "attempts": [
+    {
+      "engine": "native",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 206,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059021609.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059046612.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059054945.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059063277.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 206,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059071610.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 206,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059021609.ts",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "capabilities": {
+        "native": true,
+        "hlsJs": true
+      },
+      "continuitySeconds": 20.048700999999998,
+      "decodedByteIncrease": 172864,
+      "media": {
+        "events": [
+          {
+            "event": "waiting",
+            "time": 0,
+            "at": 271,
+            "error": null
+          },
+          {
+            "event": "loadstart",
+            "time": 0,
+            "at": 271.09999999403954,
+            "error": null
+          },
+          {
+            "event": "playing",
+            "time": 0,
+            "at": 1126.7999999970198,
+            "error": null
+          },
+          {
+            "event": "waiting",
+            "time": 0,
+            "at": 1198.3999999910593,
+            "error": null
+          },
+          {
+            "event": "playing",
+            "time": 0.261287,
+            "at": 1282.3999999910593,
+            "error": null
+          },
+          {
+            "event": "stalled",
+            "time": 3.171064,
+            "at": 4630.5999999940395,
+            "error": null
+          },
+          {
+            "event": "stalled",
+            "time": 14.905344,
+            "at": 16364.89999999106,
+            "error": null
+          }
+        ],
+        "hlsErrors": [],
+        "src": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+      }
+    },
+    {
+      "engine": "hls.js",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059071610.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059079940.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059088277.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059096613.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059104947.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "capabilities": {
+        "native": true,
+        "hlsJs": true
+      },
+      "continuitySeconds": 19.943266,
+      "decodedByteIncrease": 171057,
+      "media": {
+        "events": [
+          {
+            "event": "loadstart",
+            "time": 0,
+            "at": 218.70000000298023,
+            "error": null
+          },
+          {
+            "event": "waiting",
+            "time": 0,
+            "at": 749.7999999970198,
+            "error": null
+          },
+          {
+            "event": "playing",
+            "time": 26.009,
+            "at": 1081.5,
+            "error": null
+          }
+        ],
+        "hlsErrors": [],
+        "src": "blob:http://localhost:3074/9d537ae2-110f-4968-9dd3-120cc5ee32da"
+      }
+    },
+    {
+      "engine": "hls.js",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059096613.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059104947.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059113278.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059121614.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059129948.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "capabilities": {
+        "native": true,
+        "hlsJs": true
+      },
+      "continuitySeconds": 19.947145,
+      "decodedByteIncrease": 168563,
+      "media": {
+        "events": [
+          {
+            "event": "loadstart",
+            "time": 0,
+            "at": 200.09999999403954,
+            "error": null
+          },
+          {
+            "event": "waiting",
+            "time": 0,
+            "at": 753.4000000059605,
+            "error": null
+          },
+          {
+            "event": "playing",
+            "time": 26.003999,
+            "at": 1074.4000000059605,
+            "error": null
+          }
+        ],
+        "hlsErrors": [],
+        "src": "blob:http://localhost:3074/4900312c-4ef7-4ae9-9fc6-95efe204ae7b"
+      }
+    },
+    {
+      "engine": "native",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 206,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059088277.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059113278.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059121614.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059129948.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 206,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059138279.ts",
+          "status": 206,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 206,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059088277.ts",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "capabilities": {
+        "native": true,
+        "hlsJs": true
+      },
+      "continuitySeconds": 20.046326,
+      "decodedByteIncrease": 168258,
+      "media": {
+        "events": [
+          {
+            "event": "waiting",
+            "time": 0,
+            "at": 143.40000000596046,
+            "error": null
+          },
+          {
+            "event": "loadstart",
+            "time": 0,
+            "at": 143.5,
+            "error": null
+          },
+          {
+            "event": "playing",
+            "time": 0,
+            "at": 1032.4000000059605,
+            "error": null
+          },
+          {
+            "event": "waiting",
+            "time": 0,
+            "at": 1142.5999999940395,
+            "error": null
+          },
+          {
+            "event": "playing",
+            "time": 0.371349,
+            "at": 1150,
+            "error": null
+          },
+          {
+            "event": "stalled",
+            "time": 3.682229,
+            "at": 4524.70000000298,
+            "error": null
+          },
+          {
+            "event": "stalled",
+            "time": 15.07408,
+            "at": 15916.40000000596,
+            "error": null
+          }
+        ],
+        "hlsErrors": [],
+        "src": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+      }
+    }
+  ],
+  "browser": "157.0.8103.38"
+}

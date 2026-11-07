@@ -1,0 +1,14 @@
+✔ technical evidence is complete, uniquely scoped and counts actual outcomes (2.234818ms)
+✔ J1 Web proposal remains unconfirmed and points listeners to the official site (26.815603ms)
+✔ PR validation runs required checks with read-only access and no publishing capability (6.7818ms)
+✔ preview binds loopback by default and preserves production HTML/HTTPS configuration (160.129301ms)
+✔ external development binding requires explicit opt-in and emits a warning (49.345288ms)
+✔ review injection requires explicit snapshot and keeps the configured HTTPS base (55.186128ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 352.060858

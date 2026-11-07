@@ -33,11 +33,25 @@ Rights checking is independent:
 
 The published 1.3.0 snapshot has 88 stations and 26 candidates across 25 stations. With valid supported formats and no explicit restriction, the defaults offer **25 station Play controls**; the 63 no-stream listings retain a compact localized unavailable indication. This is eligibility to **attempt** playback, not an uptime or authorization claim.
 
+The existing relaxed treatment of `verificationStatus=unavailable` is intentional: when verification checking is disabled, historical technical observations do not veto a fresh attempt. Such candidates remain ranked below healthy candidates. Turning verification checking on blocks them regardless of `AllowUnverified`. This is covered across all eight flag combinations; explicit listening restrictions and technical safety checks always remain enforced.
+
 ## One policy for the player and discovery
 
 Cards, PlayerService play/toggle/resume, Listen now, refresh/revocation, retry and fallback all use the same injected policy and shared candidate selector. The local technical panel remains explicitly gated to a non-production, opted-in loopback build, but it does not bypass the injected RadioApi policy. Its optional stream-ID pin limits a diagnostic run to that candidate; normal cards use the full eligible pool.
 
 The strict verification/rights implementation remains present and is tested. Existing Stage 3–6 strict contract tests explicitly inject the strict preset; new Stage 7 tests cover all eight flag combinations and the new production defaults. The historical Stage 6 browser driver encodes the old strict baseline; use the Stage 7 production driver for these defaults.
+
+The exported `technicalStreamEligibility` compatibility helper now delegates to the same policy, defaulting to the build environment. Callers using an injected policy pass it explicitly. It no longer supplies a hard-coded relaxed preset. The player does not use that alias or enable technical mode in production.
+
+## HLS engine selection
+
+Production and technical builds now use the same engine selection: supported hls.js/MediaSource first, native HLS when hls.js is unsupported. MP3/AAC remain native. The selection is independent of `LIVE_TEST_ENABLED`; production still disables the technical UI and catalogue injection. `createMediaEngine(factory, false)` exists solely for explicit native-path diagnostics.
+
+The same Chrome comparison played AIR Nagercoil twice through each path for 20 seconds. Both paths can work; the earlier native CloudFront reset does not establish a native decoder defect. hls.js is a working production choice with explicit playlist/segment handling and testable adapter lifecycle; these small samples do not establish superior network reliability. Native-only platforms retain their existing path.
+
+No automatic same-URL alternate-engine retry was introduced. Initialization/runtime failures use the existing bounded distinct-URL fallback and explicit Retry. Thus no additional retry budget or engine loop exists. Repeated fatal events and discarded adapter callbacks are ignored. Regression tests combine the real media adapter with PlayerService to verify cancellation, station switching, audio reuse and volume/mute preservation.
+
+See [final HLS/policy review evidence](STAGE7-HLS-REVIEW.md) for current production results and comparison limitations. Live comparison/probe scripts are manual tools; PR CI runs only lightweight deterministic regression tests.
 
 Metadata changes are evaluated against the current policy. Ignored editorial changes do not stop an otherwise valid relaxed-mode selection. A removed/changed URL, unsupported source or explicit restriction invalidates it. An eligible alternate can replace an actively playing source; if the user paused, a refresh never resumes audio automatically. With no valid alternative, playback stops and an understandable localized error is shown.
 

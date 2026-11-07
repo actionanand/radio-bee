@@ -1,5 +1,7 @@
 # Stage 7 validation — 7 November 2026
 
+This records the initial Stage 7 run. The [final HLS/policy review](STAGE7-HLS-REVIEW.md) contains the later engine-selection corrections and production retest; historical failures below are preserved as evidence, not presented as the latest station outcome.
+
 Branch: `feature/7-configurable-radio-playback`, created from fetched public master `089fb4426137d9d1e230a34c1a99306ce50ad2e4`. No commit, push, merge or deployment was performed. Only the client repository was changed.
 
 ## Implementation

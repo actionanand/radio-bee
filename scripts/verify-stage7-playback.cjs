@@ -19,11 +19,13 @@ const report = {
   stationProbes: [],
   controls: {},
   notes: [
-    'Metadata capture is unchanged; no rights or verification values are rewritten.',
+    process.env.RADIOBEE_PUBLIC_CATALOGUE
+      ? 'Catalogue loaded directly from the public HTTPS service, without request interception.'
+      : 'Metadata capture is unchanged; no rights or verification values are rewritten.',
     'Fault injection is a separate scenario and is not evidence of broadcaster endpoint failure.',
   ],
 };
-const folder = 'documentation/stage7';
+const folder = process.env.RADIOBEE_BROWSER_REPORT_DIR || 'documentation/stage7';
 fs.mkdirSync(folder, { recursive: true });
 const save = () => fs.writeFileSync(folder + '/browser-results.json', JSON.stringify(report, null, 2) + '\n');
 const server = http.createServer((req, res) => {
@@ -44,18 +46,19 @@ async function context(browser, width = 1440, colorScheme = 'light') {
     colorScheme,
     reducedMotion: 'reduce',
   });
-  await context.route('https://actionanand.github.io/radio-bee-data/v1/**', route => {
-    const file = new URL(route.request().url()).pathname.split('/v1/')[1];
-    if (file.startsWith('assets/')) return route.continue();
-    return route.fulfill({
-      json:
-        file === 'index.json'
-          ? catalog.manifest
-          : file.startsWith('i18n/')
-            ? catalog.localization[file.slice(5, -5)]
-            : catalog[file.replace('.json', '')],
+  if (!process.env.RADIOBEE_PUBLIC_CATALOGUE)
+    await context.route('https://actionanand.github.io/radio-bee-data/v1/**', route => {
+      const file = new URL(route.request().url()).pathname.split('/v1/')[1];
+      if (file.startsWith('assets/')) return route.continue();
+      return route.fulfill({
+        json:
+          file === 'index.json'
+            ? catalog.manifest
+            : file.startsWith('i18n/')
+              ? catalog.localization[file.slice(5, -5)]
+              : catalog[file.replace('.json', '')],
+      });
     });
-  });
   const page = await context.newPage();
   await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
   await page.addInitScript(() => {
@@ -134,12 +137,23 @@ const snapshot = page =>
   }));
 async function stationProbe(browser, id) {
   const { context: ctx, page } = await context(browser);
-  const row = { stationId: id, startedAt: new Date().toISOString(), responses: [], failures: [], played: false };
+  const row = {
+    stationId: id,
+    startedAt: new Date().toISOString(),
+    requests: [],
+    responses: [],
+    failures: [],
+    played: false,
+  };
   report.stationProbes.push(row);
   const pending = [];
   const station = catalog.stations.find(station => station.id === id),
     hosts = station.streams.map(stream => new URL(stream.url).hostname);
   const media = url => hosts.includes(new URL(url).hostname) || new URL(url).hostname.endsWith('.cloudfront.net');
+  page.on('request', request => {
+    if (media(request.url()))
+      pending.push((async () => row.requests.push({ url: request.url(), headers: await request.allHeaders() }))());
+  });
   page.on('response', response => {
     if (media(response.url()))
       pending.push(
@@ -150,6 +164,7 @@ async function stationProbe(browser, id) {
             status: response.status(),
             mime: h['content-type'],
             cors: h['access-control-allow-origin'] ?? null,
+            redirectedFrom: response.request().redirectedFrom()?.url() ?? null,
           });
         })(),
       );
@@ -165,6 +180,7 @@ async function stationProbe(browser, id) {
     row.continuitySeconds = after.time - before.time;
     row.decodedByteIncrease = after.bytes === null ? null : after.bytes - before.bytes;
     row.audio = after;
+    row.enginePath = after.src.startsWith('blob:') ? 'hls.js/MediaSource' : 'native';
     assert.ok(row.continuitySeconds > 15 && !after.paused && !after.error);
     if (row.decodedByteIncrease !== null) assert.ok(row.decodedByteIncrease > 0);
     assert.equal(
@@ -177,6 +193,32 @@ async function stationProbe(browser, id) {
     row.sourceLoads = await page.evaluate(() => window.actualSourceLoads);
     if (id === 'sooriyan-srilanka')
       assert.equal(row.sourceLoads[0], station.streams.find(stream => stream.id === 'sooriyan-official-candidate').url);
+    if (id === 'air-nagercoil') {
+      assert.equal(row.enginePath, 'hls.js/MediaSource');
+      const player = page.locator('app-player');
+      await player.locator('input').fill('0.4');
+      await player.locator('button').last().click();
+      await player.locator('button').first().click();
+      const paused = await snapshot(page);
+      assert.equal(paused.paused, true);
+      assert.equal(paused.src, after.src);
+      await player.locator('button').first().click();
+      await page.waitForFunction(
+        time => window.actualAudio.currentTime > time + 1 && !window.actualAudio.paused,
+        paused.time,
+        { timeout: 15000 },
+      );
+      row.hlsControls = await page.evaluate(() => ({
+        volume: window.actualAudio.volume,
+        muted: window.actualAudio.muted,
+        audioElements: window.actualAudioCount,
+        src: window.actualAudio.currentSrc,
+      }));
+      assert.equal(row.hlsControls.volume, 0.4);
+      assert.equal(row.hlsControls.muted, true);
+      assert.equal(row.hlsControls.audioElements, 1);
+      await player.locator('button').last().click();
+    }
     row.played = true;
   } catch (error) {
     row.failure = error.message;
@@ -204,6 +246,16 @@ async function stationProbe(browser, id) {
         },
       };
   try {
+    if (process.env.RADIOBEE_STATION_PROBES_ONLY) {
+      for (const id of process.env.RADIOBEE_STATION_PROBES_ONLY.split(',')) {
+        assert.ok(
+          catalog.stations.some(station => station.id === id),
+          'Unknown catalogue station',
+        );
+        await stationProbe(bridge.browser, id);
+      }
+      return;
+    }
     for (const colorScheme of ['light', 'dark'])
       for (const width of [375, 820, 1440]) {
         const { context: ctx, page } = await context(bridge.browser, width, colorScheme);
@@ -333,10 +385,11 @@ async function stationProbe(browser, id) {
     await bridge.close();
     server.close();
   }
-  process.exit(0);
-})().catch(error => {
-  report.error = error.message;
-  save();
-  console.error(error);
-  process.exit(1);
-});
+})()
+  .then(() => process.exit(0))
+  .catch(error => {
+    report.error = error.message;
+    save();
+    console.error(error);
+    process.exit(1);
+  });

@@ -1,0 +1,217 @@
+
+> radio-bee@0.0.1 test:ci
+> ng test --watch=false
+
+❯ Building...
+✔ Building...
+Application bundle generation complete. [18.037 seconds] - 2026-11-07T13:50:18.737Z
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/AR_Files/code/radio-bee[39m
+
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/configurable-eligibility.spec.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stream-eligibility.spec.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-details.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+ [32m✓[39m [30m[43m app [49m[39m src/app/live-test/live-test.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/media-engine.spec.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.pause
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:121:5)
+    at HTMLAudioElement.pause (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:160:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:63:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+Error: Not implemented: HTMLMediaElement.prototype.load
+    at module.exports (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLAudioElementImpl.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/nodes/HTMLMediaElement-impl.js:112:5)
+    at HTMLAudioElement.load (/mnt/c/AR_Files/code/radio-bee/node_modules/jsdom/lib/jsdom/living/generated/HTMLMediaElement.js:109:34)
+    at Object.clear (/mnt/c/AR_Files/code/radio-bee/src/app/player/media-engine.ts:65:11)
+    at _PlayerService.stop (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:260:18)
+    at _PlayerService.ngOnDestroy (/mnt/c/AR_Files/code/radio-bee/src/app/player/player.service.ts:299:10)
+    at R3Injector.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_pending_tasks-chunk.mjs:1132:17)
+    at NgModuleRef.destroy (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/_debug_node-chunk.mjs:10257:37)
+    at TestBedImpl.tearDownTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1666:27)
+    at TestBedImpl.resetTestingModule (file:///mnt/c/AR_Files/code/radio-bee/node_modules/@angular/core/fesm2022/testing.mjs:1421:16) undefined
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/player.service.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 104[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/hls-player.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/configurable-player.spec.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 187[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/app.component.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 145[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/home/home.page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 275[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/catalog.spec.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 1126[2mms[22m[39m
+     [33m[2m✓[22m[39m renders unverified stations with no playback controls [33m 937[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-playback.spec.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1353[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage5.spec.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1298[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps search, favorites, grouping and India-only advanced filtering integrated [33m 852[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage6.spec.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 1525[2mms[22m[39m
+     [33m[2m✓[22m[39m combines Listen now with filters and recomputes eligibility on catalogue refresh [33m 871[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-browser.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 2250[2mms[22m[39m
+     [33m[2m✓[22m[39m renders and restores the correct controls in en [33m 1460[2mms[22m[39m
+     [33m[2m✓[22m[39m renders and restores the correct controls in ta [33m 454[2mms[22m[39m
+     [33m[2m✓[22m[39m renders and restores the correct controls in sa [33m 332[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/configurable-browser.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 2901[2mms[22m[39m
+     [33m[2m✓[22m[39m agrees throughout the UI for {"AllowUnverified":false,"CheckVerificationStatus":false,"CheckRightsStatus":false} [33m 1081[2mms[22m[39m
+     [33m[2m✓[22m[39m agrees throughout the UI for {"AllowUnverified":false,"CheckVerificationStatus":false,"CheckRightsStatus":true} [33m 532[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+[2m      Tests [22m [1m[32m205 passed[39m[22m[90m (205)[39m
+[2m   Start at [22m 19:20:27
+[2m   Duration [22m 77.93s[2m (transform 273.93s, setup 65.99s, import 378.44s, tests 11.48s, environment 338.77s)[22m
+

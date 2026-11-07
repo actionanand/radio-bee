@@ -1,0 +1,4 @@
+{"engine":"native","played":true,"continuity":20.048700999999998}
+{"engine":"hls.js","played":true,"continuity":19.943266}
+{"engine":"hls.js","played":true,"continuity":19.947145}
+{"engine":"native","played":true,"continuity":20.046326}

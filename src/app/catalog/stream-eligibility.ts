@@ -1,6 +1,6 @@
 import { Station, Stream, Source } from './catalog.models';
 import { environment } from '../../environments/environment';
-import { RadioApiConfig, TECHNICAL_RADIO_API_CONFIG } from '../../environments/radio-api.config';
+import { RadioApiConfig } from '../../environments/radio-api.config';
 
 export type StreamStatus =
   | 'noStream'
@@ -48,8 +48,10 @@ export function streamEligibility(
 export function technicalStreamEligibility(
   station: Pick<Station, 'streams'>,
   player: PlayerCapabilities,
+  policy: RadioApiConfig = environment.RadioApi,
 ): StreamEligibility {
-  return streamEligibility(station, player, TECHNICAL_RADIO_API_CONFIG);
+  // Compatibility alias, not a separate permission bypass. Injected callers pass their policy explicitly.
+  return streamEligibility(station, player, policy);
 }
 function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioApiConfig): StreamStatus {
   if (stream.directListening?.status === 'restricted') return 'permissionPending';

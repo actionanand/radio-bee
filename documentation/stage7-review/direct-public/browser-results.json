@@ -1,0 +1,545 @@
+{
+  "catalogVersion": "1.3.0",
+  "policy": {
+    "AllowUnverified": true,
+    "CheckVerificationStatus": false,
+    "CheckRightsStatus": false
+  },
+  "ui": [],
+  "stationProbes": [
+    {
+      "stationId": "sooriyan-srilanka",
+      "startedAt": "2026-11-07T13:59:33.930Z",
+      "requests": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "headers": {
+            "accept": "*/*",
+            "accept-encoding": "identity",
+            "accept-language": "en-US,en;q=0.9",
+            "connection": "keep-alive",
+            "host": "radio.lotustechnologieslk.net:2020",
+            "range": "bytes=0-",
+            "referer": "http://localhost:3072/",
+            "sec-fetch-dest": "audio",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-storage-access": "active",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\""
+          }
+        }
+      ],
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "mime": "audio/mpeg; charset=UTF-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 20.003147000000002,
+      "decodedByteIncrease": 320157,
+      "audio": {
+        "time": 21.030083,
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "paused": false,
+        "readyState": 4,
+        "bytes": 341473,
+        "error": null
+      },
+      "enginePath": "native",
+      "sourceLoads": ["https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden"],
+      "events": [
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:59:34.033Z",
+          "src": "",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "waiting",
+          "at": "2026-11-07T13:59:34.036Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "loadstart",
+          "at": "2026-11-07T13:59:34.036Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "playing",
+          "at": "2026-11-07T13:59:35.502Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:59:57.117Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        }
+      ],
+      "audioElements": 1
+    },
+    {
+      "stationId": "vasantham-srilanka",
+      "startedAt": "2026-11-07T13:59:58.564Z",
+      "requests": [
+        {
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "headers": {
+            "accept": "*/*",
+            "accept-encoding": "identity",
+            "accept-language": "en-US,en;q=0.9",
+            "connection": "keep-alive",
+            "host": "cp12.serverse.com",
+            "range": "bytes=0-",
+            "referer": "http://localhost:3072/",
+            "sec-fetch-dest": "audio",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-storage-access": "active",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\""
+          }
+        }
+      ],
+      "responses": [
+        {
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "status": 200,
+          "mime": "audio/mpeg",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 19.999290000000002,
+      "decodedByteIncrease": 319739,
+      "audio": {
+        "time": 21.032288,
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "paused": false,
+        "readyState": 4,
+        "bytes": 341055,
+        "error": null
+      },
+      "enginePath": "native",
+      "sourceLoads": ["https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream"],
+      "events": [
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:59:58.667Z",
+          "src": "",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "waiting",
+          "at": "2026-11-07T13:59:58.678Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "loadstart",
+          "at": "2026-11-07T13:59:58.678Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "playing",
+          "at": "2026-11-07T13:59:59.761Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T14:00:21.028Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        }
+      ],
+      "audioElements": 1
+    },
+    {
+      "stationId": "air-nagercoil",
+      "startedAt": "2026-11-07T14:00:22.951Z",
+      "requests": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "headers": {
+            ":authority": "radio.wavespb.com",
+            ":method": "GET",
+            ":path": "/live/10c64309264eb009/10c64309264eb009.m3u8",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009.m3u8",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "null",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059996637.ts",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009-1794059996637.ts",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060004971.ts",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009-1794060004971.ts",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060013302.ts",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009-1794060013302.ts",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009.m3u8",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "if-modified-since": "Sat, 07 Nov 2026 14:00:21 GMT",
+            "if-none-match": "\"6aef2ef5-172\"",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060021635.ts",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009-1794060021635.ts",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009.m3u8",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "if-modified-since": "Sat, 07 Nov 2026 14:00:29 GMT",
+            "if-none-match": "\"6aef2efd-172\"",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060029962.ts",
+          "headers": {
+            ":authority": "d1tmej9eu7kw5c.cloudfront.net",
+            ":method": "GET",
+            ":path": "/10c64309264eb009/10c64309264eb009-1794060029962.ts",
+            ":scheme": "https",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "http://localhost:3072",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3072/",
+            "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Google Chrome\";v=\"157\", \"Chromium\";v=\"157\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794059996637.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060004971.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060013302.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060021635.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009-1794060029962.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuitySeconds": 19.94896,
+      "decodedByteIncrease": 166252,
+      "audio": {
+        "time": 45.95796,
+        "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+        "paused": false,
+        "readyState": 4,
+        "bytes": 168370,
+        "error": null
+      },
+      "enginePath": "hls.js/MediaSource",
+      "sourceLoads": [],
+      "hlsControls": {
+        "volume": 0.4,
+        "muted": true,
+        "audioElements": 1,
+        "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de"
+      },
+      "events": [
+        {
+          "event": "emptied",
+          "at": "2026-11-07T14:00:23.048Z",
+          "src": "",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "loadstart",
+          "at": "2026-11-07T14:00:23.050Z",
+          "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "waiting",
+          "at": "2026-11-07T14:00:23.599Z",
+          "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "playing",
+          "at": "2026-11-07T14:00:23.919Z",
+          "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+          "time": 26.009,
+          "error": null
+        },
+        {
+          "event": "pause",
+          "at": "2026-11-07T14:00:44.241Z",
+          "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+          "time": 46.18027,
+          "error": null
+        },
+        {
+          "event": "playing",
+          "at": "2026-11-07T14:00:44.358Z",
+          "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+          "time": 46.279129,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T14:00:45.591Z",
+          "src": "blob:http://localhost:3072/4146a945-5ad7-4f23-a6e0-5262e93cb4de",
+          "time": 0,
+          "error": null
+        }
+      ],
+      "audioElements": 1
+    }
+  ],
+  "controls": {},
+  "notes": [
+    "Catalogue loaded directly from the public HTTPS service, without request interception.",
+    "Fault injection is a separate scenario and is not evidence of broadcaster endpoint failure."
+  ]
+}

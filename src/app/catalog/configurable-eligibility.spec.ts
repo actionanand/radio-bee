@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { eligibleStreams, streamEligibility } from './stream-eligibility';
+import { eligibleStreams, streamEligibility, technicalStreamEligibility } from './stream-eligibility';
 import { Stream, DirectListening } from './catalog.models';
 import { RADIO_API_CONFIG } from './radio-api.config';
 import { RadioApiConfig } from '../../environments/radio-api.config';
@@ -62,6 +62,9 @@ describe('Environment-controlled stream policy', () => {
               streamEligibility({ streams: [stream] }, supported, policy).status === 'ready',
               JSON.stringify(stream),
             ).toBe(status !== 'restricted' && verificationAllowed && rightsAllowed);
+            expect(technicalStreamEligibility({ streams: [stream] }, supported, policy)).toEqual(
+              streamEligibility({ streams: [stream] }, supported, policy),
+            );
           }
     });
     it(`never bypasses technical checks under ${JSON.stringify(policy)}`, () => {
@@ -88,6 +91,20 @@ describe('Environment-controlled stream policy', () => {
       ).toBe('permissionPending');
     });
   }
+  it('keeps the compatibility helper on environment defaults and unavailable status controlled by verification', () => {
+    const station = { streams: [{ ...base, verificationStatus: 'unavailable' as const }] };
+    expect(technicalStreamEligibility(station, supported)).toEqual(streamEligibility(station, supported));
+    expect(streamEligibility(station, supported, production.RadioApi).status).toBe('ready');
+    for (const AllowUnverified of [false, true]) {
+      expect(
+        streamEligibility(station, supported, {
+          ...production.RadioApi,
+          AllowUnverified,
+          CheckVerificationStatus: true,
+        }).status,
+      ).toBe('streamUnavailable');
+    }
+  });
   it('offers exactly 25 published candidate stations and leaves all 63 no-stream stations unavailable', () => {
     const catalog = validateCatalog(structuredClone(currentPublishedFixture));
     const before = JSON.stringify(catalog);

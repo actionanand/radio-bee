@@ -1,5 +1,4 @@
-import { InjectionToken, inject } from '@angular/core';
-import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
+import { InjectionToken } from '@angular/core';
 import Hls from 'hls.js';
 import { Stream } from '../catalog/catalog.models';
 export interface MediaEngine {
@@ -37,7 +36,9 @@ export const defaultHlsFactory: HlsFactory = {
     };
   },
 };
-export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, preferHlsJs = false): MediaEngine | null {
+// Prefer MediaSource where supported; native HLS remains the path for native-only platforms.
+// The optional selection parameter supports controlled diagnostics, never a different permissions policy.
+export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, preferHlsJs = true): MediaEngine | null {
   if (typeof Audio === 'undefined') return null;
   const audio = new Audio();
   if (
@@ -56,8 +57,9 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
     ++generation;
     cancel?.();
     cancel = null;
-    hls?.destroy();
+    const previous = hls;
     hls = null;
+    previous?.destroy();
     audio.pause();
     audio.removeAttribute('src');
     audio.load();
@@ -83,7 +85,8 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
         cancel = () => reject(new DOMException('Cancelled', 'AbortError'));
         const instance = factory.create();
         hls = instance;
-        const active = () => hls === instance && generation === currentGeneration;
+        let failed = false;
+        const active = () => hls === instance && generation === currentGeneration && !failed;
         instance.onAttached(() => {
           if (active()) instance.loadSource(stream.url);
         });
@@ -94,6 +97,7 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
         });
         instance.onFatal(() => {
           if (!active()) return;
+          failed = true;
           cancel = null;
           reject(new Error('HLS failure'));
           audio.dispatchEvent(new Event('error'));
@@ -105,5 +109,5 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
 }
 export const MEDIA_ENGINE = new InjectionToken<MediaEngine | null>('MEDIA_ENGINE', {
   providedIn: 'root',
-  factory: () => createMediaEngine(defaultHlsFactory, inject(LIVE_TEST_ENABLED)),
+  factory: () => createMediaEngine(),
 });
