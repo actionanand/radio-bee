@@ -1,0 +1,40 @@
+
+> radio-bee@0.0.1 build:gh
+> ng build --base-href /radio-bee/ --configuration=production
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-E3XVHFNG.js    | main          |   1.10 MB |               282.51 kB
+styles-P3G4EPQN.css | styles        |  47.44 kB |                 5.92 kB
+chunk-B8jnTkd9.js   | -             |  38.31 kB |                13.24 kB
+chunk-4eimcmyn.js   | -             |   2.65 kB |                 1.04 kB
+chunk-TmdwHrdN.js   | -             | 727 bytes |               727 bytes
+chunk-C-Yue-Ew.js   | -             | 555 bytes |               555 bytes
+
+                    | Initial total |   1.19 MB |               303.99 kB
+
+Lazy chunk files    | Names         |  Raw size | Estimated transfer size
+chunk-CSXH1-g_.js   | home-page     |  32.11 kB |                 7.98 kB
+chunk-BeAKBToQ.js   | p-BWbz71uB    |   4.89 kB |                 1.97 kB
+chunk-BRlhHmbx.js   | p-DaojW_d_    |   1.65 kB |               752 bytes
+chunk-34Lo5K4V.js   | web           |   1.23 kB |               493 bytes
+chunk-1WgjXSTw.js   | p-BmVRXR1y    | 933 bytes |               933 bytes
+chunk-Dmr5kkv0.js   | p-Ds5vN3iu    | 646 bytes |               646 bytes
+chunk-CdhTaQtU.js   | p-BBsseItU    | 484 bytes |               484 bytes
+chunk-CI0ldX2Z.js   | p-D7-vHX0A    | 173 bytes |               173 bytes
+chunk-CRMwBAvz.js   | p-CohRJRIu    | 166 bytes |               166 bytes
+chunk-4RGRIPWB.js   | p-D0YpjgON    | 127 bytes |               127 bytes
+chunk-GJJ1Y6hv.js   | p-D_U0pDe5    | 110 bytes |               110 bytes
+chunk-B1PunI6b.js   | p-CRb2xRCz    | 102 bytes |               102 bytes
+
+Application bundle generation complete. [27.245 seconds] - 2026-11-07T08:14:47.366Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1msrc/app/catalog/station-card.scss exceeded maximum budget. Budget 2.00 kB was not met by 700 bytes with a total of 2.70 kB.[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1msrc/app/catalog/station-browser.scss exceeded maximum budget. Budget 2.00 kB was not met by 1.74 kB with a total of 3.74 kB.[0m
+
+
+Output location: /mnt/c/AR_Files/code/radio-bee/www
+

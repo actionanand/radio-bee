@@ -34,8 +34,8 @@ jobs:
         run: npm run typecheck
       - name: Complete unit tests
         run: npm run test:ci
-      - name: Check PR validation contract
-        run: node --test scripts/pr-validation.test.mjs
+      - name: Check PR, preview and playback evidence contracts
+        run: node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs
       - name: Build production Pages output
         run: npm run build:gh -- --configuration=production
       - name: Check Pages base href and routing fallback

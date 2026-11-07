@@ -1,3 +1,5 @@
+import { RADIO_API_CONFIG } from './radio-api.config';
+import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
 import { fixture } from './catalog.fixture';
 import { validateCatalog } from './catalog.validation';
@@ -29,6 +31,10 @@ const cases: { status: StreamStatus; streams: Stream[] }[] = [
   { status: 'playerUnavailable', streams: [approved] },
   { status: 'ready', streams: [approved] },
 ];
+// Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
+beforeEach(() => {
+  TestBed.configureTestingModule({ providers: [{ provide: RADIO_API_CONFIG, useValue: STRICT_RADIO_API_CONFIG }] });
+});
 describe('Station card playback availability', () => {
   for (const locale of ['en', 'ta', 'sa'])
     for (const scenario of cases) {

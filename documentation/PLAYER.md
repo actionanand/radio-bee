@@ -1,5 +1,7 @@
 # RadioBee Stage 3 player
 
+> Historical strict-policy baseline. Current environment-controlled eligibility, bounded URL fallback, loaded-source pause/resume and real production-stream validation are documented in [Stage 7 configurable playback](CONFIGURABLE-PLAYBACK.md). The older results below describe their original implementation stage, not today's defaults.
+
 The station browser and root-level player use one policy in `stream-eligibility.ts`. Station discovery, country/language filtering, listing review and network grouping never depend on eligibility.
 
 ## Eligibility and messages

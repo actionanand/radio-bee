@@ -18,7 +18,9 @@ test('PR validation runs required checks with read-only access and no publishing
     'npm run typecheck',
     'npm run test:ci',
     'npm run build:gh -- --configuration=production',
+    'node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs',
   ]) {
     assert.ok(workflow.includes('run: ' + command), 'Missing required PR check: ' + command);
   }
+  assert.doesNotMatch(workflow, /run:.*(?:verify-stage[67]|compare-hls-engines)/);
 });

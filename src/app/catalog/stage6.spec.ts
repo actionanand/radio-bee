@@ -1,3 +1,5 @@
+import { RADIO_API_CONFIG } from './radio-api.config';
+import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
 import { play, pause, heartOutline, informationCircleOutline } from 'ionicons/icons';
 import { CatalogService, CATALOG_STORAGE, CATALOG_FETCH } from './catalog.service';
@@ -14,6 +16,10 @@ import { MEDIA_ENGINE } from '../player/media-engine';
 import { PlayerService } from '../player/player.service';
 import { uiLabel } from './catalog.ui';
 
+// Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
+beforeEach(() => {
+  TestBed.configureTestingModule({ providers: [{ provide: RADIO_API_CONFIG, useValue: STRICT_RADIO_API_CONFIG }] });
+});
 describe('Stage 6 catalogue controls', () => {
   function setup() {
     const catalog = validateCatalog(structuredClone(publishedFixture));

@@ -1,4 +1,13 @@
-import { createMediaEngine, HlsAdapter, HlsFactory, MediaEngine } from './media-engine';
+import { TestBed } from '@angular/core/testing';
+import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
+import {
+  createMediaEngine,
+  defaultHlsFactory,
+  MEDIA_ENGINE,
+  HlsAdapter,
+  HlsFactory,
+  MediaEngine,
+} from './media-engine';
 import { Stream } from '../catalog/catalog.models';
 const stream: Stream = {
   id: 'test',
@@ -59,10 +68,10 @@ describe('Browser media adapter', () => {
     expect(engine.audio.getAttribute('src')).toBeNull();
     expect(fake.factory.create).not.toHaveBeenCalled();
   });
-  it('prefers native HLS over a supported HLS adapter', async () => {
+  it('can explicitly select native HLS for a same-browser diagnostic', async () => {
     vi.mocked(HTMLMediaElement.prototype.canPlayType).mockReturnValue('probably');
     const fake = fakeHls();
-    const engine = existing(createMediaEngine(fake.factory));
+    const engine = existing(createMediaEngine(fake.factory, false));
     await engine.load({ ...stream, format: 'hls' });
     expect(engine.audio.src).toBe(stream.url);
     expect(fake.factory.create).not.toHaveBeenCalled();
@@ -139,15 +148,86 @@ describe('Browser media adapter', () => {
   it('returns null on unsupported platforms regardless of host MediaSource', () => {
     expect(createMediaEngine(fakeHls(false).factory)).toBeNull();
   });
-  it('can explicitly exercise hls.js in a local test even when native HLS exists', async () => {
+  it('prefers hls.js by default even when native HLS exists', async () => {
     vi.mocked(HTMLMediaElement.prototype.canPlayType).mockReturnValue('probably');
     const fake = fakeHls();
-    const engine = existing(createMediaEngine(fake.factory, true));
+    const engine = existing(createMediaEngine(fake.factory));
     const loading = engine.load({ ...stream, format: 'hls' });
     expect(fake.factory.create).toHaveBeenCalledOnce();
     fake.attached();
     fake.manifest();
     await loading;
+    engine.clear();
+  });
+  it('selects hls.js in the production injection path with technical mode disabled', async () => {
+    vi.mocked(HTMLMediaElement.prototype.canPlayType).mockReturnValue('probably');
+    const fake = fakeHls();
+    vi.spyOn(defaultHlsFactory, 'isSupported').mockReturnValue(true);
+    vi.spyOn(defaultHlsFactory, 'create').mockImplementation(fake.factory.create);
+    TestBed.configureTestingModule({ providers: [{ provide: LIVE_TEST_ENABLED, useValue: false }] });
+    const engine = existing(TestBed.inject(MEDIA_ENGINE));
+    const loading = engine.load({ ...stream, format: 'hls' });
+    fake.attached();
+    fake.manifest();
+    await loading;
+    expect(fake.factory.create).toHaveBeenCalledOnce();
+    expect(fake.adapter.loadSource).toHaveBeenCalledWith(stream.url);
+    engine.clear();
+  });
+  it('uses native HLS where MediaSource/hls.js is not supported', async () => {
+    vi.mocked(HTMLMediaElement.prototype.canPlayType).mockImplementation(mime =>
+      mime === 'application/vnd.apple.mpegurl' ? 'probably' : '',
+    );
+    const fake = fakeHls(false);
+    const engine = existing(createMediaEngine(fake.factory));
+    expect(engine.supports('hls')).toBe(true);
+    await engine.load({ ...stream, format: 'hls' });
+    expect(engine.audio.src).toBe(stream.url);
+    expect(fake.factory.create).not.toHaveBeenCalled();
+    engine.clear();
+  });
+  it('rejects adapter construction failures without leaving an attached source', async () => {
+    const fake = fakeHls();
+    fake.factory.create.mockImplementation(() => {
+      throw Error('Initialization failed');
+    });
+    const engine = existing(createMediaEngine(fake.factory));
+    await expect(engine.load({ ...stream, format: 'hls' })).rejects.toThrow('Initialization failed');
+    engine.clear();
+    expect(engine.audio.getAttribute('src')).toBeNull();
+    expect(fake.adapter.attachMedia).not.toHaveBeenCalled();
+  });
+  it('ignores repeated fatal and manifest callbacks after a fatal runtime failure', async () => {
+    const fake = fakeHls();
+    const engine = existing(createMediaEngine(fake.factory));
+    const loading = engine.load({ ...stream, format: 'hls' });
+    fake.manifest();
+    await loading;
+    const errors = vi.fn();
+    engine.audio.addEventListener('error', errors);
+    fake.fatal();
+    fake.fatal();
+    fake.attached();
+    fake.manifest();
+    expect(errors).toHaveBeenCalledOnce();
+    expect(fake.adapter.loadSource).not.toHaveBeenCalled();
+    engine.clear();
+  });
+  it('ignores attachment, manifest and fatal callbacks from an adapter discarded during fallback', async () => {
+    const fake = fakeHls(),
+      engine = existing(createMediaEngine(fake.factory));
+    const pending = engine.load({ ...stream, format: 'hls' });
+    const cancellation = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    await engine.load(stream);
+    await cancellation;
+    const error = vi.fn();
+    engine.audio.addEventListener('error', error);
+    fake.attached();
+    fake.manifest();
+    fake.fatal();
+    expect(fake.adapter.loadSource).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+    expect(engine.audio.src).toBe(stream.url);
     engine.clear();
   });
 });

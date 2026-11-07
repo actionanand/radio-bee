@@ -1,0 +1,927 @@
+{
+  "catalogVersion": "1.3.0",
+  "policy": {
+    "AllowUnverified": true,
+    "CheckVerificationStatus": false,
+    "CheckRightsStatus": false
+  },
+  "ui": [
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse-25-play-63-unavailable",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "listen-now",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details-only-website",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 375,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 820,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 375,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 820,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "production-player",
+      "width": 1440,
+      "colorScheme": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "injected-failures-retry",
+      "width": 1440,
+      "colorScheme": "light",
+      "locale": "en",
+      "violations": []
+    }
+  ],
+  "stationProbes": [
+    {
+      "stationId": "sooriyan-srilanka",
+      "startedAt": "2026-11-07T13:56:06.540Z",
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "mime": "audio/mpeg; charset=UTF-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 20.010778000000002,
+      "decodedByteIncrease": 319739,
+      "audio": {
+        "time": 21.024819,
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "paused": false,
+        "readyState": 4,
+        "bytes": 341055,
+        "error": null
+      },
+      "enginePath": "native",
+      "sourceLoads": ["https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden"],
+      "events": [
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:56:06.683Z",
+          "src": "",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "waiting",
+          "at": "2026-11-07T13:56:06.699Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "loadstart",
+          "at": "2026-11-07T13:56:06.699Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "playing",
+          "at": "2026-11-07T13:56:08.405Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:56:29.951Z",
+          "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "time": 0,
+          "error": null
+        }
+      ],
+      "audioElements": 1
+    },
+    {
+      "stationId": "vasantham-srilanka",
+      "startedAt": "2026-11-07T13:56:30.957Z",
+      "responses": [
+        {
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "status": 200,
+          "mime": "audio/mpeg",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": false,
+      "continuitySeconds": 13.232135,
+      "decodedByteIncrease": 207726,
+      "audio": {
+        "time": 14.265138,
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "paused": false,
+        "readyState": 2,
+        "bytes": 229042,
+        "error": null
+      },
+      "enginePath": "native",
+      "failure": "The expression evaluated to a falsy value:\n\n  assert.ok(row.continuitySeconds > 15 && !after.paused && !after.error)\n",
+      "events": [
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:56:31.083Z",
+          "src": "",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "waiting",
+          "at": "2026-11-07T13:56:31.086Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "loadstart",
+          "at": "2026-11-07T13:56:31.087Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "playing",
+          "at": "2026-11-07T13:56:32.156Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "waiting",
+          "at": "2026-11-07T13:56:46.527Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 14.265138,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:56:53.418Z",
+          "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "time": 0,
+          "error": null
+        }
+      ],
+      "audioElements": 1
+    },
+    {
+      "stationId": "air-nagercoil",
+      "startedAt": "2026-11-07T13:56:54.421Z",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://d1tmej9eu7kw5c.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": false,
+      "failure": "page.waitForFunction: Timeout 30000ms exceeded.",
+      "events": [
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:56:54.521Z",
+          "src": "",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "loadstart",
+          "at": "2026-11-07T13:56:54.523Z",
+          "src": "blob:http://localhost:3072/97706ce7-cea7-466e-8d34-0ada3be0e5ff",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "error",
+          "at": "2026-11-07T13:56:55.105Z",
+          "src": "blob:http://localhost:3072/97706ce7-cea7-466e-8d34-0ada3be0e5ff",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:56:55.116Z",
+          "src": "blob:http://localhost:3072/97706ce7-cea7-466e-8d34-0ada3be0e5ff",
+          "time": 0,
+          "error": null
+        },
+        {
+          "event": "emptied",
+          "at": "2026-11-07T13:57:24.680Z",
+          "src": "blob:http://localhost:3072/97706ce7-cea7-466e-8d34-0ada3be0e5ff",
+          "time": 0,
+          "error": null
+        }
+      ],
+      "audioElements": 1
+    }
+  ],
+  "controls": {
+    "passed": true,
+    "audioElements": 1,
+    "faultInjection": {
+      "description": "Both candidate URLs deliberately blocked until terminal error, then unblocked for explicit Retry; not a source availability finding",
+      "sourceLoads": [
+        "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "https://radio.lotustechnologieslk.net:8006/"
+      ]
+    },
+    "events": [
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:57:25.804Z",
+        "src": "",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "waiting",
+        "at": "2026-11-07T13:57:25.806Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "loadstart",
+        "at": "2026-11-07T13:57:25.806Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "playing",
+        "at": "2026-11-07T13:57:27.421Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "pause",
+        "at": "2026-11-07T13:57:28.933Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 1.103569,
+        "error": null
+      },
+      {
+        "event": "playing",
+        "at": "2026-11-07T13:57:29.081Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 1.160998,
+        "error": null
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:57:29.367Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "waiting",
+        "at": "2026-11-07T13:57:29.367Z",
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "loadstart",
+        "at": "2026-11-07T13:57:29.368Z",
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "playing",
+        "at": "2026-11-07T13:57:30.488Z",
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "time": 0.000171,
+        "error": null
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:58:49.798Z",
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:58:49.969Z",
+        "src": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "waiting",
+        "at": "2026-11-07T13:58:49.969Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "loadstart",
+        "at": "2026-11-07T13:58:49.969Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "error",
+        "at": "2026-11-07T13:58:49.998Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": {
+          "code": 4,
+          "message": "MEDIA_ELEMENT_ERROR: Format error"
+        }
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:58:50.001Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "waiting",
+        "at": "2026-11-07T13:58:50.002Z",
+        "src": "https://radio.lotustechnologieslk.net:8006/",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "loadstart",
+        "at": "2026-11-07T13:58:50.002Z",
+        "src": "https://radio.lotustechnologieslk.net:8006/",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "error",
+        "at": "2026-11-07T13:58:50.046Z",
+        "src": "https://radio.lotustechnologieslk.net:8006/",
+        "time": 0,
+        "error": {
+          "code": 4,
+          "message": "MEDIA_ELEMENT_ERROR: Format error"
+        }
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:58:50.054Z",
+        "src": "https://radio.lotustechnologieslk.net:8006/",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:58:54.695Z",
+        "src": "https://radio.lotustechnologieslk.net:8006/",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "waiting",
+        "at": "2026-11-07T13:58:54.696Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "loadstart",
+        "at": "2026-11-07T13:58:54.696Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "playing",
+        "at": "2026-11-07T13:58:57.637Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      },
+      {
+        "event": "emptied",
+        "at": "2026-11-07T13:58:59.114Z",
+        "src": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+        "time": 0,
+        "error": null
+      }
+    ]
+  },
+  "notes": [
+    "Metadata capture is unchanged; no rights or verification values are rewritten.",
+    "Fault injection is a separate scenario and is not evidence of broadcaster endpoint failure."
+  ]
+}

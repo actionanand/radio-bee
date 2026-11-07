@@ -1,5 +1,7 @@
+import { RADIO_API_CONFIG } from './radio-api.config';
+import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
-import { streamEligibility } from './stream-eligibility';
+import { streamEligibility as configuredEligibility } from './stream-eligibility';
 import { fixture } from './catalog.fixture';
 import { Catalog, emptyFilters, filterStations, groups, translated } from './catalog.models';
 import { validateCatalog, validateManifest, relativePath } from './catalog.validation';
@@ -7,6 +9,12 @@ import { CatalogService, CATALOG_FETCH, CATALOG_STORAGE, CATALOG_URL, CATALOG_SE
 import { environment as production } from '../../environments/environment.prod';
 import { StationBrowserComponent } from './station-browser';
 const catalog = () => validateCatalog(structuredClone(fixture));
+const streamEligibility: typeof configuredEligibility = (station, player) =>
+  configuredEligibility(station, player, STRICT_RADIO_API_CONFIG);
+// Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
+beforeEach(() => {
+  TestBed.configureTestingModule({ providers: [{ provide: RADIO_API_CONFIG, useValue: STRICT_RADIO_API_CONFIG }] });
+});
 describe('Catalogue contract', () => {
   it('disables seed fallback in production', () => {
     expect(production.catalogSeedUrl).toBeNull();
