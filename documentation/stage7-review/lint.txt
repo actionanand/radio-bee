@@ -6,4 +6,3 @@
 Linting "app"...
 
 All files pass linting.
-

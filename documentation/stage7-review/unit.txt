@@ -214,4 +214,3 @@ Error: Not implemented: HTMLMediaElement.prototype.load
 [2m      Tests [22m [1m[32m205 passed[39m[22m[90m (205)[39m
 [2m   Start at [22m 19:20:27
 [2m   Duration [22m 77.93s[2m (transform 273.93s, setup 65.99s, import 378.44s, tests 11.48s, environment 338.77s)[22m
-

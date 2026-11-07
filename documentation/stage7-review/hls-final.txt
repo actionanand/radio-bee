@@ -15,4 +15,3 @@ Application bundle generation complete. [9.528 seconds] - 2026-11-07T13:52:34.96
 [2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
 [2m   Start at [22m 19:22:37
 [2m   Duration [22m 22.40s[2m (transform 544ms, setup 7.18s, import 447ms, tests 134ms, environment 12.73s)[22m
-
