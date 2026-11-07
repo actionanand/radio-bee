@@ -116,17 +116,15 @@ export class StationDetailsContentComponent {
       location => location.type === 'country' && location.countryCode === station.countryCode,
     );
     add('country', country ? this.data.t('countries', station.countryCode, country.name) : undefined);
-    if (station.listingStatus === 'reviewed') {
-      for (const [id, label] of [
-        [station.regionId, 'region'],
-        [station.districtId, 'district'],
-        [station.localityId, 'city'],
-      ] as const) {
-        const location = catalog?.locations.find(location => location.id === id);
-        add(label, location ? this.data.t('regions', location.id, location.name) : undefined);
-      }
-      if (station.delivery === 'fm' && station.frequencyMHz) add('frequency', station.frequencyMHz + ' MHz');
+    for (const [id, label] of [
+      [station.regionId, 'region'],
+      [station.districtId, 'district'],
+      [station.localityId, 'city'],
+    ] as const) {
+      const location = catalog?.locations.find(location => location.id === id);
+      add(label, location ? this.data.t('regions', location.id, location.name) : undefined);
     }
+    if (station.delivery === 'fm' && station.frequencyMHz) add('frequency', station.frequencyMHz + ' MHz');
     add(
       'genres',
       station.genres
@@ -135,7 +133,7 @@ export class StationDetailsContentComponent {
         .join(', '),
     );
     const network = catalog?.networks.find(network => network.id === station.networkId);
-    if (network?.name !== station.name) add('network', network?.name);
+    add('network', network?.name);
     return result;
   });
 }

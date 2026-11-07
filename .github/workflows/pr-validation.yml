@@ -32,10 +32,12 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
+      - name: Log production recording configuration
+        run: node scripts/report-recording-config.mjs
       - name: Complete unit tests
         run: npm run test:ci
       - name: Check PR, preview and playback evidence contracts
-        run: node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs
+        run: node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs scripts/recording-config.test.mjs
       - name: Build production Pages output
         run: npm run build:gh -- --configuration=production
       - name: Check Pages base href and routing fallback

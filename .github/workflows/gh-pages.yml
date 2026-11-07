@@ -38,6 +38,8 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+      - name: Log production recording configuration
+        run: node scripts/report-recording-config.mjs
 
       - name: Unit tests
         run: npm run test:ci

@@ -1,0 +1,5 @@
+
+> radio-bee@0.0.1 copy-error-page
+> cp www/index.html www/404.html
+
+Routing fallback and theme bootstrap verified

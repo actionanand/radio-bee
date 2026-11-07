@@ -33,8 +33,8 @@ describe('India-only detailed geography', () => {
       const renderedLabels = (): string[] => {
         view.detectChanges();
         return Array.from(
-          view.nativeElement.querySelectorAll('.filters label select') as NodeListOf<HTMLSelectElement>,
-        ).map(select => select.parentElement!.firstChild!.textContent!.trim());
+          view.nativeElement.querySelectorAll('.filters ion-select') as NodeListOf<HTMLElement & { label: string }>,
+        ).map(select => select.label);
       };
       const basicLabels = [service.t('catalog', 'countries'), service.t('catalog', 'languages')];
       expect(renderedLabels()).toEqual(basicLabels);
@@ -59,7 +59,12 @@ describe('India-only detailed geography', () => {
       expect(renderedLabels()).toEqual(basicLabels);
       expect(browser.filters()).toEqual({ ...emptyFilters, country: 'LK', language: 'ta' });
       const ids = browser.grouped().flatMap(g => g.stations.map(s => s.id));
-      for (const id of ['vasantham-srilanka', 'shakthi-colombo', 'shakthi-jaffna', 'sooriyan-srilanka']) {
+      for (const id of catalog.stations
+        .filter(
+          station =>
+            station.countryCode === 'LK' && station.broadcastLanguages.includes('ta') && station.streams.length,
+        )
+        .map(station => station.id)) {
         expect(ids).toContain(id);
       }
       expect(browser.options('region')).toEqual([]);

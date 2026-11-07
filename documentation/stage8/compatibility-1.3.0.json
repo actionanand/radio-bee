@@ -1,0 +1,582 @@
+{
+  "startedAt": "2026-11-07T18:13:37.753Z",
+  "catalogVersion": "1.3.0",
+  "candidateStations": 25,
+  "recordingEnabled": true,
+  "audits": [
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    }
+  ],
+  "playback": [
+    {
+      "id": "sooriyan-srilanka",
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "none",
+            "access-control-allow-origin": "*",
+            "cache-control": "no-cache,no-store,must-revalidate,max-age=0",
+            "connection": "keep-alive",
+            "content-type": "audio/mpeg; charset=UTF-8",
+            "date": "Sat, 07 Nov 2026 18:15:55 GMT",
+            "server": "nginx",
+            "transfer-encoding": "chunked",
+            "x-clacks-overhead": "GNU Terry Pratchett",
+            "icy-br": "128",
+            "icy-genre": "Misc",
+            "icy-name": "No Name",
+            "icy-notice1": "<BR>This stream requires <a href=\"http://www.winamp.com\">Winamp</a><BR>",
+            "icy-notice2": "Shoutcast DNAS/posix(linux x64) v2.6.1.777<BR>",
+            "icy-pub": "0",
+            "icy-sr": "44100",
+            "icy-url": "http://www.shoutcast.com"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 8.040999,
+      "bytes": 128313,
+      "source": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden"
+    },
+    {
+      "id": "air-nagercoil",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "headers": {
+            "access-control-allow-origin": "*",
+            "content-length": "98",
+            "content-type": "text/plain; charset=utf-8",
+            "date": "Sat, 07 Nov 2026 18:16:09 GMT",
+            "location": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+            "vary": "Accept",
+            "x-powered-by": "Express"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "369",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sat, 07 Nov 2026 18:16:10 GMT",
+            "etag": "\"6aef6ae4-171\"",
+            "last-modified": "Sat, 07 Nov 2026 18:16:04 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 4792be71c7e6e91596b2f9843a0696fc.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "LqOQsRpusUmHRG8WtI48IHPhYDuNHC6hRa7KkCXFVvSG7JU76NeCgQ==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794075339639.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312456",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:16:10 GMT",
+            "etag": "\"6aef6ad3-4c488\"",
+            "last-modified": "Sat, 07 Nov 2026 18:15:47 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 4792be71c7e6e91596b2f9843a0696fc.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "jpG-XbE2obnm2mbCQold9CfNmq_gfp7T1g5C-9e9suiG3QXOs-Rr1Q==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794075347970.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312832",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:16:10 GMT",
+            "etag": "\"6aef6adc-4c600\"",
+            "last-modified": "Sat, 07 Nov 2026 18:15:56 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 4792be71c7e6e91596b2f9843a0696fc.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "liMWrNeFW5FJlraIGH7fbDG3EKxsswZh96AloTFC0ytG6uElAzZ5rQ==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794075356303.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312456",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:16:10 GMT",
+            "etag": "\"6aef6ae4-4c488\"",
+            "last-modified": "Sat, 07 Nov 2026 18:16:04 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 4792be71c7e6e91596b2f9843a0696fc.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "ORcYLXejrjE4_LsIXW_8hFHTlgP2sDITuhZqwpG3i5YlhNrY1Oy9Zw==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "1",
+            "content-length": "369",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sat, 07 Nov 2026 18:16:16 GMT",
+            "etag": "\"6aef6aec-171\"",
+            "last-modified": "Sat, 07 Nov 2026 18:16:12 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 4792be71c7e6e91596b2f9843a0696fc.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "pV4KsgOXzhd4GJMjCtZ4yay9dqYRsJqAYLsxrpv0HcrNpmo80euaSQ==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794075364642.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312832",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:16:17 GMT",
+            "etag": "\"6aef6aec-4c600\"",
+            "last-modified": "Sat, 07 Nov 2026 18:16:12 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 4792be71c7e6e91596b2f9843a0696fc.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "_kTL7qtsrOTPOOUu3sVcmkgQv8ei5EA0LPz1L11ShfkBOT9W9HIYwg==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 7.920049000000002,
+      "bytes": 68694,
+      "source": "blob:http://localhost:3081/3bb36963-86ec-4529-b45a-845e31623e6e"
+    }
+  ],
+  "recording": {
+    "sooriyan-srilanka": {
+      "id": "sooriyan-srilanka",
+      "captureSucceeded": false,
+      "error": "This browser or stream does not support recording. Listening can continue.",
+      "playbackAdvancedAfterCapture": 2.0032490000000003
+    },
+    "air-nagercoil": {
+      "id": "air-nagercoil",
+      "captureSucceeded": false,
+      "error": "No genuine audio could be captured. No recording was saved.",
+      "playbackAdvancedAfterCapture": 2.003965000000001
+    }
+  },
+  "logos": [],
+  "browser": "157.0.8103.38",
+  "completed": true
+}

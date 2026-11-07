@@ -4,14 +4,30 @@
       <p class="eyebrow rb-eyebrow">RADIOBEE / {{ ui('discover') }}</p>
       <h2 id="catalog-title">{{ ui('explore') }}</h2>
     </div>
-    <label class="language-label"
-      ><span class="language-name">{{ ui('uiLanguage') }}</span
-      ><select [attr.aria-label]="ui('uiLanguage')" [value]="data.locale()" (change)="data.setLocale(value($event))">
-        <option value="en">English</option>
-        <option value="ta">தமிழ்</option>
-        <option value="sa">संस्कृतम्</option>
-      </select></label
-    >
+    <div class="browse-controls">
+      <ion-select
+        class="language-select"
+        [attr.aria-label]="ui('uiLanguage')"
+        interface="popover"
+        [interfaceOptions]="selectOptions(ui('uiLanguage'))"
+        [value]="data.locale()"
+        (ionChange)="data.setLocale($event.detail.value)">
+        <ion-select-option value="en">English</ion-select-option>
+        <ion-select-option value="ta">தமிழ்</ion-select-option>
+        <ion-select-option value="sa">संस्कृतम्</ion-select-option>
+      </ion-select>
+      <ion-select
+        class="theme-select"
+        [attr.aria-label]="ui('theme')"
+        interface="popover"
+        [interfaceOptions]="selectOptions(ui('theme'))"
+        [value]="theme.mode()"
+        (ionChange)="theme.set($event.detail.value)">
+        <ion-select-option value="automatic">{{ ui('automatic') }}</ion-select-option>
+        <ion-select-option value="light">{{ ui('light') }}</ion-select-option>
+        <ion-select-option value="dark">{{ ui('dark') }}</ion-select-option>
+      </ion-select>
+    </div>
   </header>
   <label class="search"
     ><ion-icon class="search-icon" [icon]="icons.searchOutline" aria-hidden="true" /><span class="sr-only"
@@ -47,16 +63,19 @@
     <summary>{{ ui('advanced') }}<ion-icon [icon]="icons.chevronDownOutline" aria-hidden="true" /></summary>
     <div class="filters">
       @for (control of controls(); track control.key) {
-      <label
-        >{{ controlLabel(control.label) }}<select
-          [value]="filters()[control.key]"
-          (change)="change(control.key,value($event))">
-          <option value="">{{ data.t('catalog','allStations') }}</option>
-          @for (option of options(control.key); track option.id) {
-          <option [value]="option.id">{{ option.name }}</option>
-          }
-        </select></label
-      >
+      <ion-select
+        [label]="controlLabel(control.label)"
+        labelPlacement="stacked"
+        [attr.data-filter]="control.key"
+        interface="popover"
+        [interfaceOptions]="selectOptions(controlLabel(control.label))"
+        [value]="filters()[control.key]"
+        (ionChange)="change(control.key,$event.detail.value)">
+        <ion-select-option value="">{{ data.t('catalog','allStations') }}</ion-select-option>
+        @for (option of options(control.key); track option.id) {
+        <ion-select-option [value]="option.id">{{ option.name }}</ion-select-option>
+        }
+      </ion-select>
       }
       <button type="button" (click)="clear()">{{ ui('clear') }}</button>
     </div>

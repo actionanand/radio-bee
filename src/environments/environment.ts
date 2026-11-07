@@ -1,3 +1,4 @@
+import type { RadioRecordingConfig } from './radio-recording.config';
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
@@ -5,6 +6,7 @@
 import type { RadioApiConfig } from './radio-api.config';
 
 export const environment = {
+  RadioRecording: { Enabled: true } satisfies RadioRecordingConfig,
   RadioApi: {
     AllowUnverified: true,
     CheckVerificationStatus: false,

@@ -171,7 +171,7 @@ describe('Localized station presentation', () => {
 
       view.componentRef.setInput('station', { ...station, delivery: 'fm' });
       view.detectChanges();
-      expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'radioLabel'));
+      expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'onlineRadio'));
       if (locale !== 'en')
         expect(view.nativeElement.querySelector('.frequency').textContent).not.toMatch(/ONLINE RADIO|\bRadio\b/);
     });
@@ -280,7 +280,9 @@ describe('Published 1.2 catalogue discovery', () => {
     const view = TestBed.createComponent(StationBrowserComponent);
     view.detectChanges();
     const browser = view.componentInstance;
-    expect(view.nativeElement.querySelectorAll('.station-card')).toHaveLength(88);
+    expect(view.nativeElement.querySelectorAll('.station-card')).toHaveLength(
+      data.catalog()!.stations.filter(station => station.streams.length).length,
+    );
     browser.selectCategory('sriLanka');
     browser.change('search', 'Sooriyan');
     view.detectChanges();

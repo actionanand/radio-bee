@@ -20,11 +20,7 @@
   <div class="card-copy">
     <h3 [title]="station().name">{{ station().name }}</h3>
     <p class="location">{{ shortLocation(station()) }}</p>
-    <p class="frequency">
-      @if(station().listingStatus==='reviewed' && station().delivery==='fm' && station().frequencyMHz){ {{
-      station().frequencyMHz }} <span>MHz</span> } @else { {{
-      ui(station().delivery==='online'?'onlineRadio':'radioLabel') }} }
-    </p>
+    <p class="frequency">{{ ui('onlineRadio') }}</p>
     <div class="card-actions">
       @if(eligibility.status==='ready'){<button
         class="play"

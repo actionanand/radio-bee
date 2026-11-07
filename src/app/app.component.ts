@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ThemeService } from './theme/theme.service';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { PlayerComponent } from './player/player';
 import { StationDetailsComponent } from './catalog/station-details';
@@ -10,5 +11,5 @@ import { StationDetailsComponent } from './catalog/station-details';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  constructor() {}
+  readonly theme = inject(ThemeService);
 }

@@ -1,0 +1,183 @@
+{
+  "startedAt": "2026-11-07T18:51:45.757Z",
+  "catalogVersion": "1.4.0",
+  "candidateStations": 24,
+  "recordingEnabled": true,
+  "audits": [
+    {
+      "state": "recording-active",
+      "station": "air-nagercoil",
+      "violations": []
+    },
+    {
+      "state": "recording-export",
+      "station": "air-nagercoil",
+      "violations": []
+    }
+  ],
+  "playback": [
+    {
+      "id": "air-nagercoil",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "headers": {
+            "access-control-allow-origin": "*",
+            "content-length": "98",
+            "content-type": "text/plain; charset=utf-8",
+            "date": "Sat, 07 Nov 2026 18:51:49 GMT",
+            "location": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+            "vary": "Accept",
+            "x-powered-by": "Express"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "1",
+            "content-length": "369",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sat, 07 Nov 2026 18:51:49 GMT",
+            "etag": "\"6aef7342-171\"",
+            "last-modified": "Sat, 07 Nov 2026 18:51:46 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 17a1d4ba5c02af1e2a4b0ca549178a5e.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "VFN9xwf37H6wSG9kv_0UJufr0-P6cZooMNrt3OxButWpUsZgtJ-IaA==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794077481356.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312268",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:51:50 GMT",
+            "etag": "\"6aef7331-4c3cc\"",
+            "last-modified": "Sat, 07 Nov 2026 18:51:29 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 17a1d4ba5c02af1e2a4b0ca549178a5e.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "CdE16mmT_dwm4QNdz7_jw5W0ykyTMHnvFOjjaFlYFe_nUe2R1GRl2A==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794077489694.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312832",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:51:50 GMT",
+            "etag": "\"6aef7339-4c600\"",
+            "last-modified": "Sat, 07 Nov 2026 18:51:37 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 17a1d4ba5c02af1e2a4b0ca549178a5e.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "6S3X352RGqGeNuVTaQKGW2MOzg_xm6R6-u5_yxx_mwsi6bHDfYUoBw==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794077498031.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312644",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:51:50 GMT",
+            "etag": "\"6aef7342-4c544\"",
+            "last-modified": "Sat, 07 Nov 2026 18:51:46 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 17a1d4ba5c02af1e2a4b0ca549178a5e.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "kyb1WRqiMc_Bl2LhkzuhGi9Rtk-ZxgGYmL8ZoQKRqExxNrV5AxR0kg==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "369",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sat, 07 Nov 2026 18:51:57 GMT",
+            "etag": "\"6aef734a-171\"",
+            "last-modified": "Sat, 07 Nov 2026 18:51:54 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 17a1d4ba5c02af1e2a4b0ca549178a5e.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "HBFStybcXSZTgdtNkCt8KdWtzwPNBuE3OgUyaTLNnYd44bqDsSxagQ==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794077506364.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312456",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 18:51:57 GMT",
+            "etag": "\"6aef734a-4c488\"",
+            "last-modified": "Sat, 07 Nov 2026 18:51:54 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 17a1d4ba5c02af1e2a4b0ca549178a5e.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "OS6xixWa9qCCO4fRLZf5lHYesR1EOrJUCUsFfEtUcniNUPPqggtPsQ==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 7.305794999999996,
+      "bytes": 64053,
+      "source": "blob:http://localhost:3081/2fe2d4a0-fc35-45fb-89a5-488a04d63a65"
+    }
+  ],
+  "recording": {
+    "air-nagercoil": {
+      "id": "air-nagercoil",
+      "captureSucceeded": true,
+      "filename": "RadioBee-Akashvani-Nagercoil-2026-11-07T18-52-08-301Z.webm",
+      "decoded": {
+        "size": 146155,
+        "mime": "audio/webm;codecs=opus",
+        "duration": 9.06,
+        "sampleRate": 48000,
+        "channelRms": [0.000029026565851998998, 0.11958848932632057],
+        "rms": 0.08456183424540002
+      },
+      "playbackAdvancedAfterCapture": 2.0064690000000027
+    }
+  },
+  "logos": [],
+  "browser": "157.0.8103.38",
+  "completed": true
+}

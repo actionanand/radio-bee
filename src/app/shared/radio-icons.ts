@@ -15,6 +15,8 @@ import {
   openOutline,
   volumeHigh,
   volumeMute,
+  radioButtonOn,
+  downloadOutline,
 } from 'ionicons/icons';
 
 // Genuine Ionicons SVGs, passed directly to IonIcon; no character-based icon substitutes.
@@ -35,4 +37,6 @@ export const radioIcons = {
   openOutline,
   volumeHigh,
   volumeMute,
+  radioButtonOn,
+  downloadOutline,
 };

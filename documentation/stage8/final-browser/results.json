@@ -1,0 +1,619 @@
+{
+  "startedAt": "2026-11-07T19:16:08.960Z",
+  "catalogVersion": "1.4.0",
+  "candidateStations": 24,
+  "recordingEnabled": true,
+  "audits": [
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "browse",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "select-overlay",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "details",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 375,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 375,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 375,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 375,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 375,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 375,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 820,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 820,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 820,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 820,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 820,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 820,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 1440,
+      "mode": "light",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 1440,
+      "mode": "light",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 1440,
+      "mode": "light",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "en",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "ta",
+      "violations": []
+    },
+    {
+      "state": "recording-consent",
+      "width": 1440,
+      "mode": "dark",
+      "locale": "sa",
+      "violations": []
+    },
+    {
+      "state": "recording-active",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "recording-export",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "injected-recording-access-failure",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "recording-ended-on-station-switch",
+      "violations": []
+    }
+  ],
+  "playback": [
+    {
+      "id": "sooriyan-srilanka",
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "none",
+            "access-control-allow-origin": "*",
+            "cache-control": "no-cache,no-store,must-revalidate,max-age=0",
+            "connection": "keep-alive",
+            "content-type": "audio/mpeg; charset=UTF-8",
+            "date": "Sat, 07 Nov 2026 19:17:58 GMT",
+            "server": "nginx",
+            "transfer-encoding": "chunked",
+            "x-clacks-overhead": "GNU Terry Pratchett",
+            "icy-br": "128",
+            "icy-genre": "Misc",
+            "icy-name": "No Name",
+            "icy-notice1": "<BR>This stream requires <a href=\"http://www.winamp.com\">Winamp</a><BR>",
+            "icy-notice2": "Shoutcast DNAS/posix(linux x64) v2.6.1.777<BR>",
+            "icy-pub": "0",
+            "icy-sr": "44100",
+            "icy-url": "http://www.shoutcast.com"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 8.048084999999999,
+      "bytes": 128732,
+      "source": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden"
+    },
+    {
+      "id": "air-nagercoil",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "headers": {
+            "access-control-allow-origin": "*",
+            "content-length": "98",
+            "content-type": "text/plain; charset=utf-8",
+            "date": "Sat, 07 Nov 2026 19:19:28 GMT",
+            "location": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+            "vary": "Accept",
+            "x-powered-by": "Express"
+          }
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": false,
+      "error": "page.waitForFunction: Timeout 35000ms exceeded."
+    }
+  ],
+  "recording": {
+    "sooriyan-srilanka": {
+      "id": "sooriyan-srilanka",
+      "captureSucceeded": true,
+      "trackKinds": ["audio"],
+      "filename": "RadioBee-Sooriyan-FM-Sri-Lanka-2026-11-07T19-19-06-150Z.webm",
+      "decoded": {
+        "size": 106517,
+        "mime": "audio/webm;codecs=opus",
+        "duration": 6.6,
+        "sampleRate": 48000,
+        "channelRms": [0.21831177208753136, 0.2019495196633731],
+        "rms": 0.2102898455991936
+      },
+      "playbackAdvancedAfterCapture": 2.011616
+    }
+  },
+  "logos": [],
+  "browser": "157.0.8103.38",
+  "recordingLifecycle": {
+    "pauseEndsAndResumeDoesNotRecord": true,
+    "discardStopsTracksAndRemovesFile": true,
+    "injectedAccessFailureKeepsPlayback": true,
+    "stationSwitchEndsCapture": true,
+    "stopCleanup": true
+  },
+  "completed": true
+}

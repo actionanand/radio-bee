@@ -67,6 +67,10 @@ describe('Station card playback availability', () => {
         const view = TestBed.createComponent(StationBrowserComponent);
         view.detectChanges();
         const article = view.nativeElement.querySelector('article') as HTMLElement;
+        if (scenario.status === 'noStream') {
+          expect(article).toBeNull(); // Stage 8: terrestrial-only records are not normal internet-radio cards.
+          return;
+        }
         expect(article.textContent).toContain(
           uiLabel(locale, scenario.status === 'ready' ? 'play' : 'listeningUnavailable'),
         );

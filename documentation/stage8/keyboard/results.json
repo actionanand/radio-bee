@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-11-07T19:20:58.950Z",
+  "catalogVersion": "1.4.0",
+  "candidateStations": 24,
+  "recordingEnabled": true,
+  "audits": [
+    {
+      "state": "keyboard-enter-arrow-selection",
+      "violations": []
+    }
+  ],
+  "playback": [],
+  "recording": {},
+  "logos": [],
+  "browser": "157.0.8103.38",
+  "completed": true
+}

@@ -1,0 +1,2194 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "catalogVersion": "1.4.0",
+    "publishedOn": "2026-11-07",
+    "defaultLocale": "en",
+    "locales": ["en", "ta", "sa"],
+    "countries": ["IN", "LK"],
+    "counts": {
+      "networks": 18,
+      "stations": 24,
+      "locations": 89,
+      "streams": 26,
+      "verifiedStreams": 1
+    },
+    "files": {
+      "networks": "networks.json",
+      "stations": "stations.json",
+      "locations": "locations.json",
+      "languages": "languages.json",
+      "categories": "categories.json",
+      "sources": "sources.json",
+      "stationMigrations": "station-migrations.json"
+    },
+    "localizationRoot": "i18n/",
+    "disclaimer": "Internet stream candidates only. Reachability is not playback verification or permission. No current candidate is approved for RadioBee direct listening."
+  },
+  "networks": [
+    {
+      "id": "akashvani",
+      "name": "Akashvani (All India Radio)",
+      "aliases": ["AIR", "Prasar Bharati"],
+      "countryCodes": ["IN"],
+      "kind": "public",
+      "website": "https://prasarbharati.gov.in/en/akashvani-network/"
+    },
+    {
+      "id": "suryan-in",
+      "name": "Suryan FM",
+      "aliases": ["Suryan FM India"],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": "https://www.suryanfm.in/"
+    },
+    {
+      "id": "hello-fm",
+      "name": "Hello FM",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": null
+    },
+    {
+      "id": "mirchi",
+      "name": "Radio Mirchi",
+      "aliases": ["Mirchi"],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": "https://mirchi.in/stories"
+    },
+    {
+      "id": "radio-city",
+      "name": "Radio City",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": "https://www.radiocity.in/"
+    },
+    {
+      "id": "red-fm",
+      "name": "RED FM",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": "https://www.redfmindia.in/"
+    },
+    {
+      "id": "big-fm",
+      "name": "BIG FM",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": "https://www.bigfmindia.com/"
+    },
+    {
+      "id": "fever-fm",
+      "name": "Fever FM",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": null
+    },
+    {
+      "id": "shakthi-lk",
+      "name": "Shakthi FM",
+      "aliases": [],
+      "countryCodes": ["LK"],
+      "kind": "broadcaster",
+      "website": "https://shakthifm.com/"
+    },
+    {
+      "id": "sooriyan-lk",
+      "name": "Sooriyan FM (Sri Lanka)",
+      "aliases": ["Sooriyan"],
+      "countryCodes": ["LK"],
+      "kind": "broadcaster",
+      "website": "https://www.sooriyanfm.lk/"
+    },
+    {
+      "id": "vasantham-lk",
+      "name": "Vasantham FM",
+      "aliases": [],
+      "countryCodes": ["LK"],
+      "kind": "broadcaster",
+      "website": "https://www.vasanthamfm.lk/"
+    },
+    {
+      "id": "slbc",
+      "name": "Sri Lanka Broadcasting Corporation",
+      "aliases": [],
+      "countryCodes": ["LK"],
+      "kind": "public",
+      "website": "https://slbc.lk/"
+    },
+    {
+      "id": "asr-digital",
+      "name": "ASR Digital Radio",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "online",
+      "website": "https://radio.asrdmm.com/"
+    },
+    {
+      "id": "annai-fm",
+      "name": "Annai FM",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "online",
+      "website": "https://zeno.fm/radio/annai-fm/"
+    },
+    {
+      "id": "kumari-tamil",
+      "name": "Kumari Tamil Media",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "online",
+      "website": "https://radio.kumaritamil.com/"
+    },
+    {
+      "id": "luminous-radio",
+      "name": "Luminous Radio",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "online",
+      "website": "https://www.luminousradio.com/"
+    },
+    {
+      "id": "capital-lk",
+      "name": "Capital FM Sri Lanka",
+      "aliases": [],
+      "countryCodes": ["LK"],
+      "kind": "broadcaster",
+      "website": "https://capitalfm.lk/"
+    },
+    {
+      "id": "club-fm",
+      "name": "Club FM",
+      "aliases": [],
+      "countryCodes": ["IN"],
+      "kind": "broadcaster",
+      "website": "https://www.clubfm.in/"
+    }
+  ],
+  "stations": [
+    {
+      "id": "air-nagercoil",
+      "name": "Akashvani Nagercoil",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-kanyakumari",
+      "localityId": "in-tn-kanyakumari-nagercoil",
+      "broadcastLanguages": ["ta", "en"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-player-2026", "prasar-terms-2026"],
+      "streams": [
+        {
+          "id": "air-nagercoil-hls-candidate",
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-player-2026",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Official player channel 248: FM Nagercoil Kumari. HTTPS HLS playlist reachable; segments, decoding, Web/Android playback and RadioBee permission unconfirmed. City association is explicitly published by Akashvani, not inferred from reception."
+    },
+    {
+      "id": "air-coimbatore",
+      "name": "Akashvani Coimbatore",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-coimbatore",
+      "localityId": "in-tn-coimbatore-coimbatore",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-coimbatore-stage6-hls",
+          "url": "https://radio.wavespb.com/live/a6eec8ec7d6ee49d/a6eec8ec7d6ee49d.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 243: Akashvani Coimbatore. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-madurai",
+      "name": "Akashvani Madurai",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-madurai",
+      "localityId": "in-tn-madurai-madurai",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-madurai-stage6-hls",
+          "url": "https://radio.wavespb.com/live/5c28fdbb318c1f13/5c28fdbb318c1f13.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 247: Akashvani Madurai. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-tiruchirappalli",
+      "name": "Akashvani Tiruchirappalli",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-tiruchirappalli",
+      "localityId": "in-tn-tiruchirappalli-tiruchirappalli",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-tiruchirappalli-stage6-hls",
+          "url": "https://radio.wavespb.com/live/bd8f073da8cde368/bd8f073da8cde368.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 250: Akashvani Tiruchirapalli. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-tirunelveli",
+      "name": "Akashvani Tirunelveli",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-tirunelveli",
+      "localityId": "in-tn-tirunelveli-tirunelveli",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-tirunelveli-stage6-hls",
+          "url": "https://radio.wavespb.com/live/ee7f2a29ab3b6bf9/ee7f2a29ab3b6bf9.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 252: Akashvani Tirunelveli. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-kodaikanal",
+      "name": "Akashvani Kodaikanal",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-dindigul",
+      "localityId": "in-tn-dindigul-kodaikanal",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-kodaikanal-stage6-hls",
+          "url": "https://radio.wavespb.com/live/eef8fc0421c2cc48/eef8fc0421c2cc48.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 246: Akashvani Kodaikanal. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-ooty",
+      "name": "Akashvani Ooty",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-nilgiris",
+      "localityId": "in-tn-nilgiris-ooty",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-ooty-stage6-hls",
+          "url": "https://radio.wavespb.com/live/e2ac3971fdada7d1/e2ac3971fdada7d1.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 249: Akashvani Ooty. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-puducherry",
+      "name": "Akashvani Puducherry",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-py",
+      "districtId": "in-py-puducherry",
+      "localityId": "in-py-puducherry-puducherry",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-puducherry-stage6-hls",
+          "url": "https://radio.wavespb.com/live/6b93ba50696fddcd/6b93ba50696fddcd.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 216: Akashvani Puducherry. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-karaikal",
+      "name": "Akashvani Karaikal",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-py",
+      "districtId": "in-py-karaikal",
+      "localityId": "in-py-karaikal-karaikal",
+      "broadcastLanguages": ["ta"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-karaikal-stage6-hls",
+          "url": "https://radio.wavespb.com/live/51065e9e2f00e83e/51065e9e2f00e83e.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial service/location reference. An internet stream for this exact city is not yet confirmed. Stage 6 exact official player channel 215: Akashvani Karaikal. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-kochi",
+      "name": "Akashvani Kochi",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-kl",
+      "districtId": "in-kl-ernakulam",
+      "localityId": "in-kl-ernakulam-kochi",
+      "broadcastLanguages": ["ml"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-kochi-stage6-hls",
+          "url": "https://radio.wavespb.com/live/70400e7510e87cdf/70400e7510e87cdf.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial station reference. City-specific online feed unconfirmed. Stage 6 exact official player channel 134: Akashvani Kochi. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-kozhikode",
+      "name": "Akashvani Kozhikode",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-kl",
+      "districtId": "in-kl-kozhikode",
+      "localityId": "in-kl-kozhikode-kozhikode",
+      "broadcastLanguages": ["ml"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-kozhikode-stage6-hls",
+          "url": "https://radio.wavespb.com/live/8321393de70015fc/8321393de70015fc.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial station reference. City-specific online feed unconfirmed. Stage 6 exact official player channel 135: Akashvani Calicut. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-thrissur",
+      "name": "Akashvani Thrissur",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-kl",
+      "districtId": "in-kl-thrissur",
+      "localityId": "in-kl-thrissur-thrissur",
+      "broadcastLanguages": ["ml"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-thrissur-stage6-hls",
+          "url": "https://radio.wavespb.com/live/f70fdeca437dc326/f70fdeca437dc326.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial station reference. City-specific online feed unconfirmed. Stage 6 exact official player channel 138: Akashvani Trissur. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-kannur",
+      "name": "Akashvani Kannur",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-kl",
+      "districtId": "in-kl-kannur",
+      "localityId": "in-kl-kannur-kannur",
+      "broadcastLanguages": ["ml"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-kannur-stage6-hls",
+          "url": "https://radio.wavespb.com/live/b82c91a395fc4a7d/b82c91a395fc4a7d.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial station reference. City-specific online feed unconfirmed. Stage 6 exact official player channel 132: Akashvani Kannur. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-devikulam",
+      "name": "Akashvani Devikulam",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-kl",
+      "districtId": "in-kl-idukki",
+      "localityId": "in-kl-idukki-devikulam",
+      "broadcastLanguages": ["ml"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-network", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-devikulam-stage6-hls",
+          "url": "https://radio.wavespb.com/live/e97acc829da9bf2a/e97acc829da9bf2a.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Terrestrial station reference. City-specific online feed unconfirmed. Stage 6 exact official player channel 131: Akashvani Devikulam. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-tamil",
+      "name": "Akashvani Tamil Nadu",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ta", "en"],
+      "genres": ["general", "news"],
+      "delivery": "online",
+      "coverage": "regional",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-live", "air-player-2026", "prasar-terms-2026"],
+      "streams": [
+        {
+          "id": "air-tamil-hls-candidate",
+          "url": "https://radio.wavespb.com/live/d533f2af4f49bd6f/d533f2af4f49bd6f.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-player-2026",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Official player channel 9: Akashvani Tamil Nadu. HTTPS HLS playlist reachable; segments, decoding, Web/Android playback and RadioBee permission unconfirmed. Regional service; no city origin asserted."
+    },
+    {
+      "id": "air-vividh-bharati",
+      "name": "Vividh Bharati",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["hi"],
+      "genres": ["music", "general"],
+      "delivery": "online",
+      "coverage": "national",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-live", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-vividh-bharati-stage6-hls",
+          "url": "https://radio.wavespb.com/live/146ed6ec6dea5a24/146ed6ec6dea5a24.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "nullStage 6 exact official player channel 1: Vividh Bharati. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "air-raagam",
+      "name": "Akashvani Raagam",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": [],
+      "genres": ["classical"],
+      "delivery": "online",
+      "coverage": "national",
+      "listingStatus": "candidate",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["prasar-air-live", "air-stage6-player"],
+      "streams": [
+        {
+          "id": "air-raagam-stage6-hls",
+          "url": "https://d3r9rhourdc02u.cloudfront.net/assets/radio/airbang04/air036_Auto.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage6-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Indian classical music service. No spoken broadcast language is asserted; do not infer Sanskrit from the service name. Stage 6 exact official player channel 4: Raagam. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping."
+    },
+    {
+      "id": "sooriyan-srilanka",
+      "name": "Sooriyan FM Sri Lanka",
+      "networkId": "sooriyan-lk",
+      "countryCode": "LK",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ta"],
+      "genres": ["music", "general"],
+      "delivery": "fm",
+      "coverage": "national",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://www.sooriyanfm.lk/",
+      "sourceIds": ["sooriyan-site", "sooriyan-player-2026"],
+      "streams": [
+        {
+          "id": "sooriyan-candidate",
+          "url": "https://radio.lotustechnologieslk.net:8006/",
+          "format": "mp3",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "initial-directory-candidates",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        },
+        {
+          "id": "sooriyan-official-candidate",
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "format": "mp3",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "sooriyan-player-2026",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Sri Lankan Sooriyan is distinct from Indian Suryan. Official player publishes one network feed on port 2020. Legacy port 8006 responds with MP3-like data but exact identity is unconfirmed. Neither endpoint has confirmed RadioBee permission or decoder verification."
+    },
+    {
+      "id": "vasantham-srilanka",
+      "name": "Vasantham FM Sri Lanka",
+      "networkId": "vasantham-lk",
+      "countryCode": "LK",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ta"],
+      "genres": ["music", "general"],
+      "delivery": "fm",
+      "coverage": "national",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://www.vasanthamfm.lk/",
+      "sourceIds": ["itn-vasantham-identity", "vasantham-player-2026"],
+      "streams": [
+        {
+          "id": "vasantham-candidate",
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream",
+          "format": "mp3",
+          "verificationStatus": "verified",
+          "lastVerifiedAt": "2026-11-05T23:13:09.857Z",
+          "sourceId": "vasantham-player-2026",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "ITN Tamil network service. Exact official endpoint played in the desktop browser for over 24 seconds. Technical verification does not grant RadioBee permission; rights remain unconfirmed. Android and sustained playback not tested. Not a unique local feed."
+    },
+    {
+      "id": "shakthi-srilanka",
+      "name": "Shakthi FM Sri Lanka",
+      "networkId": "shakthi-lk",
+      "countryCode": "LK",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ta"],
+      "genres": ["music"],
+      "delivery": "online",
+      "coverage": "national",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://shakthifm.com/",
+      "sourceIds": ["shakthi-site", "shakthi-player-2026", "shakthi-player-stage8"],
+      "streams": [
+        {
+          "id": "shakthi-candidate",
+          "url": "https://mbc.thestreamtech.com:8086/stream",
+          "format": "aac",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "initial-directory-candidates",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        },
+        {
+          "id": "shakthi-official-player-candidate",
+          "url": "https://mbc.thestreamtech.com:8086/index.html",
+          "format": "aac",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "shakthi-player-stage8",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-07T17:18:54.786Z",
+            "sourceId": "shakthi-player-stage8",
+            "notes": "Official player publishes this endpoint; no allowance for RadioBee third-party direct listening established. Technical byte inspection is not decoded playback or use permission.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "One national Internet service, with legacy /stream and official-player /index.html alternatives. Official script publishes the latter; HTTP 200 audio/aacp, AAC signature and ICY name Shakthi FM observed 2026-11-07. Live programme equivalence to Colombo/Jaffna FM has not been proven. No city origin inferred; decoding and RadioBee use review remain pending."
+    },
+    {
+      "id": "air-chennai-rainbow",
+      "name": "Akashvani FM Rainbow Chennai",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-chennai",
+      "localityId": "in-tn-chennai-chennai",
+      "broadcastLanguages": ["ta", "en"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["air-player-2026", "prasar-terms-2026"],
+      "streams": [
+        {
+          "id": "air-chennai-rainbow-hls-candidate",
+          "url": "https://radio.wavespb.com/live/b20ff2fc0bb34b3d/b20ff2fc0bb34b3d.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-player-2026",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Distinct named official live-player channel 297, not a duplicate generic Chennai feed. HTTPS HLS playlist reachable; segments, decoding, Web/Android playback and RadioBee permission unconfirmed."
+    },
+    {
+      "id": "luminous-radio-tamil",
+      "name": "Luminous Radio Tamil",
+      "networkId": "luminous-radio",
+      "countryCode": "IN",
+      "regionId": null,
+      "districtId": null,
+      "localityId": null,
+      "broadcastLanguages": ["ta"],
+      "genres": ["devotional", "community"],
+      "delivery": "online",
+      "coverage": "global",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://www.luminousradio.com/radiochannel/luminous-radio-tamil/",
+      "sourceIds": ["luminous-site", "luminous-tamil-player-2026", "luminous-identity-2026"],
+      "streams": [
+        {
+          "id": "luminous-tamil-candidate",
+          "url": "https://patmos.cdnstream.com/proxy/luminousradiotamil/?mp=/stream",
+          "format": "mp3",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "luminous-tamil-player-2026",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Official separately named Tamil Internet channel. No city-specific feed or originating locality asserted. Two short MP3-like samples; decoder, client compatibility and RadioBee permission unconfirmed."
+    },
+    {
+      "id": "air-chennai-gold",
+      "name": "Akashvani FM Gold Chennai",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-chennai",
+      "localityId": "in-tn-chennai-chennai",
+      "broadcastLanguages": ["ta", "en"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["air-stage4-player"],
+      "streams": [
+        {
+          "id": "air-chennai-gold-hls-candidate",
+          "url": "https://radio.wavespb.com/live/84ad819b3f45dc08/84ad819b3f45dc08.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage4-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Distinct official named Chennai service. Location/languages documentary; stream is unverified and permission unconfirmed."
+    },
+    {
+      "id": "air-chennai-vividh-tamil",
+      "name": "Akashvani Vividh Bharati Tamil Chennai",
+      "networkId": "akashvani",
+      "countryCode": "IN",
+      "regionId": "in-tn",
+      "districtId": "in-tn-chennai",
+      "localityId": "in-tn-chennai-chennai",
+      "broadcastLanguages": ["ta", "en"],
+      "genres": ["general", "news"],
+      "delivery": "fm",
+      "coverage": "local",
+      "listingStatus": "reviewed",
+      "frequencyMHz": null,
+      "website": "https://akashvani.gov.in/radio/live.php",
+      "sourceIds": ["air-stage4-player"],
+      "streams": [
+        {
+          "id": "air-chennai-vividh-tamil-hls-candidate",
+          "url": "https://radio.wavespb.com/live/f893db91dedcb4ab/f893db91dedcb4ab.m3u8",
+          "format": "hls",
+          "verificationStatus": "unverified",
+          "lastVerifiedAt": null,
+          "sourceId": "air-stage4-player",
+          "rightsStatus": "unconfirmed",
+          "directListening": {
+            "status": "needs-review",
+            "reviewedAt": "2026-11-06T16:27:52.570Z",
+            "sourceId": "stage6-use-review",
+            "notes": "Official or legacy stream provenance is separate from third-party in-app use terms. No current RadioBee-specific allowance established; do not override express broadcaster restrictions. See Stage 6 review.",
+            "recording": "unconfirmed",
+            "redistribution": "unconfirmed"
+          }
+        }
+      ],
+      "notes": "Distinct official named Chennai service. Location/languages documentary; stream is unverified and permission unconfirmed."
+    }
+  ],
+  "locations": [
+    {
+      "id": "in",
+      "name": "India",
+      "type": "country",
+      "parentId": null,
+      "countryCode": "IN"
+    },
+    {
+      "id": "lk",
+      "name": "Sri Lanka",
+      "type": "country",
+      "parentId": null,
+      "countryCode": "LK"
+    },
+    {
+      "id": "in-tn",
+      "name": "Tamil Nadu",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl",
+      "name": "Kerala",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-py",
+      "name": "Puducherry",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ka",
+      "name": "Karnataka",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-mh",
+      "name": "Maharashtra",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-dl",
+      "name": "Delhi",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tg",
+      "name": "Telangana",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ap",
+      "name": "Andhra Pradesh",
+      "type": "state",
+      "parentId": "in",
+      "countryCode": "IN"
+    },
+    {
+      "id": "lk-wp",
+      "name": "Western Province",
+      "type": "state",
+      "parentId": "lk",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-np",
+      "name": "Northern Province",
+      "type": "state",
+      "parentId": "lk",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-ep",
+      "name": "Eastern Province",
+      "type": "state",
+      "parentId": "lk",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-cp",
+      "name": "Central Province",
+      "type": "state",
+      "parentId": "lk",
+      "countryCode": "LK"
+    },
+    {
+      "id": "in-tn-kanyakumari",
+      "name": "Kanyakumari",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-chennai",
+      "name": "Chennai",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-coimbatore",
+      "name": "Coimbatore",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-madurai",
+      "name": "Madurai",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-tiruchirappalli",
+      "name": "Tiruchirappalli",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-tirunelveli",
+      "name": "Tirunelveli",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-thoothukudi",
+      "name": "Thoothukudi",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-salem",
+      "name": "Salem",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-erode",
+      "name": "Erode",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-vellore",
+      "name": "Vellore",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-dindigul",
+      "name": "Dindigul",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-nilgiris",
+      "name": "Nilgiris",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-thanjavur",
+      "name": "Thanjavur",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-tiruppur",
+      "name": "Tiruppur",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-dharmapuri",
+      "name": "Dharmapuri",
+      "type": "district",
+      "parentId": "in-tn",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-py-puducherry",
+      "name": "Puducherry",
+      "type": "district",
+      "parentId": "in-py",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-py-karaikal",
+      "name": "Karaikal",
+      "type": "district",
+      "parentId": "in-py",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-thiruvananthapuram",
+      "name": "Thiruvananthapuram",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-ernakulam",
+      "name": "Ernakulam",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-kozhikode",
+      "name": "Kozhikode",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-thrissur",
+      "name": "Thrissur",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-kannur",
+      "name": "Kannur",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-idukki",
+      "name": "Idukki",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-alappuzha",
+      "name": "Alappuzha",
+      "type": "district",
+      "parentId": "in-kl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ka-bengaluru-urban",
+      "name": "Bengaluru Urban",
+      "type": "district",
+      "parentId": "in-ka",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ka-mysuru",
+      "name": "Mysuru",
+      "type": "district",
+      "parentId": "in-ka",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-mh-mumbai-city",
+      "name": "Mumbai City",
+      "type": "district",
+      "parentId": "in-mh",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-mh-pune",
+      "name": "Pune",
+      "type": "district",
+      "parentId": "in-mh",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-dl-new-delhi",
+      "name": "New Delhi",
+      "type": "district",
+      "parentId": "in-dl",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tg-hyderabad",
+      "name": "Hyderabad",
+      "type": "district",
+      "parentId": "in-tg",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ap-visakhapatnam",
+      "name": "Visakhapatnam",
+      "type": "district",
+      "parentId": "in-ap",
+      "countryCode": "IN"
+    },
+    {
+      "id": "lk-wp-colombo",
+      "name": "Colombo",
+      "type": "district",
+      "parentId": "lk-wp",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-wp-gampaha",
+      "name": "Gampaha",
+      "type": "district",
+      "parentId": "lk-wp",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-np-jaffna",
+      "name": "Jaffna",
+      "type": "district",
+      "parentId": "lk-np",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-np-kilinochchi",
+      "name": "Kilinochchi",
+      "type": "district",
+      "parentId": "lk-np",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-ep-batticaloa",
+      "name": "Batticaloa",
+      "type": "district",
+      "parentId": "lk-ep",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-ep-trincomalee",
+      "name": "Trincomalee",
+      "type": "district",
+      "parentId": "lk-ep",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-cp-kandy",
+      "name": "Kandy",
+      "type": "district",
+      "parentId": "lk-cp",
+      "countryCode": "LK"
+    },
+    {
+      "id": "in-tn-kanyakumari-nagercoil",
+      "name": "Nagercoil",
+      "type": "locality",
+      "parentId": "in-tn-kanyakumari",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-kanyakumari-kuzhithurai",
+      "name": "Kuzhithurai",
+      "type": "locality",
+      "parentId": "in-tn-kanyakumari",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-kanyakumari-thingalnagar",
+      "name": "Thingalnagar",
+      "type": "locality",
+      "parentId": "in-tn-kanyakumari",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-chennai-chennai",
+      "name": "Chennai",
+      "type": "locality",
+      "parentId": "in-tn-chennai",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-coimbatore-coimbatore",
+      "name": "Coimbatore",
+      "type": "locality",
+      "parentId": "in-tn-coimbatore",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-madurai-madurai",
+      "name": "Madurai",
+      "type": "locality",
+      "parentId": "in-tn-madurai",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-tiruchirappalli-tiruchirappalli",
+      "name": "Tiruchirappalli",
+      "type": "locality",
+      "parentId": "in-tn-tiruchirappalli",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-tirunelveli-tirunelveli",
+      "name": "Tirunelveli",
+      "type": "locality",
+      "parentId": "in-tn-tirunelveli",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-thoothukudi-thoothukudi",
+      "name": "Thoothukudi",
+      "type": "locality",
+      "parentId": "in-tn-thoothukudi",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-salem-salem",
+      "name": "Salem",
+      "type": "locality",
+      "parentId": "in-tn-salem",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-erode-erode",
+      "name": "Erode",
+      "type": "locality",
+      "parentId": "in-tn-erode",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-vellore-vellore",
+      "name": "Vellore",
+      "type": "locality",
+      "parentId": "in-tn-vellore",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-dindigul-kodaikanal",
+      "name": "Kodaikanal",
+      "type": "locality",
+      "parentId": "in-tn-dindigul",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-nilgiris-ooty",
+      "name": "Ooty",
+      "type": "locality",
+      "parentId": "in-tn-nilgiris",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-thanjavur-thanjavur",
+      "name": "Thanjavur",
+      "type": "locality",
+      "parentId": "in-tn-thanjavur",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tn-tiruppur-tiruppur",
+      "name": "Tiruppur",
+      "type": "locality",
+      "parentId": "in-tn-tiruppur",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-py-puducherry-puducherry",
+      "name": "Puducherry",
+      "type": "locality",
+      "parentId": "in-py-puducherry",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-py-karaikal-karaikal",
+      "name": "Karaikal",
+      "type": "locality",
+      "parentId": "in-py-karaikal",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-thiruvananthapuram-thiruvananthapuram",
+      "name": "Thiruvananthapuram",
+      "type": "locality",
+      "parentId": "in-kl-thiruvananthapuram",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-ernakulam-kochi",
+      "name": "Kochi",
+      "type": "locality",
+      "parentId": "in-kl-ernakulam",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-kozhikode-kozhikode",
+      "name": "Kozhikode",
+      "type": "locality",
+      "parentId": "in-kl-kozhikode",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-thrissur-thrissur",
+      "name": "Thrissur",
+      "type": "locality",
+      "parentId": "in-kl-thrissur",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-kannur-kannur",
+      "name": "Kannur",
+      "type": "locality",
+      "parentId": "in-kl-kannur",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-idukki-devikulam",
+      "name": "Devikulam",
+      "type": "locality",
+      "parentId": "in-kl-idukki",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-kl-alappuzha-alappuzha",
+      "name": "Alappuzha",
+      "type": "locality",
+      "parentId": "in-kl-alappuzha",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ka-bengaluru-urban-bengaluru",
+      "name": "Bengaluru",
+      "type": "locality",
+      "parentId": "in-ka-bengaluru-urban",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ka-mysuru-mysuru",
+      "name": "Mysuru",
+      "type": "locality",
+      "parentId": "in-ka-mysuru",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-mh-mumbai-city-mumbai",
+      "name": "Mumbai",
+      "type": "locality",
+      "parentId": "in-mh-mumbai-city",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-mh-pune-pune",
+      "name": "Pune",
+      "type": "locality",
+      "parentId": "in-mh-pune",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-dl-new-delhi-new-delhi",
+      "name": "New Delhi",
+      "type": "locality",
+      "parentId": "in-dl-new-delhi",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-tg-hyderabad-hyderabad",
+      "name": "Hyderabad",
+      "type": "locality",
+      "parentId": "in-tg-hyderabad",
+      "countryCode": "IN"
+    },
+    {
+      "id": "in-ap-visakhapatnam-visakhapatnam",
+      "name": "Visakhapatnam",
+      "type": "locality",
+      "parentId": "in-ap-visakhapatnam",
+      "countryCode": "IN"
+    },
+    {
+      "id": "lk-wp-colombo-colombo",
+      "name": "Colombo",
+      "type": "locality",
+      "parentId": "lk-wp-colombo",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-np-jaffna-jaffna",
+      "name": "Jaffna",
+      "type": "locality",
+      "parentId": "lk-np-jaffna",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-ep-batticaloa-batticaloa",
+      "name": "Batticaloa",
+      "type": "locality",
+      "parentId": "lk-ep-batticaloa",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-ep-trincomalee-trincomalee",
+      "name": "Trincomalee",
+      "type": "locality",
+      "parentId": "lk-ep-trincomalee",
+      "countryCode": "LK"
+    },
+    {
+      "id": "lk-cp-kandy-kandy",
+      "name": "Kandy",
+      "type": "locality",
+      "parentId": "lk-cp-kandy",
+      "countryCode": "LK"
+    }
+  ],
+  "languages": [
+    {
+      "code": "ta",
+      "name": "Tamil",
+      "nativeName": "தமிழ்"
+    },
+    {
+      "code": "en",
+      "name": "English",
+      "nativeName": "English"
+    },
+    {
+      "code": "sa",
+      "name": "Sanskrit",
+      "nativeName": "संस्कृतम्"
+    },
+    {
+      "code": "ml",
+      "name": "Malayalam",
+      "nativeName": "മലയാളം"
+    },
+    {
+      "code": "hi",
+      "name": "Hindi",
+      "nativeName": "हिन्दी"
+    },
+    {
+      "code": "kn",
+      "name": "Kannada",
+      "nativeName": "ಕನ್ನಡ"
+    },
+    {
+      "code": "te",
+      "name": "Telugu",
+      "nativeName": "తెలుగు"
+    },
+    {
+      "code": "mr",
+      "name": "Marathi",
+      "nativeName": "मराठी"
+    },
+    {
+      "code": "si",
+      "name": "Sinhala",
+      "nativeName": "සිංහල"
+    },
+    {
+      "code": "ur",
+      "name": "Urdu",
+      "nativeName": "اردو"
+    }
+  ],
+  "categories": [
+    {
+      "id": "music",
+      "name": "Music"
+    },
+    {
+      "id": "news",
+      "name": "News"
+    },
+    {
+      "id": "general",
+      "name": "General"
+    },
+    {
+      "id": "talk",
+      "name": "Talk"
+    },
+    {
+      "id": "devotional",
+      "name": "Devotional"
+    },
+    {
+      "id": "classical",
+      "name": "Classical"
+    },
+    {
+      "id": "community",
+      "name": "Community"
+    }
+  ],
+  "sources": [
+    {
+      "id": "prasar-air-network",
+      "title": "Prasar Bharati — Akashvani Network",
+      "url": "https://prasarbharati.gov.in/en/akashvani-network/",
+      "kind": "official",
+      "notes": "Contains services, streaming-channel names and terrestrial transmitter locations; not proof of an independently playable stream URL."
+    },
+    {
+      "id": "prasar-air-live",
+      "title": "Prasar Bharati — Livestreaming Services",
+      "url": "https://prasarbharati.gov.in/en/livestreaming-services/",
+      "kind": "official",
+      "notes": "Confirms channels streamed via broadcaster services; not a direct stream endpoint."
+    },
+    {
+      "id": "suryan-nagercoil-2026",
+      "title": "AirMedia — Suryan FM 91.9 Nagercoil launch (18 August 2026)",
+      "url": "https://www.airmedia.in/news/radio-listeners-of-kanyakumari-district-listen-listen-keep-on-listening-fm-radio-network-with-the-launch-of-suryan-fm-91-9-mhz-in-nagercoil-tamil-nadu",
+      "kind": "trade-press",
+      "notes": "Reports local FM launch; does not establish internet stream URL."
+    },
+    {
+      "id": "shakthi-site",
+      "title": "Shakthi FM official website",
+      "url": "https://shakthifm.com/",
+      "kind": "official",
+      "notes": "Official site lists Colombo 103.9 MHz and Jaffna 104.1 MHz and advertises island-wide service. This is not proof of unique city Internet feeds. See shakthi-player-2026 for player limitations."
+    },
+    {
+      "id": "sooriyan-site",
+      "title": "Sooriyan FM official website",
+      "url": "https://www.sooriyanfm.lk/",
+      "kind": "official",
+      "notes": "Confirms Sri Lankan Sooriyan broadcaster, separate from Indian Suryan FM."
+    },
+    {
+      "id": "radio-browser-docs",
+      "title": "Radio Browser open API reference",
+      "url": "https://docs.radio-browser.info/",
+      "kind": "technical",
+      "notes": "Metadata discovery API, stream checks and UUID guidance; its data and uptime are not guaranteed."
+    },
+    {
+      "id": "initial-directory-candidates",
+      "title": "Initial unverified streaming-directory leads",
+      "url": null,
+      "kind": "unverified",
+      "notes": "Legacy research leads only. No rights confirmation, endpoint verification or Play compatibility. Must be reviewed before promoting."
+    },
+    {
+      "id": "asr-site",
+      "title": "ASR Digital Radio website",
+      "url": "https://radio.asrdmm.com/",
+      "kind": "broadcaster-site",
+      "notes": "Website reference only, not a direct stream URL."
+    },
+    {
+      "id": "annai-site",
+      "title": "Annai FM directory page",
+      "url": "https://zeno.fm/radio/annai-fm/",
+      "kind": "directory",
+      "notes": "Directory page only, not a raw stream URL."
+    },
+    {
+      "id": "kumari-site",
+      "title": "Kumari Tamil Media website",
+      "url": "https://radio.kumaritamil.com/",
+      "kind": "broadcaster-site",
+      "notes": "Website reference only, not a direct stream URL."
+    },
+    {
+      "id": "luminous-site",
+      "title": "Luminous Radio official website",
+      "url": "https://www.luminousradio.com/",
+      "kind": "broadcaster-site",
+      "notes": "Website reference only, not a direct stream URL."
+    },
+    {
+      "id": "shakthi-player-2026",
+      "title": "Shakthi FM official player configuration",
+      "url": "https://shakthifm.com/scripts.js",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Publishes https://mbc.thestreamtech.com:8086/index.html, not the legacy /stream path. Same host is corroborating evidence only; exact legacy stream identity remains unconfirmed. AAC-like bytes at /stream; no decoder verification or RadioBee use permission."
+    },
+    {
+      "id": "sooriyan-player-2026",
+      "title": "Sooriyan FM official live player",
+      "url": "https://www.sooriyanfm.lk/",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Audio source is https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden. MP3-like bytes observed; HTML declares conflicting MIME types, so format is based on sampled bytes. Does not prove legacy port 8006 identity or permission for RadioBee. One network feed, no separate city feeds established."
+    },
+    {
+      "id": "vasantham-player-2026",
+      "title": "Vasantham FM official live player",
+      "url": "https://www.vasanthamfm.lk/",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Audio src exactly matches the legacy cp12.serverse.com proxy candidate. Two bounded GETs returned audio/mpeg and MP3-like frames. Official browser playback advanced to 24.464898 seconds, readyState 3, no media error. Android, long-term stability and RadioBee use permission unconfirmed. One network feed; not a unique market feed. All rights reserved footer is not third-party playback permission."
+    },
+    {
+      "id": "itn-vasantham-identity",
+      "title": "ITN broadcaster identity and Vasantham Radio",
+      "url": "https://itn.lk/about-itn/",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Identifies Vasantham Radio as an ITN venture for Tamil-speaking audiences. Establishes broadcaster identity, not RadioBee playback permission."
+    },
+    {
+      "id": "air-player-2026",
+      "title": "Akashvani official live-radio channel configuration",
+      "url": "https://akashvani.gov.in/radio/live.php",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Published channels map 248 to FM Nagercoil Kumari, 297 to FM Rainbow Chennai and 9 to Akashvani Tamil Nadu. Official HTTPS HLS URLs tested twice; 302 redirects to HTTPS CloudFront playlists. HLS segments and actual playback not verified. Tamil Nadu service is not duplicated as a city feed. Editorial review reconfirmed the official station cards list Tamil and English for all three channels; these labels support ta/en catalogue tags, not a claim of listening verification."
+    },
+    {
+      "id": "prasar-terms-2026",
+      "title": "Prasar Bharati terms and conditions",
+      "url": "https://prasarbharati.gov.in/en/terms-conditions/",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Website material use is limited to personal or educational purposes and restricts transmission/distribution. No confirmed grant for RadioBee stream playback; seek broadcaster clarification and applicable stream terms."
+    },
+    {
+      "id": "luminous-tamil-player-2026",
+      "title": "Luminous Radio Tamil official channel",
+      "url": "https://www.luminousradio.com/radiochannel/luminous-radio-tamil/",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Official homepage player labels https://patmos.cdnstream.com/proxy/luminousradiotamil/?mp=/stream as Luminous Radio Tamil. MP3-like bytes on two GETs; no Access-Control-Allow-Origin header observed. Separate Tamil service, not a bilingual local Thiruvananthapuram simulcast. Decoding, origin, client compatibility and RadioBee permission remain unconfirmed."
+    },
+    {
+      "id": "asr-player-2026",
+      "title": "ASR Digital Radio published player",
+      "url": "https://radio.asrdmm.com/",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Published HTTPS player URL https://cast1.asurahosting.com/proxy/asrdigit/live returned 404 on two GETs. Older embedded Zeno URLs are HTTP. No working HTTPS stream or exact originating locality confirmed; no stream added."
+    },
+    {
+      "id": "asr-terms-2026",
+      "title": "ASR Digital Radio terms and conditions",
+      "url": "https://radio.asrdmm.com/p/terms-conditions.html",
+      "kind": "official",
+      "notes": "Investigated 2026-11-06 (Asia/Calcutta). Restricts reproducing/redistributing material and framing without written permission. No RadioBee playback grant established."
+    },
+    {
+      "id": "luminous-identity-2026",
+      "title": "Luminous Radio official broadcaster identity",
+      "url": "https://www.luminousradio.com/about-luminous-radio/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06 (Asia/Calcutta). Official About Us page identifies an Indian multilingual Catholic Internet broadcaster, including Tamil programming and international reach. Supports country IN and devotional grouping for the separately named Tamil channel; does not establish a city origin or RadioBee playback permission."
+    },
+    {
+      "id": "air-stage4-player",
+      "title": "Akashvani named Chennai channel mapping",
+      "url": "https://akashvani.gov.in/radio/live.php",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Exact published mappings: channel 241 FM Gold Chennai; 242 VB Tamil Chennai. Channel cards list Tamil and English. No playback approval or rights inferred."
+    },
+    {
+      "id": "slbc-stage4-channels",
+      "title": "SLBC official Tamil channel listings",
+      "url": "https://slbc.lk/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Official navigation names Thendral FM, Thamil Sevai and Yaal FM. No safe HTTPS media URL established; historical HTTP/IP streams not imported."
+    },
+    {
+      "id": "capital-stage4-site",
+      "title": "Capital FM Sri Lanka official broadcaster",
+      "url": "https://capitalfm.lk/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Official indexed page identifies Sri Lankan Tamil network and 94.0/103.1 frequencies. Direct request encountered TLS-related 526; no audio URL or locality established."
+    },
+    {
+      "id": "suryan-stage4-cities",
+      "title": "Suryan official network cities",
+      "url": "https://www.suryanfm.in/about-us/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Official navigation independently names Chennai, Coimbatore, Erode, Madurai, Pondicherry, Salem, Tirunelveli, Trichy, Tuticorin, Vellore. No network stream or city simulcast demonstrated."
+    },
+    {
+      "id": "mib-operational-2026-03",
+      "title": "MIB operational private FM channels 30 March 2026",
+      "url": "https://mib.gov.in/sites/default/files/2026-03/390_operationalchannels_as-pn-30032026.pdf",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Chennai rows 84–89 establish Mirchi 98.3, Fever 91.9, Hello 106.4, Radio City 91.1, BIG 92.7 and Suryan 93.5. Terrestrial licence evidence only; not language, stream or playback permission evidence."
+    },
+    {
+      "id": "air-stage6-player",
+      "title": "Akashvani official named live channel configurations — Stage 6",
+      "url": "https://akashvani.gov.in/radio/live.php",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Exact channel IDs and named mappings retained in docs/stage6/stations.json. Calicut/Kozhikode, Trissur/Thrissur and Tuticorin/Thoothukudi are place-name aliases; distinct FM variants were not substituted. No audible identity, programme-language, uptime or use approval inferred."
+    },
+    {
+      "id": "stage6-use-review",
+      "title": "Stage 6 direct end-user listening review decisions",
+      "url": null,
+      "kind": "editorial-review",
+      "notes": "Reviewed 2026-11-06. See docs/STAGE6-STREAM-DISCOVERY.md. Public player availability is not a third-party application grant. Direct listening, recording and redistribution remain separately unresolved; no allowed policy is assigned. Existing rightsStatus is untouched."
+    },
+    {
+      "id": "mirchi-stage6-website",
+      "title": "mirchi official broadcaster website review",
+      "url": "https://mirchi.in/stories",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Broadcaster homepage provenance only, not city-specific programme identity, streaming endpoint or app-use permission."
+    },
+    {
+      "id": "radio-city-stage6-website",
+      "title": "radio-city official broadcaster website review",
+      "url": "https://www.radiocity.in/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Broadcaster homepage provenance only, not city-specific programme identity, streaming endpoint or app-use permission."
+    },
+    {
+      "id": "big-fm-stage6-website",
+      "title": "big-fm official broadcaster website review",
+      "url": "https://www.bigfmindia.com/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Broadcaster homepage provenance only, not city-specific programme identity, streaming endpoint or app-use permission."
+    },
+    {
+      "id": "red-fm-stage6-website",
+      "title": "red-fm official broadcaster website review",
+      "url": "https://www.redfmindia.in/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Broadcaster homepage provenance only, not city-specific programme identity, streaming endpoint or app-use permission."
+    },
+    {
+      "id": "club-fm-stage6-website",
+      "title": "club-fm official broadcaster website review",
+      "url": "https://www.clubfm.in/",
+      "kind": "official",
+      "notes": "Reviewed 2026-11-06. Broadcaster homepage provenance only, not city-specific programme identity, streaming endpoint or app-use permission."
+    },
+    {
+      "id": "shakthi-player-stage8",
+      "title": "Shakthi FM official player configuration, reviewed 7 November 2026",
+      "kind": "official",
+      "url": "https://shakthifm.com/scripts.js",
+      "notes": "Official website player script publishes STREAM_URL https://mbc.thestreamtech.com:8086/index.html. Bounded GET returned AAC signature, audio/aacp, ICY Shakthi FM and CORS *. No playback decoding or third-party-use permission established. See docs/INTERNET-RADIO-CATALOGUE.md."
+    }
+  ],
+  "localization": {
+    "en": {
+      "catalog": {
+        "title": "Radio stations",
+        "networks": "Networks",
+        "stations": "Stations",
+        "countries": "Countries",
+        "states": "States / provinces",
+        "districts": "Districts",
+        "localities": "Cities / localities",
+        "languages": "Broadcast languages",
+        "genres": "Categories",
+        "allStations": "All stations",
+        "availableStreams": "Available streams",
+        "streamUnverified": "Stream not verified",
+        "streamUnavailable": "Stream unavailable",
+        "noStream": "Direct stream not available",
+        "candidate": "Needs review",
+        "reviewed": "Listing reviewed",
+        "listen": "Listen",
+        "source": "Source",
+        "coverage": "Coverage",
+        "search": "Search stations",
+        "noResults": "No stations found",
+        "global": "National / global",
+        "lastVerified": "Last verified"
+      },
+      "categories": {
+        "music": "Music",
+        "news": "News",
+        "general": "General",
+        "talk": "Talk",
+        "devotional": "Devotional",
+        "classical": "Classical",
+        "community": "Community"
+      },
+      "countries": {
+        "IN": "India",
+        "LK": "Sri Lanka"
+      },
+      "regions": {
+        "in-tn": "Tamil Nadu",
+        "in-kl": "Kerala",
+        "in-py": "Puducherry",
+        "lk-wp": "Western Province",
+        "lk-np": "Northern Province",
+        "lk-ep": "Eastern Province",
+        "lk-cp": "Central Province"
+      }
+    },
+    "ta": {
+      "catalog": {
+        "title": "வானொலி நிலையங்கள்",
+        "networks": "வானொலி வலையமைப்புகள்",
+        "stations": "நிலையங்கள்",
+        "countries": "நாடுகள்",
+        "states": "மாநிலங்கள் / மாகாணங்கள்",
+        "districts": "மாவட்டங்கள்",
+        "localities": "நகரங்கள் / ஊர்கள்",
+        "languages": "ஒலிபரப்பு மொழிகள்",
+        "genres": "வகைகள்",
+        "allStations": "அனைத்து நிலையங்கள்",
+        "availableStreams": "கிடைக்கும் இணைய ஒலிபரப்புகள்",
+        "streamUnverified": "இணைய ஒலிபரப்பு சரிபார்க்கப்படவில்லை",
+        "streamUnavailable": "இணைய ஒலிபரப்பு கிடைக்கவில்லை",
+        "noStream": "நேரடி இணைய ஒலிபரப்பு முகவரி இல்லை",
+        "candidate": "சரிபார்ப்பு தேவை",
+        "reviewed": "பட்டியல் சரிபார்க்கப்பட்டது",
+        "listen": "கேளுங்கள்",
+        "source": "ஆதாரம்",
+        "coverage": "ஒலிபரப்புப் பகுதி",
+        "search": "நிலையங்களைத் தேடுக",
+        "noResults": "நிலையங்கள் கிடைக்கவில்லை",
+        "global": "தேசிய / உலகளாவிய",
+        "lastVerified": "கடைசியாகச் சரிபார்த்தது"
+      },
+      "categories": {
+        "music": "இசை",
+        "news": "செய்திகள்",
+        "general": "பொது",
+        "talk": "உரையாடல்",
+        "devotional": "பக்தி",
+        "classical": "செவ்வியல் இசை",
+        "community": "சமூக வானொலி"
+      },
+      "countries": {
+        "IN": "இந்தியா",
+        "LK": "இலங்கை"
+      },
+      "regions": {
+        "in-tn": "தமிழ்நாடு",
+        "in-kl": "கேரளம்",
+        "in-py": "புதுச்சேரி",
+        "lk-wp": "மேல் மாகாணம்",
+        "lk-np": "வட மாகாணம்",
+        "lk-ep": "கிழக்கு மாகாணம்",
+        "lk-cp": "மத்திய மாகாணம்"
+      }
+    },
+    "sa": {
+      "catalog": {
+        "title": "आकाशवाणीकेन्द्राणि",
+        "networks": "प्रसारणजालानि",
+        "stations": "केन्द्राणि",
+        "countries": "देशाः",
+        "states": "राज्यानि / प्रान्ताः",
+        "districts": "जनपदाः",
+        "localities": "नगराणि / स्थानानि",
+        "languages": "प्रसारणभाषाः",
+        "genres": "वर्गाः",
+        "allStations": "सर्वाणि केन्द्राणि",
+        "availableStreams": "उपलब्धाः अन्तर्जालप्रसाराः",
+        "streamUnverified": "अन्तर्जालप्रसारः अपरीक्षितः",
+        "streamUnavailable": "अन्तर्जालप्रसारः अनुपलब्धः",
+        "noStream": "प्रत्यक्षप्रसारस्य सङ्केतः न उपलब्धः",
+        "candidate": "परीक्षा आवश्यकी",
+        "reviewed": "सूची परीक्षिता",
+        "listen": "शृणुत",
+        "source": "स्रोतः",
+        "coverage": "प्रसारणक्षेत्रम्",
+        "search": "केन्द्राणि अन्विष्यताम्",
+        "noResults": "केन्द्राणि न प्राप्तानि",
+        "global": "राष्ट्रीयम् / वैश्विकम्",
+        "lastVerified": "अन्तिमपरीक्षणम्"
+      },
+      "categories": {
+        "music": "सङ्गीतम्",
+        "news": "वार्ताः",
+        "general": "सामान्यम्",
+        "talk": "संवादः",
+        "devotional": "भक्तिः",
+        "classical": "शास्त्रीयसङ्गीतम्",
+        "community": "समुदायः"
+      },
+      "countries": {
+        "IN": "भारतम्",
+        "LK": "श्रीलङ्का"
+      },
+      "regions": {
+        "in-tn": "तमिलनाडुराज्यम्",
+        "in-kl": "केरलराज्यम्",
+        "in-py": "पुदुच्चेरी",
+        "lk-wp": "पश्चिमप्रान्तः",
+        "lk-np": "उत्तरप्रान्तः",
+        "lk-ep": "पूर्वप्रान्तः",
+        "lk-cp": "मध्यप्रान्तः"
+      }
+    }
+  }
+}
