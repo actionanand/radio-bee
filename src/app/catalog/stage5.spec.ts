@@ -1,3 +1,5 @@
+import { RADIO_API_CONFIG } from './radio-api.config';
+import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { StationArtworkComponent, artworkCandidates, FALLBACK_ARTWORK, logoUrl } from './station-artwork';
@@ -15,6 +17,10 @@ import { MEDIA_ENGINE } from '../player/media-engine';
 import { PlayerService } from '../player/player.service';
 
 const base = 'https://actionanand.github.io/radio-bee-data/v1/';
+// Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
+beforeEach(() => {
+  TestBed.configureTestingModule({ providers: [{ provide: RADIO_API_CONFIG, useValue: STRICT_RADIO_API_CONFIG }] });
+});
 describe('Station artwork', () => {
   it('retries once per successful catalogue snapshot, not on locale changes, stale errors or failed refreshes', async () => {
     const snapshot = validateCatalog(structuredClone(fixture));

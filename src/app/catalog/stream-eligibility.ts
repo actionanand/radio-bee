@@ -1,4 +1,6 @@
-import { Station, Stream } from './catalog.models';
+import { Station, Stream, Source } from './catalog.models';
+import { environment } from '../../environments/environment';
+import { RadioApiConfig, TECHNICAL_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 
 export type StreamStatus =
   | 'noStream'
@@ -17,48 +19,22 @@ export interface StreamEligibility {
   status: StreamStatus;
   stream: Stream | null;
 }
+export interface StreamPreference {
+  sources?: readonly Source[];
+  outcomes?: ReadonlyMap<string, 'playing' | 'failed'>;
+}
 
 /** One policy for cards and the player boundary. Listing review never grants playback permission. */
-export function streamEligibility(station: Pick<Station, 'streams'>, player: PlayerCapabilities): StreamEligibility {
-  return selectStream(station, player, true);
-}
-export function technicalStreamEligibility(
+export function streamEligibility(
   station: Pick<Station, 'streams'>,
   player: PlayerCapabilities,
-): StreamEligibility {
-  return selectStream(station, player, false);
-}
-function selectStream(
-  station: Pick<Station, 'streams'>,
-  player: PlayerCapabilities,
-  editorial: boolean,
+  policy: RadioApiConfig = environment.RadioApi,
+  preference: StreamPreference = {},
 ): StreamEligibility {
   if (!station.streams.length) return { status: 'noStream', stream: null };
-  const evaluate = (stream: Stream): StreamStatus => {
-    // Explicit restrictions also apply to controlled technical probes. A review label never grants rights.
-    if (
-      stream.directListening?.status === 'restricted' ||
-      (editorial && stream.directListening && stream.directListening.status !== 'allowed')
-    )
-      return 'permissionPending';
-    if (editorial && stream.verificationStatus === 'unavailable') return 'streamUnavailable';
-    if (editorial && stream.verificationStatus !== 'verified') return 'verificationPending';
-    if (editorial && stream.rightsStatus !== 'permission-granted') return 'permissionPending';
-    try {
-      const url = new URL(stream.url);
-      if (url.protocol !== 'https:' || url.username || url.password || !url.hostname) return 'invalidStream';
-    } catch {
-      return 'invalidStream';
-    }
-    if (!['mp3', 'aac', 'hls'].includes(stream.format)) return 'incompatibleStream';
-    if (!player.available) return 'playerUnavailable';
-    if (!player.supports(stream.format)) return 'incompatibleStream';
-    return 'ready';
-  };
-  const results = station.streams.map(stream => ({ status: evaluate(stream), stream }));
-  const ready = results.find(result => result.status === 'ready');
-  if (ready) return ready;
-  // Prefer the most actionable blocker; an unavailable alternative never hides an approved candidate.
+  const ready = eligibleStreams(station, player, policy, preference)[0];
+  if (ready) return { status: 'ready', stream: ready };
+  const statuses = station.streams.map(stream => streamStatus(stream, player, policy));
   const priority: StreamStatus[] = [
     'playerUnavailable',
     'incompatibleStream',
@@ -67,6 +43,61 @@ function selectStream(
     'verificationPending',
     'streamUnavailable',
   ];
-  const blocked = priority.map(status => results.find(result => result.status === status)).find(Boolean)!;
-  return { status: blocked.status, stream: null };
+  return { status: priority.find(status => statuses.includes(status))!, stream: null };
+}
+export function technicalStreamEligibility(
+  station: Pick<Station, 'streams'>,
+  player: PlayerCapabilities,
+): StreamEligibility {
+  return streamEligibility(station, player, TECHNICAL_RADIO_API_CONFIG);
+}
+function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioApiConfig): StreamStatus {
+  if (stream.directListening?.status === 'restricted') return 'permissionPending';
+  if (policy.CheckVerificationStatus) {
+    if (stream.verificationStatus === 'unavailable') return 'streamUnavailable';
+    if (
+      stream.verificationStatus !== 'verified' &&
+      !(policy.AllowUnverified && stream.verificationStatus === 'unverified')
+    )
+      return 'verificationPending';
+  }
+  if (
+    policy.CheckRightsStatus &&
+    (stream.rightsStatus !== 'permission-granted' ||
+      (stream.directListening && stream.directListening.status !== 'allowed'))
+  )
+    return 'permissionPending';
+  try {
+    const url = new URL(stream.url);
+    if (url.protocol !== 'https:' || url.username || url.password || !url.hostname) return 'invalidStream';
+  } catch {
+    return 'invalidStream';
+  }
+  if (!['mp3', 'aac', 'hls'].includes(stream.format)) return 'incompatibleStream';
+  if (!player.available) return 'playerUnavailable';
+  if (!player.supports(stream.format)) return 'incompatibleStream';
+  return 'ready';
+}
+
+/** Ranking is evidence of technical preference, never a rights/verification grant. */
+export function eligibleStreams(
+  station: Pick<Station, 'streams'>,
+  player: PlayerCapabilities,
+  policy: RadioApiConfig = environment.RadioApi,
+  preference: StreamPreference = {},
+): Stream[] {
+  const score = (stream: Stream) => {
+    const outcome = preference.outcomes?.get(stream.url);
+    const source = preference.sources?.find(source => source.id === stream.sourceId);
+    return (
+      (outcome === 'playing' ? 1000 : outcome === 'failed' ? -1000 : 0) +
+      (stream.verificationStatus === 'verified' ? 100 : stream.verificationStatus === 'unavailable' ? -100 : 0) +
+      (source && ['official', 'broadcaster'].includes(source.kind) ? 20 : 0)
+    );
+  };
+  return station.streams
+    .filter(stream => streamStatus(stream, player, policy) === 'ready')
+    .map((stream, index) => ({ stream, index, score: score(stream) }))
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map(item => item.stream);
 }

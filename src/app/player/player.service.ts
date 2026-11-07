@@ -1,43 +1,62 @@
 import { Service, inject, signal, effect, OnDestroy } from '@angular/core';
 import { CatalogService } from '../catalog/catalog.service';
 import { Station, Stream } from '../catalog/catalog.models';
-import { streamEligibility, technicalStreamEligibility } from '../catalog/stream-eligibility';
+import { eligibleStreams, streamEligibility } from '../catalog/stream-eligibility';
+import { RADIO_API_CONFIG } from '../catalog/radio-api.config';
 import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
 import { MEDIA_ENGINE } from './media-engine';
+
 export type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
+export const MAX_STREAM_ATTEMPTS = 3;
+
 @Service()
 export class PlayerService implements OnDestroy {
   private readonly testsEnabled = inject(LIVE_TEST_ENABLED);
-  readonly technicalTest = signal(false);
+  private readonly policy = inject(RADIO_API_CONFIG);
   private readonly engine = inject(MEDIA_ENGINE);
   private readonly catalog = inject(CatalogService);
   private attempt = 0;
   private loaded = false;
+  private attempted = new Set<string>();
+  private pinnedStreamId: string | undefined;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private readonly cleanups: (() => void)[] = [];
+  private readonly outcomes = signal<ReadonlyMap<string, 'playing' | 'failed'>>(new Map());
+  private readonly selectedStream = signal<Stream | null>(null);
+  readonly technicalTest = signal(false);
   readonly station = signal<Station | null>(null);
   readonly state = signal<PlaybackState>('idle');
   readonly error = signal('');
   readonly volume = signal(1);
   readonly muted = signal(false);
-  private readonly selectedStream = signal<Stream | null>(null);
   readonly capabilities = {
     available: !!this.engine,
     supports: (format: string) => this.engine?.supports(format) ?? false,
   };
+
   constructor() {
     effect(() => {
       const active = this.station();
-      const technical = this.technicalTest();
       const selected = this.selectedStream();
       const catalog = this.catalog.catalog();
       if (!active || !selected || !catalog || this.state() === 'error' || this.state() === 'idle') return;
-      const current = catalog.stations
-        .find(s => s.id === active.id)
-        ?.streams.find(s => s.id === selected.id && s.url === selected.url);
-      const eligibility = technical ? technicalStreamEligibility : streamEligibility;
-      if (!current || eligibility({ streams: [current] }, this.capabilities).status !== 'ready')
-        this.fail('playbackPermissionChanged');
+      const current = catalog.stations.find(station => station.id === active.id);
+      const currentStream = current?.streams.find(stream => stream.id === selected.id && stream.url === selected.url);
+      if (current && current !== active) this.station.set(current);
+      if (
+        !currentStream ||
+        streamEligibility({ streams: [currentStream] }, this.capabilities, this.policy).status !== 'ready'
+      ) {
+        if (this.state() === 'paused') {
+          // A catalogue refresh must never turn a user's pause into automatic playback.
+          ++this.attempt;
+          this.clearTimer();
+          this.loaded = false;
+          this.selectedStream.set(null);
+          this.engine?.clear();
+          if (!this.canResume()) this.terminate('playbackPermissionChanged');
+        } else void this.recover('playbackPermissionChanged', false);
+      }
     });
     const audio = this.engine?.audio;
     if (!audio) return;
@@ -46,31 +65,26 @@ export class PlayerService implements OnDestroy {
       this.cleanups.push(() => audio.removeEventListener(event, action));
     };
     listen('playing', () => {
-      if (this.station() && this.state() === 'loading') {
+      const selected = this.selectedStream();
+      if (selected && this.state() === 'loading') {
         this.clearTimer();
+        this.recordOutcome(selected.url, 'playing');
         this.state.set('playing');
       }
     });
-    listen('waiting', () => {
+    const buffering = () => {
       if (this.state() === 'playing') {
         this.state.set('loading');
         this.watchdog();
       }
-    });
-    listen('stalled', () => {
-      if (this.state() === 'playing') {
-        this.state.set('loading');
-        this.watchdog();
-      }
-    });
+    };
+    listen('waiting', buffering);
+    listen('stalled', buffering);
     listen('error', () => {
-      if (this.station()) this.fail('playbackError');
+      if (this.selectedStream() && ['loading', 'playing'].includes(this.state())) void this.recover('playbackError');
     });
     listen('ended', () => {
-      if (this.station()) {
-        this.clearTimer();
-        this.state.set('paused');
-      }
+      if (this.selectedStream() && ['loading', 'playing'].includes(this.state())) void this.recover('playbackError');
     });
     listen('pause', () => {
       if (this.station() && this.state() === 'playing') {
@@ -79,49 +93,72 @@ export class PlayerService implements OnDestroy {
       }
     });
   }
+  private current(id: string) {
+    return this.catalog.catalog()?.stations.find(station => station.id === id);
+  }
+  private preference() {
+    return { sources: this.catalog.catalog()?.sources, outcomes: this.outcomes() };
+  }
+  private candidates(station: Station, technical = this.technicalTest(), pinned = this.pinnedStreamId) {
+    return eligibleStreams(
+      { streams: station.streams.filter(stream => !technical || !pinned || stream.id === pinned) },
+      this.capabilities,
+      this.policy,
+      this.preference(),
+    );
+  }
   eligibility(station: Station) {
-    const current = this.catalog.catalog()?.stations.find(s => s.id === station.id);
-    return streamEligibility(current ?? { streams: [] }, this.capabilities);
+    return streamEligibility(
+      this.current(station.id) ?? { streams: [] },
+      this.capabilities,
+      this.policy,
+      this.preference(),
+    );
   }
   async play(station: Station): Promise<void> {
-    // Resolve the newest loaded metadata again, so callers cannot grant rights with an altered card object.
-    const current = this.catalog.catalog()?.stations.find(s => s.id === station.id);
-    const eligibility = current ? this.eligibility(current) : null;
-    if (!current || !eligibility?.stream || eligibility.status !== 'ready' || !this.engine) return;
-    this.technicalTest.set(false);
-    await this.start(current, eligibility.stream);
+    await this.begin(station.id, false);
   }
   technicalEligibility(id: string, streamId?: string) {
-    const station = this.testsEnabled ? this.catalog.catalog()?.stations.find(station => station.id === id) : null;
-    return technicalStreamEligibility(
+    const station = this.testsEnabled ? this.current(id) : undefined;
+    return streamEligibility(
       { streams: station?.streams.filter(stream => !streamId || stream.id === streamId) ?? [] },
       this.capabilities,
+      this.policy,
+      this.preference(),
     );
   }
   async playTechnical(id: string, streamId?: string): Promise<void> {
-    const station = this.testsEnabled ? this.catalog.catalog()?.stations.find(station => station.id === id) : null;
-    const result = this.technicalEligibility(id, streamId);
-    if (!station || result.status !== 'ready' || !result.stream) return;
-    this.technicalTest.set(true);
-    await this.start(station, result.stream);
+    if (this.testsEnabled) await this.begin(id, true, streamId);
   }
-  canResume(): boolean {
+  private async begin(id: string, technical: boolean, pinned?: string): Promise<void> {
+    const station = this.current(id);
+    if (!station || !this.engine || !this.candidates(station, technical, pinned).length) return;
+    ++this.attempt;
+    this.clearTimer();
+    this.attempted = new Set();
+    this.pinnedStreamId = pinned;
+    this.technicalTest.set(technical);
+    this.station.set(station);
+    this.error.set('');
+    await this.loadNext();
+  }
+  private async loadNext(failure = 'playbackError'): Promise<void> {
     const station = this.station();
-    return (
-      !!station &&
-      (this.technicalTest() ? this.technicalEligibility(station.id) : this.eligibility(station)).status === 'ready'
-    );
-  }
-  private async start(current: Station, stream: Stream): Promise<void> {
-    if (!this.engine) return;
+    const current = station && this.current(station.id);
+    const stream = current && this.candidates(current).find(stream => !this.attempted.has(stream.url));
+    if (!current || !stream || !this.engine || this.attempted.size >= MAX_STREAM_ATTEMPTS) {
+      this.terminate(failure);
+      return;
+    }
     const attempt = ++this.attempt;
     this.clearTimer();
-    this.engine.clear();
     this.loaded = false;
+    this.state.set('loading');
+    this.selectedStream.set(null);
+    this.engine.clear();
     this.station.set(current);
     this.selectedStream.set(stream);
-    this.error.set('');
-    this.state.set('loading');
+    this.attempted.add(stream.url);
     this.watchdog();
     try {
       await this.engine.load(stream);
@@ -130,50 +167,75 @@ export class PlayerService implements OnDestroy {
       this.engine.audio.volume = this.volume();
       this.engine.audio.muted = this.muted();
       await this.engine.audio.play();
-      // The playing event, rather than a fulfilled request alone, confirms actual playback.
+      // Only the actual playing event changes Connecting to Playing.
     } catch (cause) {
-      if (attempt === this.attempt)
-        this.fail(
-          cause && typeof cause === 'object' && 'name' in cause && cause.name === 'NotAllowedError'
-            ? 'playbackBlocked'
-            : 'playbackError',
-        );
+      if (attempt !== this.attempt) return;
+      if (this.blocked(cause)) this.terminate('playbackBlocked');
+      else await this.recover('playbackError');
     }
   }
+  private async recover(message: string, mediaFailure = true): Promise<void> {
+    const selected = this.selectedStream();
+    if (selected && mediaFailure) this.recordOutcome(selected.url, 'failed');
+    const cancellation = ++this.attempt;
+    this.clearTimer();
+    this.loaded = false;
+    this.selectedStream.set(null);
+    this.state.set('loading');
+    const station = this.station();
+    const current = station && this.current(station.id);
+    if (
+      !current ||
+      this.attempted.size >= MAX_STREAM_ATTEMPTS ||
+      !this.candidates(current).some(stream => !this.attempted.has(stream.url))
+    ) {
+      this.terminate(message);
+      return;
+    }
+    this.engine?.clear();
+    // Leave the failing adapter's callback before replacing/destroying its media.
+    await Promise.resolve();
+    if (cancellation === this.attempt && this.state() === 'loading') await this.loadNext(message);
+  }
+  canResume(): boolean {
+    const station = this.station();
+    const current = station && this.current(station.id);
+    return !!current && this.candidates(current).length > 0;
+  }
   pause(): void {
+    if (!this.station()) return;
     ++this.attempt;
     this.clearTimer();
     this.state.set('paused');
     if (this.loaded) this.engine?.audio.pause();
-    else this.engine?.clear();
+    else {
+      this.selectedStream.set(null);
+      this.engine?.clear();
+    }
   }
   async resume(): Promise<void> {
     const station = this.station();
+    if (!station) return;
+    const current = this.current(station.id);
     const selected = this.selectedStream();
-    const current = this.catalog
-      .catalog()
-      ?.stations.find(candidate => candidate.id === station?.id)
-      ?.streams.find(stream => stream.id === selected?.id && stream.url === selected.url);
-    const check = this.technicalTest() ? technicalStreamEligibility : streamEligibility;
-    if (this.loaded && current && check({ streams: [current] }, this.capabilities).status === 'ready' && this.engine) {
+    const valid =
+      current && this.candidates(current).some(stream => stream.id === selected?.id && stream.url === selected.url);
+    if (this.loaded && valid && this.engine) {
       const attempt = ++this.attempt;
       this.error.set('');
       this.state.set('loading');
       this.watchdog();
       try {
         await this.engine.audio.play();
-      } catch (error) {
-        if (attempt === this.attempt)
-          this.fail(
-            error instanceof DOMException && error.name === 'NotAllowedError' ? 'playbackBlocked' : 'playbackError',
-          );
+      } catch (cause) {
+        if (attempt === this.attempt) {
+          if (this.blocked(cause)) this.terminate('playbackBlocked');
+          else await this.recover('playbackError');
+        }
       }
-      return;
-    }
-    if (station) {
-      if (this.technicalTest()) await this.playTechnical(station.id, selected?.id);
-      else await this.play(station);
-    }
+    } else if (this.canResume()) {
+      await this.begin(station.id, this.technicalTest(), this.pinnedStreamId);
+    } else this.terminate('playbackPermissionChanged');
   }
   stateFor(station: Station): PlaybackState {
     return this.station()?.id === station.id ? this.state() : 'idle';
@@ -181,15 +243,17 @@ export class PlayerService implements OnDestroy {
   async toggle(station: Station): Promise<void> {
     const state = this.stateFor(station);
     if (state === 'playing' || state === 'loading') this.pause();
-    else if (state === 'paused' || state === 'error') await this.resume();
+    else if ((state === 'paused' || state === 'error') && !this.technicalTest()) await this.resume();
     else await this.play(station);
   }
   stop(): void {
     ++this.attempt;
     this.clearTimer();
     this.station.set(null);
-    this.technicalTest.set(false);
     this.selectedStream.set(null);
+    this.technicalTest.set(false);
+    this.pinnedStreamId = undefined;
+    this.attempted.clear();
     this.loaded = false;
     this.state.set('idle');
     this.error.set('');
@@ -205,20 +269,30 @@ export class PlayerService implements OnDestroy {
     this.muted.update(value => !value);
     if (this.engine) this.engine.audio.muted = this.muted();
   }
+  private blocked(cause: unknown): boolean {
+    return !!cause && typeof cause === 'object' && 'name' in cause && cause.name === 'NotAllowedError';
+  }
+  private recordOutcome(url: string, outcome: 'playing' | 'failed') {
+    this.outcomes.update(previous => new Map(previous).set(url, outcome));
+  }
   private clearTimer() {
     if (this.timer) clearTimeout(this.timer);
     this.timer = undefined;
   }
   private watchdog() {
     this.clearTimer();
-    this.timer = setTimeout(() => this.fail('playbackTimeout'), 20000);
+    const attempt = this.attempt;
+    this.timer = setTimeout(() => {
+      if (attempt === this.attempt) void this.recover('playbackTimeout');
+    }, 20000);
   }
-  private fail(message: string) {
+  private terminate(message: string) {
     ++this.attempt;
     this.clearTimer();
+    this.loaded = false;
+    this.selectedStream.set(null);
     this.state.set('error');
     this.error.set(message);
-    this.loaded = false;
     this.engine?.clear();
   }
   ngOnDestroy(): void {

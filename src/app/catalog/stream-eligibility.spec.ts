@@ -1,7 +1,14 @@
-import { streamEligibility, technicalStreamEligibility, PlayerCapabilities } from './stream-eligibility';
+import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
+import {
+  streamEligibility as configuredEligibility,
+  technicalStreamEligibility,
+  PlayerCapabilities,
+} from './stream-eligibility';
 import { Station, Stream, emptyFilters, filterStations } from './catalog.models';
 import { fixture } from './catalog.fixture';
 import { validateCatalog } from './catalog.validation';
+const streamEligibility: typeof configuredEligibility = (station, player) =>
+  configuredEligibility(station, player, STRICT_RADIO_API_CONFIG);
 const approved: Stream = {
   id: 'test',
   url: 'https://media.example.test/live.mp3',

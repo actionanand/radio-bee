@@ -150,4 +150,21 @@ describe('Browser media adapter', () => {
     await loading;
     engine.clear();
   });
+  it('ignores attachment, manifest and fatal callbacks from an adapter discarded during fallback', async () => {
+    const fake = fakeHls(),
+      engine = existing(createMediaEngine(fake.factory));
+    const pending = engine.load({ ...stream, format: 'hls' });
+    const cancellation = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    await engine.load(stream);
+    await cancellation;
+    const error = vi.fn();
+    engine.audio.addEventListener('error', error);
+    fake.attached();
+    fake.manifest();
+    fake.fatal();
+    expect(fake.adapter.loadSource).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+    expect(engine.audio.src).toBe(stream.url);
+    engine.clear();
+  });
 });

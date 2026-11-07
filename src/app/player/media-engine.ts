@@ -50,8 +50,10 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
   audio.preload = 'none';
   let hls: HlsAdapter | null = null;
   let cancel: (() => void) | null = null;
+  let generation = 0;
   const nativeHls = () => !!audio.canPlayType('application/vnd.apple.mpegurl');
   const clear = () => {
+    ++generation;
     cancel?.();
     cancel = null;
     hls?.destroy();
@@ -77,15 +79,21 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
         return;
       }
       await new Promise<void>((resolve, reject) => {
+        const currentGeneration = generation;
         cancel = () => reject(new DOMException('Cancelled', 'AbortError'));
         const instance = factory.create();
         hls = instance;
-        instance.onAttached(() => instance.loadSource(stream.url));
+        const active = () => hls === instance && generation === currentGeneration;
+        instance.onAttached(() => {
+          if (active()) instance.loadSource(stream.url);
+        });
         instance.onManifest(() => {
+          if (!active()) return;
           cancel = null;
           resolve();
         });
         instance.onFatal(() => {
+          if (!active()) return;
           cancel = null;
           reject(new Error('HLS failure'));
           audio.dispatchEvent(new Event('error'));

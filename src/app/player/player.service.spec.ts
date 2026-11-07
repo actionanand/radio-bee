@@ -1,3 +1,5 @@
+import { RADIO_API_CONFIG } from '../catalog/radio-api.config';
+import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { Catalog, Station } from '../catalog/catalog.models';
@@ -7,6 +9,10 @@ import { CatalogService } from '../catalog/catalog.service';
 import { MEDIA_ENGINE, MediaEngine } from './media-engine';
 import { PlayerService } from './player.service';
 import type { Mock } from 'vitest';
+// Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
+beforeEach(() => {
+  TestBed.configureTestingModule({ providers: [{ provide: RADIO_API_CONFIG, useValue: STRICT_RADIO_API_CONFIG }] });
+});
 describe('Functional player service', () => {
   let c: Catalog;
   let station: Station;

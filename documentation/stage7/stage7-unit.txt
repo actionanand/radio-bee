@@ -1,0 +1,39 @@
+
+> radio-bee@0.0.1 test:ci
+> ng test --watch=false
+
+❯ Building...
+✔ Building...
+Application bundle generation complete. [18.781 seconds] - 2026-11-07T08:12:29.224Z
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/AR_Files/code/radio-bee[39m
+
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stream-eligibility.spec.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/configurable-eligibility.spec.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/media-engine.spec.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/live-test/live-test.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-details.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/player.service.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 96[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/configurable-player.spec.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 217[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/app.component.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/home/home.page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 284[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/catalog.spec.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 894[2mms[22m[39m
+     [33m[2m✓[22m[39m renders unverified stations with no playback controls [33m 732[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage5.spec.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1025[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps search, favorites, grouping and India-only advanced filtering integrated [33m 640[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-playback.spec.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1109[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage6.spec.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 1209[2mms[22m[39m
+     [33m[2m✓[22m[39m combines Listen now with filters and recomputes eligibility on catalogue refresh [33m 638[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-browser.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1762[2mms[22m[39m
+     [33m[2m✓[22m[39m renders and restores the correct controls in en [33m 1066[2mms[22m[39m
+     [33m[2m✓[22m[39m renders and restores the correct controls in ta [33m 410[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/configurable-browser.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 2455[2mms[22m[39m
+     [33m[2m✓[22m[39m agrees throughout the UI for {"AllowUnverified":false,"CheckVerificationStatus":false,"CheckRightsStatus":false} [33m 931[2mms[22m[39m
+     [33m[2m✓[22m[39m agrees throughout the UI for {"AllowUnverified":false,"CheckVerificationStatus":false,"CheckRightsStatus":true} [33m 370[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+[2m      Tests [22m [1m[32m192 passed[39m[22m[90m (192)[39m
+[2m   Start at [22m 13:42:37
+[2m   Duration [22m 88.83s[2m (transform 292.53s, setup 86.23s, import 397.39s, tests 9.38s, environment 417.55s)[22m
+

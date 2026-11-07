@@ -2,7 +2,14 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import type { RadioApiConfig } from './radio-api.config';
+
 export const environment = {
+  RadioApi: {
+    AllowUnverified: true,
+    CheckVerificationStatus: false,
+    CheckRightsStatus: false,
+  } satisfies RadioApiConfig,
   liveStreamTests: false,
   production: false,
   catalogSeedUrl: 'assets/catalog-development-seed.json',
