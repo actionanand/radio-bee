@@ -55,6 +55,7 @@ export function technicalStreamEligibility(
 }
 function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioApiConfig): StreamStatus {
   if (stream.directListening?.status === 'restricted') return 'permissionPending';
+  if (stream.verificationStatus === 'unverified' && !policy.AllowUnverified) return 'verificationPending';
   if (policy.CheckVerificationStatus) {
     if (stream.verificationStatus === 'unavailable') return 'streamUnavailable';
     if (

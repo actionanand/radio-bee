@@ -25,12 +25,14 @@ export const CAPTURE_ACCESS = new InjectionToken('CAPTURE_ACCESS', {
   providedIn: 'root',
   factory: () => ({ check: checkCaptureAccess }),
 });
-export function recordingPermission(stream: Stream): 'blocked' | 'acknowledgment' | 'allowed' {
-  return stream.directListening?.status === 'restricted' || stream.directListening?.recording === 'prohibited'
-    ? 'blocked'
-    : stream.directListening?.recording === 'permission-granted'
-      ? 'allowed'
-      : 'acknowledgment';
+export function recordingPermission(
+  stream: Stream,
+  allowProhibitedRecording = false,
+): 'blocked' | 'acknowledgment' | 'allowed' {
+  if (stream.directListening?.status === 'restricted') return 'blocked';
+  if (stream.directListening?.recording === 'prohibited')
+    return allowProhibitedRecording ? 'acknowledgment' : 'blocked';
+  return stream.directListening?.recording === 'permission-granted' ? 'allowed' : 'acknowledgment';
 }
 @Service()
 export class RecordingService implements OnDestroy {
@@ -50,7 +52,7 @@ export class RecordingService implements OnDestroy {
   readonly file = signal<Blob | null>(null);
   readonly permission = computed(() => {
     const source = this.player.captureSource();
-    return source ? recordingPermission(source.stream) : 'unavailable';
+    return source ? recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) : 'unavailable';
   });
   private handle: CaptureHandle | undefined;
   private controller: AbortController | undefined;
@@ -83,7 +85,7 @@ export class RecordingService implements OnDestroy {
       const source = this.player.captureSource();
       if (
         ['starting', 'recording'].includes(this.state()) &&
-        (!source || recordingPermission(source.stream) === 'blocked')
+        (!source || recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) === 'blocked')
       )
         this.stop();
     });
@@ -110,7 +112,7 @@ export class RecordingService implements OnDestroy {
       ['preparing', 'starting', 'recording', 'stopping', 'exporting'].includes(this.state())
     )
       return;
-    const permission = recordingPermission(source.stream);
+    const permission = recordingPermission(source.stream, this.config.AllowProhibitedRecording === true);
     if (permission === 'blocked' || (permission === 'acknowledgment' && !acknowledged)) {
       this.message.set(permission === 'blocked' ? 'recordingProhibited' : 'recordingConsent');
       return;
@@ -155,8 +157,9 @@ export class RecordingService implements OnDestroy {
         !latest ||
         latest.station.id !== source.station.id ||
         latest.stream.url !== source.stream.url ||
-        recordingPermission(latest.stream) === 'blocked' ||
-        (recordingPermission(latest.stream) === 'acknowledgment' && !acknowledged)
+        recordingPermission(latest.stream, this.config.AllowProhibitedRecording === true) === 'blocked' ||
+        (recordingPermission(latest.stream, this.config.AllowProhibitedRecording === true) === 'acknowledgment' &&
+          !acknowledged)
       )
         throw Error('Cancelled');
       this.preparation = undefined;

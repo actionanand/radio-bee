@@ -22,7 +22,7 @@ import { environment as production } from '../../environments/environment.prod';
 import { environment as technical } from '../../environments/environment.live-test';
 import { PlaybackError } from '../player/playback-failure';
 
-function setup(enabled = true) {
+function setup(enabled = true, allowProhibitedRecording = false) {
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -40,7 +40,7 @@ function setup(enabled = true) {
   const data = { catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
-      { provide: RADIO_RECORDING, useValue: { Enabled: enabled } },
+      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording } },
       { provide: CatalogService, useValue: data },
       { provide: MEDIA_ENGINE, useValue: { audio, supports: () => true, load: async () => undefined, clear: vi.fn() } },
       { provide: CAPTURE_FACTORY, useValue: create },
@@ -97,8 +97,9 @@ describe('Configured recording and explicit source policy', () => {
   });
   it('accepts independently configured recording booleans in every environment without altering RadioApi', () => {
     for (const e of [environment, production, technical]) {
-      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled']);
+      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled', 'AllowProhibitedRecording']);
       expect(typeof e.RadioRecording.Enabled).toBe('boolean'); // Neither true nor false is a CI release gate.
+      expect(typeof e.RadioRecording.AllowProhibitedRecording).toBe('boolean');
       expect(e.RadioApi).toEqual({ AllowUnverified: true, CheckVerificationStatus: false, CheckRightsStatus: false });
     }
   });
@@ -130,6 +131,27 @@ describe('Configured recording and explicit source policy', () => {
     stream.directListening!.recording = 'permission-granted';
     stream.directListening!.status = 'restricted';
     expect(recordingPermission(stream)).toBe('blocked');
+  });
+  it('requires a deliberate opt-in and user acknowledgment before recording a prohibited stream', async () => {
+    const s = setup(true, true);
+    await playing(s);
+    const stream = s.station.streams[0];
+    stream.directListening!.recording = 'prohibited';
+    const service = TestBed.inject(RecordingService);
+    expect(recordingPermission(stream)).toBe('blocked');
+    expect(recordingPermission(stream, true)).toBe('acknowledgment');
+    expect(service.permission()).toBe('acknowledgment');
+    await service.start(false);
+    expect(s.create).not.toHaveBeenCalled();
+    await service.start(true);
+    expect(s.create).toHaveBeenCalledOnce();
+  });
+  it('does not override a stream restricted for listening', () => {
+    const s = setup(true, true);
+    const stream = s.station.streams[0];
+    stream.directListening!.recording = 'prohibited';
+    stream.directListening!.status = 'restricted';
+    expect(recordingPermission(stream, true)).toBe('blocked');
   });
   it('starts only on request and claims recording only after genuine-data confirmation', async () => {
     const s = setup();

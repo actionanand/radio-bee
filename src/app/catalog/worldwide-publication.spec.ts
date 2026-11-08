@@ -28,6 +28,9 @@ it('allows decoded unverified candidates under trial policy while preserving str
   for (const s of c.stations) {
     expect(streamEligibility(s, capabilities, TECHNICAL_RADIO_API_CONFIG).status).toBe('ready');
     expect(streamEligibility(s, capabilities, STRICT_RADIO_API_CONFIG).status).not.toBe('ready');
+    expect(streamEligibility(s, capabilities, { ...TECHNICAL_RADIO_API_CONFIG, AllowUnverified: false }).status).toBe(
+      'verificationPending',
+    );
     expect(s.streams[0].rightsStatus).toBe('unconfirmed');
   }
   const s = structuredClone(c.stations[0]);

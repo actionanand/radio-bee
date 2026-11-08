@@ -23,7 +23,7 @@ export const extraEnglish = {
   recordingStarting: 'Waiting for stream audio…',
   recordingReady: 'Recording ready to export',
   recordingConsent:
-    'Recording permission is unconfirmed. I acknowledge this and take responsibility for this experimental capture. Do not redistribute.',
+    'Recording may be unconfirmed or prohibited by the broadcaster. I confirm I have permission for this experimental recording and will not redistribute it.',
   recordingProhibited: 'Recording is prohibited for this stream.',
   recordingUnsupported: 'This browser or stream does not support recording. Listening can continue.',
   recordingError: 'Recording could not continue. Listening is unaffected. Try another supported stream.',
@@ -59,7 +59,7 @@ export const extraTamil: typeof extraEnglish = {
   recordingStarting: 'ஒலிக்காகக் காத்திருக்கிறது…',
   recordingReady: 'பதிவு ஏற்றுமதிக்குத் தயார்',
   recordingConsent:
-    'பதிவு அனுமதி உறுதியாகவில்லை. இதை ஏற்று, சோதனைப் பதிவுக்குப் பொறுப்பேற்கிறேன். மறுவிநியோகம் செய்ய வேண்டாம்.',
+    'பதிவு அனுமதி உறுதியாகாமலோ ஒலிபரப்பாளரால் தடைசெய்யப்பட்டதாகவோ இருக்கலாம். இந்தச் சோதனைப் பதிவிற்கு எனக்கு அனுமதி உள்ளது என்பதை உறுதிப்படுத்துகிறேன். மறுவிநியோகம் செய்ய மாட்டேன்.',
   recordingProhibited: 'இந்த ஒலிபரப்பைப் பதிவு செய்யத் தடை உள்ளது.',
   recordingUnsupported: 'இந்த உலாவி அல்லது ஒலிபரப்பில் பதிவு ஆதரவு இல்லை. தொடர்ந்து கேட்கலாம்.',
   recordingError: 'பதிவைத் தொடர முடியவில்லை. கேட்பது பாதிக்கப்படாது. வேறு ஒலிபரப்பை முயலவும்.',
@@ -95,7 +95,7 @@ export const extraSanskrit: typeof extraEnglish = {
   recordingStarting: 'ध्वनेः प्रतीक्षा…',
   recordingReady: 'मुद्रणं निर्याताय सज्जम्',
   recordingConsent:
-    'मुद्रणानुमतिः अनिश्चिता। एतत् ज्ञात्वा प्रयोगमुद्रणस्य उत्तरदायित्वं स्वीकरोमि। पुनर्वितरणं मा कुरु।',
+    'मुद्रणानुमतिः अनिश्चिता अथवा प्रसारकेण निषिद्धा स्यात्। अस्य परीक्षणमुद्रणस्य आवश्यकानुमतिः मम अस्ति इति पुष्णामि। पुनर्वितरणं न करिष्यामि।',
   recordingProhibited: 'अस्य प्रसारस्य मुद्रणं निषिद्धम्।',
   recordingUnsupported: 'अत्र ब्राउज़रे अथवा प्रसारे मुद्रणं न समर्थितम्। श्रवणं निरन्तरं भवतु।',
   recordingError: 'मुद्रणं न चलति। श्रवणं न बाध्यते। अन्यं प्रसारं प्रयतस्व।',

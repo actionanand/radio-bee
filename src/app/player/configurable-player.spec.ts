@@ -72,7 +72,7 @@ describe('Configurable player and bounded fallback', () => {
         const policy = { AllowUnverified, CheckVerificationStatus, CheckRightsStatus };
         it(`uses the same injected policy for eligibility and play ${JSON.stringify(policy)}`, async () => {
           const { player, station, load } = setup(policy);
-          const expected = (!CheckVerificationStatus || AllowUnverified) && !CheckRightsStatus;
+          const expected = AllowUnverified && !CheckRightsStatus;
           expect(player.eligibility(station).status === 'ready').toBe(expected);
           await player.play(station);
           expect(load).toHaveBeenCalledTimes(expected ? 1 : 0);
