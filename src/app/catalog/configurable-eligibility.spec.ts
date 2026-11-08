@@ -53,9 +53,10 @@ describe('Environment-controlled stream policy', () => {
               directListening: status ? review(status) : undefined,
             };
             const verificationAllowed =
-              !policy.CheckVerificationStatus ||
-              verificationStatus === 'verified' ||
-              (verificationStatus === 'unverified' && policy.AllowUnverified);
+              (verificationStatus !== 'unverified' || policy.AllowUnverified) &&
+              (!policy.CheckVerificationStatus ||
+                verificationStatus === 'verified' ||
+                (verificationStatus === 'unverified' && policy.AllowUnverified));
             const rightsAllowed =
               !policy.CheckRightsStatus || (rightsStatus === 'permission-granted' && (!status || status === 'allowed'));
             expect(

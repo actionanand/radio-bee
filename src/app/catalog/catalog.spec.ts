@@ -132,7 +132,7 @@ describe('Catalogue loading and cache', () => {
     expect(s.catalog()?.stations.length).toBe(81);
     expect(saved.size).toBe(1);
     await s.start();
-    expect(requests.length).toBe(10);
+    expect(requests.length).toBe(11);
   });
   it('retains last good snapshot after partial download and validation failure', async () => {
     const s = TestBed.inject(CatalogService);

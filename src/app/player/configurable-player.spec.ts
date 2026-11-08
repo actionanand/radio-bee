@@ -72,7 +72,7 @@ describe('Configurable player and bounded fallback', () => {
         const policy = { AllowUnverified, CheckVerificationStatus, CheckRightsStatus };
         it(`uses the same injected policy for eligibility and play ${JSON.stringify(policy)}`, async () => {
           const { player, station, load } = setup(policy);
-          const expected = (!CheckVerificationStatus || AllowUnverified) && !CheckRightsStatus;
+          const expected = AllowUnverified && !CheckRightsStatus;
           expect(player.eligibility(station).status === 'ready').toBe(expected);
           await player.play(station);
           expect(load).toHaveBeenCalledTimes(expected ? 1 : 0);
@@ -180,12 +180,12 @@ describe('Configurable player and bounded fallback', () => {
     vi.useFakeTimers();
     const { player, station, load } = setup();
     await player.play(station);
-    await vi.advanceTimersByTimeAsync(40000);
-    expect(load).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(82000);
+    expect(load).toHaveBeenCalledTimes(4);
     expect(player.state()).toBe('error');
     expect(player.error()).toBe('playbackTimeout');
     await vi.advanceTimersByTimeAsync(100000);
-    expect(load).toHaveBeenCalledTimes(2);
+    expect(load).toHaveBeenCalledTimes(4);
   });
   it('does not use alternate URLs to bypass browser gesture restrictions', async () => {
     const { player, station, load, audio } = setup();

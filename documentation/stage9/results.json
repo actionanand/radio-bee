@@ -1,0 +1,1889 @@
+{
+  "startedAt": "2026-11-08T04:02:54.628Z",
+  "catalogVersion": "1.4.0",
+  "stations": 24,
+  "streams": 26,
+  "recordingEnabled": true,
+  "attempts": [
+    {
+      "label": "cold1",
+      "injectedFailure": null,
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": false,
+      "outcome": "No continuous decoded playback within the bounded observation window",
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1427.699999988079,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1443.199999988079,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 1996.5999999940395,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1999.0999999940395,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 2720.699999988079,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 2721.199999988079,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 2960,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 2964.2999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110577199,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110577786,
+          "elapsedMs": 587,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110577788,
+          "elapsedMs": 589,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 715
+        },
+        {
+          "timestamp": 1794110578508,
+          "elapsedMs": 1309,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110578750,
+          "elapsedMs": 1551,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110578750,
+          "elapsedMs": 1551,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "error",
+          "result": "exhausted",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": false
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": true,
+        "ready": 0,
+        "bytes": 0,
+        "time": 0,
+        "engine": "MediaSource"
+      }
+    },
+    {
+      "label": "cold2",
+      "injectedFailure": null,
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110598899.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110607235.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110615566.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110623902.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuitySeconds": 7.704743999999998,
+      "decodedBytes": 65035,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1207.7000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1208.9000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "waiting",
+          "at": 1740.7000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 2028.9000000059605,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 2207.5,
+          "time": 26.009999,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 2207.5,
+          "time": 26.009999,
+          "ready": 4,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110625737,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110626756,
+          "elapsedMs": 1019,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 67066,
+        "time": 33.719165,
+        "engine": "MediaSource"
+      }
+    },
+    {
+      "label": "cold3",
+      "injectedFailure": null,
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110607235.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110615566.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110623902.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110632235.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuitySeconds": 8.010693,
+      "decodedBytes": 67486,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 752.7999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 756.2999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "waiting",
+          "at": 1253.8999999910593,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 1502.2999999970198,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 1540.2999999970198,
+          "time": 26.006,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 1540.2999999970198,
+          "time": 26.006,
+          "ready": 4,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110635851,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110636660,
+          "elapsedMs": 809,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 69799,
+        "time": 34.02579,
+        "engine": "MediaSource"
+      }
+    },
+    {
+      "label": "first-failure",
+      "injectedFailure": "first",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "mime": "text/plain; charset=utf-8",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8"
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110615566.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110623902.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110632235.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "mime": "application/vnd.apple.mpegurl",
+          "cors": "*",
+          "redirectedFrom": null
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110640567.ts",
+          "status": 200,
+          "mime": "video/mp2t",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 7.995676000000003,
+      "decodedBytes": 67270,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1109.0999999940395,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1112.5,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 1132.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1137.5999999940395,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1883.5999999940395,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1883.7999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "waiting",
+          "at": 2404.0999999940395,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 2658.7999999970198,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 2696.0999999940395,
+          "time": 26.005,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 2696.2000000029802,
+          "time": 26.005,
+          "ready": 4,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110646102,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110646147,
+          "elapsedMs": 45,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110646149,
+          "elapsedMs": 47,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 737
+        },
+        {
+          "timestamp": 1794110646898,
+          "elapsedMs": 796,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110647711,
+          "elapsedMs": 1609,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 69402,
+        "time": 34.004299,
+        "engine": "MediaSource"
+      }
+    },
+    {
+      "label": "persistent",
+      "injectedFailure": "persistent",
+      "responses": [],
+      "failures": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": false,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1573.8999999910593,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1576.5,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 1595.5,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1601.7999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 2176,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 2176.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 2178.8999999910593,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 2180.7999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110657603,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110657647,
+          "elapsedMs": 44,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110657648,
+          "elapsedMs": 45,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 576
+        },
+        {
+          "timestamp": 1794110658226,
+          "elapsedMs": 623,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110658230,
+          "elapsedMs": 627,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110658230,
+          "elapsedMs": 627,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "error",
+          "result": "exhausted",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": false
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": true,
+        "ready": 0,
+        "bytes": 0,
+        "time": 0,
+        "engine": "MediaSource"
+      },
+      "exhausted": true
+    },
+    {
+      "label": "stop",
+      "injectedFailure": "first",
+      "responses": [],
+      "failures": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": false,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1093.5,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1094.7000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 1117.800000011921,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1121.4000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1268.5,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110663689,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110663736,
+          "elapsedMs": 47,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110663738,
+          "elapsedMs": 49,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 532
+        },
+        {
+          "timestamp": 1794110663876,
+          "elapsedMs": 187,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "cancelled"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": true,
+        "ready": 0,
+        "bytes": 0,
+        "time": 0,
+        "engine": "MediaSource"
+      },
+      "cancelled": true
+    },
+    {
+      "label": "pause",
+      "injectedFailure": "first",
+      "responses": [],
+      "failures": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": false,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 952.7000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 954.1000000089407,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 978.1000000089407,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 981.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1095.9000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110666605,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110666652,
+          "elapsedMs": 47,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110666653,
+          "elapsedMs": 48,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 624
+        },
+        {
+          "timestamp": 1794110666763,
+          "elapsedMs": 158,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "paused",
+          "result": "cancelled"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": true,
+        "ready": 0,
+        "bytes": 0,
+        "time": 0,
+        "engine": "MediaSource"
+      },
+      "cancelled": true
+    },
+    {
+      "label": "switch",
+      "injectedFailure": "first",
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "mime": "audio/mpeg; charset=UTF-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 8.002618,
+      "decodedBytes": 127895,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1027,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1035.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 1053.4000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1056.2999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1187.2999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "waiting",
+          "at": 1187.7999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadstart",
+          "at": 1187.7999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 2788,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 2849.2000000029802,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 2849.2999999970198,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110669559,
+          "elapsedMs": 0,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110669608,
+          "elapsedMs": 49,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110669610,
+          "elapsedMs": 51,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 596
+        },
+        {
+          "timestamp": 1794110669723,
+          "elapsedMs": 0,
+          "stationId": "sooriyan-srilanka",
+          "streamId": "sooriyan-official-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110671404,
+          "elapsedMs": 1681,
+          "stationId": "sooriyan-srilanka",
+          "streamId": "sooriyan-official-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 149211,
+        "time": 9.027818,
+        "engine": "native"
+      }
+    },
+    {
+      "label": "sooriyan",
+      "injectedFailure": null,
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "mime": "audio/mpeg; charset=UTF-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 8.048742,
+      "decodedBytes": 128732,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 814.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "waiting",
+          "at": 815.5,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadstart",
+          "at": 815.7000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 2356.7000000029802,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 2370.1000000089407,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 2370.1000000089407,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110681909,
+          "elapsedMs": 0,
+          "stationId": "sooriyan-srilanka",
+          "streamId": "sooriyan-official-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110683484,
+          "elapsedMs": 1575,
+          "stationId": "sooriyan-srilanka",
+          "streamId": "sooriyan-official-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 149630,
+        "time": 9.058961,
+        "engine": "native"
+      },
+      "pauseResume": true,
+      "stopClearedSource": true
+    },
+    {
+      "label": "vasantham",
+      "injectedFailure": null,
+      "responses": [
+        {
+          "url": "https://cp12.serverse.com/proxy/vasanthamfm",
+          "status": 200,
+          "mime": "audio/mpeg",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuitySeconds": 8.044752,
+      "decodedBytes": 128731,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1234.9000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "waiting",
+          "at": 1236.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadstart",
+          "at": 1236.2999999970198,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 2267,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 2280.6000000089407,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 2280.6000000089407,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110696859,
+          "elapsedMs": 0,
+          "stationId": "vasantham-srilanka",
+          "streamId": "vasantham-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110697924,
+          "elapsedMs": 1065,
+          "stationId": "vasantham-srilanka",
+          "streamId": "vasantham-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 149629,
+        "time": 9.055853,
+        "engine": "native"
+      }
+    },
+    {
+      "label": "reconnecting-ui",
+      "injectedFailure": "hold",
+      "responses": [],
+      "failures": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_CONNECTION_RESET"
+        },
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": false,
+      "testError": "Expected values to be strictly equal:\n\n1 !== 0\n",
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 1093.7000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1095,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 1149.1000000089407,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1151.6000000089407,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 1732.2000000029802,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "loadstart",
+          "at": 1732.5,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "error",
+          "at": 10075.40000000596,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        },
+        {
+          "name": "emptied",
+          "at": 10084.79999999702,
+          "time": 0,
+          "ready": 0,
+          "paused": true
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110708426,
+          "elapsedMs": 1,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110708515,
+          "elapsedMs": 90,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110708516,
+          "elapsedMs": 91,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "reconnecting",
+          "result": "scheduled",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadError",
+              "fatal": true,
+              "status": 0
+            }
+          },
+          "retryAllowed": true,
+          "delayMs": 576
+        },
+        {
+          "timestamp": 1794110709097,
+          "elapsedMs": 672,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110717441,
+          "elapsedMs": 9016,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "reconnecting",
+          "result": "failure",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadTimeOut",
+              "fatal": true
+            }
+          },
+          "retryAllowed": true
+        },
+        {
+          "timestamp": 1794110717441,
+          "elapsedMs": 9016,
+          "stationId": "air-nagercoil",
+          "streamId": "air-nagercoil-hls-candidate",
+          "attempt": 2,
+          "urlAttempt": 2,
+          "phase": "error",
+          "result": "exhausted",
+          "failure": {
+            "kind": "manifest",
+            "transient": true,
+            "hls": {
+              "type": "networkError",
+              "details": "manifestLoadTimeOut",
+              "fatal": true
+            }
+          },
+          "retryAllowed": false
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": true,
+        "ready": 0,
+        "bytes": 0,
+        "time": 0,
+        "engine": "MediaSource"
+      }
+    },
+    {
+      "label": "accessibility",
+      "injectedFailure": null,
+      "responses": [],
+      "failures": [],
+      "played": false
+    }
+  ],
+  "audits": [
+    {
+      "state": "persistent-error",
+      "violations": []
+    },
+    {
+      "state": "playing",
+      "violations": []
+    },
+    {
+      "state": {
+        "state": "reconnecting",
+        "language": "English",
+        "width": 375,
+        "theme": "Dark"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "state": "reconnecting",
+        "language": "தமிழ்",
+        "width": 375,
+        "theme": "Dark"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "state": "reconnecting",
+        "language": "संस्कृतम्",
+        "width": 375,
+        "theme": "Dark"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Light",
+        "language": "English"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Light",
+        "language": "தமிழ்"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Light",
+        "language": "संस्कृतम्"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Dark",
+        "language": "English"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Dark",
+        "language": "தமிழ்"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Dark",
+        "language": "संस्कृतम्"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Automatic",
+        "language": "English"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Automatic",
+        "language": "தமிழ்"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 375,
+        "theme": "Automatic",
+        "language": "संस्कृतम्"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Light",
+        "language": "English"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Light",
+        "language": "தமிழ்"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Light",
+        "language": "संस्कृतम्"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Dark",
+        "language": "English"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Dark",
+        "language": "தமிழ்"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Dark",
+        "language": "संस्कृतम्"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Automatic",
+        "language": "English"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Automatic",
+        "language": "தமிழ்"
+      },
+      "violations": []
+    },
+    {
+      "state": {
+        "width": 1440,
+        "theme": "Automatic",
+        "language": "संस्कृतम्"
+      },
+      "violations": []
+    }
+  ],
+  "completed": true
+}

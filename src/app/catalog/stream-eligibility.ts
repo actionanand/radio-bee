@@ -26,12 +26,12 @@ export interface StreamPreference {
 
 /** One policy for cards and the player boundary. Listing review never grants playback permission. */
 export function streamEligibility(
-  station: Pick<Station, 'streams'>,
+  station: Pick<Station, 'streams' | 'discovery'>,
   player: PlayerCapabilities,
   policy: RadioApiConfig = environment.RadioApi,
   preference: StreamPreference = {},
 ): StreamEligibility {
-  if (!station.streams.length) return { status: 'noStream', stream: null };
+  if (station.discovery || !station.streams.length) return { status: 'noStream', stream: null };
   const ready = eligibleStreams(station, player, policy, preference)[0];
   if (ready) return { status: 'ready', stream: ready };
   const statuses = station.streams.map(stream => streamStatus(stream, player, policy));
@@ -46,7 +46,7 @@ export function streamEligibility(
   return { status: priority.find(status => statuses.includes(status))!, stream: null };
 }
 export function technicalStreamEligibility(
-  station: Pick<Station, 'streams'>,
+  station: Pick<Station, 'streams' | 'discovery'>,
   player: PlayerCapabilities,
   policy: RadioApiConfig = environment.RadioApi,
 ): StreamEligibility {
@@ -55,6 +55,7 @@ export function technicalStreamEligibility(
 }
 function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioApiConfig): StreamStatus {
   if (stream.directListening?.status === 'restricted') return 'permissionPending';
+  if (stream.verificationStatus === 'unverified' && !policy.AllowUnverified) return 'verificationPending';
   if (policy.CheckVerificationStatus) {
     if (stream.verificationStatus === 'unavailable') return 'streamUnavailable';
     if (
@@ -83,11 +84,12 @@ function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioA
 
 /** Ranking is evidence of technical preference, never a rights/verification grant. */
 export function eligibleStreams(
-  station: Pick<Station, 'streams'>,
+  station: Pick<Station, 'streams' | 'discovery'>,
   player: PlayerCapabilities,
   policy: RadioApiConfig = environment.RadioApi,
   preference: StreamPreference = {},
 ): Stream[] {
+  if (station.discovery) return [];
   const score = (stream: Stream) => {
     const outcome = preference.outcomes?.get(stream.url);
     const source = preference.sources?.find(source => source.id === stream.sourceId);

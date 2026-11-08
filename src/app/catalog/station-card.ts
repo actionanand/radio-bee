@@ -23,12 +23,29 @@ export class StationCardComponent {
   readonly details = inject(StationDetailsService);
   readonly icons = radioIcons;
   private readonly document = inject(DOCUMENT);
+  readonly discoveryStatus = computed<UiKey>(() =>
+    this.station().discovery?.availability === 'temporarily-unavailable'
+      ? 'temporarilyUnavailable'
+      : this.station().discovery?.availability === 'review-pending'
+        ? 'streamReviewPending'
+        : 'noDirectStream',
+  );
+  readonly trialCandidate = computed(
+    () => !this.station().discovery && this.station().streams.some(s => s.verificationStatus === 'unverified'),
+  );
+  readonly useReviewPending = computed(
+    () =>
+      !this.station().discovery &&
+      this.station().streams.some(
+        s => s.rightsStatus !== 'permission-granted' || (s.directListening && s.directListening.status !== 'allowed'),
+      ),
+  );
   readonly state = computed(() => this.player.stateFor(this.station()));
   readonly action = computed<UiKey>(() =>
     this.state() === 'playing'
       ? 'pause'
       : this.state() === 'loading'
-        ? 'connecting'
+        ? this.player.pendingPhase()
         : this.state() === 'error'
           ? 'retry'
           : 'play',

@@ -33,7 +33,7 @@ describe('Cards, player and Listen now share the configured policy', () => {
           data.catalog.set(catalog);
           const view = TestBed.createComponent(StationBrowserComponent);
           view.detectChanges();
-          const expected = CheckRightsStatus ? 0 : !CheckVerificationStatus || AllowUnverified ? 25 : 1;
+          const expected = CheckRightsStatus ? 0 : AllowUnverified ? 25 : 1;
           expect(view.nativeElement.querySelectorAll('button.play')).toHaveLength(expected);
           const browser = view.componentInstance;
           browser.selectCategory('listenNow');

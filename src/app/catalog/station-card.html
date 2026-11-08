@@ -2,6 +2,7 @@
 <article
   class="station-card"
   [attr.data-station-id]="station().id"
+  [class.is-discovery]="!!station().discovery"
   [class.is-playing]="state() === 'playing'"
   [class.is-loading]="state() === 'loading'">
   <div class="thumbnail">
@@ -13,15 +14,18 @@
       (click)="toggleFavorite()">
       <ion-icon [icon]="favorites.has(station().id)?icons.heart:icons.heartOutline" aria-hidden="true" />
     </button>
-    @if(state()==='playing'||state()==='loading'){<span class="on-air"
-      >{{ ui(state()==='playing'?'playing':'connecting') }}</span
-    >}
+    @if(state()==='playing'||state()==='loading'){<span class="on-air">{{ ui(player.statusLabel()) }}</span>}
   </div>
   <div class="card-copy">
     <h3 [title]="station().name">{{ station().name }}</h3>
     <p class="location">{{ shortLocation(station()) }}</p>
-    <p class="frequency">{{ ui('onlineRadio') }}</p>
-    <div class="card-actions">
+    <p class="frequency">{{ ui(station().discovery ? 'discoveryOnly' : 'onlineRadio') }}</p>
+    @if (trialCandidate()) {
+    <p class="trial-label">{{ ui('unverifiedTrial') }}</p>
+    } @else if (useReviewPending()) {
+    <p class="trial-label">{{ ui('permissionPending') }}</p>
+    }
+    <div class="card-actions" [class.has-discovery]="!!station().discovery">
       @if(eligibility.status==='ready'){<button
         class="play"
         type="button"
@@ -31,7 +35,11 @@
         <ion-icon [icon]="actionIcon()" [class.connecting]="state()==='loading'" aria-hidden="true" /><span
           >{{ ui(action()) }}</span
         ></button
-      >}@else{<span class="unavailable"
+      >}@else if(station().discovery){
+      <div class="discovery-actions">
+        <span class="unavailable">{{ ui(discoveryStatus()) }}</span>
+      </div>
+      }@else{<span class="unavailable"
         ><ion-icon [icon]="icons.radioOutline" aria-hidden="true" />{{ ui('listeningUnavailable') }}</span
       >}
     </div>

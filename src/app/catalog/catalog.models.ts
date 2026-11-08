@@ -7,7 +7,17 @@ export interface Manifest {
   countries: string[];
   files: Record<string, string>;
   localizationRoot: string;
-  counts: { networks: number; stations: number; locations: number; streams: number; verifiedStreams: number };
+  counts: {
+    networks: number;
+    stations: number;
+    locations: number;
+    streams: number;
+    verifiedStreams: number;
+    discoveryStations?: number;
+    discoverableStations?: number;
+    stationsWithStreamCandidates?: number;
+    productionEligibleStations?: number;
+  };
 }
 export interface Named {
   id: string;
@@ -56,6 +66,12 @@ export interface Stream {
   directListening?: DirectListening;
 }
 export interface Station extends Named {
+  aliases?: string[];
+  discovery?: {
+    availability: DiscoveryStation['availability'];
+    reviewedOn: string;
+    websiteKind: DiscoveryStation['websiteKind'];
+  };
   logoPath?: string;
   networkId: string;
   countryCode: string;
@@ -73,8 +89,41 @@ export interface Station extends Named {
   streams: Stream[];
   notes: string | null;
 }
+export interface DiscoveryStation extends Omit<Station, 'streams' | 'discovery'> {
+  aliases: string[];
+  availability: 'no-direct-stream' | 'temporarily-unavailable' | 'review-pending';
+  reviewedOn: string;
+  websiteKind: 'official' | 'provider' | null;
+}
+export function allStations(c: Catalog | null): Station[] {
+  if (!c) return [];
+  return [
+    ...c.stations,
+    ...(c.discoveryStations ?? []).map(({ availability, reviewedOn, websiteKind, ...metadata }) => ({
+      ...metadata,
+      streams: [],
+      discovery: { availability, reviewedOn, websiteKind },
+    })),
+  ];
+}
+export function catalogCounts(c: Catalog | null) {
+  return {
+    discoverable: allStations(c).length,
+    candidates: c?.stations.filter(s => s.streams.length > 0).length ?? 0,
+    approved:
+      c?.stations.filter(s =>
+        s.streams.some(
+          x =>
+            x.verificationStatus === 'verified' &&
+            x.rightsStatus === 'permission-granted' &&
+            (!x.directListening || x.directListening.status === 'allowed'),
+        ),
+      ).length ?? 0,
+  };
+}
 export type Dictionary = Record<string, Record<string, string>>;
 export interface Catalog {
+  discoveryStations?: DiscoveryStation[];
   manifest: Manifest;
   networks: Network[];
   stations: Station[];
@@ -102,7 +151,7 @@ export const emptyFilters: Filters = {
 };
 export function filterStations(c: Catalog, f: Filters): Station[] {
   const query = f.search.trim().toLocaleLowerCase();
-  return c.stations.filter(
+  return allStations(c).filter(
     s =>
       (!f.country || s.countryCode === f.country) &&
       (f.country !== 'IN' ||
@@ -114,6 +163,7 @@ export function filterStations(c: Catalog, f: Filters): Station[] {
       (!query ||
         [
           s.name,
+          ...(s.aliases ?? []),
           c.networks.find(n => n.id === s.networkId)?.name,
           ...c.locations.filter(l => [s.regionId, s.districtId, s.localityId].includes(l.id)).map(l => l.name),
         ]

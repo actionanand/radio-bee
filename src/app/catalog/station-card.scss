@@ -200,3 +200,28 @@ app-station-artwork {
     transform: rotate(360deg);
   }
 }
+
+.discovery-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.card-actions.has-discovery {
+  height: auto;
+  min-height: 54px;
+}
+
+.is-discovery .frequency {
+  height: auto;
+  min-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.trial-label {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}

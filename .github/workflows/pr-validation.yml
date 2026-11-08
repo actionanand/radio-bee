@@ -37,7 +37,7 @@ jobs:
       - name: Complete unit tests
         run: npm run test:ci
       - name: Check PR, preview and playback evidence contracts
-        run: node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs scripts/recording-config.test.mjs
+        run: node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs scripts/recording-config.test.mjs scripts/integration-contract.test.cjs
       - name: Build production Pages output
         run: npm run build:gh -- --configuration=production
       - name: Check Pages base href and routing fallback
@@ -46,3 +46,4 @@ jobs:
           grep -Fq '<base href="/radio-bee/">' www/index.html
           npm run copy-error-page
           cmp www/index.html www/404.html
+          node scripts/check-web-artifact.mjs

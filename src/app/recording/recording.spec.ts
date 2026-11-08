@@ -20,8 +20,9 @@ import { PlayerComponent } from '../player/player';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
 import { environment as technical } from '../../environments/environment.live-test';
+import { PlaybackError } from '../player/playback-failure';
 
-function setup(enabled = true) {
+function setup(enabled = true, allowProhibitedRecording = false) {
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -39,7 +40,7 @@ function setup(enabled = true) {
   const data = { catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
-      { provide: RADIO_RECORDING, useValue: { Enabled: enabled } },
+      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording } },
       { provide: CatalogService, useValue: data },
       { provide: MEDIA_ENGINE, useValue: { audio, supports: () => true, load: async () => undefined, clear: vi.fn() } },
       { provide: CAPTURE_FACTORY, useValue: create },
@@ -57,10 +58,34 @@ async function playing(s: ReturnType<typeof setup>) {
 }
 afterEach(() => {
   TestBed.resetTestingModule();
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
 describe('Configured recording and explicit source policy', () => {
+  it('ends capture before transient recovery, preserves the completed draft and never restarts capture', async () => {
+    vi.useFakeTimers();
+    const s = setup();
+    // AIR-like single candidate, keeping its real recording consent requirement.
+    s.station.streams = [s.station.streams[0]];
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    s.hooks().progress(2, true);
+    Object.defineProperty(s.audio, 'error', { value: { code: 2 } });
+    s.audio.dispatchEvent(new Event('error'));
+    expect(s.stop).toHaveBeenCalledOnce();
+    expect(s.player.statusLabel()).toBe('reconnecting');
+    const blob = new Blob(['unit draft'], { type: 'audio/webm' });
+    s.hooks().finished(blob);
+    await vi.advanceTimersByTimeAsync(750);
+    s.audio.dispatchEvent(new Event('playing'));
+    expect(s.player.state()).toBe('playing');
+    expect(s.create).toHaveBeenCalledOnce();
+    expect(service.state()).toBe('ready');
+    await service.save();
+    expect(s.save).toHaveBeenCalledWith(blob, expect.any(String));
+  });
   it('distinguishes paused or absent playback from prohibited recording metadata', async () => {
     const s = setup();
     const service = TestBed.inject(RecordingService);
@@ -72,8 +97,9 @@ describe('Configured recording and explicit source policy', () => {
   });
   it('accepts independently configured recording booleans in every environment without altering RadioApi', () => {
     for (const e of [environment, production, technical]) {
-      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled']);
+      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled', 'AllowProhibitedRecording']);
       expect(typeof e.RadioRecording.Enabled).toBe('boolean'); // Neither true nor false is a CI release gate.
+      expect(typeof e.RadioRecording.AllowProhibitedRecording).toBe('boolean');
       expect(e.RadioApi).toEqual({ AllowUnverified: true, CheckVerificationStatus: false, CheckRightsStatus: false });
     }
   });
@@ -105,6 +131,27 @@ describe('Configured recording and explicit source policy', () => {
     stream.directListening!.recording = 'permission-granted';
     stream.directListening!.status = 'restricted';
     expect(recordingPermission(stream)).toBe('blocked');
+  });
+  it('requires a deliberate opt-in and user acknowledgment before recording a prohibited stream', async () => {
+    const s = setup(true, true);
+    await playing(s);
+    const stream = s.station.streams[0];
+    stream.directListening!.recording = 'prohibited';
+    const service = TestBed.inject(RecordingService);
+    expect(recordingPermission(stream)).toBe('blocked');
+    expect(recordingPermission(stream, true)).toBe('acknowledgment');
+    expect(service.permission()).toBe('acknowledgment');
+    await service.start(false);
+    expect(s.create).not.toHaveBeenCalled();
+    await service.start(true);
+    expect(s.create).toHaveBeenCalledOnce();
+  });
+  it('does not override a stream restricted for listening', () => {
+    const s = setup(true, true);
+    const stream = s.station.streams[0];
+    stream.directListening!.recording = 'prohibited';
+    stream.directListening!.status = 'restricted';
+    expect(recordingPermission(stream, true)).toBe('blocked');
   });
   it('starts only on request and claims recording only after genuine-data confirmation', async () => {
     const s = setup();
@@ -319,6 +366,29 @@ describe('Configured recording and explicit source policy', () => {
     expect(s.audio.getAttribute('crossorigin')).toBeNull();
     expect(s.create).not.toHaveBeenCalled();
     expect(s.player.state()).toBe('playing');
+    expect(service.state()).toBe('error');
+  });
+  it('does not create a fresh session over the player reconnect scheduled during capture preparation', async () => {
+    vi.useFakeTimers();
+    const s = setup();
+    s.station.streams = [s.station.streams[0]];
+    await playing(s);
+    nativeSource(s);
+    vi.mocked(s.audio.play).mockRejectedValueOnce(new PlaybackError({ kind: 'network', transient: true }));
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    expect(s.audio.play).toHaveBeenCalledTimes(2); // Initial selection and explicit capture preparation.
+    expect(s.player.statusLabel()).toBe('reconnecting');
+    await vi.advanceTimersByTimeAsync(750);
+    expect(s.audio.play).toHaveBeenCalledTimes(3);
+    expect(
+      s.player
+        .diagnostics()
+        .filter(d => d.result === 'attempt')
+        .map(d => d.attempt),
+    ).toEqual([1, 1, 2]);
+    s.audio.dispatchEvent(new Event('playing'));
+    expect(s.create).not.toHaveBeenCalled();
     expect(service.state()).toBe('error');
   });
   for (const action of ['pause', 'stop', 'switch'] as const)

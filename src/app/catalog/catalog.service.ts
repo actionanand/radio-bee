@@ -87,6 +87,7 @@ export class CatalogService {
     try {
       const manifest = validateManifest(await this.fetchJson(relativePath(this.base, 'index.json')));
       const names = ['networks', 'stations', 'locations', 'languages', 'categories', 'sources'];
+      if (manifest.files['discoveryStations']) names.push('discoveryStations');
       const values = await Promise.all(
         names.map(name => this.fetchJson(relativePath(this.base, manifest.files[name]))),
       );
@@ -100,6 +101,9 @@ export class CatalogService {
         ...Object.fromEntries(names.map((name, i) => [name, values[i]])),
         localization: Object.fromEntries(['en', 'ta', 'sa'].map((locale, i) => [locale, dictionaries[i]])),
       });
+      const confirmed = validateManifest(await this.fetchJson(relativePath(this.base, 'index.json')));
+      if (JSON.stringify(confirmed) !== JSON.stringify(manifest))
+        throw new Error('Catalogue changed during loading; refresh to request a consistent snapshot.');
       const updatedAt = new Date().toISOString();
       try {
         await this.storage.set({ key: this.key, value: JSON.stringify({ catalog: next, updatedAt }) });

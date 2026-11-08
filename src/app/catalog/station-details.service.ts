@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Service, computed, effect, inject, signal } from '@angular/core';
 import { CatalogService } from './catalog.service';
+import { allStations } from './catalog.models';
 interface DetailsSession {
   token: number;
   id: string;
@@ -24,7 +25,7 @@ export class StationDetailsService {
   // Closing before presentation must still complete a real Ionic lifecycle.
   readonly overlayOpen = computed(() => !!this.active() && (!this.active()!.closing || !this.active()!.presented));
   readonly station = computed(
-    () => this.data.catalog()?.stations.find(station => station.id === this.active()?.id) ?? null,
+    () => allStations(this.data.catalog()).find(station => station.id === this.active()?.id) ?? null,
   );
   constructor() {
     effect(() => {
@@ -33,7 +34,7 @@ export class StationDetailsService {
     });
   }
   open(id: string, event: Event) {
-    if (!this.data.catalog()?.stations.some(station => station.id === id)) return;
+    if (!allStations(this.data.catalog()).some(station => station.id === id)) return;
     const active = this.active();
     if (active?.id === id && !active.closing) {
       this.dismiss();
@@ -70,7 +71,7 @@ export class StationDetailsService {
     if (active?.token !== token) return;
     const next = this.pending;
     this.pending = null;
-    if (next && this.data.catalog()?.stations.some(station => station.id === next.id)) {
+    if (next && allStations(this.data.catalog()).some(station => station.id === next.id)) {
       this.active.set(next);
       return; // A predecessor must not steal focus from its successor.
     }

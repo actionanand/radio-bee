@@ -30,7 +30,8 @@
               {
                 "glob": "**/*",
                 "input": "src/assets",
-                "output": "assets"
+                "output": "assets",
+                "ignore": ["catalog-development-seed.json"]
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
@@ -60,6 +61,7 @@
               "outputHashing": "all"
             },
             "live-test": {
+              "assets": [{ "glob": "**/*", "input": "src/assets", "output": "assets" }],
               "optimization": false,
               "sourceMap": true,
               "fileReplacements": [
@@ -70,6 +72,7 @@
               ]
             },
             "development": {
+              "assets": [{ "glob": "**/*", "input": "src/assets", "output": "assets" }],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,

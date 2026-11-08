@@ -5,9 +5,24 @@ import { eligibleStreams, streamEligibility } from '../catalog/stream-eligibilit
 import { RADIO_API_CONFIG } from '../catalog/radio-api.config';
 import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
 import { MEDIA_ENGINE } from './media-engine';
+import { PlaybackFailure, playbackFailure, safeFailure } from './playback-failure';
+import { RECOVERY_POLICY, RECOVERY_RANDOM, recoveryDelay } from './recovery-policy';
 
 export type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
-export const MAX_STREAM_ATTEMPTS = 3;
+export const MAX_STREAM_ATTEMPTS = RECOVERY_POLICY.maxDistinctUrls;
+export interface PlaybackDiagnostic {
+  timestamp: number;
+  elapsedMs: number;
+  stationId: string;
+  streamId: string;
+  attempt: number;
+  urlAttempt: number;
+  phase: 'connecting' | 'reconnecting' | 'buffering' | 'playing' | 'paused' | 'idle' | 'error';
+  result: 'attempt' | 'playing' | 'buffering' | 'failure' | 'scheduled' | 'exhausted' | 'cancelled';
+  retryAllowed?: boolean;
+  delayMs?: number;
+  failure?: PlaybackFailure;
+}
 export type PlaybackBoundary = 'source' | 'pause' | 'stop' | 'failure';
 
 @Service()
@@ -16,9 +31,22 @@ export class PlayerService implements OnDestroy {
   private readonly policy = inject(RADIO_API_CONFIG);
   private readonly engine = inject(MEDIA_ENGINE);
   private readonly catalog = inject(CatalogService);
+  private readonly random = inject(RECOVERY_RANDOM);
   private attempt = 0;
   private loaded = false;
-  private attempted = new Set<string>();
+  private attempted = new Map<string, number>();
+  private readonly retryable = new Set<string>();
+  private totalAttempts = 0;
+  private startedAt = 0;
+  private pending: ReturnType<typeof setTimeout> | undefined;
+  private lastStream: Stream | null = null;
+  readonly pendingPhase = signal<'connecting' | 'reconnecting' | 'buffering'>('connecting');
+  readonly statusLabel = computed(() => {
+    const state = this.state();
+    return state === 'loading' ? this.pendingPhase() : state;
+  });
+  private readonly history = signal<readonly PlaybackDiagnostic[]>([]);
+  readonly diagnostics = this.history.asReadonly();
   private pinnedStreamId: string | undefined;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private readonly cleanups: (() => void)[] = [];
@@ -63,7 +91,12 @@ export class PlayerService implements OnDestroy {
       const active = this.station();
       const selected = this.selectedStream();
       const catalog = this.catalog.catalog();
-      if (!active || !selected || !catalog || this.state() === 'error' || this.state() === 'idle') return;
+      if (!active || !catalog || this.state() === 'error' || this.state() === 'idle') return;
+      if (!selected) {
+        if (this.state() === 'loading' && this.pendingPhase() === 'reconnecting' && !this.nextCandidate())
+          this.terminate('playbackPermissionChanged', { kind: 'revoked', transient: false });
+        return;
+      }
       const current = catalog.stations.find(station => station.id === active.id);
       const currentStream = current?.streams.find(stream => stream.id === selected.id && stream.url === selected.url);
       if (current && current !== active) this.station.set(current);
@@ -79,7 +112,7 @@ export class PlayerService implements OnDestroy {
           this.selectedStream.set(null);
           this.engine?.clear();
           if (!this.canResume()) this.terminate('playbackPermissionChanged');
-        } else void this.recover('playbackPermissionChanged', false);
+        } else void this.recover('playbackPermissionChanged', { kind: 'revoked', transient: false }, false);
       }
     });
     const audio = this.engine?.audio;
@@ -90,30 +123,49 @@ export class PlayerService implements OnDestroy {
     };
     listen('playing', () => {
       const selected = this.selectedStream();
-      if (selected && this.state() === 'loading') {
+      if (
+        selected &&
+        this.loaded &&
+        this.state() === 'loading' &&
+        (!this.engine?.failure || (!audio.paused && audio.readyState >= 2))
+      ) {
         this.clearTimer();
         this.recordOutcome(selected.url, 'playing');
         this.state.set('playing');
+        this.trace('playing');
       }
     });
     const buffering = () => {
       if (this.state() === 'playing') {
         this.state.set('loading');
-        this.watchdog();
+        this.pendingPhase.set('buffering');
+        this.trace('buffering');
+        this.watchdog(true);
       }
     };
     listen('waiting', buffering);
     listen('stalled', buffering);
     listen('error', () => {
-      if (this.selectedStream() && ['loading', 'playing'].includes(this.state())) void this.recover('playbackError');
+      const failure = this.engine?.failure?.();
+      if (this.engine?.failure && !failure && !audio.error) return;
+      if (this.selectedStream() && ['loading', 'playing'].includes(this.state()))
+        void this.recover('playbackError', failure ?? playbackFailure(undefined, audio.error));
     });
     listen('ended', () => {
-      if (this.selectedStream() && ['loading', 'playing'].includes(this.state())) void this.recover('playbackError');
+      if (
+        this.selectedStream() &&
+        ['loading', 'playing'].includes(this.state()) &&
+        (!this.engine?.failure || audio.ended)
+      )
+        void this.recover('playbackError', { kind: 'ended', transient: true });
     });
     listen('pause', () => {
-      if (this.station() && this.state() === 'playing') {
+      if (audio.paused && this.selectedStream() && this.loaded && ['loading', 'playing'].includes(this.state())) {
+        this.playbackBoundary('pause');
+        ++this.attempt;
         this.clearTimer();
         this.state.set('paused');
+        this.trace('cancelled');
       }
     });
   }
@@ -159,7 +211,12 @@ export class PlayerService implements OnDestroy {
     if (!station || !this.engine || !this.candidates(station, technical, pinned).length) return;
     ++this.attempt;
     this.clearTimer();
-    this.attempted = new Set();
+    this.attempted = new Map();
+    this.retryable.clear();
+    this.totalAttempts = 0;
+    this.startedAt = Date.now();
+    this.lastStream = null;
+    this.pendingPhase.set('connecting');
     this.pinnedStreamId = pinned;
     this.technicalTest.set(technical);
     this.station.set(station);
@@ -170,8 +227,8 @@ export class PlayerService implements OnDestroy {
     this.playbackBoundary('source');
     const station = this.station();
     const current = station && this.current(station.id);
-    const stream = current && this.candidates(current).find(stream => !this.attempted.has(stream.url));
-    if (!current || !stream || !this.engine || this.attempted.size >= MAX_STREAM_ATTEMPTS) {
+    const stream = this.nextCandidate();
+    if (!current || !stream || !this.engine) {
       this.terminate(failure);
       return;
     }
@@ -183,7 +240,10 @@ export class PlayerService implements OnDestroy {
     this.engine.clear();
     this.station.set(current);
     this.selectedStream.set(stream);
-    this.attempted.add(stream.url);
+    this.lastStream = stream;
+    this.attempted.set(stream.url, (this.attempted.get(stream.url) ?? 0) + 1);
+    ++this.totalAttempts;
+    this.trace('attempt');
     this.watchdog();
     try {
       await this.engine.load(stream);
@@ -195,33 +255,64 @@ export class PlayerService implements OnDestroy {
       // Only the actual playing event changes Connecting to Playing.
     } catch (cause) {
       if (attempt !== this.attempt) return;
-      if (this.blocked(cause)) this.terminate('playbackBlocked');
-      else await this.recover('playbackError');
+      await this.recover('playbackError', playbackFailure(cause));
     }
   }
-  private async recover(message: string, mediaFailure = true): Promise<void> {
+  private async recover(message: string, failure: PlaybackFailure, mediaFailure = true): Promise<void> {
     this.playbackBoundary('failure');
     const selected = this.selectedStream();
+    if (selected) {
+      if (failure.transient) this.retryable.add(selected.url);
+      else this.retryable.delete(selected.url);
+    }
     if (selected && mediaFailure) this.recordOutcome(selected.url, 'failed');
+    const next = ['cancelled', 'autoplay', 'restricted'].includes(failure.kind) ? undefined : this.nextCandidate();
+    this.trace('failure', { failure, retryAllowed: !!next });
     const cancellation = ++this.attempt;
     this.clearTimer();
     this.loaded = false;
     this.selectedStream.set(null);
     this.state.set('loading');
-    const station = this.station();
-    const current = station && this.current(station.id);
-    if (
-      !current ||
-      this.attempted.size >= MAX_STREAM_ATTEMPTS ||
-      !this.candidates(current).some(stream => !this.attempted.has(stream.url))
-    ) {
-      this.terminate(message);
+    this.pendingPhase.set('reconnecting');
+    if (failure.kind === 'cancelled') {
+      this.pause();
+      return;
+    }
+    if (failure.kind === 'autoplay' || failure.kind === 'restricted') {
+      this.terminate(failure.kind === 'autoplay' ? 'playbackBlocked' : message, failure);
+      return;
+    }
+    if (!next) {
+      this.terminate(message, failure);
       return;
     }
     this.engine?.clear();
+    const delay = this.attempted.has(next.url) ? recoveryDelay(this.random()) : 0;
+    this.trace('scheduled', { failure, retryAllowed: true, delayMs: delay }, next);
+    if (delay) {
+      this.pending = setTimeout(() => {
+        this.pending = undefined;
+        if (cancellation === this.attempt && this.state() === 'loading') void this.loadNext(message);
+      }, delay);
+      return;
+    }
     // Leave the failing adapter's callback before replacing/destroying its media.
     await Promise.resolve();
     if (cancellation === this.attempt && this.state() === 'loading') await this.loadNext(message);
+  }
+  private nextCandidate(): Stream | undefined {
+    const station = this.station(),
+      current = station && this.current(station.id);
+    if (!current || this.totalAttempts >= RECOVERY_POLICY.maxTotalAttempts) return;
+    const eligible = this.candidates(current);
+    if (this.attempted.size < RECOVERY_POLICY.maxDistinctUrls) {
+      const fresh = eligible.find(stream => !this.attempted.has(stream.url));
+      if (fresh) return fresh;
+    }
+    return eligible.find(
+      stream =>
+        this.retryable.has(stream.url) && (this.attempted.get(stream.url) ?? 0) < RECOVERY_POLICY.maxAttemptsPerUrl,
+    );
   }
   canResume(): boolean {
     const station = this.station();
@@ -234,6 +325,7 @@ export class PlayerService implements OnDestroy {
     ++this.attempt;
     this.clearTimer();
     this.state.set('paused');
+    this.trace('cancelled');
     if (this.loaded) this.engine?.audio.pause();
     else {
       this.selectedStream.set(null);
@@ -251,13 +343,13 @@ export class PlayerService implements OnDestroy {
       const attempt = ++this.attempt;
       this.error.set('');
       this.state.set('loading');
+      this.pendingPhase.set('connecting');
       this.watchdog();
       try {
         await this.engine.audio.play();
       } catch (cause) {
         if (attempt === this.attempt) {
-          if (this.blocked(cause)) this.terminate('playbackBlocked');
-          else await this.recover('playbackError');
+          await this.recover('playbackError', playbackFailure(cause));
         }
       }
     } else if (this.canResume()) {
@@ -275,6 +367,7 @@ export class PlayerService implements OnDestroy {
   }
   stop(): void {
     this.playbackBoundary('stop');
+    this.trace('cancelled');
     ++this.attempt;
     this.clearTimer();
     this.station.set(null);
@@ -282,6 +375,8 @@ export class PlayerService implements OnDestroy {
     this.technicalTest.set(false);
     this.pinnedStreamId = undefined;
     this.attempted.clear();
+    this.retryable.clear();
+    this.totalAttempts = 0;
     this.loaded = false;
     this.state.set('idle');
     this.error.set('');
@@ -297,24 +392,26 @@ export class PlayerService implements OnDestroy {
     this.muted.update(value => !value);
     if (this.engine) this.engine.audio.muted = this.muted();
   }
-  private blocked(cause: unknown): boolean {
-    return !!cause && typeof cause === 'object' && 'name' in cause && cause.name === 'NotAllowedError';
-  }
   private recordOutcome(url: string, outcome: 'playing' | 'failed') {
     this.outcomes.update(previous => new Map(previous).set(url, outcome));
   }
   private clearTimer() {
     if (this.timer) clearTimeout(this.timer);
     this.timer = undefined;
+    if (this.pending) clearTimeout(this.pending);
+    this.pending = undefined;
   }
-  private watchdog() {
+  private watchdog(buffering = false) {
     this.clearTimer();
     const attempt = this.attempt;
-    this.timer = setTimeout(() => {
-      if (attempt === this.attempt) void this.recover('playbackTimeout');
-    }, 20000);
+    this.timer = setTimeout(
+      () => {
+        if (attempt === this.attempt) void this.recover('playbackTimeout', { kind: 'timeout', transient: true });
+      },
+      buffering ? RECOVERY_POLICY.bufferingMs : RECOVERY_POLICY.startupMs,
+    );
   }
-  private terminate(message: string) {
+  private terminate(message: string, failure?: PlaybackFailure) {
     this.playbackBoundary('failure');
     ++this.attempt;
     this.clearTimer();
@@ -322,7 +419,33 @@ export class PlayerService implements OnDestroy {
     this.selectedStream.set(null);
     this.state.set('error');
     this.error.set(message);
+    this.trace('exhausted', { failure, retryAllowed: false });
     this.engine?.clear();
+  }
+  private trace(
+    result: PlaybackDiagnostic['result'],
+    extra: Partial<Pick<PlaybackDiagnostic, 'failure' | 'retryAllowed' | 'delayMs'>> = {},
+    stream = this.selectedStream() ?? this.lastStream,
+  ) {
+    const station = this.station();
+    if (!station) return;
+    const id = (value: string | undefined) =>
+      value && /^[a-z0-9][a-z0-9._-]{0,95}$/i.test(value) ? value : 'catalogue-id';
+    const timestamp = Date.now();
+    const row: PlaybackDiagnostic = {
+      timestamp,
+      elapsedMs: timestamp - this.startedAt,
+      stationId: id(station.id),
+      streamId: id(stream?.id),
+      attempt: this.totalAttempts,
+      urlAttempt: stream ? (this.attempted.get(stream.url) ?? 0) : 0,
+      phase: this.statusLabel(),
+      result,
+      ...extra,
+      ...(extra.failure ? { failure: safeFailure(extra.failure) } : {}),
+    };
+    this.history.update(history => [...history.slice(-(RECOVERY_POLICY.maxDiagnostics - 1)), row]);
+    this.engine?.audio.dispatchEvent(new CustomEvent('radiobee-diagnostic', { detail: row }));
   }
   ngOnDestroy(): void {
     this.stop();
