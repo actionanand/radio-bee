@@ -179,7 +179,9 @@ describe('Catalogue loading and cache', () => {
     browser.change('region', 'in-tn');
     browser.change('district', 'in-tn-kanyakumari');
     browser.change('locality', 'in-tn-kanyakumari-nagercoil');
-    expect(browser.count()).toBeGreaterThan(0);
+    expect(browser.count()).toBe(
+      filterStations(s.catalog()!, browser.filters()).filter(station => station.streams.length).length,
+    );
     browser.change('country', 'LK');
     expect(browser.filters().region).toBe('');
     expect(browser.filters().locality).toBe('');

@@ -312,7 +312,10 @@ test('workflow isolates Android from web, persists before compilation and publis
   assert.match(reserve, /'push', 'origin', 'HEAD:main-android'/);
   const web = read('.github/workflows/gh-pages.yml');
   assert.match(web, /branches:\s*\n\s*- main-github/);
-  assert.match(web, /deploy_branch: gh-pages/);
+  assert.match(web, /actions\/upload-pages-artifact@v4/);
+  assert.match(web, /actions\/deploy-pages@v4/);
+  assert.match(web, /path: www/);
+  assert.doesNotMatch(web, /peaceiris|deploy_branch:|base_href:/);
   assert.doesNotMatch(web, /main-android|android:version|android-version.json/);
   const implementation =
     readdirSync('scripts')

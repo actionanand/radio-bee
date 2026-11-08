@@ -52,8 +52,7 @@ export class StationCardComponent {
     const country = catalog?.locations.find(
       location => location.type === 'country' && location.countryCode === station.countryCode,
     );
-    const id =
-      station.listingStatus === 'reviewed' ? (station.localityId ?? station.districtId ?? station.regionId) : null;
+    const id = station.localityId ?? station.districtId ?? station.regionId;
     const location = catalog?.locations.find(location => location.id === id);
     return [
       location ? this.data.t('regions', location.id, location.name) : '',

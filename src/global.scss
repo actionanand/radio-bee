@@ -35,7 +35,7 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import '@ionic/angular/css/palettes/dark.class.css';
 
 :root {
   --paper: #faf9f5;
@@ -47,8 +47,8 @@
   --accent: #cbdf9e;
   --accent-ink: #426a29;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
+:root.ion-palette-dark {
+  & {
     --paper: #10251f;
     --surface: #19332b;
     --ink: #f1f4e8;

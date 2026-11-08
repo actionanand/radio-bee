@@ -1,0 +1,42 @@
+
+> radio-bee@0.0.1 test:ci
+> ng test --watch=false
+
+❯ Building...
+✔ Building...
+Application bundle generation complete. [22.041 seconds] - 2026-11-07T19:12:52.296Z
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/AR_Files/code/radio-bee[39m
+
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/hls-player.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/recording/capture-engine.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/configurable-eligibility.spec.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/media-engine.spec.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/live-test/live-test.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stream-eligibility.spec.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/recording/capture-access.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/configurable-player.spec.ts [2m([22m[2m28 tests[22m[2m)[22m[33m 346[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-details.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 101[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/player/player.service.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/theme/theme.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/app.component.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 175[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/home/home.page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 281[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/recording/recording.spec.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 451[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/catalog.spec.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 504[2mms[22m[39m
+     [33m[2m✓[22m[39m renders unverified stations with no playback controls [33m 337[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage5.spec.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 626[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage6.spec.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 904[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-browser.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1055[2mms[22m[39m
+     [33m[2m✓[22m[39m renders and restores the correct controls in en [33m 596[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/stage8.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 1022[2mms[22m[39m
+     [33m[2m✓[22m[39m shows only candidate-bearing records and responds to reduced/updated catalogues dynamically [33m 556[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/station-playback.spec.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1537[2mms[22m[39m
+     [33m[2m✓[22m[39m en: noStream renders only appropriate controls and keeps details accessible [32m 300[2mms[22m[39m
+ [32m✓[39m [30m[43m app [49m[39m src/app/catalog/configurable-browser.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 1570[2mms[22m[39m
+     [33m[2m✓[22m[39m agrees throughout the UI for {"AllowUnverified":false,"CheckVerificationStatus":false,"CheckRightsStatus":false} [33m 586[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m21 passed[39m[22m[90m (21)[39m
+[2m      Tests [22m [1m[32m256 passed[39m[22m[90m (256)[39m
+[2m   Start at [22m 00:42:56
+[2m   Duration [22m 42.28s[2m (transform 209.56s, setup 59.97s, import 230.34s, tests 8.86s, environment 216.13s)[22m

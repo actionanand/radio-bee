@@ -22,5 +22,5 @@ test('PR validation runs required checks with read-only access and no publishing
   ]) {
     assert.ok(workflow.includes('run: ' + command), 'Missing required PR check: ' + command);
   }
-  assert.doesNotMatch(workflow, /run:.*(?:verify-stage[67]|compare-hls-engines)/);
+  assert.doesNotMatch(workflow, /run:.*(?:verify-stage[678]|compare-hls-engines)/);
 });

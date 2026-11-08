@@ -7,15 +7,31 @@ import { StationCardComponent } from './station-card';
 import { FavoritesService } from './favorites.service';
 import { DiscoveryCategory, discoveryCategories, inCategory } from './discovery';
 import { PlayerService } from '../player/player.service';
-import { IonIcon } from '@ionic/angular';
+import { IonIcon, IonSelect, IonSelectOption } from '@ionic/angular';
+import { ThemeService } from '../theme/theme.service';
 import { radioIcons } from '../shared/radio-icons';
 @Component({
   selector: 'app-station-browser',
-  imports: [DatePipe, StationCardComponent, IonIcon],
+  imports: [DatePipe, StationCardComponent, IonIcon, IonSelect, IonSelectOption],
   templateUrl: './station-browser.html',
   styleUrl: './station-browser.scss',
+  host: { '(document:ionPopoverWillPresent)': 'selectPresented($event)' },
 })
 export class StationBrowserComponent {
+  readonly theme = inject(ThemeService);
+  selectOptions(label: string) {
+    return {
+      cssClass: 'radio-select-popover',
+      showBackdrop: true,
+      htmlAttributes: { role: 'dialog', 'aria-label': label, lang: this.data.locale() },
+    };
+  }
+  selectPresented(event: Event) {
+    const overlay = event.target;
+    if (!(overlay instanceof HTMLElement) || !overlay.matches('ion-popover.radio-select-popover')) return;
+    // Ionic 9 puts a radiogroup inside ion-list without listitems. The list is visual, not a semantic list.
+    overlay.querySelector('ion-select-popover ion-list')?.setAttribute('role', 'presentation');
+  }
   readonly icons = radioIcons;
   readonly player = inject(PlayerService);
   readonly toggle = (value: boolean) => !value;
@@ -49,6 +65,7 @@ export class StationBrowserComponent {
             ...group,
             stations: group.stations.filter(
               station =>
+                station.streams.length > 0 &&
                 inCategory(station, this.category(), this.favorites.has(station.id)) &&
                 (this.category() !== 'listenNow' || this.player.eligibility(station).status === 'ready'),
             ),

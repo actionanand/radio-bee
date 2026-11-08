@@ -6,13 +6,16 @@ import { UiKey, uiLabel } from '../catalog/catalog.ui';
 import { StationArtworkComponent } from '../catalog/station-artwork';
 import { IonIcon } from '@ionic/angular';
 import { radioIcons } from '../shared/radio-icons';
+import { RADIO_RECORDING } from '../recording/recording.config';
+import { RecordingControlsComponent } from '../recording/recording-controls';
 @Component({
   selector: 'app-player',
-  imports: [StationArtworkComponent, IonIcon],
+  imports: [StationArtworkComponent, IonIcon, RecordingControlsComponent],
   templateUrl: './player.html',
   styleUrl: './player.scss',
 })
 export class PlayerComponent {
+  readonly recording = inject(RADIO_RECORDING);
   readonly icons = radioIcons;
   private readonly document = inject(DOCUMENT);
   stop() {

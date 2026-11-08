@@ -1,4 +1,4 @@
-import { Service, inject, signal, effect, OnDestroy } from '@angular/core';
+import { Service, inject, signal, computed, effect, OnDestroy } from '@angular/core';
 import { CatalogService } from '../catalog/catalog.service';
 import { Station, Stream } from '../catalog/catalog.models';
 import { eligibleStreams, streamEligibility } from '../catalog/stream-eligibility';
@@ -8,6 +8,7 @@ import { MEDIA_ENGINE } from './media-engine';
 
 export type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 export const MAX_STREAM_ATTEMPTS = 3;
+export type PlaybackBoundary = 'source' | 'pause' | 'stop' | 'failure';
 
 @Service()
 export class PlayerService implements OnDestroy {
@@ -23,6 +24,29 @@ export class PlayerService implements OnDestroy {
   private readonly cleanups: (() => void)[] = [];
   private readonly outcomes = signal<ReadonlyMap<string, 'playing' | 'failed'>>(new Map());
   private readonly selectedStream = signal<Stream | null>(null);
+  private readonly playbackBoundaries = new Set<(reason: PlaybackBoundary) => void>();
+  readonly captureSource = computed(() => {
+    const station = this.station(),
+      selected = this.selectedStream();
+    const current = station && this.current(station.id);
+    const stream = current?.streams.find(stream => stream.id === selected?.id && stream.url === selected.url);
+    return current && stream && this.state() === 'playing' && this.engine
+      ? { station: current, stream, audio: this.engine.audio }
+      : null;
+  });
+  onPlaybackBoundary(callback: (reason: PlaybackBoundary) => void) {
+    this.playbackBoundaries.add(callback);
+    return () => this.playbackBoundaries.delete(callback);
+  }
+  private playbackBoundary(reason: PlaybackBoundary) {
+    for (const callback of this.playbackBoundaries) {
+      try {
+        callback(reason);
+      } catch {
+        /* An optional observer must never break ordinary playback. */
+      }
+    }
+  }
   readonly technicalTest = signal(false);
   readonly station = signal<Station | null>(null);
   readonly state = signal<PlaybackState>('idle');
@@ -143,6 +167,7 @@ export class PlayerService implements OnDestroy {
     await this.loadNext();
   }
   private async loadNext(failure = 'playbackError'): Promise<void> {
+    this.playbackBoundary('source');
     const station = this.station();
     const current = station && this.current(station.id);
     const stream = current && this.candidates(current).find(stream => !this.attempted.has(stream.url));
@@ -175,6 +200,7 @@ export class PlayerService implements OnDestroy {
     }
   }
   private async recover(message: string, mediaFailure = true): Promise<void> {
+    this.playbackBoundary('failure');
     const selected = this.selectedStream();
     if (selected && mediaFailure) this.recordOutcome(selected.url, 'failed');
     const cancellation = ++this.attempt;
@@ -203,6 +229,7 @@ export class PlayerService implements OnDestroy {
     return !!current && this.candidates(current).length > 0;
   }
   pause(): void {
+    this.playbackBoundary('pause');
     if (!this.station()) return;
     ++this.attempt;
     this.clearTimer();
@@ -247,6 +274,7 @@ export class PlayerService implements OnDestroy {
     else await this.play(station);
   }
   stop(): void {
+    this.playbackBoundary('stop');
     ++this.attempt;
     this.clearTimer();
     this.station.set(null);
@@ -287,6 +315,7 @@ export class PlayerService implements OnDestroy {
     }, 20000);
   }
   private terminate(message: string) {
+    this.playbackBoundary('failure');
     ++this.attempt;
     this.clearTimer();
     this.loaded = false;

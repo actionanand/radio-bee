@@ -1,0 +1,201 @@
+{
+  "startedAt": "2026-11-07T19:24:28.078Z",
+  "catalogVersion": "1.4.0",
+  "candidateStations": 24,
+  "recordingEnabled": false,
+  "audits": [
+    {
+      "state": "recording-disabled-playback",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "recording-disabled-playback",
+      "station": "air-nagercoil",
+      "violations": []
+    }
+  ],
+  "playback": [
+    {
+      "id": "sooriyan-srilanka",
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "none",
+            "access-control-allow-origin": "*",
+            "cache-control": "no-cache,no-store,must-revalidate,max-age=0",
+            "connection": "keep-alive",
+            "content-type": "audio/mpeg; charset=UTF-8",
+            "date": "Sat, 07 Nov 2026 19:24:31 GMT",
+            "server": "nginx",
+            "transfer-encoding": "chunked",
+            "x-clacks-overhead": "GNU Terry Pratchett",
+            "icy-br": "128",
+            "icy-genre": "Misc",
+            "icy-name": "No Name",
+            "icy-notice1": "<BR>This stream requires <a href=\"http://www.winamp.com\">Winamp</a><BR>",
+            "icy-notice2": "Shoutcast DNAS/posix(linux x64) v2.6.1.777<BR>",
+            "icy-pub": "0",
+            "icy-sr": "44100",
+            "icy-url": "http://www.shoutcast.com"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 8.007811,
+      "bytes": 127895,
+      "source": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden"
+    },
+    {
+      "id": "air-nagercoil",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "headers": {
+            "access-control-allow-origin": "*",
+            "content-length": "98",
+            "content-type": "text/plain; charset=utf-8",
+            "date": "Sat, 07 Nov 2026 19:24:44 GMT",
+            "location": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+            "vary": "Accept",
+            "x-powered-by": "Express"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "369",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sat, 07 Nov 2026 19:24:44 GMT",
+            "etag": "\"6aef7af9-171\"",
+            "last-modified": "Sat, 07 Nov 2026 19:24:41 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 817efdc6b450f8ea2c3cfecf176cd352.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "Rf8RYW_rZrIiwMbwNfNrwkuhpmEBaYB8jvSbikcRhCZgE93qevO21g==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794079456414.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312644",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 19:24:44 GMT",
+            "etag": "\"6aef7ae8-4c544\"",
+            "last-modified": "Sat, 07 Nov 2026 19:24:24 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 817efdc6b450f8ea2c3cfecf176cd352.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "mHFwT2M41rcHNPQ2qloM7qrm9WTEvgs1oZmI76XuB_P1eOtyvHmjcA==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794079464741.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312832",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 19:24:44 GMT",
+            "etag": "\"6aef7af1-4c600\"",
+            "last-modified": "Sat, 07 Nov 2026 19:24:33 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 817efdc6b450f8ea2c3cfecf176cd352.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "xHFqdt7dpyuUultBeKL6LEveTx0uZh-Qm75ThTk_Cgs-0Vs_vCRcEw==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794079473077.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312644",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 19:24:44 GMT",
+            "etag": "\"6aef7af9-4c544\"",
+            "last-modified": "Sat, 07 Nov 2026 19:24:41 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 817efdc6b450f8ea2c3cfecf176cd352.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "bcqUh17Pe9tByrAhl2Y5m2T1IVn5SqVc6xu2GHzEuOhhnpAizt7W4Q==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "1",
+            "content-length": "369",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sat, 07 Nov 2026 19:24:50 GMT",
+            "etag": "\"6aef7b01-171\"",
+            "last-modified": "Sat, 07 Nov 2026 19:24:49 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 817efdc6b450f8ea2c3cfecf176cd352.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "LFBtQiCuO-egLViK_eXOiwXLnJE98AHyDamtauRXj3Ri-FGA6ZOa6Q==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794079481414.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "312456",
+            "content-type": "video/mp2t",
+            "date": "Sat, 07 Nov 2026 19:24:51 GMT",
+            "etag": "\"6aef7b01-4c488\"",
+            "last-modified": "Sat, 07 Nov 2026 19:24:49 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 817efdc6b450f8ea2c3cfecf176cd352.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "oEL-4KxMBo81lz7dU8bANGh4ExERkM5FeBHFgMgo_Sc3Jm3FiMzsVg==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 7.925092999999997,
+      "bytes": 68964,
+      "source": "blob:http://localhost:3081/d04fbfe5-8765-4800-abb5-5d5474b4ff36"
+    }
+  ],
+  "recording": {},
+  "logos": [],
+  "browser": "157.0.8103.38",
+  "completed": true
+}

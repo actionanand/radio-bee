@@ -1,0 +1,30 @@
+Collected RadioBee-1-0-0-2-unsigned APK/AAB and R8 mapping. Signing is required before distribution.
+✔ code-only and semantic version transitions, including sequential bumps (265.670989ms)
+✔ invalid versions and overflow fail without changing the version file (172.134413ms)
+✔ identity, native patch idempotency and preservation of custom native changes (24.322383ms)
+✔ release collection rejects stale/empty Gradle outputs and preserves approved history (10.274217ms)
+✔ asset plan uses all densities, padded artwork, splash and 512px store icon (1.071264ms)
+✔ release names unambiguously include name and code; build only collects explicitly unsigned outputs (3.969761ms)
+✔ signing verifies both candidates before promotion, handles PKCS12 and cleans secrets (1.904473ms)
+✔ apk verification failure leaves no signed-looking files or secrets (1.218551ms)
+✔ aab verification failure leaves no signed-looking files or secrets (1.267237ms)
+✔ missing secrets and unsigned jars cannot produce production artifacts (1.792741ms)
+✔ JKS retains its separate key password; non-private aliases are rejected (1.464988ms)
+✔ keystore generation refuses existing identities and password arguments (104.92532ms)
+✔ version reservations persist monotonically and reject stale branch reads (273.692184ms)
+✔ workflow isolates Android from web, persists before compilation and publishes verified exact artifacts (606.83413ms)
+✔ technical evidence is complete, uniquely scoped and counts actual outcomes (1.737951ms)
+✔ J1 Web proposal remains unconfirmed and points listeners to the official site (22.049789ms)
+✔ PR validation runs required checks with read-only access and no publishing capability (21.759079ms)
+✔ recording configuration is an informational CI notice, with no blocking production gate (0.706319ms)
+✔ preview binds loopback by default and preserves production HTML/HTTPS configuration (128.771216ms)
+✔ external development binding requires explicit opt-in and emits a warning (38.248916ms)
+✔ review injection requires explicit snapshot and keeps the configured HTTPS base (44.558593ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1807.487705
