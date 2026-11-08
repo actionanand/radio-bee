@@ -20,6 +20,7 @@ import { PlayerComponent } from '../player/player';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
 import { environment as technical } from '../../environments/environment.live-test';
+import { PlaybackError } from '../player/playback-failure';
 
 function setup(enabled = true) {
   const c = validateCatalog(structuredClone(currentPublishedFixture));
@@ -57,10 +58,34 @@ async function playing(s: ReturnType<typeof setup>) {
 }
 afterEach(() => {
   TestBed.resetTestingModule();
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
 describe('Configured recording and explicit source policy', () => {
+  it('ends capture before transient recovery, preserves the completed draft and never restarts capture', async () => {
+    vi.useFakeTimers();
+    const s = setup();
+    // AIR-like single candidate, keeping its real recording consent requirement.
+    s.station.streams = [s.station.streams[0]];
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    s.hooks().progress(2, true);
+    Object.defineProperty(s.audio, 'error', { value: { code: 2 } });
+    s.audio.dispatchEvent(new Event('error'));
+    expect(s.stop).toHaveBeenCalledOnce();
+    expect(s.player.statusLabel()).toBe('reconnecting');
+    const blob = new Blob(['unit draft'], { type: 'audio/webm' });
+    s.hooks().finished(blob);
+    await vi.advanceTimersByTimeAsync(750);
+    s.audio.dispatchEvent(new Event('playing'));
+    expect(s.player.state()).toBe('playing');
+    expect(s.create).toHaveBeenCalledOnce();
+    expect(service.state()).toBe('ready');
+    await service.save();
+    expect(s.save).toHaveBeenCalledWith(blob, expect.any(String));
+  });
   it('distinguishes paused or absent playback from prohibited recording metadata', async () => {
     const s = setup();
     const service = TestBed.inject(RecordingService);
@@ -319,6 +344,29 @@ describe('Configured recording and explicit source policy', () => {
     expect(s.audio.getAttribute('crossorigin')).toBeNull();
     expect(s.create).not.toHaveBeenCalled();
     expect(s.player.state()).toBe('playing');
+    expect(service.state()).toBe('error');
+  });
+  it('does not create a fresh session over the player reconnect scheduled during capture preparation', async () => {
+    vi.useFakeTimers();
+    const s = setup();
+    s.station.streams = [s.station.streams[0]];
+    await playing(s);
+    nativeSource(s);
+    vi.mocked(s.audio.play).mockRejectedValueOnce(new PlaybackError({ kind: 'network', transient: true }));
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    expect(s.audio.play).toHaveBeenCalledTimes(2); // Initial selection and explicit capture preparation.
+    expect(s.player.statusLabel()).toBe('reconnecting');
+    await vi.advanceTimersByTimeAsync(750);
+    expect(s.audio.play).toHaveBeenCalledTimes(3);
+    expect(
+      s.player
+        .diagnostics()
+        .filter(d => d.result === 'attempt')
+        .map(d => d.attempt),
+    ).toEqual([1, 1, 2]);
+    s.audio.dispatchEvent(new Event('playing'));
+    expect(s.create).not.toHaveBeenCalled();
     expect(service.state()).toBe('error');
   });
   for (const action of ['pause', 'stop', 'switch'] as const)

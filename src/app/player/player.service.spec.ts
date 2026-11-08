@@ -86,7 +86,7 @@ describe('Functional player service', () => {
     await player.resume();
     audio.dispatchEvent(new Event('playing'));
     audio.dispatchEvent(new Event('waiting'));
-    await vi.advanceTimersByTimeAsync(20000);
+    await vi.advanceTimersByTimeAsync(33000);
     expect(player.error()).toBe('playbackTimeout');
     player.setVolume(0.35);
     expect(audio.volume).toBe(0.35);

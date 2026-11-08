@@ -1,0 +1,21 @@
+{
+  "startedAt": "2026-11-08T05:36:45.261Z",
+  "catalogVersion": "1.5.0",
+  "counts": {
+    "networks": 21,
+    "stations": 24,
+    "locations": 91,
+    "streams": 26,
+    "verifiedStreams": 1,
+    "discoveryStations": 41,
+    "discoverableStations": 65,
+    "stationsWithStreamCandidates": 24,
+    "productionEligibleStations": 0
+  },
+  "checks": [],
+  "audits": [],
+  "playback": [],
+  "requests": [],
+  "completed": true,
+  "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3101/radio-bee/home\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3101/radio-bee/home\", waiting until \"load\"\u001b[22m\n"
+}

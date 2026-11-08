@@ -1,0 +1,114 @@
+{
+  "startedAt": "2026-11-08T05:37:27.431Z",
+  "catalogVersion": "1.6.0",
+  "counts": {
+    "networks": 41,
+    "stations": 33,
+    "locations": 111,
+    "streams": 35,
+    "verifiedStreams": 1,
+    "discoveryStations": 52,
+    "discoverableStations": 85,
+    "stationsWithStreamCandidates": 33,
+    "productionEligibleStations": 0
+  },
+  "checks": ["actual v1.4.0: 24 stations, 26 candidates; optional discovery absent without extra request"],
+  "audits": [],
+  "playback": [],
+  "requests": [
+    {
+      "path": "index.json",
+      "bytes": 801
+    },
+    {
+      "path": "languages.json",
+      "bytes": 864
+    },
+    {
+      "path": "networks.json",
+      "bytes": 3500
+    },
+    {
+      "path": "stations.json",
+      "bytes": 41991
+    },
+    {
+      "path": "locations.json",
+      "bytes": 12612
+    },
+    {
+      "path": "categories.json",
+      "bytes": 365
+    },
+    {
+      "path": "sources.json",
+      "bytes": 13144
+    },
+    {
+      "path": "i18n/ta.json",
+      "bytes": 2481
+    },
+    {
+      "path": "i18n/en.json",
+      "bytes": 1317
+    },
+    {
+      "path": "i18n/sa.json",
+      "bytes": 2434
+    },
+    {
+      "path": "index.json",
+      "bytes": 801
+    },
+    {
+      "path": "index.json",
+      "bytes": 1152
+    },
+    {
+      "path": "categories.json",
+      "bytes": 365
+    },
+    {
+      "path": "networks.json",
+      "bytes": 7918
+    },
+    {
+      "path": "stations.json",
+      "bytes": 58656
+    },
+    {
+      "path": "locations.json",
+      "bytes": 15356
+    },
+    {
+      "path": "languages.json",
+      "bytes": 864
+    },
+    {
+      "path": "sources.json",
+      "bytes": 30694
+    },
+    {
+      "path": "discovery-stations.json",
+      "bytes": 47756
+    },
+    {
+      "path": "i18n/ta.json",
+      "bytes": 2481
+    },
+    {
+      "path": "i18n/en.json",
+      "bytes": 1317
+    },
+    {
+      "path": "i18n/sa.json",
+      "bytes": 2434
+    },
+    {
+      "path": "index.json",
+      "bytes": 1152
+    }
+  ],
+  "completed": true,
+  "error": "page.waitForFunction: Timeout 30000ms exceeded."
+}

@@ -1,0 +1,116 @@
+{
+  "startedAt": "2026-11-08T04:08:44.587Z",
+  "catalogVersion": "1.4.0",
+  "stations": 24,
+  "streams": 26,
+  "recordingEnabled": false,
+  "attempts": [
+    {
+      "label": "sooriyan",
+      "injectedFailure": null,
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "mime": "audio/mpeg; charset=UTF-8",
+          "cors": "*",
+          "redirectedFrom": null
+        }
+      ],
+      "failures": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "played": true,
+      "continuitySeconds": 8.04618,
+      "decodedBytes": 128731,
+      "mediaEvents": [
+        {
+          "name": "emptied",
+          "at": 828.6000000089407,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "waiting",
+          "at": 829.9000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadstart",
+          "at": 829.9000000059605,
+          "time": 0,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "name": "loadedmetadata",
+          "at": 2300.5,
+          "time": 0,
+          "ready": 1,
+          "paused": false
+        },
+        {
+          "name": "canplay",
+          "at": 2315.6000000089407,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        },
+        {
+          "name": "playing",
+          "at": 2315.6000000089407,
+          "time": 0,
+          "ready": 3,
+          "paused": false
+        }
+      ],
+      "transitions": [
+        {
+          "timestamp": 1794110926663,
+          "elapsedMs": 0,
+          "stationId": "sooriyan-srilanka",
+          "streamId": "sooriyan-official-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "connecting",
+          "result": "attempt"
+        },
+        {
+          "timestamp": 1794110928167,
+          "elapsedMs": 1504,
+          "stationId": "sooriyan-srilanka",
+          "streamId": "sooriyan-official-candidate",
+          "attempt": 1,
+          "urlAttempt": 1,
+          "phase": "playing",
+          "result": "playing"
+        }
+      ],
+      "audioCount": 1,
+      "microphoneRequests": 0,
+      "final": {
+        "paused": false,
+        "ready": 4,
+        "bytes": 149629,
+        "time": 9.057322,
+        "engine": "native"
+      },
+      "pauseResume": true,
+      "stopClearedSource": true
+    }
+  ],
+  "audits": [
+    {
+      "state": "playing",
+      "violations": []
+    }
+  ],
+  "completed": true,
+  "validationPassed": true
+}

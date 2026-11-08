@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CatalogService } from './catalog.service';
 import { UiKey, uiLabel } from './catalog.ui';
-import { Filters, Location, emptyFilters, groups } from './catalog.models';
+import { Filters, Location, emptyFilters, groups, catalogCounts } from './catalog.models';
 import { StationCardComponent } from './station-card';
 import { FavoritesService } from './favorites.service';
 import { DiscoveryCategory, discoveryCategories, inCategory } from './discovery';
@@ -65,7 +65,7 @@ export class StationBrowserComponent {
             ...group,
             stations: group.stations.filter(
               station =>
-                station.streams.length > 0 &&
+                (station.streams.length > 0 || !!station.discovery) &&
                 inCategory(station, this.category(), this.favorites.has(station.id)) &&
                 (this.category() !== 'listenNow' || this.player.eligibility(station).status === 'ready'),
             ),
@@ -73,6 +73,7 @@ export class StationBrowserComponent {
           .filter(group => group.stations.length)
       : [];
   });
+  readonly totals = computed(() => catalogCounts(this.data.catalog()));
   readonly count = computed(() => this.grouped().reduce((total, g) => total + g.stations.length, 0));
   readonly controls = computed(() =>
     this.filters().country === 'IN'

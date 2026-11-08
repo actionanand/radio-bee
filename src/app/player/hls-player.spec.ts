@@ -8,11 +8,13 @@ import { RADIO_API_CONFIG } from '../catalog/radio-api.config';
 import { environment } from '../../environments/environment.prod';
 import { createMediaEngine, HlsAdapter, MEDIA_ENGINE } from './media-engine';
 import { PlayerService } from './player.service';
+import { PlaybackFailure } from './playback-failure';
+import { RECOVERY_RANDOM } from './recovery-policy';
 
 function adapter() {
   let attached = () => {},
     manifest = () => {},
-    fatal = () => {};
+    fatal: (failure?: PlaybackFailure) => void = () => {};
   const value: HlsAdapter = {
     onAttached: callback => {
       attached = callback;
@@ -27,13 +29,20 @@ function adapter() {
     loadSource: vi.fn(),
     destroy: vi.fn(),
   };
-  return { value, attached: () => attached(), manifest: () => manifest(), fatal: () => fatal() };
+  return {
+    value,
+    attached: () => attached(),
+    manifest: () => manifest(),
+    fatal: (failure?: PlaybackFailure) => fatal(failure),
+  };
 }
 function setup() {
   vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('probably');
   vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => undefined);
   vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
   const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+  vi.spyOn(HTMLMediaElement.prototype, 'paused', 'get').mockReturnValue(false);
+  vi.spyOn(HTMLMediaElement.prototype, 'readyState', 'get').mockReturnValue(4);
   const first = adapter(),
     second = adapter();
   const create = vi.fn().mockReturnValueOnce(first.value).mockReturnValue(second.value);
@@ -62,6 +71,7 @@ function setup() {
       { provide: CatalogService, useValue: { catalog: signal(c) } },
       { provide: RADIO_API_CONFIG, useValue: environment.RadioApi },
       { provide: MEDIA_ENGINE, useValue: engine },
+      { provide: RECOVERY_RANDOM, useValue: () => 0 },
     ],
   });
   return { player: TestBed.inject(PlayerService), engine, station, other, first, second, create, play };
@@ -74,10 +84,40 @@ afterEach(() => {
   TestBed.inject(PlayerService).stop();
   // Destroy the service while the controlled media API is still installed.
   TestBed.resetTestingModule();
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
 describe('HLS adapter and real PlayerService integration', () => {
+  for (const phase of ['initialization', 'runtime'] as const)
+    it(`retries one HLS URL after a transient ${phase} failure without duplicate error/promise recovery`, async () => {
+      vi.useFakeTimers();
+      const s = setup();
+      s.station.streams = [s.station.streams[0]];
+      const pending = s.player.play(s.station);
+      if (phase === 'runtime') {
+        s.first.manifest();
+        await pending;
+        s.engine.audio.dispatchEvent(new Event('playing'));
+      }
+      s.first.fatal({ kind: phase === 'runtime' ? 'segment' : 'manifest', transient: true });
+      await settle();
+      expect(s.create).toHaveBeenCalledOnce();
+      expect(s.player.diagnostics().filter(d => d.result === 'scheduled')).toHaveLength(1);
+      await vi.advanceTimersByTimeAsync(500);
+      expect(s.create).toHaveBeenCalledTimes(2);
+      s.first.fatal();
+      s.first.manifest();
+      s.first.attached();
+      s.second.attached();
+      s.second.manifest();
+      await pending;
+      await settle();
+      expect(s.second.value.loadSource).toHaveBeenCalledWith(s.station.streams[0].url);
+      expect(s.player.state()).toBe('loading');
+      s.engine.audio.dispatchEvent(new Event('playing'));
+      expect(s.player.state()).toBe('playing');
+    });
   for (const phase of ['initialization', 'runtime'] as const)
     it(`falls back after ${phase} failure preserving one audio element, volume and mute`, async () => {
       const { player, engine, station, first, second, create, play } = setup();

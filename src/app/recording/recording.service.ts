@@ -198,7 +198,8 @@ export class RecordingService implements OnDestroy {
         (preparation.failed || generation === this.generation) &&
         !this.destroyed &&
         this.player.station()?.id === source.station.id &&
-        ['loading', 'error'].includes(this.player.state());
+        (this.player.state() === 'error' ||
+          (this.player.state() === 'loading' && this.player.pendingPhase() !== 'reconnecting'));
       this.restoreAccess?.();
       if (this.preparation === preparation) this.preparation = undefined;
       if (restorePlayback) {

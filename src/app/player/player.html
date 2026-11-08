@@ -11,7 +11,7 @@
     @if (player.technicalTest()) {
     <p>{{ ui('technicalTest') }}</p>
     }
-    <p role="status">{{ ui(player.state() === 'loading' ? 'buffering' : player.state()) }}</p>
+    <p role="status">{{ ui(player.statusLabel()) }}</p>
   </div>
   @let active = player.state() === 'playing' || player.state() === 'loading';
   <button type="button" (click)="active ? player.pause() : player.resume()" [disabled]="!active && !player.canResume()">

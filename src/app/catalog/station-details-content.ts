@@ -25,7 +25,8 @@ import { stationWebsite } from './station-website';
     </dl>
     @if (website(); as url) {
       <a [href]="url" target="_blank" rel="noopener noreferrer"
-        >{{ ui('officialWebsite') }}<ion-icon [icon]="icons.openOutline" aria-hidden="true"
+        >{{ ui(station().discovery?.websiteKind === 'provider' ? 'visitProvider' : 'officialWebsite')
+        }}<ion-icon [icon]="icons.openOutline" aria-hidden="true"
       /></a>
     }
   </section>`,
@@ -105,6 +106,20 @@ export class StationDetailsContentComponent {
     const add = (label: UiKey, value: string | undefined) => {
       if (value) result.push({ label, value });
     };
+    if (station.discovery) {
+      add(
+        'availability',
+        uiLabel(
+          this.data.locale(),
+          station.discovery.availability === 'temporarily-unavailable'
+            ? 'temporarilyUnavailable'
+            : station.discovery.availability === 'review-pending'
+              ? 'streamReviewPending'
+              : 'noDirectStream',
+        ),
+      );
+      add('aboutStation', station.notes ?? undefined);
+    }
     add(
       'language',
       station.broadcastLanguages

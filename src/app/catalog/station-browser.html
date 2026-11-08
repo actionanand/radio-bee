@@ -110,7 +110,8 @@
     <summary>{{ ui('catalogueInfo') }} · {{ catalog.manifest.catalogVersion }}</summary>
     <p>
       {{ ui('catalogue') }} {{ catalog.manifest.catalogVersion }} · {{ catalog.manifest.publishedOn }} · {{
-      catalog.stations.length }} {{ data.t('catalog','stations') }} · {{ catalog.networks.length }} {{
+      totals().discoverable }} {{ ui('totalDiscoverable') }} · {{ totals().candidates }} {{ ui('streamCandidates') }} ·
+      {{ totals().approved }} {{ ui('approvedListening') }} · {{ catalog.networks.length }} {{
       data.t('catalog','networks') }}
     </p>
     <p>

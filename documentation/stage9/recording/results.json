@@ -1,0 +1,262 @@
+{
+  "startedAt": "2026-11-08T04:07:38.684Z",
+  "catalogVersion": "1.4.0",
+  "candidateStations": 24,
+  "recordingEnabled": true,
+  "audits": [
+    {
+      "state": "recording-active",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "recording-export",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "injected-recording-access-failure",
+      "station": "sooriyan-srilanka",
+      "violations": []
+    },
+    {
+      "state": "recording-ended-on-station-switch",
+      "violations": []
+    },
+    {
+      "state": "recording-active",
+      "station": "air-nagercoil",
+      "violations": []
+    },
+    {
+      "state": "recording-export",
+      "station": "air-nagercoil",
+      "violations": []
+    }
+  ],
+  "playback": [
+    {
+      "id": "sooriyan-srilanka",
+      "responses": [
+        {
+          "url": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "none",
+            "access-control-allow-origin": "*",
+            "cache-control": "no-cache,no-store,must-revalidate,max-age=0",
+            "connection": "keep-alive",
+            "content-type": "audio/mpeg; charset=UTF-8",
+            "date": "Sun, 08 Nov 2026 04:07:42 GMT",
+            "server": "nginx",
+            "transfer-encoding": "chunked",
+            "x-clacks-overhead": "GNU Terry Pratchett",
+            "icy-br": "128",
+            "icy-genre": "Misc",
+            "icy-name": "No Name",
+            "icy-notice1": "<BR>This stream requires <a href=\"http://www.winamp.com\">Winamp</a><BR>",
+            "icy-notice2": "Shoutcast DNAS/posix(linux x64) v2.6.1.777<BR>",
+            "icy-pub": "0",
+            "icy-sr": "44100",
+            "icy-url": "http://www.shoutcast.com"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 8.005650000000001,
+      "bytes": 128313,
+      "source": "https://radio.lotustechnologieslk.net:2020/stream/sooriyanfmgarden"
+    },
+    {
+      "id": "air-nagercoil",
+      "responses": [
+        {
+          "url": "https://radio.wavespb.com/live/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 302,
+          "headers": {
+            "access-control-allow-origin": "*",
+            "content-length": "98",
+            "content-type": "text/plain; charset=utf-8",
+            "date": "Sun, 08 Nov 2026 04:08:26 GMT",
+            "location": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+            "vary": "Accept",
+            "x-powered-by": "Express"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "1",
+            "content-length": "370",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sun, 08 Nov 2026 04:08:25 GMT",
+            "etag": "\"6aeff5b2-172\"",
+            "last-modified": "Sun, 08 Nov 2026 04:08:18 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 466d51ceb9de022f6d388522335554e4.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "C6JiCQ3fttR6uirNY7sc6n14v4YzUVBF4OirQZ4Gvk7qOREyJ7PZcA==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110873902.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "22",
+            "content-length": "313396",
+            "content-type": "video/mp2t",
+            "date": "Sun, 08 Nov 2026 04:08:04 GMT",
+            "etag": "\"6aeff5a2-4c834\"",
+            "last-modified": "Sun, 08 Nov 2026 04:08:02 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 466d51ceb9de022f6d388522335554e4.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "kYRHqHowPjg85WMqJhzpwKQ0Q67U_NlXSdR17M9opCLlTGJ2vMWwXA==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110882237.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "13",
+            "content-length": "312832",
+            "content-type": "video/mp2t",
+            "date": "Sun, 08 Nov 2026 04:08:13 GMT",
+            "etag": "\"6aeff5aa-4c600\"",
+            "last-modified": "Sun, 08 Nov 2026 04:08:10 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 466d51ceb9de022f6d388522335554e4.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "RsFLW6O2k7-kY55VPnSyhwNUXAD9RUIdSHMADR5nEOHFtkmTmO292Q==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110890573.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "5",
+            "content-length": "312080",
+            "content-type": "video/mp2t",
+            "date": "Sun, 08 Nov 2026 04:08:21 GMT",
+            "etag": "\"6aeff5b2-4c310\"",
+            "last-modified": "Sun, 08 Nov 2026 04:08:18 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 466d51ceb9de022f6d388522335554e4.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "sRFZOxhr8L_9tzaa-s7WCh5A7nodj_m3YpxKTKtXVQiSQ8is6Dk7zA==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009.m3u8",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "content-length": "370",
+            "content-type": "application/vnd.apple.mpegurl",
+            "date": "Sun, 08 Nov 2026 04:08:34 GMT",
+            "etag": "\"6aeff5bb-172\"",
+            "last-modified": "Sun, 08 Nov 2026 04:08:27 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 466d51ceb9de022f6d388522335554e4.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "3h2xc91ZxZBYKXgsz7oPUUjdrinNSZh9LYWGTmI4glM4uRo75DS8BQ==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Miss from cloudfront"
+          }
+        },
+        {
+          "url": "https://d3hrxqn1tritdh.cloudfront.net/10c64309264eb009/10c64309264eb009-1794110898908.ts",
+          "status": 200,
+          "headers": {
+            "accept-ranges": "bytes",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-allow-origin": "*",
+            "age": "5",
+            "content-length": "312832",
+            "content-type": "video/mp2t",
+            "date": "Sun, 08 Nov 2026 04:08:29 GMT",
+            "etag": "\"6aeff5bb-4c600\"",
+            "last-modified": "Sun, 08 Nov 2026 04:08:27 GMT",
+            "server": "nginx/1.24.0 (Ubuntu)",
+            "via": "1.1 466d51ceb9de022f6d388522335554e4.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "pVxRAbpqUQsKQ2JHuLBdi7ZYAbfXnssP1v3qTeWR3Hwj8rEnSGJJEg==",
+            "x-amz-cf-pop": "MAA50-P2",
+            "x-cache": "Hit from cloudfront"
+          }
+        }
+      ],
+      "failures": [],
+      "played": true,
+      "continuity": 7.987133000000004,
+      "bytes": 67787,
+      "source": "blob:http://localhost:3081/01af20c4-b7ad-485e-a22a-688fb14fbb10"
+    }
+  ],
+  "recording": {
+    "sooriyan-srilanka": {
+      "id": "sooriyan-srilanka",
+      "captureSucceeded": true,
+      "trackKinds": ["audio"],
+      "filename": "RadioBee-Sooriyan-FM-Sri-Lanka-2026-11-08T04-08-01-743Z.webm",
+      "decoded": {
+        "size": 117143,
+        "mime": "audio/webm;codecs=opus",
+        "duration": 7.26,
+        "sampleRate": 48000,
+        "channelRms": [0.23363154631496497, 0.2222729926286926],
+        "rms": 0.22802300617003152
+      },
+      "playbackAdvancedAfterCapture": 2.0028560000000013
+    },
+    "air-nagercoil": {
+      "id": "air-nagercoil",
+      "captureSucceeded": true,
+      "trackKinds": ["audio"],
+      "filename": "RadioBee-Akashvani-Nagercoil-2026-11-08T04-08-42-223Z.webm",
+      "decoded": {
+        "size": 119091,
+        "mime": "audio/webm;codecs=opus",
+        "duration": 7.38,
+        "sampleRate": 48000,
+        "channelRms": [0.060115807468283114, 0.16946215811357768],
+        "rms": 0.12714427501872602
+      },
+      "playbackAdvancedAfterCapture": 2.002832000000005
+    }
+  },
+  "logos": [],
+  "browser": "157.0.8103.38",
+  "recordingLifecycle": {
+    "pauseEndsAndResumeDoesNotRecord": true,
+    "discardStopsTracksAndRemovesFile": true,
+    "injectedAccessFailureKeepsPlayback": true,
+    "stationSwitchEndsCapture": true,
+    "stopCleanup": true
+  },
+  "completed": true
+}

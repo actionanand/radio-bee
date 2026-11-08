@@ -1,4 +1,4 @@
-import { Catalog, Manifest } from './catalog.models';
+import { Catalog, Manifest, catalogCounts } from './catalog.models';
 function check(value: unknown, message: string): asserts value {
   if (!value) throw new Error(`Invalid catalogue: ${message}`);
 }
@@ -53,6 +53,17 @@ export function validateManifest(value: unknown): Manifest {
   for (const key of ['networks', 'stations', 'locations', 'languages', 'categories', 'sources']) {
     check(text(files[key]), `file ${key}`);
     relativePath('https://catalog.invalid/v1/', files[key]);
+  }
+  if (files['discoveryStations'] !== undefined) {
+    check(files['discoveryStations'] === 'discovery-stations.json', 'discovery file');
+    const discoveryCounts = record(m['counts']);
+    for (const k of [
+      'discoveryStations',
+      'discoverableStations',
+      'stationsWithStreamCandidates',
+      'productionEligibleStations',
+    ])
+      check(Number.isSafeInteger(discoveryCounts[k]) && Number(discoveryCounts[k]) >= 0, 'discovery count ' + k);
   }
   check(text(m['localizationRoot']), 'localizationRoot');
   relativePath('https://catalog.invalid/v1/', m['localizationRoot']);
@@ -111,10 +122,107 @@ export function validateCatalog(value: unknown): Catalog {
       );
     }
   }
+  const discovery = data['discoveryStations'] ?? [];
+  check(Array.isArray(discovery), 'discovery stations');
+  check(!discovery.length || !!manifest.files['discoveryStations'], 'unadvertised discovery');
+  check(!manifest.files['discoveryStations'] || Array.isArray(data['discoveryStations']), 'missing discovery payload');
+  const discoveryIds = new Set<string>(),
+    names = new Map<string, string>();
+  const identity = (network: unknown, name: string) =>
+    String(network) + '|' + name.normalize('NFKC').trim().toLowerCase();
+  for (const s of table('stations').values()) {
+    names.set(identity(s['networkId'], String(s['name'])), String(s['id']));
+    check(s['aliases'] === undefined || strings(s['aliases']), 'station aliases');
+    for (const a of (s['aliases'] as string[] | undefined) ?? []) {
+      const key = identity(s['networkId'], a);
+      check(!names.has(key) || names.get(key) === s['id'], 'duplicate programme alias');
+      names.set(key, String(s['id']));
+    }
+  }
+  const fields = [
+    'id',
+    'name',
+    'networkId',
+    'countryCode',
+    'regionId',
+    'districtId',
+    'localityId',
+    'broadcastLanguages',
+    'genres',
+    'delivery',
+    'coverage',
+    'listingStatus',
+    'frequencyMHz',
+    'website',
+    'sourceIds',
+    'notes',
+    'aliases',
+    'availability',
+    'reviewedOn',
+    'websiteKind',
+  ];
+  const discoveryRecords = discovery.map((value): Record<string, unknown> => {
+    const r = record(value);
+    check(
+      fields.every(k => Object.hasOwn(r, k)) && Object.keys(r).every(k => fields.includes(k)),
+      'metadata-only discovery fields',
+    );
+    check(
+      text(r['id']) &&
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r['id']) &&
+        !discoveryIds.has(r['id']) &&
+        !table('stations').has(r['id']),
+      'duplicate discovery ID',
+    );
+    discoveryIds.add(r['id']);
+    check(
+      text(r['name']) && strings(r['aliases']) && new Set(r['aliases']).size === r['aliases'].length,
+      'discovery aliases',
+    );
+    for (const name of [r['name'], ...r['aliases']]) {
+      const k = identity(r['networkId'], name);
+      check(!names.has(k) || names.get(k) === r['id'], 'duplicate programme alias');
+      names.set(k, r['id']);
+    }
+    choice(r['availability'], ['no-direct-stream', 'temporarily-unavailable', 'review-pending']);
+    check(
+      text(r['reviewedOn']) &&
+        /^\d{4}-\d{2}-\d{2}$/.test(r['reviewedOn']) &&
+        Number.isFinite(Date.parse(r['reviewedOn'])),
+      'discovery review date',
+    );
+    check(
+      strings(r['sourceIds']) && r['sourceIds'].length > 0 && strings(r['genres']) && r['genres'].length > 0,
+      'discovery provenance',
+    );
+    if (r['website'] === null) check(r['websiteKind'] === null, 'discovery website kind');
+    else {
+      https(r['website']);
+      choice(r['websiteKind'], ['official', 'provider']);
+      const url = new URL(String(r['website'])),
+        host = url.hostname.toLowerCase().replace(/\.$/, '');
+      check(
+        !url.search &&
+          !/\.(mp3|m3u8|aac)(\/|$)/i.test(url.pathname) &&
+          !/\/(api|proxy|webdio)(\/|$)/i.test(url.pathname),
+        'website is not audio/API',
+      );
+      check(
+        host.includes('.') &&
+          !host.includes(':') &&
+          !/^\d+\.\d+\.\d+\.\d+$/.test(host) &&
+          !['localhost', 'local', 'internal', 'lan', 'home', 'home.arpa', 'onion', 'invalid'].some(
+            n => host === n || host.endsWith('.' + n),
+          ),
+        'public discovery website',
+      );
+    }
+    return { ...r, streams: [] };
+  });
   let streams = 0;
   let verified = 0;
   const streamIds = new Set<string>();
-  for (const s of table('stations').values()) {
+  for (const s of [...table('stations').values(), ...discoveryRecords]) {
     check(s['logoPath'] === undefined || typeof s['logoPath'] === 'string', 'station logoPath');
     const network = ref('networks', s['networkId']);
     check(
@@ -196,6 +304,16 @@ export function validateCatalog(value: unknown): Catalog {
   for (const key of ['networks', 'stations', 'locations'] as const)
     check(table(key).size === manifest.counts[key], `incomplete ${key}`);
   check(streams === manifest.counts.streams && verified === manifest.counts.verifiedStreams, 'stream counts');
+  if (manifest.files['discoveryStations']) {
+    const counts = catalogCounts(value as Catalog);
+    check(
+      discovery.length === manifest.counts.discoveryStations &&
+        counts.discoverable === manifest.counts.discoverableStations &&
+        counts.candidates === manifest.counts.stationsWithStreamCandidates &&
+        counts.approved === manifest.counts.productionEligibleStations,
+      'discovery counts',
+    );
+  }
   const locales = record(data['localization']);
   for (const locale of ['en', 'ta', 'sa']) {
     const dictionary = record(locales[locale]);

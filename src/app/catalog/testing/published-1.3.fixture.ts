@@ -973,7 +973,7 @@ export const currentPublishedFixture: unknown = {
         },
       ],
       notes:
-        'nullStage 6 exact official player channel 1: Vividh Bharati. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping.',
+        'Stage 6 exact official player channel 1: Vividh Bharati. Named service association; decoding, audible identity and listening-use review pending. Existing language/genre tags not reverified by this mapping.',
     },
     {
       id: 'air-raagam',

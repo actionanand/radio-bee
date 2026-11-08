@@ -7,7 +7,10 @@ import {
   HlsAdapter,
   HlsFactory,
   MediaEngine,
+  HLS_INITIALIZATION_MS,
+  HLS_LOAD_CONFIG,
 } from './media-engine';
+import { PlaybackError } from './playback-failure';
 import { Stream } from '../catalog/catalog.models';
 const stream: Stream = {
   id: 'test',
@@ -104,12 +107,53 @@ describe('Browser media adapter', () => {
     const failure = vi.fn();
     engine.audio.addEventListener('error', failure);
     const loading = engine.load({ ...stream, format: 'hls' });
-    const rejection = expect(loading).rejects.toThrow('HLS failure');
+    const rejection = expect(loading).rejects.toThrow('Media playback failure');
     fake.fatal();
     await rejection;
     expect(failure).toHaveBeenCalledOnce();
     engine.clear();
     expect(fake.adapter.destroy).toHaveBeenCalledOnce();
+  });
+  it('bounds unresolved HLS initialization and clears the timer on cancellation', async () => {
+    vi.useFakeTimers();
+    try {
+      const fake = fakeHls(),
+        engine = existing(createMediaEngine(fake.factory));
+      const loading = engine.load({ ...stream, format: 'hls' });
+      const rejected = expect(loading).rejects.toMatchObject({ failure: { kind: 'timeout', transient: true } });
+      await vi.advanceTimersByTimeAsync(HLS_INITIALIZATION_MS);
+      await rejected;
+      expect(engine.failure?.()).toEqual({ kind: 'timeout', transient: true });
+      engine.clear();
+      const next = engine.load({ ...stream, format: 'hls' });
+      const cancelled = expect(next).rejects.toMatchObject({ name: 'AbortError' });
+      engine.clear();
+      await cancelled;
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+  it('classifies attachment failures and does not leave unresolved promises', async () => {
+    const fake = fakeHls(),
+      engine = existing(createMediaEngine(fake.factory));
+    fake.adapter.attachMedia.mockImplementation(() => {
+      throw new DOMException('Unsupported', 'NotSupportedError');
+    });
+    await expect(engine.load({ ...stream, format: 'hls' })).rejects.toBeInstanceOf(PlaybackError);
+    expect(engine.failure?.()?.kind).toBe('unsupported');
+    engine.clear();
+  });
+  it('disables nested manifest retries and limits short segment retries to transient responses', () => {
+    expect(HLS_LOAD_CONFIG.manifestLoadPolicy?.default.errorRetry).toBeNull();
+    expect(HLS_LOAD_CONFIG.manifestLoadPolicy?.default.timeoutRetry).toBeNull();
+    const policy = HLS_LOAD_CONFIG.fragLoadPolicy!.default.errorRetry!;
+    for (const code of [0, 408, 429, 500, 401, 403, 404]) {
+      expect(policy.shouldRetry!(policy, 0, false, { code, url: '', data: '' }, true)).toBe(
+        [0, 408, 429, 500].includes(code),
+      );
+      expect(policy.shouldRetry!(policy, 1, false, { code, url: '', data: '' }, true)).toBe(false);
+    }
   });
   it('reports fatal errors after the manifest has loaded', async () => {
     const fake = fakeHls();
