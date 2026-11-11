@@ -3,7 +3,11 @@
     <div class="tuner-brand">
       <ion-icon [icon]="icons.radioOutline" aria-hidden="true" />
       <div>
+        @if(compact()){
+        <h2 id="home-title">RadioBee</h2>
+        }@else{
         <h1 id="home-title">RadioBee</h1>
+        }
         <p>Stay tuned. Stay buzzing.</p>
       </div>
     </div>

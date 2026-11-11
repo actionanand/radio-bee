@@ -16,9 +16,11 @@
   @let active = player.state() === 'playing' || player.state() === 'loading';
   <button type="button" (click)="active ? player.pause() : player.resume()" [disabled]="!active && !player.canResume()">
     <ion-icon [icon]="active ? icons.pause : icons.play" aria-hidden="true" />
-    {{ ui(active ? 'pause' : player.state() === 'error' ? 'retry' : 'play') }}
+    <span class="control-label">{{ ui(active ? 'pause' : player.state() === 'error' ? 'retry' : 'play') }}</span>
   </button>
-  <button type="button" (click)="stop()"><ion-icon [icon]="icons.stop" aria-hidden="true" />{{ ui('stop') }}</button>
+  <button type="button" (click)="stop()">
+    <ion-icon [icon]="icons.stop" aria-hidden="true" /><span class="control-label">{{ ui('stop') }}</span>
+  </button>
   <label
     >{{ ui('volume') }}<input
       type="range"
@@ -28,9 +30,10 @@
       [value]="player.volume()"
       (input)="volume($event)"
   /></label>
-  <button type="button" [attr.aria-pressed]="player.muted()" (click)="player.toggleMute()">
-    <ion-icon [icon]="player.muted()?icons.volumeMute:icons.volumeHigh" aria-hidden="true" />{{
-    ui(player.muted()?'unmute':'mute') }}
+  <button class="mute" type="button" [attr.aria-pressed]="player.muted()" (click)="player.toggleMute()">
+    <ion-icon [icon]="player.muted()?icons.volumeMute:icons.volumeHigh" aria-hidden="true" /><span class="control-label"
+      >{{ ui(player.muted()?'unmute':'mute') }}</span
+    >
   </button>
   @if (player.error(); as error) {
   <p role="alert">

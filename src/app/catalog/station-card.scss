@@ -225,3 +225,26 @@ app-station-artwork {
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
+
+.artwork-link {
+  position: absolute;
+  inset: 8px 8px 0;
+  display: block;
+  border-radius: 10px;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+.language-summary {
+  margin: 6px 0;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

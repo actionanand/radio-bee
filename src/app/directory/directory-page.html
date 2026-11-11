@@ -1,0 +1,55 @@
+<h1 tabindex="-1" [attr.data-directory-favorites-focus]="mode()==='favorites'?'':null">{{heading()}}</h1>
+@if(!data.catalog()){
+<p role="status">{{text('loading')}}</p>
+} @else if(!valid()){<a routerLink="/home">{{text('returnHome')}}</a>} @else { @if(crumbs().length){
+<app-directory-breadcrumbs [items]="crumbs()" [label]="text('breadcrumbs')" />
+} @if(mode()==='home'){<app-radio-illustration [compact]="true" />
+<h2>{{text('featured')}}</h2>
+<details class="selection-note">
+  <summary>{{text('selectionInfo')}}</summary>
+  <p>{{text('featuredInfo')}}</p>
+</details>
+<a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>} @if(destinations().length){
+<div class="destinations">
+  @for(destination of destinations();track destination.id){<a [routerLink]="destination.url"
+    ><strong>{{destination.name}}</strong><span>{{destination.count}} {{text('stations')}}</span></a
+  >}
+</div>
+} @if(!index()){ @if(mode()!=='home'){
+<details class="refine">
+  <summary>{{text('refine')}}</summary>
+  <div class="filters">
+    @for(control of controls();track control.key){
+    <app-directory-select
+      [attr.data-filter]="control.key"
+      [label]="control.label"
+      [value]="filters()[control.key]"
+      [options]="control.options"
+      [disabled]="fixed(control.key)"
+      (changed)="filter(control.key,$event)" />
+    }
+    <app-directory-select
+      data-filter="sort"
+      [label]="text('sort')"
+      [value]="filters().sort"
+      [options]="sortOptions()"
+      (changed)="filter('sort',$event)" />
+    <app-directory-select
+      data-filter="group"
+      [label]="text('group')"
+      [value]="query().get('group')??'none'"
+      [options]="groupOptions()"
+      (changed)="filter('group',$event)" />
+  </div>
+</details>
+<h2>{{text('stations')}}</h2>
+<p role="status">{{rows().length}} {{text('stations')}}</p>
+@if(query().keys.length){<button type="button" (click)="reset()">{{text('clear')}}</button>} } @if(!rows().length){
+<p role="status">{{text('empty')}}</p>
+} @for(group of groups();track group.id){@if(group.name){
+<h2>{{group.name}}</h2>
+}
+<div class="cards">
+  @for(station of group.stations;track station.id){<app-station-card [station]="station" [directoryLinks]="true" />}
+</div>
+} } }

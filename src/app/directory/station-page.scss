@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+a {
+  color: var(--ink);
+}
+
+h1 {
+  font-size: clamp(26px, 4vw, 40px);
+  margin: 8px 0 16px;
+  line-height: 1.2;
+}
+h2 {
+  font-size: 22px;
+  margin-top: 30px;
+}
+.station-intro {
+  display: grid;
+  grid-template-columns: minmax(150px, 240px) minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+}
+.station-intro app-station-artwork {
+  border-radius: 18px;
+  overflow: hidden;
+}
+.eyebrow,
+.note {
+  color: var(--muted);
+  font-size: 13px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.play {
+  background: var(--ink);
+  color: var(--paper);
+}
+ion-icon {
+  font-size: 20px;
+}
+.description {
+  line-height: 1.7;
+  max-width: 80ch;
+  white-space: pre-line;
+}
+dl > div {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+dt {
+  color: var(--muted);
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+dd a {
+  display: inline-block;
+  padding: 4px;
+}
+.website {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+}
+.languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.languages a {
+  display: block;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 10px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+  gap: 16px;
+}
+:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 3px;
+}
+@media (max-width: 599px) {
+  .station-intro {
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+  h1 {
+    font-size: 25px;
+  }
+  .station-intro button {
+    width: 100%;
+  }
+  dl > div {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+}

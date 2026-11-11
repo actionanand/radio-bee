@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { input, Component, inject } from '@angular/core';
 import { IonIcon } from '@ionic/angular';
 import { radioIcons } from '../shared/radio-icons';
 import { PlayerService } from '../player/player.service';
@@ -11,6 +11,7 @@ import { UiKey, uiLabel } from '../catalog/catalog.ui';
   styleUrl: './radio-illustration.scss',
 })
 export class RadioIllustrationComponent {
+  readonly compact = input(false);
   readonly icons = radioIcons;
   readonly player = inject(PlayerService);
   readonly data = inject(CatalogService);
