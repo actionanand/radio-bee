@@ -2,7 +2,7 @@ import { RADIO_API_CONFIG } from './radio-api.config';
 import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
 import { play, pause, heartOutline, informationCircleOutline } from 'ionicons/icons';
-import { CatalogService, CATALOG_STORAGE, CATALOG_FETCH } from './catalog.service';
+import { CatalogService, CATALOG_STORAGE, CATALOG_FETCH, CATALOG_URL } from './catalog.service';
 import { FAVORITES_STORAGE } from './favorites.service';
 import { publishedFixture } from './testing/published-1.2.fixture';
 import { currentPublishedFixture } from './testing/published-1.3.fixture';
@@ -221,6 +221,8 @@ describe('Published catalogue compatibility', () => {
     let saved = '';
     TestBed.configureTestingModule({
       providers: [
+        // Explicit v1 fixture/loader contract; development and production now default to v2.
+        { provide: CATALOG_URL, useValue: 'https://actionanand.github.io/radio-bee-data/v1/' },
         {
           provide: CATALOG_STORAGE,
           useValue: {
@@ -264,6 +266,8 @@ describe('Published catalogue compatibility', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
+        // Explicit v1 fixture/loader contract; development and production now default to v2.
+        { provide: CATALOG_URL, useValue: 'https://actionanand.github.io/radio-bee-data/v1/' },
         {
           provide: CATALOG_STORAGE,
           useValue: {
