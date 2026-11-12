@@ -416,6 +416,8 @@ export class V2BrowserComponent {
     return browseV2(catalog, this.selection()).filter(
       s =>
         matches.has(s.id) &&
+        !s.discovery &&
+        s.streams.some(stream => stream.url.startsWith('https://') && stream.verificationStatus !== 'unavailable') &&
         (!this.listenNowOnly() || this.player.eligibility(s).status === 'ready') &&
         (!this.favoritesOnly() || this.favorites.has(s.id)),
     );

@@ -66,7 +66,8 @@ export class StationBrowserComponent {
             ...group,
             stations: group.stations.filter(
               station =>
-                (station.streams.length > 0 || !!station.discovery) &&
+                !station.discovery &&
+                station.streams.some(stream => stream.url.startsWith('https://') && stream.verificationStatus !== 'unavailable') &&
                 inCategory(station, this.category(), this.favorites.has(station.id)) &&
                 (this.category() !== 'listenNow' || this.player.eligibility(station).status === 'ready'),
             ),
