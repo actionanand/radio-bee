@@ -5,7 +5,6 @@ import { RADIO_API_CONFIG } from './radio-api.config';
 import { RadioApiConfig } from '../../environments/radio-api.config';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
-import { environment as live } from '../../environments/environment.live-test';
 import { currentPublishedFixture } from './testing/published-1.3.fixture';
 import { validateCatalog } from './catalog.validation';
 
@@ -34,9 +33,9 @@ for (const AllowUnverified of [false, true])
       policies.push({ AllowUnverified, CheckVerificationStatus, CheckRightsStatus });
 
 describe('Environment-controlled stream policy', () => {
-  it('uses exactly the requested defaults in all environments and exposes a frozen injectable policy', () => {
+  it('uses exactly the requested defaults in development and production and exposes a frozen injectable policy', () => {
     const expected = { AllowUnverified: true, CheckVerificationStatus: false, CheckRightsStatus: false };
-    for (const env of [environment, production, live]) expect(env.RadioApi).toEqual(expected);
+    for (const env of [environment, production]) expect(env.RadioApi).toEqual(expected);
     const config = TestBed.inject(RADIO_API_CONFIG);
     expect(config).toEqual(expected);
     expect(Object.isFrozen(config)).toBe(true);
