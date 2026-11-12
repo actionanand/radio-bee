@@ -1,3 +1,4 @@
+import { RADIO_RECORDING } from '../recording/recording.config';
 import { RADIO_API_CONFIG } from './radio-api.config';
 import { STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
 import { TestBed } from '@angular/core/testing';
@@ -280,6 +281,8 @@ describe('Published 1.2 catalogue discovery', () => {
     const view = TestBed.createComponent(StationBrowserComponent);
     view.detectChanges();
     const browser = view.componentInstance;
+    await browser.theme.loaded;
+    await view.whenStable();
     expect(view.nativeElement.querySelectorAll('.station-card')).toHaveLength(
       data.catalog()!.stations.filter(station => station.streams.length).length,
     );
@@ -328,6 +331,7 @@ describe('Mini-player controls', () => {
     const clear = vi.fn();
     TestBed.configureTestingModule({
       providers: [
+        { provide: RADIO_RECORDING, useValue: { Enabled: true, AllowProhibitedRecording: false } },
         { provide: CatalogService, useValue: { catalog: signal(catalog), locale: signal('en') } },
         { provide: MEDIA_ENGINE, useValue: { audio, clear, supports: () => true, load: async () => undefined } },
       ],
@@ -336,42 +340,52 @@ describe('Mini-player controls', () => {
     await player.play(station);
     audio.dispatchEvent(new Event('playing'));
     const view = TestBed.createComponent(PlayerComponent);
-    view.detectChanges();
-    const button = (name: string) =>
-      Array.from(view.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>).find(
-        button => button.textContent!.trim() === name,
-      )!;
-    expect(view.nativeElement.querySelector('app-station-artwork')).toBeTruthy();
-    const primary = button('Pause');
-    primary.focus();
-    primary.click();
-    view.detectChanges();
-    expect(player.state()).toBe('paused');
-    expect(button('Play')).toBe(primary);
-    expect(document.activeElement).toBe(primary);
-    button('Play').click();
-    await Promise.resolve();
-    await Promise.resolve();
-    audio.dispatchEvent(new Event('playing'));
-    view.detectChanges();
-    expect(player.state()).toBe('playing');
-    expect(button('Pause')).toBe(primary);
-    expect(document.activeElement).toBe(primary);
-    button('Mute').click();
-    expect(audio.muted).toBe(true);
-    const volume = view.nativeElement.querySelector('input') as HTMLInputElement;
-    volume.value = '0.3';
-    volume.dispatchEvent(new Event('input'));
-    expect(audio.volume).toBe(0.3);
-    const search = document.createElement('input');
-    search.type = 'search';
-    document.body.append(search);
-    button('Stop').click();
-    view.detectChanges();
-    expect(player.state()).toBe('idle');
-    expect(view.nativeElement.querySelector('section')).toBeNull();
-    expect(clear).toHaveBeenCalled();
-    expect(document.activeElement).toBe(search);
-    search.remove();
+    try {
+      view.detectChanges();
+      await view.whenStable();
+      expect(view.nativeElement.querySelector('app-recording-controls')).not.toBeNull();
+      expect(view.isStable()).toBe(true);
+      const button = (name: string) =>
+        Array.from(view.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>).find(
+          button => button.textContent!.trim() === name,
+        )!;
+      expect(view.nativeElement.querySelector('app-station-artwork')).toBeTruthy();
+      const primary = button('Pause');
+      primary.focus();
+      primary.click();
+      view.detectChanges();
+      await view.whenStable();
+      expect(player.state()).toBe('paused');
+      expect(button('Play')).toBe(primary);
+      expect(document.activeElement).toBe(primary);
+      button('Play').click();
+      await Promise.resolve();
+      await Promise.resolve();
+      audio.dispatchEvent(new Event('playing'));
+      view.detectChanges();
+      await view.whenStable();
+      expect(player.state()).toBe('playing');
+      expect(button('Pause')).toBe(primary);
+      expect(document.activeElement).toBe(primary);
+      button('Mute').click();
+      expect(audio.muted).toBe(true);
+      const volume = view.nativeElement.querySelector('input') as HTMLInputElement;
+      volume.value = '0.3';
+      volume.dispatchEvent(new Event('input'));
+      expect(audio.volume).toBe(0.3);
+      const search = document.createElement('input');
+      search.type = 'search';
+      document.body.append(search);
+      button('Stop').click();
+      view.detectChanges();
+      await view.whenStable();
+      expect(player.state()).toBe('idle');
+      expect(view.nativeElement.querySelector('section')).toBeNull();
+      expect(clear).toHaveBeenCalled();
+      expect(document.activeElement).toBe(search);
+      search.remove();
+    } finally {
+      view.destroy();
+    }
   });
 });
