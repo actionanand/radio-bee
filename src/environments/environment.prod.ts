@@ -11,5 +11,8 @@ export const environment = {
   liveStreamTests: false,
   production: true,
   catalogSeedUrl: null,
-  catalogUrl: 'https://actionanand.github.io/radio-bee-data/v1/',
+  // Catalogue URL selects both the schema and the UI:
+  // https://actionanand.github.io/radio-bee-data/v1/ -> legacy RadioBee station-browser UI.
+  // https://actionanand.github.io/radio-bee-data/v2/ -> new Stage 16 directory UI (sidebar, routes, station pages).
+  catalogUrl: 'https://actionanand.github.io/radio-bee-data/v2/',
 };

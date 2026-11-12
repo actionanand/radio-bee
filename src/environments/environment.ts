@@ -14,8 +14,11 @@ export const environment = {
   } satisfies RadioApiConfig,
   liveStreamTests: false,
   production: false,
-  catalogSeedUrl: 'assets/catalog-development-seed.json',
-  catalogUrl: 'https://actionanand.github.io/radio-bee-data/v1/',
+  catalogSeedUrl: null,
+  // Catalogue URL selects both the schema and the UI:
+  // https://actionanand.github.io/radio-bee-data/v1/ -> legacy RadioBee station-browser UI.
+  // https://actionanand.github.io/radio-bee-data/v2/ -> new Stage 16 directory UI (sidebar, routes, station pages).
+  catalogUrl: 'https://actionanand.github.io/radio-bee-data/v2/',
 };
 
 /*

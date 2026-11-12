@@ -60,17 +60,6 @@
               ],
               "outputHashing": "all"
             },
-            "live-test": {
-              "assets": [{ "glob": "**/*", "input": "src/assets", "output": "assets" }],
-              "optimization": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.live-test.ts"
-                }
-              ]
-            },
             "development": {
               "assets": [{ "glob": "**/*", "input": "src/assets", "output": "assets" }],
               "optimization": false,
@@ -80,16 +69,6 @@
             },
             "ci": {
               "progress": false
-            },
-            "stage16": {
-              "optimization": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.stage16.ts"
-                }
-              ]
             }
           },
           "defaultConfiguration": "production"
@@ -99,9 +78,6 @@
           "configurations": {
             "production": {
               "buildTarget": "app:build:production"
-            },
-            "live-test": {
-              "buildTarget": "app:build:live-test"
             },
             "development": {
               "buildTarget": "app:build:development"
