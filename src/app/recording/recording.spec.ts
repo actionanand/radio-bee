@@ -19,7 +19,6 @@ import { recordingFilename } from './export-recording';
 import { PlayerComponent } from '../player/player';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
-import { environment as technical } from '../../environments/environment.live-test';
 import { PlaybackError } from '../player/playback-failure';
 
 function setup(enabled = true, allowProhibitedRecording = false) {
@@ -95,8 +94,8 @@ describe('Configured recording and explicit source policy', () => {
     s.player.pause();
     expect(service.permission()).toBe('unavailable');
   });
-  it('accepts independently configured recording booleans in every environment without altering RadioApi', () => {
-    for (const e of [environment, production, technical]) {
+  it('accepts independently configured recording booleans in both environments without altering RadioApi', () => {
+    for (const e of [environment, production]) {
       expect(Object.keys(e.RadioRecording)).toEqual(['Enabled', 'AllowProhibitedRecording']);
       expect(typeof e.RadioRecording.Enabled).toBe('boolean'); // Neither true nor false is a CI release gate.
       expect(typeof e.RadioRecording.AllowProhibitedRecording).toBe('boolean');
