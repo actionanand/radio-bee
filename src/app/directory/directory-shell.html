@@ -1,0 +1,91 @@
+<a class="skip" href="#directory-main" (click)="skip($event)">{{text('skip')}}</a>
+<div class="directory-shell" [attr.lang]="data.locale()">
+  <aside class="desktop-nav">
+    <a class="brand" routerLink="/home"
+      ><img ngSrc="assets/icon/radio-bee.png" width="42" height="42" alt="" /><strong>RadioBee</strong></a
+    >
+    <ng-container [ngTemplateOutlet]="navigation" />
+  </aside>
+  <div class="workspace">
+    <header class="toolbar">
+      <div class="mobile-brand">
+        <button
+          #menuButton
+          type="button"
+          [attr.aria-label]="text('menu')"
+          aria-haspopup="dialog"
+          aria-controls="directory-drawer"
+          [attr.aria-expanded]="drawerOpen()"
+          (click)="openMenu()">
+          <ion-icon [icon]="icons.menuOutline" aria-hidden="true" /></button
+        ><a routerLink="/home">RadioBee</a>
+      </div>
+      <div class="tools">
+        <form (submit)="search($event)">
+          <label>{{text('search')}}<input type="search" [value]="query()" (input)="searchInput($event)" /></label
+          ><button type="submit" [attr.aria-label]="text('search')">
+            <ion-icon [icon]="icons.searchOutline" aria-hidden="true" />
+          </button>
+        </form>
+        <app-directory-select
+          data-control="locale"
+          [label]="text('uiLanguage')"
+          [value]="data.locale()"
+          [options]="localeOptions"
+          (changed)="data.setLocale($event)" />
+        <app-directory-select
+          data-control="theme"
+          [label]="text('theme')"
+          [value]="theme.mode()"
+          [options]="themeOptions()"
+          (changed)="theme.set($event)" />
+      </div>
+    </header>
+    <main #content id="directory-main" [attr.aria-busy]="data.loading()">
+      @if(data.error()){
+      <p role="alert">{{data.error()}}</p>
+      } @if(data.cached()){
+      <p role="status">{{text('saved')}}</p>
+      } @if(data.storageWarning()){
+      <p role="status" data-warning="storage">{{storageNotice()}}</p>
+      } @if(favorites.warning()){
+      <p role="status" data-warning="favorites">{{favoritesNotice()}}</p>
+      }
+      <router-outlet />
+      <footer>
+        <span>RadioBee · Stay tuned. Stay buzzing.</span
+        ><button type="button" (click)="data.refresh()" [disabled]="data.loading()">{{text('refresh')}}</button>
+      </footer>
+    </main>
+  </div>
+</div>
+<dialog
+  id="directory-drawer"
+  [attr.lang]="data.locale()"
+  #drawer
+  aria-labelledby="drawer-title"
+  (cancel)="$event.preventDefault();closeMenu()"
+  (close)="closed()"
+  (click)="backdrop($event)"
+  (keydown)="trapFocus($event)">
+  <div class="drawer-header">
+    <h2 id="drawer-title">{{text('navigation')}}</h2>
+    <button #closeButton type="button" [attr.aria-label]="text('closeMenu')" (click)="closeMenu()">
+      <ion-icon [icon]="icons.closeOutline" aria-hidden="true" />
+    </button>
+  </div>
+  <ng-container [ngTemplateOutlet]="navigation" />
+</dialog>
+<ng-template #navigation
+  ><nav [attr.aria-label]="text('navigation')">
+    @for(link of links;track link.path){@if(link.key!=='broadcasters'||data.catalog()?.broadcasters?.length){<a
+      [routerLink]="link.path"
+      (click)="navigationSelected()"
+      routerLinkActive="selected"
+      ariaCurrentWhenActive="page"
+      [routerLinkActiveOptions]="{exact:link.path==='/home'}"
+      [attr.data-nav]="link.key"
+      ><ion-icon [icon]="link.icon" aria-hidden="true" /><span>{{text(link.key)}}</span></a
+    >}}
+  </nav></ng-template
+>

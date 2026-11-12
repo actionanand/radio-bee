@@ -1,3 +1,4 @@
+@if(data.catalog()?.manifest?.schemaVersion===2){<app-v2-browser />}@else{
 <section class="rb-ui" aria-labelledby="catalog-title" [attr.lang]="data.locale()">
   <header class="browse-header">
     <div>
@@ -123,3 +124,5 @@
   </details>
   }
 </section>
+
+}

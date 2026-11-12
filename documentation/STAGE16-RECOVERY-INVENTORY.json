@@ -1,0 +1,772 @@
+{
+  "sourceCommit": "1ea954c9c73c5b68c4ef036890e21db61b99292d",
+  "targetCommit": "319168c420de696dcf760e21d7a07f505ad1fdc6",
+  "commonAncestor": "1ea954c9c73c5b68c4ef036890e21db61b99292d",
+  "backup": "C:\\AR_Files\\code\\radio-bee\\tmp\\stage16-recovery-20261111-003125",
+  "backupScope": "All 30 tracked modifications plus 75 non-ignored untracked files. Ignored dependency/build/cache directories remain in original source; not copied into branch.",
+  "sourceFilesHashed": 419,
+  "recoveredCount": 14,
+  "alreadyPresentCount": 39,
+  "unrelatedExcludedCount": 52,
+  "files": [
+    {
+      "path": "documentation/KANYAKUMARI-DISCOVERY.md",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "048ae4e0425d22ed05f2a1fc5e69403e523cc7b8abaf0a81b00d827905cfad62",
+      "targetSha256": "feced1c17feb010d79520d82866af92ecaf06588f51dc602a6306a958f3033c6"
+    },
+    {
+      "path": "documentation/STAGE16-V2.md",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "045529cf093f27617d5338510f8943de03c3b34b9358ce54b2efe80ad319976e",
+      "targetSha256": "e13185ad2ac47e6d3d4df21e9f60a10a56dceb97c6138fa7ff0940f6047a4a7e"
+    },
+    {
+      "path": "documentation/STAGE9-PLAYBACK-RELIABILITY.md",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "faa22f3b50777aea7f953d1c0dd50b4cae7d3727f5b2bb788f38ea0d14dcd7b9",
+      "targetSha256": "7e312b46fa1df48d93557340f01c648d093b0b6617952a25f9e83cc8edb73459"
+    },
+    {
+      "path": "documentation/integration-audit/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "ae46af4beac483bfc0e15b2bbcc7b2859f951d25b56307206fad80854d0449cb",
+      "targetSha256": "abfd289c557538cc256fc41a5e408944d9270c6976e4d67eeb552d6367c56c51"
+    },
+    {
+      "path": "documentation/integration-audit/setup-failure.json",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "bb586249e63988173702fb9bfd8a70c8878eab94625c33b40a8a32f79a6bc684",
+      "targetSha256": "bb586249e63988173702fb9bfd8a70c8878eab94625c33b40a8a32f79a6bc684"
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/Dark-English.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "3ec944dc3b222aeb12160b12d7a57edf76eace64a10827e4bfc92f5ac3cf0d4d",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/Dark-संस्कृतम्.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "c4d208900dd886939c567c4b69588b85b05ce560f0fa9ade87db49facfc96980",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/Dark-தமிழ்.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "b755bc146bd526160a894141fb34ff6145e5869c8a677e5bf3451b1f6559e773",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/Light-English.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "cb7018b8362a141421ee631f965e1b072f3fc903375933ff7b1fc16c1be3d775",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/Light-संस्कृतम्.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "e042d3e300bea148face12caf13c6bb6a27435f50fd8d4b617660dc96cf71ff7",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/Light-தமிழ்.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "0e453a8fbbb1e3e0c7f2242859ef69ae954504f97910bda96f2596d64616caf8",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/data-contract.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "e1e896fa99c13c532a900604f6d46f935c91a024499872e2784f8d9f5e5c197f",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/disabled/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "05e53d1e99c6241e0ec38ec34fcd4bbdc6aad279948b1acbc7e17fb21bbf3704",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/final-contract/desktop-details.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "8036109b340f1f9d475cc856dcfb920fa27f3c899d5bd134fb08a76767a0e6d2",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/final-contract/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "e35401ffd29831b63bb520553266ff1755eff5e34b6ad83cb8aa87c089329537",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/harness-selector-failure.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "8ef0552f21177f0ad7e5cfa73391bde3e55d696a35a2d8543551bf8f6dd2e7b7",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/offline/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "66afbaaf219be47d6665c70b9f6bc3e82a72e32aa8471d997a6ef7ee0d2cf785",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/rapid-popup-race-before.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "b5e29438afa847924de24c95abb5a5ee9163a1370ffa6352034e7f38db40ae3a",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/reliability/persistent-error.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "e3b63ba37da82f91a887fd5b269486fb7b0478f5541c5349f7271a713b2a0fea",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/reliability/reconnecting-en.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "4ad2ec89498a672739c9e2e2f6f8707c71523f0201c6714a308590ca91f25f1f",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/reliability/reconnecting-sa.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "ced2b410453cd84732460ee34cca87512761bbc106caaba9fad0909a0712ff1f",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/reliability/reconnecting-ta.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "a81346a116cbfcfab22b23415fb17993080af6984b02846f6a2f03f7890de7e4",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/reliability/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "d33cacc9a5043730d0b3b0f4c91934421b79d5b51649f8f2430889d7c89c74e6",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "182625d6ec2e7ae33c7866551532839e0b3e979c6d2aa29b4707ddea17a4bcad",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/source-snapshot.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "22f6a4c12aedff92f2746812014d46d6da7662df8f6b7b2f12745f1270879733",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/integration-audit/v1.6/station-provenance.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "95017d56f09cd63f4f23491f85b6a0edf5f9eda128709d361546e3239d4483d1",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/1440-dark.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "7a1e89189d5ed2d33341970390ffe4380628114d0f8ef0223bd5afd77fd4b7d6",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/1440-en.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "fa4e0411b56fef5e41935c7d5b7228397fb7b44f04c7b2bbd34c1d671f61723e",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/1440-sa.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "c91c8cccd3a73e8a3c884f33072a1199f1d87fbdad3bf2601e15a1976ef4d05d",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/1440-ta.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "f4690df17a786bcae98b6ca6c95cdc36e456d1f078246ad39f126c89470ea0d2",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/375-dark.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "6c32852f664c25bac6fd3006b2df199e084762ad317dd049e43a3595d9921bdd",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/375-en.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "c774554dca3b1cf579c857b3c08fdffb5171ab2528b8e92be89e00f030b344ca",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/375-sa.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "6d74b33a39c52e7d16aa459fa0f8596e81c6e882676462c9005769765f3387b4",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/375-ta.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "b132118fe4caa493bc0e8c4d279ad28d1dd809a517b84f819dca559fd2f56399",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/browser.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "41b88ae3ebe23246c0f9fee7174be23bb9571a0208fc14c02e646f0f5ed2f73c",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage16/details.png",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "d7fb5dfd17ff8c973078f0dfc2b5d74794e6f80be296c17a1ae60f9f6fabd929",
+      "targetSha256": null
+    },
+    {
+      "path": "documentation/stage9/Dark-English.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "f24aaff837d1a5a799dc62b1369922e9b13fc18fe3eb098428091a20e5c1d6b3",
+      "targetSha256": "f24aaff837d1a5a799dc62b1369922e9b13fc18fe3eb098428091a20e5c1d6b3"
+    },
+    {
+      "path": "documentation/stage9/Dark-संस्कृतम्.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "d77f9067740e7117efa3755bce14fa429fae2c4874e1dfb76b2d258fb97b58f3",
+      "targetSha256": "d77f9067740e7117efa3755bce14fa429fae2c4874e1dfb76b2d258fb97b58f3"
+    },
+    {
+      "path": "documentation/stage9/Dark-தமிழ்.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "4e6b84dafce5dd2c8d77909890e19e1bfcdaefcb381ec42949c9aa09f8bca5de",
+      "targetSha256": "4e6b84dafce5dd2c8d77909890e19e1bfcdaefcb381ec42949c9aa09f8bca5de"
+    },
+    {
+      "path": "documentation/stage9/Light-English.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "7a8fbea8504582e048578e5ccdf64fa6132511b683ecbb8dd0c1423c1877a63f",
+      "targetSha256": "7a8fbea8504582e048578e5ccdf64fa6132511b683ecbb8dd0c1423c1877a63f"
+    },
+    {
+      "path": "documentation/stage9/Light-संस्कृतम्.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "dbf9ea7b29d33745aca443c4ca6a3a52b1413c5720e7e7f2f226715eff68c002",
+      "targetSha256": "dbf9ea7b29d33745aca443c4ca6a3a52b1413c5720e7e7f2f226715eff68c002"
+    },
+    {
+      "path": "documentation/stage9/Light-தமிழ்.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "b0d21cded70701d78475572fd4d8b819c84dab0243b556dbd8eec6733fdb1810",
+      "targetSha256": "b0d21cded70701d78475572fd4d8b819c84dab0243b556dbd8eec6733fdb1810"
+    },
+    {
+      "path": "documentation/stage9/disabled/results.json",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "2e79fccad4a72c0bb0c26f8098bcaa14ad0d6df5b2d697e9a139ee461d517366",
+      "targetSha256": "2e79fccad4a72c0bb0c26f8098bcaa14ad0d6df5b2d697e9a139ee461d517366"
+    },
+    {
+      "path": "documentation/stage9/persistent-error.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "f49af666b21411625ed12ccc7771ce5ac2b1ece869eb33da7c11135cdb101f9b",
+      "targetSha256": "f49af666b21411625ed12ccc7771ce5ac2b1ece869eb33da7c11135cdb101f9b"
+    },
+    {
+      "path": "documentation/stage9/reconnecting-English.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "2f498682450690de2d8f691b6bbc8f3ac5ffc97de7a27d7ebf52ff4d6cd31ad9",
+      "targetSha256": "2f498682450690de2d8f691b6bbc8f3ac5ffc97de7a27d7ebf52ff4d6cd31ad9"
+    },
+    {
+      "path": "documentation/stage9/reconnecting-தமிழ்.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "ef2911eaa6230be1b822bc5c852bdd2b74c97831211e8bdc3f52ea6a210b3912",
+      "targetSha256": "ef2911eaa6230be1b822bc5c852bdd2b74c97831211e8bdc3f52ea6a210b3912"
+    },
+    {
+      "path": "documentation/stage9/recording/results.json",
+      "action": "excluded-unrelated",
+      "reason": "Historical report or generated browser evidence; retained in backup/source, not imported into feature.",
+      "sourceSha256": "bb9ffd55a6eea4a4ff85c8fd2c331d81067745363ee0713569c082cd3136ea6f",
+      "targetSha256": "59a13ff3aeb9051e36e330350d7f0356a2052bccf524c26d4ce343297fc5ff17"
+    },
+    {
+      "path": "documentation/stage9/recovery-ui/reconnecting-en.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "9ec61fc8d0c82b9a1b16296427b36273cbc9227275c906a38aa1ad39c46fe346",
+      "targetSha256": "9ec61fc8d0c82b9a1b16296427b36273cbc9227275c906a38aa1ad39c46fe346"
+    },
+    {
+      "path": "documentation/stage9/recovery-ui/reconnecting-sa.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "138c9f42e4c1393bab5bad6416d0a9e66e7607782110a09132d4bafda34f5914",
+      "targetSha256": "138c9f42e4c1393bab5bad6416d0a9e66e7607782110a09132d4bafda34f5914"
+    },
+    {
+      "path": "documentation/stage9/recovery-ui/reconnecting-ta.png",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "d0dfe2841ab4b2f629d66bd026f61da345c548ed0d0b72e7fb86a8f8fb6246fb",
+      "targetSha256": "d0dfe2841ab4b2f629d66bd026f61da345c548ed0d0b72e7fb86a8f8fb6246fb"
+    },
+    {
+      "path": "documentation/stage9/recovery-ui/results.json",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "21db08219433e5ecceceed77f9cf6ba270ff253c331d22d8202e4b38788b46da",
+      "targetSha256": "21db08219433e5ecceceed77f9cf6ba270ff253c331d22d8202e4b38788b46da"
+    },
+    {
+      "path": "documentation/stage9/results.json",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "a55baeac46cff63face0fa51dc3b7077e6b4dc31bacfa21cf40068b9261e690d",
+      "targetSha256": "a55baeac46cff63face0fa51dc3b7077e6b4dc31bacfa21cf40068b9261e690d"
+    },
+    {
+      "path": "scripts/check-data-contract.cjs",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "560025dd1a261492ab0df404fba766362853d6aac12446d5f9f3ef4a4883d59b",
+      "targetSha256": null
+    },
+    {
+      "path": "scripts/check-web-artifact.mjs",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "378fa8961922d22e4f136dcc5e59d6d8756cf485137a42a227fb4556f8b4ea16",
+      "targetSha256": "378fa8961922d22e4f136dcc5e59d6d8756cf485137a42a227fb4556f8b4ea16"
+    },
+    {
+      "path": "scripts/generate-catalog-fixture.mjs",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "74e20d7c1226d7b77715b2c35815052a5210d8e6c7eb891cb173b923f92d8102",
+      "targetSha256": "74e20d7c1226d7b77715b2c35815052a5210d8e6c7eb891cb173b923f92d8102"
+    },
+    {
+      "path": "scripts/generate-development-fixture.mjs",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "5c5e90480bbbd72e4e4a051306519184d44fc9ea8461e35910affbb4e670c15b",
+      "targetSha256": null
+    },
+    {
+      "path": "scripts/generate-v2-fixture.mjs",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "7f0c8335ca9aa53b18ce5afbd75e4ff1ade3b390ec38eae8542468a3877347e5",
+      "targetSha256": "7f0c8335ca9aa53b18ce5afbd75e4ff1ade3b390ec38eae8542468a3877347e5"
+    },
+    {
+      "path": "scripts/generate-worldwide-fixture.mjs",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "9672e5af1af3646b5676abf9c16fa452716ba2fb6ba51405f9d9fcb49925521e",
+      "targetSha256": "3112bc8196c476aded6a242e3f5e6ebae7c2e2e0f2f975b7f8af955cbf14c808"
+    },
+    {
+      "path": "scripts/integration-contract.test.cjs",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "2ffea233381ddec5a2fbe7ee025acd68bdd057fa1f4b9cf7955499c8af10d4e8",
+      "targetSha256": "dfdc21c49f28d98fd102a0bc86f2aa476b108c859a6cee4fe185b51ef85e7227"
+    },
+    {
+      "path": "scripts/preview-discovery.mjs",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "e67c6682d54350f090279541854b40318b037c9c92b21b27a4acf03bd875298b",
+      "targetSha256": "e67c6682d54350f090279541854b40318b037c9c92b21b27a4acf03bd875298b"
+    },
+    {
+      "path": "scripts/verify-catalogue-integration.cjs",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "0e1fcf7a030bcf6ddf73018d9fe0cd2b159102116cc095c33ff29aa3b568794d",
+      "targetSha256": "fdf1ab6be2969c796da26576e3e348bfd26111830341888102ef591757c466fd"
+    },
+    {
+      "path": "scripts/verify-stage9-playback.cjs",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "7a74b9166fbd2d499433f388bf56a3917e7d0c29306307166a485d7ff577197e",
+      "targetSha256": "7a74b9166fbd2d499433f388bf56a3917e7d0c29306307166a485d7ff577197e"
+    },
+    {
+      "path": "src/app/catalog/catalog-v2-loading.spec.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "d35eecbfa55120b94f54f4fe415a96dd461d1d5dcd5123278d3060652164fc88",
+      "targetSha256": "d35eecbfa55120b94f54f4fe415a96dd461d1d5dcd5123278d3060652164fc88"
+    },
+    {
+      "path": "src/app/catalog/catalog-v2.spec.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "0a4a9713fde3adbcb63188266d467b44164226ba93f3a242704d97e87cee31b7",
+      "targetSha256": "0a4a9713fde3adbcb63188266d467b44164226ba93f3a242704d97e87cee31b7"
+    },
+    {
+      "path": "src/app/catalog/catalog-v2.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "93afeb981d847090a047fd336467978a370dffc98a0bfcf4d98105be98eede0d",
+      "targetSha256": "93afeb981d847090a047fd336467978a370dffc98a0bfcf4d98105be98eede0d"
+    },
+    {
+      "path": "src/app/catalog/discovery-publication.spec.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "9853c55cb307eb79c977bcbe7e1d88b954e37174aaaa9a4d33720d7d7664e245",
+      "targetSha256": "bbfeab9fcd4ea3979006125cac59f0478f562300baddb75cbfc5de811354c5b6"
+    },
+    {
+      "path": "src/app/catalog/testing/discovery-contract.fixture.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "cca10fc2f03800a43c65aa33f642c83809d72721a95c68c0212e644587422f89",
+      "targetSha256": "cca10fc2f03800a43c65aa33f642c83809d72721a95c68c0212e644587422f89"
+    },
+    {
+      "path": "src/app/catalog/testing/v2.fixture.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "68c5c55db15efbf19d9a49cefab26f3849be6033a1ac12d48b8e280620ce25bc",
+      "targetSha256": "68c5c55db15efbf19d9a49cefab26f3849be6033a1ac12d48b8e280620ce25bc"
+    },
+    {
+      "path": "src/app/catalog/testing/worldwide-contract.fixture.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "f9213a8032acc885728d3a09cfa51e3d42e2a7a84e43effe5e7bfbdfbd229f19",
+      "targetSha256": "f9213a8032acc885728d3a09cfa51e3d42e2a7a84e43effe5e7bfbdfbd229f19"
+    },
+    {
+      "path": "src/app/catalog/v2-browser.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "2266236b25cd68c519fafeafd2babb1633963f02c3b3c1de744a559b250c4872",
+      "targetSha256": "5141047445f2e08f499f08b1364305b3fa419f2ebb4e2bfc2b2f2780ebf6a1ff"
+    },
+    {
+      "path": "src/app/catalog/worldwide-publication.spec.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "024f476e338ef7e9665b58a802202ce14f884039a08ebe9c993f6d9db55a0ce1",
+      "targetSha256": "cbbad6694931513ca2800a99fb3c3d9cb17b51ee535222ceb3dd5a6b2ca52f53"
+    },
+    {
+      "path": "src/app/player/playback-failure.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "29fb9ba2ffefcccf826d4eed9c528f4e161d2dc52cd59cb78570d7753e27b53c",
+      "targetSha256": "29fb9ba2ffefcccf826d4eed9c528f4e161d2dc52cd59cb78570d7753e27b53c"
+    },
+    {
+      "path": "src/app/player/recovery-policy.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "a126b124aa13bb97349de1f469c4209c11aceba3e0160b0b8de172f04aca5c62",
+      "targetSha256": "a126b124aa13bb97349de1f469c4209c11aceba3e0160b0b8de172f04aca5c62"
+    },
+    {
+      "path": "src/app/player/recovery.spec.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "15b627b7f5f442361e71cc83e76953a0643572a3f7709f0f81d85bb09ec2ae0e",
+      "targetSha256": "15b627b7f5f442361e71cc83e76953a0643572a3f7709f0f81d85bb09ec2ae0e"
+    },
+    {
+      "path": "src/environments/environment.stage16.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "b28e9365da0abc2c4824b008b41268821fd403a21901726ae5400d1220fe8e22",
+      "targetSha256": "7058f57a2f42cb2a079f9e3b4dd1f3a23548e7941204ee9f9c04ecb46c8435a4"
+    },
+    {
+      "path": ".github/workflows/pr-validation.yml",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "3224873191aff6d0f9cdc030c53d24d06f45cb12b16293f54bf2700e5fe45795",
+      "targetSha256": "3224873191aff6d0f9cdc030c53d24d06f45cb12b16293f54bf2700e5fe45795"
+    },
+    {
+      "path": "angular.json",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "4f57f1f71e93387124c7152246719cfd5c3b9800676e78751ad3fb226a613533",
+      "targetSha256": "5f718f88f5ea83e06826b1cf3dcfb47165469f771ce17505e8170e5f4947f07a"
+    },
+    {
+      "path": "src/app/catalog/catalog.models.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "311364108a00602f140c2d1ecca460f7a6217fd7e68fd0a01b3ead8df6cc9e70",
+      "targetSha256": "311364108a00602f140c2d1ecca460f7a6217fd7e68fd0a01b3ead8df6cc9e70"
+    },
+    {
+      "path": "src/app/catalog/catalog.service.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "522309e3518eb159c5b1d724b939d4dc4cd1af684d3ebcdedd080f85d6b4a26e",
+      "targetSha256": "62d8008a28ed135b9c85b28d73f6ec782aea885ffe8ec596740edcd685c4d5b8"
+    },
+    {
+      "path": "src/app/catalog/catalog.spec.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "79df425f76329e6e3521af2503260b4c6851ba482a68aecec799956f192f3ad5",
+      "targetSha256": "79df425f76329e6e3521af2503260b4c6851ba482a68aecec799956f192f3ad5"
+    },
+    {
+      "path": "src/app/catalog/catalog.ui.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "4ff87159f799486dd80fcbcc4621f8d337ae50ff6b856dc11fb36b724174c699",
+      "targetSha256": "4ff87159f799486dd80fcbcc4621f8d337ae50ff6b856dc11fb36b724174c699"
+    },
+    {
+      "path": "src/app/catalog/catalog.validation.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "f211d2b43177d1ce1cc50537295c7d987842865ae7a9bed6afaa1b505e472fa7",
+      "targetSha256": "f211d2b43177d1ce1cc50537295c7d987842865ae7a9bed6afaa1b505e472fa7"
+    },
+    {
+      "path": "src/app/catalog/station-browser.html",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "35c1c9ba3654ca63300274323ba7798a0189472512e73cfcfad9370abc585bc4",
+      "targetSha256": "35c1c9ba3654ca63300274323ba7798a0189472512e73cfcfad9370abc585bc4"
+    },
+    {
+      "path": "src/app/catalog/station-browser.ts",
+      "action": "recovered",
+      "reason": "Stage 16 implementation, contract test/fixture, preview/build integration or documentation.",
+      "sourceSha256": "f8971b3b6984b9974773c0bc56b47285aa452ae343fd4b638245a53aac48a199",
+      "targetSha256": "f8971b3b6984b9974773c0bc56b47285aa452ae343fd4b638245a53aac48a199"
+    },
+    {
+      "path": "src/app/catalog/station-card.html",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "e894553448650edca39eabe33a14c5aa3da46ed6fc906bb336054944caaf8293",
+      "targetSha256": "f4bcf2fbeca8ff32cb5ccb042e685a0e02db60c5923cf2c2600bbe46acb60ace"
+    },
+    {
+      "path": "src/app/catalog/station-card.scss",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "d2092eeb6a4ff484dd092f9919e1ca5a53789087d9f1ba3d06e5e4f02648fb2b",
+      "targetSha256": "d2092eeb6a4ff484dd092f9919e1ca5a53789087d9f1ba3d06e5e4f02648fb2b"
+    },
+    {
+      "path": "src/app/catalog/station-card.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "021cf23d81bde054583e67d32e0e0a7696922d157e859f8d0177a1c390e35d2f",
+      "targetSha256": "d462bcd61bf7c02bfe3e0521f11a6ea8d18286dae9e4d5eb67eaef1448df7761"
+    },
+    {
+      "path": "src/app/catalog/station-details-content.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "f3214242227ad1ee3e1aad6785a02c961798e39b39e97435af32eda77732c1e4",
+      "targetSha256": "f3214242227ad1ee3e1aad6785a02c961798e39b39e97435af32eda77732c1e4"
+    },
+    {
+      "path": "src/app/catalog/station-details.service.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "3454489494fe9aec5d7da7f010b6e64b08ce57d050ad2ad13df6f576ec402635",
+      "targetSha256": "3454489494fe9aec5d7da7f010b6e64b08ce57d050ad2ad13df6f576ec402635"
+    },
+    {
+      "path": "src/app/catalog/station-details.spec.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "e57da08f2de8258052a6c19a9413493388a7e57c6588d08fbb35c019c25647d4",
+      "targetSha256": "318d11f2fb4cb908d9b1b9f4f4dba8a6127be5cbc0decbe583f43ee887f8ed1c"
+    },
+    {
+      "path": "src/app/catalog/station-details.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "9e1dbba7772e096a5e344eeec5b979cd9f58f5b4dfc7944fbc2bca922bff5d9b",
+      "targetSha256": "746dfc7e9943bba4bc2ba2d13112b3ec9b40316d18439a939f7c6c8f4d9d7402"
+    },
+    {
+      "path": "src/app/catalog/stream-eligibility.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "ceda9f33dee9e695e1c0154fe7edbed1d330f501d7a86bfab3f2928d72019275",
+      "targetSha256": "bb3483f5b434c9bbe21a60dd4e79c4636526574dc47cd620405cb7feb379dd73"
+    },
+    {
+      "path": "src/app/catalog/testing/published-1.3.fixture.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "8f76ed6a18791782aa4817a8ab24a763282d1393096ebbc30198e5cc5745fe88",
+      "targetSha256": "8f76ed6a18791782aa4817a8ab24a763282d1393096ebbc30198e5cc5745fe88"
+    },
+    {
+      "path": "src/app/catalog/ui-extras.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "95876ef5f13ed10d254da97f67ff28a90f00e517780f61236df9f63442101e4a",
+      "targetSha256": "9d81b3be5ac744d3f18e01104a78709dc370885031d79524074951db764db3db"
+    },
+    {
+      "path": "src/app/home/radio-illustration.html",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "1893f154952f7bfd00c6d225ed8fbd9b3bd00bd99c5c6afb0f12dcb2525a2b45",
+      "targetSha256": "1893f154952f7bfd00c6d225ed8fbd9b3bd00bd99c5c6afb0f12dcb2525a2b45"
+    },
+    {
+      "path": "src/app/player/configurable-player.spec.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "1bc4b5a5ccad2ad426cd95c4efe711839fcf6f4a512eed8bb6b035377bf90fee",
+      "targetSha256": "2f9ff7b96d3ae1cec6629dc87363106ff346e43c6682231c051d6bbe435d87b1"
+    },
+    {
+      "path": "src/app/player/hls-player.spec.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "b3332599a406aa89114fda0838b1d0e7e8aaa092064cca533da354aff94e76e2",
+      "targetSha256": "b3332599a406aa89114fda0838b1d0e7e8aaa092064cca533da354aff94e76e2"
+    },
+    {
+      "path": "src/app/player/media-engine.spec.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "f4684a4ae72b7a301400741fcbd4e39fbe639bf6b02ca425bcfb512219564de1",
+      "targetSha256": "f4684a4ae72b7a301400741fcbd4e39fbe639bf6b02ca425bcfb512219564de1"
+    },
+    {
+      "path": "src/app/player/media-engine.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "96c775e1aec109c1318c7146d5794e511ef30aa1f2508e2983dc65cb38b16560",
+      "targetSha256": "96c775e1aec109c1318c7146d5794e511ef30aa1f2508e2983dc65cb38b16560"
+    },
+    {
+      "path": "src/app/player/player.html",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "0619253992c48bec2355ff03e5bc8a2b00d53d710c416d89c318f20a09490e31",
+      "targetSha256": "0619253992c48bec2355ff03e5bc8a2b00d53d710c416d89c318f20a09490e31"
+    },
+    {
+      "path": "src/app/player/player.service.spec.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "9016d9f1e9deb0aa7b40a7984ee393ac2193a70b4972788de20b1e3cd54142a5",
+      "targetSha256": "9016d9f1e9deb0aa7b40a7984ee393ac2193a70b4972788de20b1e3cd54142a5"
+    },
+    {
+      "path": "src/app/player/player.service.ts",
+      "action": "excluded-already-present",
+      "reason": "Identical merged baseline content already exists in target; no transfer needed.",
+      "sourceSha256": "7c9d2aa92d8a5d6a7e25855d0b79d2b2d25b0b633cebf9e9d341e7375e16c6d6",
+      "targetSha256": "7c9d2aa92d8a5d6a7e25855d0b79d2b2d25b0b633cebf9e9d341e7375e16c6d6"
+    },
+    {
+      "path": "src/app/recording/recording.service.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "5870393672c22b42194fcbd268df28ad41e0fdc9af8006f3a806ca5fb05c3093",
+      "targetSha256": "75f6d2547fe167c5861fd3a8b8f7dae37593f8c01d8b31ccd617249f6ded7d68"
+    },
+    {
+      "path": "src/app/recording/recording.spec.ts",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "29024948e092bfa87e5be2177891be225b0cfec2689f5941770fbacb1356043d",
+      "targetSha256": "16f84c1894837b22993cc3a47f0981f6f8a4a81bda7085b6b32782b32ada6688"
+    },
+    {
+      "path": "src/assets/catalog-development-seed.json",
+      "action": "excluded-unrelated",
+      "reason": "Different non-Stage-16 source work; merged target baseline retained without overwriting.",
+      "sourceSha256": "af73b6123b947db39ebe02e7b6e8c58e3b833605e46e62e3c7da679366dba0ff",
+      "targetSha256": "280492a2228e583d34e9d147146d1c60413a8540a12239a19b3f6fd4588d860c"
+    }
+  ],
+  "adaptations": [
+    "angular.json: add only stage16 build configuration; retain merged baseline formatting/assets.",
+    "catalog.service.ts: recover v2 parser/cache/loading hunks; retain baseline development-seed message.",
+    "environment.stage16.ts: retain AllowProhibitedRecording=false to match merged target behavior.",
+    "STAGE16-V2.md: label original validation as historical and link current target recovery report.",
+    "v2-browser.ts: restore the shared-card data-category=favorites focus contract and keep Favorites/Listen Now visible outside collapsed Refine controls."
+  ],
+  "additionalRecoveryFiles": [
+    "src/app/catalog/v2-browser.spec.ts",
+    "documentation/STAGE16-RECOVERY.md",
+    "documentation/STAGE16-RECOVERY-INVENTORY.json"
+  ],
+  "finalValidation": {
+    "axeViolations": 0,
+    "angularFiles": 27,
+    "backupPathsVerified": 105,
+    "sourceFilesUnchanged": 419,
+    "reviewPaths": 17,
+    "angularTests": 334,
+    "nodeTests": 23,
+    "stagedFiles": 0,
+    "axeScans": 14,
+    "protectedRefsUnchanged": true
+  }
+}

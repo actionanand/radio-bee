@@ -1,0 +1,61 @@
+/* Only Stage 16 select overlays: legacy v1 controls retain their existing styles. */
+.rb-directory-select-overlay {
+  --background: var(--surface);
+  --ion-background-color: var(--surface);
+  --ion-text-color: var(--ink);
+  --ion-item-background: var(--surface);
+  --ion-toolbar-background: var(--surface);
+  --ion-toolbar-color: var(--ink);
+  --ion-color-primary: var(--accent-ink);
+  --ion-color-primary-rgb: 66, 106, 41;
+  --ion-color-primary-contrast: var(--paper);
+  --backdrop-opacity: 0.45;
+  color: var(--ink);
+
+  ion-content,
+  ion-list,
+  ion-item,
+  ion-toolbar {
+    --background: var(--surface);
+    color: var(--ink);
+  }
+  ion-radio,
+  ion-checkbox {
+    color: var(--ink);
+    --color: var(--muted);
+    --color-checked: var(--accent-ink);
+    min-height: 44px;
+    width: 100%;
+    padding-block: 8px;
+  }
+  ion-radio::part(label),
+  ion-checkbox::part(label) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  ion-item {
+    --min-height: 44px;
+  }
+  ion-button {
+    min-height: 44px;
+    --color: var(--ink);
+  }
+  ion-title {
+    font-size: 18px;
+  }
+  &::part(content) {
+    background: var(--surface);
+    color: var(--ink);
+  }
+}
+ion-popover.rb-directory-select-overlay {
+  --width: min(360px, calc(100vw - 24px));
+  --max-height: 65vh;
+}
+ion-modal.rb-directory-select-overlay {
+  --width: min(640px, 100vw);
+  --height: min(760px, 100dvh);
+}
+:root.ion-palette-dark .rb-directory-select-overlay {
+  --ion-color-primary-rgb: 203, 223, 158;
+}

@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, computed, inject, input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { IonIcon } from '@ionic/angular';
@@ -11,12 +12,20 @@ import { StationDetailsService } from './station-details.service';
 import { radioIcons } from '../shared/radio-icons';
 @Component({
   selector: 'app-station-card',
-  imports: [StationArtworkComponent, IonIcon],
+  imports: [StationArtworkComponent, IonIcon, RouterLink],
   templateUrl: './station-card.html',
   styleUrl: './station-card.scss',
 })
 export class StationCardComponent {
   readonly station = input.required<Station>();
+  readonly directoryLinks = input(false);
+  readonly languageSummary = computed(() => {
+    const tags = this.station().broadcastLanguages;
+    const names = tags
+      .slice(0, 3)
+      .map(code => this.data.catalog()?.languages.find(l => l.code === code)?.nativeName ?? code);
+    return names.join(' · ') + (tags.length > 3 ? ' +' + (tags.length - 3) : '');
+  });
   readonly data = inject(CatalogService);
   readonly player = inject(PlayerService);
   readonly favorites = inject(FavoritesService);
@@ -62,7 +71,10 @@ export class StationCardComponent {
   }
   toggleFavorite() {
     void this.favorites.toggle(this.station().id);
-    this.document.querySelector<HTMLButtonElement>('[data-category="favorites"][aria-pressed="true"]')?.focus();
+    (this.directoryLinks()
+      ? this.document.querySelector<HTMLElement>('[data-directory-favorites-focus]')
+      : this.document.querySelector<HTMLButtonElement>('[data-category="favorites"][aria-pressed="true"]')
+    )?.focus();
   }
   shortLocation(station: Station) {
     const catalog = this.data.catalog();

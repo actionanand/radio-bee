@@ -1,0 +1,101 @@
+@if(station();as station){
+<app-directory-breadcrumbs [items]="crumbs()" [label]="text('breadcrumbs')" />
+<div class="station-intro" [attr.data-station-id]="station.id">
+  <app-station-artwork [station]="station" />
+  <div>
+    <p class="eyebrow">RadioBee · {{text('stations')}}</p>
+    <h1 tabindex="-1">{{station.name}}</h1>
+    @if(station.aliases?.length){
+    <p><strong>{{text('aliases')}}:</strong> {{station.aliases.join(', ')}}</p>
+    }
+    <div class="actions">
+      @if(eligibility()?.status==='ready'){<button
+        class="play"
+        type="button"
+        (click)="player.toggle(station)"
+        [attr.aria-busy]="player.stateFor(station)==='loading'">
+        <ion-icon
+          [icon]="action()==='pause'?icons.pause:action()==='retry'?icons.syncOutline:icons.play"
+          aria-hidden="true" />{{text(action())}}</button
+      >} @else{<span role="status">{{text('unavailable')}}</span>}
+      <button type="button" [attr.aria-pressed]="favorites.has(station.id)" (click)="favorites.toggle(station.id)">
+        <ion-icon
+          [icon]="favorites.has(station.id)?icons.heart:icons.heartOutline"
+          aria-hidden="true" />{{text(favorites.has(station.id)?'unfavorite':'favorite')}}
+      </button>
+    </div>
+    <p class="note">{{station.discovery?text('discoveryOnly'):text('streamBearing')}}</p>
+  </div>
+</div>
+<section>
+  <h2>{{text('about')}}</h2>
+  @if(station.notes){
+  <p class="description">{{station.notes}}</p>
+  }
+  <dl>
+    @for(field of fields();track field.id){
+    <div>
+      <dt>{{field.label}}</dt>
+      <dd><a [routerLink]="field.url">{{field.value}}</a></dd>
+    </div>
+    }
+    <div>
+      <dt>{{text('broadcast')}}</dt>
+      <dd>{{broadcastType()}}</dd>
+    </div>
+    @if(station.frequencyMHz!==null){
+    <div>
+      <dt>{{text('frequency')}}</dt>
+      <dd>{{station.frequencyMHz}} MHz</dd>
+    </div>
+    } @if(network();as network){
+    <div>
+      <dt>{{text('network')}}</dt>
+      <dd><a [routerLink]="['/networks',network.id]">{{network.name}}</a></dd>
+    </div>
+    } @if(broadcaster();as broadcaster){
+    <div>
+      <dt>{{text('broadcaster')}}</dt>
+      <dd><a [routerLink]="['/broadcasters',broadcaster.id]">{{broadcaster.name}}</a></dd>
+    </div>
+    }
+    <div>
+      <dt>{{text('genres')}}</dt>
+      <dd>@for(id of station.genres;track id){<a [routerLink]="['/genres',id]">{{genre(id)}}</a> }</dd>
+    </div>
+  </dl>
+  @if(website();as url){<a class="website" [href]="url" target="_blank" rel="noopener noreferrer"
+    >{{text(station.discovery?.websiteKind==='provider'?'provider':'official')}}
+    <ion-icon [icon]="icons.openOutline" aria-hidden="true" /></a
+  >}
+</section>
+<section>
+  <h2>{{text('documentedLanguages')}}</h2>
+  @if(languages().length>3){
+  <p>{{shortLanguages()}}</p>
+  <details>
+    <summary>{{text('moreLanguages')}} ({{languages().length}})</summary>
+    <ul class="languages">
+      @for(language of languages();track language.code){
+      <li><a [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
+      }
+    </ul>
+  </details>
+  } @else{
+  <ul class="languages">
+    @for(language of languages();track language.code){
+    <li><a [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
+    }
+  </ul>
+  }
+</section>
+@if(related().length){
+<section>
+  <h2>{{text('nearby')}}</h2>
+  <div class="cards">
+    @for(other of related();track other.id){<app-station-card [station]="other" [directoryLinks]="true" />}
+  </div>
+</section>
+} }@else{
+<h1 tabindex="-1">{{data.loading()?text('loading'):text('notFound')}}</h1>
+<a routerLink="/world">{{text('browseAll')}}</a>}

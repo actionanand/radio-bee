@@ -4,16 +4,24 @@ import { readFileSync, existsSync, statSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 if (process.platform !== 'linux') throw Error('Use WSL2 Linux Node');
-export function createPreview({ webRoot = 'www', dataRoot = '../radio-bee-data/dist/v1', requests = [] } = {}) {
+export function createPreview({
+  webRoot = 'www',
+  dataRoot = '../radio-bee-data/dist/v1',
+  requests = [],
+  apiVersion = 'v1',
+} = {}) {
+  if (!['v1', 'v2'].includes(apiVersion)) throw Error('Unsupported preview API version');
   const web = realpathSync(webRoot),
     data = realpathSync(dataRoot);
   return http.createServer((request, response) => {
     try {
       if (!['GET', 'HEAD'].includes(request.method)) return response.writeHead(405).end();
       const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-      const metadata = pathname.startsWith('/__catalogue/v1/'),
+      const metadata = pathname.startsWith('/__catalogue/' + apiVersion + '/'),
         root = metadata ? data : web;
-      const relative = metadata ? pathname.slice('/__catalogue/v1/'.length) : pathname.replace(/^\/radio-bee\//, '');
+      const relative = metadata
+        ? pathname.slice(('/__catalogue/' + apiVersion + '/').length)
+        : pathname.replace(/^\/radio-bee\//, '');
       let file = path.resolve(root, relative.replace(/^\//, ''));
       if (!file.startsWith(root + path.sep)) return response.writeHead(403).end();
       if (!existsSync(file) || statSync(file).isDirectory()) {
@@ -41,8 +49,8 @@ export function createPreview({ webRoot = 'www', dataRoot = '../radio-bee-data/d
             `<script>
    const originalCatalogueFetch=window.fetch.bind(window);
    window.fetch=(input,options)=>{const url=typeof input==='string'?input:input instanceof URL?input.href:input.url;
-    const base='https://actionanand.github.io/radio-bee-data/v1/';
-    return originalCatalogueFetch(url.startsWith(base)?'/__catalogue/v1/'+url.slice(base.length):input,options);
+    const base='https://actionanand.github.io/radio-bee-data/${apiVersion}/';
+    return originalCatalogueFetch(url.startsWith(base)?'/__catalogue/${apiVersion}/'+url.slice(base.length):input,options);
    };
   </script></head>`,
           ),
@@ -54,7 +62,11 @@ export function createPreview({ webRoot = 'www', dataRoot = '../radio-bee-data/d
   });
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const server = createPreview({ webRoot: process.env.RADIOBEE_WEB_ROOT, dataRoot: process.env.RADIOBEE_DATA_ROOT });
+  const server = createPreview({
+    webRoot: process.env.RADIOBEE_WEB_ROOT,
+    dataRoot: process.env.RADIOBEE_DATA_ROOT,
+    apiVersion: process.env.RADIOBEE_API_VERSION || 'v1',
+  });
   const port = Number(process.env.RADIOBEE_PREVIEW_PORT || 4312);
   if (!Number.isSafeInteger(port) || port < 1024 || port > 65535) throw Error('Invalid preview port');
   server.listen(port, '127.0.0.1', () =>

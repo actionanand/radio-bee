@@ -80,6 +80,16 @@
             },
             "ci": {
               "progress": false
+            },
+            "stage16": {
+              "optimization": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage16.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

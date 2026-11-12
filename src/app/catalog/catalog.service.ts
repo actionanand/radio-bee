@@ -1,3 +1,4 @@
+import { validateV2, v2Manifest } from './catalog-v2';
 import { InjectionToken, Service, inject, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { environment } from '../../environments/environment';
@@ -38,7 +39,14 @@ export class CatalogService {
   private readonly storage = inject(CATALOG_STORAGE);
   private readonly seedUrl = inject(CATALOG_SEED_URL);
   readonly developmentSeed = signal(false);
-  private readonly key = `radiobee.catalog.v1:${this.base}`;
+  private readonly version = new URL(this.base).pathname.endsWith('/v2/') ? 2 : 1;
+  private readonly key = `radiobee.catalog.v${this.version}:${this.base}`;
+  private validate(value: unknown) {
+    return this.version === 2 ? validateV2(value) : validateCatalog(value);
+  }
+  private manifest(value: unknown) {
+    return this.version === 2 ? v2Manifest(value) : validateManifest(value);
+  }
   private started = false;
   readonly catalog = signal<Catalog | null>(null);
   readonly loading = signal(false);
@@ -70,7 +78,7 @@ export class CatalogService {
           !Number.isFinite(Date.parse(stored.updatedAt))
         )
           throw new Error('Invalid cached snapshot');
-        this.catalog.set(validateCatalog(stored.catalog));
+        this.catalog.set(this.validate(stored.catalog));
         this.updatedAt.set(stored.updatedAt);
         this.cached.set(true);
       }
@@ -85,23 +93,35 @@ export class CatalogService {
     this.loading.set(true);
     this.error.set('');
     try {
-      const manifest = validateManifest(await this.fetchJson(relativePath(this.base, 'index.json')));
+      const manifest = this.manifest(await this.fetchJson(relativePath(this.base, 'index.json')));
       const names = ['networks', 'stations', 'locations', 'languages', 'categories', 'sources'];
       if (manifest.files['discoveryStations']) names.push('discoveryStations');
+      if (this.version === 2)
+        for (const key of ['stationMigrations', 'broadcasters', 'programmeThemes', 'browseIndex'])
+          if (manifest.files[key]) names.push(key);
       const values = await Promise.all(
-        names.map(name => this.fetchJson(relativePath(this.base, manifest.files[name]))),
+        names.map(async name => {
+          try {
+            return await this.fetchJson(relativePath(this.base, manifest.files[name]));
+          } catch (error) {
+            // A retrieved but malformed optional index must not invalidate canonical data.
+            // Missing advertised files and other transport failures still fail atomically.
+            if (name === 'browseIndex' && error instanceof SyntaxError) return undefined;
+            throw error;
+          }
+        }),
       );
       const dictionaries = await Promise.all(
         ['en', 'ta', 'sa'].map(locale =>
           this.fetchJson(relativePath(this.base, `${manifest.localizationRoot}${locale}.json`)),
         ),
       );
-      const next = validateCatalog({
+      const next = this.validate({
         manifest,
         ...Object.fromEntries(names.map((name, i) => [name, values[i]])),
         localization: Object.fromEntries(['en', 'ta', 'sa'].map((locale, i) => [locale, dictionaries[i]])),
       });
-      const confirmed = validateManifest(await this.fetchJson(relativePath(this.base, 'index.json')));
+      const confirmed = this.manifest(await this.fetchJson(relativePath(this.base, 'index.json')));
       if (JSON.stringify(confirmed) !== JSON.stringify(manifest))
         throw new Error('Catalogue changed during loading; refresh to request a consistent snapshot.');
       const updatedAt = new Date().toISOString();

@@ -6,7 +6,13 @@
   [class.is-playing]="state() === 'playing'"
   [class.is-loading]="state() === 'loading'">
   <div class="thumbnail">
-    <app-station-artwork [station]="station()" /><button
+    <app-station-artwork [station]="station()" />
+    @if(directoryLinks()){<a
+      class="artwork-link"
+      [routerLink]="['/radios',station().id]"
+      [attr.aria-label]="ui('details')+' · '+station().name"></a
+    >}
+    <button
       class="favorite"
       type="button"
       [attr.aria-pressed]="favorites.has(station().id)"
@@ -17,7 +23,13 @@
     @if(state()==='playing'||state()==='loading'){<span class="on-air">{{ ui(player.statusLabel()) }}</span>}
   </div>
   <div class="card-copy">
-    <h3 [title]="station().name">{{ station().name }}</h3>
+    <h3 [title]="station().name">
+      @if(directoryLinks()){<a [routerLink]="['/radios',station().id]">{{station().name}}</a>}@else{ {{station().name}}
+      }
+    </h3>
+    @if(directoryLinks()&&languageSummary()){
+    <p class="language-summary">{{languageSummary()}}</p>
+    }
     <p class="location">{{ shortLocation(station()) }}</p>
     <p class="frequency">{{ ui(station().discovery ? 'discoveryOnly' : 'onlineRadio') }}</p>
     @if (trialCandidate()) {
@@ -43,6 +55,9 @@
         ><ion-icon [icon]="icons.radioOutline" aria-hidden="true" />{{ ui('listeningUnavailable') }}</span
       >}
     </div>
+    @if(directoryLinks()){<a class="details-button" [routerLink]="['/radios',station().id]"
+      ><ion-icon [icon]="icons.informationCircleOutline" aria-hidden="true" />{{ui('details')}}</a
+    >}@else{
     <button
       class="details-button"
       type="button"
@@ -52,5 +67,6 @@
       (click)="details.open(station().id,$event)">
       <ion-icon [icon]="icons.informationCircleOutline" aria-hidden="true" />{{ ui('details') }}
     </button>
+    }
   </div>
 </article>

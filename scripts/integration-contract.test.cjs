@@ -12,9 +12,12 @@ test('production assets exclude the seed; dev and technical builds retain their 
   assert.ok(fs.statSync('src/assets/catalog-development-seed.json').size < 5000);
   assert.doesNotMatch(fs.readFileSync('tsconfig.json', 'utf8'), /"resolveJsonModule"\s*:\s*true/);
 });
-test('no client maintained alias list, card navigation or JSON seed imports remain', () => {
+test('no client maintained aliases, external card redirects or JSON seed imports remain', () => {
   assert.doesNotMatch(fs.readFileSync('src/app/catalog/catalog.models.ts', 'utf8'), /airNagercoilAliases/);
-  assert.doesNotMatch(fs.readFileSync('src/app/catalog/station-card.html', 'utf8'), /<a\b|\[href\]/);
+  assert.doesNotMatch(
+    fs.readFileSync('src/app/catalog/station-card.html', 'utf8'),
+    /\[href\]|href\s*=\s*[\x22\x27]https?:/,
+  );
   assert.doesNotMatch(
     fs.readFileSync('src/app/catalog/discovery-publication.spec.ts', 'utf8'),
     /catalog-development-seed\.json/,

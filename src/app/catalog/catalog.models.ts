@@ -24,6 +24,7 @@ export interface Named {
   name: string;
 }
 export interface Network extends Named {
+  broadcasterId?: string;
   logoPath?: string;
   aliases: string[];
   countryCodes: string[];
@@ -66,6 +67,12 @@ export interface Stream {
   directListening?: DirectListening;
 }
 export interface Station extends Named {
+  languageProfile?: {
+    classification: 'single-language' | 'multilingual' | 'unknown';
+    primaryLanguage: string | null;
+    coverage: string;
+  };
+  programmeThemeIds?: string[];
   aliases?: string[];
   discovery?: {
     availability: DiscoveryStation['availability'];
@@ -123,6 +130,8 @@ export function catalogCounts(c: Catalog | null) {
 }
 export type Dictionary = Record<string, Record<string, string>>;
 export interface Catalog {
+  broadcasters?: Named[];
+  programmeThemes?: Named[];
   discoveryStations?: DiscoveryStation[];
   manifest: Manifest;
   networks: Network[];
