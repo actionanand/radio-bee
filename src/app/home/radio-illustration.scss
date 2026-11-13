@@ -65,6 +65,10 @@ h2 {
   opacity: 0.55;
   transform: scaleY(0.26);
   transform-origin: bottom center;
+  /* Keep the animation timeline ready; only real playback unpauses it. */
+  animation: tuner-meter 900ms ease-in-out infinite;
+  animation-play-state: paused;
+  will-change: transform;
 }
 .segments .amber {
   --meter-color: #cfaa60;
@@ -72,24 +76,24 @@ h2 {
 .segments .red {
   --meter-color: #bd756c;
 }
-/* Only the confirmed media 'playing' state starts the animation. */
-.is-playing .segments span {
+/* Only the confirmed media 'playing' state runs the animation. */
+.tuner[data-playback-state='playing'] .segments span {
   opacity: 1;
-  animation: tuner-meter 900ms ease-in-out infinite;
+  animation-play-state: running;
 }
-.is-playing .segments span:nth-child(4n + 1) {
+.segments span:nth-child(4n + 1) {
   animation-duration: 730ms;
   animation-delay: -470ms;
 }
-.is-playing .segments span:nth-child(4n + 2) {
+.segments span:nth-child(4n + 2) {
   animation-duration: 1040ms;
   animation-delay: -820ms;
 }
-.is-playing .segments span:nth-child(4n + 3) {
+.segments span:nth-child(4n + 3) {
   animation-duration: 820ms;
   animation-delay: -220ms;
 }
-.is-playing .segments span:nth-child(4n) {
+.segments span:nth-child(4n) {
   animation-duration: 1180ms;
   animation-delay: -650ms;
 }
@@ -100,8 +104,12 @@ h2 {
   59% { transform: scaleY(0.96); }
   82% { transform: scaleY(0.54); }
 }
-.is-playing .marker {
+.marker {
   animation: tuner-marker-glow 1800ms ease-in-out infinite;
+  animation-play-state: paused;
+}
+.tuner[data-playback-state='playing'] .marker {
+  animation-play-state: running;
 }
 @keyframes tuner-marker-glow {
   0%, 100% { box-shadow: 0 0 5px #ead7a050; }
@@ -167,13 +175,3 @@ h2 {
   }
 }
 
-/* Never force decorative motion for users who prefer reduced animation. */
-@media (prefers-reduced-motion: reduce) {
-  .is-playing .segments span,
-  .is-playing .marker {
-    animation: none;
-  }
-  .is-playing .segments span {
-    transform: scaleY(0.65);
-  }
-}
