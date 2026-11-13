@@ -153,7 +153,7 @@ export class DirectoryPage {
   readonly rows = computed(() => {
     const c = this.data.catalog();
     if (!c || !this.valid() || this.index()) return [];
-    if (this.mode() === 'home') return featuredStations(c);
+    if (this.mode() === 'home') return featuredStations(c, this.data.homeStationIds());
     const searched = new Set(
       filterStations(c, { ...emptyFilters, search: this.query().get('q') ?? '' }).map(s => s.id),
     );
