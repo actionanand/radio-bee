@@ -306,9 +306,29 @@ describe('Routable v2 directory', () => {
     expect(element(h).textContent).toContain('not found');
     expect(element(h).querySelectorAll('.play')).toHaveLength(0);
     await h.navigateByUrl('/world/europe/in/in-tn');
-    expect(element(h).textContent).toContain('not found');
+    expect(element(h).querySelector('app-not-found-page .scene[data-signal-state="lost"]')).not.toBeNull();
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(0);
   });
+  it('routes unknown World paths and invalid directory scopes to the animated 404', async () => {
+    setup();
+    const h = await RouterTestingHarness.create('/world/cool');
+    expect(TestBed.inject(Router).url).toBe('/world/cool');
+    expect(element(h).querySelector('app-not-found-page .scene[data-signal-state="lost"]')).not.toBeNull();
+    expect(element(h).querySelector('app-directory-page')).toBeNull();
+    expect(element(h).querySelector('app-not-found-page a.btn')?.getAttribute('href')).toBe('/home');
+
+    await h.navigateByUrl('/world/asia/not-a-real-location');
+    expect(element(h).querySelector('app-not-found-page .scene[data-signal-state="lost"]')).not.toBeNull();
+    expect(element(h).querySelector('app-directory-page > h1')).toBeNull();
+
+    await h.navigateByUrl('/languages/not-a-real-language');
+    expect(element(h).querySelector('app-not-found-page .scene[data-signal-state="lost"]')).not.toBeNull();
+
+    await h.navigateByUrl('/world/asia/in/in-tn/in-tn-kanyakumari');
+    expect(element(h).querySelector('app-not-found-page')).toBeNull();
+    expect(element(h).querySelectorAll('.station-card').length).toBeGreaterThan(0);
+  });
+
   it('renders animated wildcard 404 instead of redirecting for unmatched v1 routes', async () => {
     const { data } = setup('https://catalog.test/v1/');
     data.catalog.set(null);
