@@ -10,22 +10,22 @@
     @if(directoryLinks()){<a
       class="artwork-link"
       [routerLink]="['/radios',station().id]"
-      [attr.aria-label]="ui('details')+' · '+station().name"></a
+      [attr.aria-label]="ui('details')+' · '+data.stationName(station())"></a
     >}
     <button
       class="favorite"
       type="button"
       [attr.aria-pressed]="favorites.has(station().id)"
-      [attr.aria-label]="ui(favorites.has(station().id)?'removeFavorite':'addFavorite') + ' · ' + station().name"
+      [attr.aria-label]="ui(favorites.has(station().id)?'removeFavorite':'addFavorite') + ' · ' + data.stationName(station())"
       (click)="toggleFavorite()">
       <ion-icon [icon]="favorites.has(station().id)?icons.heart:icons.heartOutline" aria-hidden="true" />
     </button>
     @if(state()==='playing'||state()==='loading'){<span class="on-air">{{ ui(player.statusLabel()) }}</span>}
   </div>
   <div class="card-copy">
-    <h3 [title]="station().name">
-      @if(directoryLinks()){<a [routerLink]="['/radios',station().id]">{{station().name}}</a>}@else{ {{station().name}}
-      }
+    <h3 [title]="data.stationName(station())">
+      @if(directoryLinks()){<a [routerLink]="['/radios',station().id]">{{data.stationName(station())}}</a>}@else{
+      {{data.stationName(station())}} }
     </h3>
     @if(directoryLinks()&&languageSummary()){
     <p class="language-summary">{{languageSummary()}}</p>
@@ -41,7 +41,7 @@
       @if(eligibility.status==='ready'){<button
         class="play"
         type="button"
-        [attr.aria-label]="ui(action())+' · '+station().name"
+        [attr.aria-label]="ui(action())+' · '+data.stationName(station())"
         [attr.aria-busy]="state()==='loading'"
         (click)="player.toggle(station())">
         <ion-icon [icon]="actionIcon()" [class.connecting]="state()==='loading'" aria-hidden="true" /><span
@@ -63,7 +63,7 @@
       type="button"
       aria-haspopup="dialog"
       [attr.aria-expanded]="details.isOpen() && details.station()?.id === station().id"
-      [attr.aria-label]="ui('details')+' · '+station().name"
+      [attr.aria-label]="ui('details')+' · '+data.stationName(station())"
       (click)="details.open(station().id,$event)">
       <ion-icon [icon]="icons.informationCircleOutline" aria-hidden="true" />{{ ui('details') }}
     </button>

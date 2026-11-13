@@ -23,7 +23,9 @@ export interface Named {
   id: string;
   name: string;
 }
-export interface Artist extends Named { aliases: string[]; }
+export interface Artist extends Named {
+  aliases: string[];
+}
 export interface Network extends Named {
   broadcasterId?: string;
   logoPath?: string;
@@ -175,6 +177,7 @@ export function filterStations(c: Catalog, f: Filters): Station[] {
       (!query ||
         [
           s.name,
+          ...Object.values(c.localization).map(dictionary => dictionary['stationNames']?.[s.id] ?? ''),
           ...(s.aliases ?? []),
           ...(s.artistIds ?? []).flatMap(artistId => {
             const a = c.artists?.find(row => row.id === artistId);
@@ -196,4 +199,10 @@ export function groups(c: Catalog, f: Filters) {
 }
 export function translated(c: Catalog | null, locale: string, section: string, key: string, fallback = key): string {
   return c?.localization[locale]?.[section]?.[key] || c?.localization['en']?.[section]?.[key] || fallback;
+}
+
+/** Presentation only: identities, canonical sorting and playback metadata stay unchanged. */
+export function stationDisplayName(c: Catalog | null, locale: string, station: Pick<Station, 'id' | 'name'>): string {
+  const translated = locale === 'en' ? undefined : c?.localization[locale]?.['stationNames']?.[station.id];
+  return typeof translated === 'string' && translated.trim() ? translated.trim() : station.name;
 }

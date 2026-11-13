@@ -36,7 +36,7 @@ function setup(enabled = true, allowProhibitedRecording = false) {
   });
   const save = vi.fn(async () => undefined);
   const access = vi.fn<(url: string, signal: AbortSignal) => Promise<void>>(async () => undefined);
-  const data = { catalog: signal(c), locale: signal('en') };
+  const data = { stationName: CatalogService.prototype.stationName, catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
       { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording } },

@@ -70,7 +70,7 @@ export class StationPage {
           );
         },
       ),
-      { name: s.name, url: ['/radios', s.id], kind: 'station', current: true },
+      { name: this.data.stationName(s), url: ['/radios', s.id], kind: 'station', current: true },
     ];
   });
   readonly fields = computed(() => {
@@ -120,6 +120,10 @@ export class StationPage {
     return this.data.t('categories', id, this.data.catalog()?.categories.find(g => g.id === id)?.name ?? id);
   }
   constructor() {
-    effect(() => this.title.setTitle((this.station()?.name ?? this.text('notFound')) + ' · RadioBee'));
+    effect(() =>
+      this.title.setTitle(
+        (this.station() ? this.data.stationName(this.station()!) : this.text('notFound')) + ' · RadioBee',
+      ),
+    );
   }
 }

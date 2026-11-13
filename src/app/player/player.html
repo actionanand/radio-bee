@@ -7,18 +7,22 @@
   <app-station-artwork [station]="station" />
   <div class="track">
     <span class="player-eyebrow">{{ ui('nowPlaying') }}</span>
-    <strong>{{ station.name }}</strong>
+    <strong>{{ catalog.stationName(station) }}</strong>
     @if (player.technicalTest()) {
     <p>{{ ui('technicalTest') }}</p>
     }
     <p role="status">{{ ui(player.statusLabel()) }}</p>
   </div>
   @let active = player.state() === 'playing' || player.state() === 'loading';
-  <button type="button" (click)="active ? player.pause() : player.resume()" [disabled]="!active && !player.canResume()">
+  <button
+    type="button"
+    [attr.aria-label]="ui(active ? 'pause' : player.state() === 'error' ? 'retry' : 'play') + ' · ' + catalog.stationName(station)"
+    (click)="active ? player.pause() : player.resume()"
+    [disabled]="!active && !player.canResume()">
     <ion-icon [icon]="active ? icons.pause : icons.play" aria-hidden="true" />
     <span class="control-label">{{ ui(active ? 'pause' : player.state() === 'error' ? 'retry' : 'play') }}</span>
   </button>
-  <button type="button" (click)="stop()">
+  <button type="button" [attr.aria-label]="ui('stop') + ' · ' + catalog.stationName(station)" (click)="stop()">
     <ion-icon [icon]="icons.stop" aria-hidden="true" /><span class="control-label">{{ ui('stop') }}</span>
   </button>
   <label
