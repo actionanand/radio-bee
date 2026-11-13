@@ -332,7 +332,14 @@ describe('Mini-player controls', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: RADIO_RECORDING, useValue: { Enabled: true, AllowProhibitedRecording: false } },
-        { provide: CatalogService, useValue: { catalog: signal(catalog), locale: signal('en') } },
+        {
+          provide: CatalogService,
+          useValue: {
+            stationName: CatalogService.prototype.stationName,
+            catalog: signal(catalog),
+            locale: signal('en'),
+          },
+        },
         { provide: MEDIA_ENGINE, useValue: { audio, clear, supports: () => true, load: async () => undefined } },
       ],
     });

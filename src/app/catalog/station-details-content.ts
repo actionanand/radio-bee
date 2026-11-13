@@ -10,7 +10,7 @@ import { stationWebsite } from './station-website';
   imports: [IonIcon],
   template: `<section class="rb-ui" [attr.lang]="data.locale()">
     <header>
-      <h2 id="station-details-title">{{ station().name }}</h2>
+      <h2 id="station-details-title">{{ data.stationName(station()) }}</h2>
       <button type="button" class="close" [attr.aria-label]="ui('close')" (click)="closed.emit()">
         <ion-icon [icon]="icons.close" aria-hidden="true" />
       </button>

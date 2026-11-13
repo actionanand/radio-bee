@@ -4,7 +4,7 @@
   <app-station-artwork [station]="station" />
   <div>
     <p class="eyebrow">RadioBee · {{text('stations')}}</p>
-    <h1 tabindex="-1">{{station.name}}</h1>
+    <h1 tabindex="-1">{{data.stationName(station)}}</h1>
     @if(station.aliases?.length){
     <p><strong>{{text('aliases')}}:</strong> {{station.aliases.join(', ')}}</p>
     }
