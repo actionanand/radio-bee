@@ -170,6 +170,11 @@ export class CatalogService {
   stationName(station: Pick<Station, 'id' | 'name'>): string {
     return stationDisplayName(this.catalog(), this.locale(), station);
   }
+  artistName(artist: { id: string; name: string }): string {
+    const value =
+      this.locale() === 'en' ? undefined : this.catalog()?.localization[this.locale()]?.['artistNames']?.[artist.id];
+    return typeof value === 'string' && value.trim() ? value.trim() : artist.name;
+  }
   t(section: string, key: string, fallback = key): string {
     return translated(this.catalog(), this.locale(), section, key, fallback);
   }

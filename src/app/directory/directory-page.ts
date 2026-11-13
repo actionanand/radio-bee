@@ -82,7 +82,7 @@ export class DirectoryPage {
       case 'genres':
         return c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) }));
       case 'artists':
-        return c.artists ?? [];
+        return (c.artists ?? []).map(a => ({ ...a, name: this.data.artistName(a) }));
       case 'networks':
         return c.networks;
       case 'broadcasters':
@@ -141,11 +141,11 @@ export class DirectoryPage {
           ? 'genre'
           : this.mode() === 'artists'
             ? 'artist'
-          : this.mode() === 'networks'
-            ? 'network'
-            : this.mode() === 'broadcasters'
-              ? 'broadcaster'
-              : null;
+            : this.mode() === 'networks'
+              ? 'network'
+              : this.mode() === 'broadcasters'
+                ? 'broadcaster'
+                : null;
     if (field && this.facet()) result[field] = this.facet()!;
     if (!this.sorts.includes(result.sort)) result.sort = 'name';
     return result;
@@ -183,10 +183,10 @@ export class DirectoryPage {
               : this.mode() === 'genres'
                 ? s.genres.includes(item.id)
                 : this.mode() === 'artists'
-                  ? s.artistIds?.includes(item.id) ?? false
-                : this.mode() === 'networks'
-                  ? s.networkId === item.id
-                  : c.networks.find(n => n.id === s.networkId)?.broadcasterId === item.id,
+                  ? (s.artistIds?.includes(item.id) ?? false)
+                  : this.mode() === 'networks'
+                    ? s.networkId === item.id
+                    : c.networks.find(n => n.id === s.networkId)?.broadcasterId === item.id,
           ).length,
         }))
         .filter(d => d.count > 0);
@@ -237,7 +237,11 @@ export class DirectoryPage {
               options: c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) })),
             },
             { key: 'theme', label: this.text('themeFilter'), options: c.programmeThemes ?? [] },
-            { key: 'artist', label: this.text('artist'), options: c.artists ?? [] },
+            {
+              key: 'artist',
+              label: this.text('artist'),
+              options: (c.artists ?? []).map(a => ({ ...a, name: this.data.artistName(a) })),
+            },
             { key: 'network', label: this.text('network'), options: c.networks },
             { key: 'broadcaster', label: this.text('broadcaster'), options: c.broadcasters ?? [] },
             {
@@ -277,7 +281,7 @@ export class DirectoryPage {
         for (const artistId of s.artistIds?.length ? s.artistIds : ['']) {
           const artist = c?.artists?.find(a => a.id === artistId);
           const id = artist ? 'artist:' + artist.id : 'artist:other';
-          const name = artist?.name ?? this.text('otherArtistStations');
+          const name = artist ? this.data.artistName(artist) : this.text('otherArtistStations');
           const entry = result.get(id) ?? { id, name, stations: [] };
           entry.stations.push(s);
           result.set(id, entry);
@@ -313,10 +317,13 @@ export class DirectoryPage {
     return (
       !!this.facet() &&
       (
-        { languages: 'language', genres: 'genre', artists: 'artist', networks: 'network', broadcasters: 'broadcaster' } as Record<
-          string,
-          string
-        >
+        {
+          languages: 'language',
+          genres: 'genre',
+          artists: 'artist',
+          networks: 'network',
+          broadcasters: 'broadcaster',
+        } as Record<string, string>
       )[this.mode()] === key
     );
   }

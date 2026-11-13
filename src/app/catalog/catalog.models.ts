@@ -181,7 +181,9 @@ export function filterStations(c: Catalog, f: Filters): Station[] {
           ...(s.aliases ?? []),
           ...(s.artistIds ?? []).flatMap(artistId => {
             const a = c.artists?.find(row => row.id === artistId);
-            return a ? [a.name, ...a.aliases] : [];
+            return a
+              ? [a.name, ...a.aliases, ...Object.values(c.localization).map(d => d['artistNames']?.[a.id] ?? '')]
+              : [];
           }),
           c.networks.find(n => n.id === s.networkId)?.name,
           ...c.locations.filter(l => [s.regionId, s.districtId, s.localityId].includes(l.id)).map(l => l.name),
