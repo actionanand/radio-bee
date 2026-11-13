@@ -309,13 +309,42 @@ describe('Routable v2 directory', () => {
     expect(element(h).textContent).toContain('not found');
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(0);
   });
-  it('retains v1 Home and rejects the v2 route group in production configuration', async () => {
+  it('renders animated wildcard 404 instead of redirecting for unmatched v1 routes', async () => {
     const { data } = setup('https://catalog.test/v1/');
     data.catalog.set(null);
     const h = await RouterTestingHarness.create('/radios/air-nagercoil');
-    expect(TestBed.inject(Router).url).toBe('/home');
+    expect(TestBed.inject(Router).url).toBe('/radios/air-nagercoil');
+    expect(element(h).querySelector('app-not-found-page.ion-page')).not.toBeNull();
+    expect(element(h).querySelector('.scene[data-signal-state="lost"]')).not.toBeNull();
+    expect(element(h).querySelector('.scene .bee svg')).not.toBeNull();
+    expect(element(h).querySelector('.readout')?.textContent?.trim()).toBe('404 MHz');
+    expect(element(h).querySelector('a.btn')?.getAttribute('href')).toBe('/home');
+    await h.navigateByUrl('/home');
     expect(element(h).querySelector('app-station-browser')).not.toBeNull();
-    expect(element(h).querySelector('app-directory-page')).toBeNull();
+  });
+
+  it('renders animated wildcard 404 in v2 without changing the URL or the catalogue', async () => {
+    const { data } = setup();
+    const stationCount = data.catalog()!.stations.length;
+    const h = await RouterTestingHarness.create('/this-page-does-not-exist');
+    expect(TestBed.inject(Router).url).toBe('/this-page-does-not-exist');
+    expect(element(h).querySelector('app-not-found-page')).not.toBeNull();
+    expect(element(h).querySelector('.scene[data-signal-state="lost"]')).not.toBeNull();
+    expect(element(h).querySelector('.scene .wing.back')).not.toBeNull();
+    expect(element(h).querySelector('h1')?.textContent?.trim()).toBe('404');
+    expect(element(h).textContent).toContain('Signal lost');
+    expect(data.catalog()!.stations.length).toBe(stationCount);
+    data.locale.set('ta');
+    h.detectChanges();
+    expect(element(h).textContent).toContain('சமிக்ஞை தொலைந்துவிட்டது');
+    expect(element(h).querySelector('a.btn')?.textContent?.trim()).toBe('முகப்புக்குத் திரும்பு');
+    data.locale.set('sa');
+    h.detectChanges();
+    expect(element(h).textContent).toContain('संकेतः लुप्तः');
+    expect(element(h).querySelector('a.btn')?.textContent?.trim()).toBe('मुखपृष्ठं गच्छ');
+    await h.navigateByUrl('/home');
+    expect(element(h).querySelector('app-not-found-page')).toBeNull();
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
   });
   it('wraps keyboard focus inside the native mobile drawer in both directions', async () => {
     setup();
