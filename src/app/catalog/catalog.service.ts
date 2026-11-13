@@ -97,7 +97,7 @@ export class CatalogService {
       const names = ['networks', 'stations', 'locations', 'languages', 'categories', 'sources'];
       if (manifest.files['discoveryStations']) names.push('discoveryStations');
       if (this.version === 2)
-        for (const key of ['stationMigrations', 'broadcasters', 'programmeThemes', 'browseIndex'])
+        for (const key of ['stationMigrations', 'broadcasters', 'programmeThemes', 'browseIndex', 'artists'])
           if (manifest.files[key]) names.push(key);
       const values = await Promise.all(
         names.map(async name => {

@@ -16,7 +16,7 @@ export const routes: Routes = [
     children: [
       { path: 'home', loadComponent: page, data: { mode: 'home' } },
       { matcher: worldMatcher, loadComponent: page, data: { mode: 'world' } },
-      ...(['languages', 'genres', 'networks', 'broadcasters'] as const).flatMap(mode => [
+      ...(['languages', 'genres', 'artists', 'networks', 'broadcasters'] as const).flatMap(mode => [
         { path: mode, loadComponent: page, data: { mode } },
         { path: mode + '/:facetId', loadComponent: page, data: { mode } },
       ]),
