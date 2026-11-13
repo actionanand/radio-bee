@@ -1,4 +1,7 @@
 import { signal } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { IonSelect } from '@ionic/angular';
+import { directoryText } from './directory.labels';
 import { TestBed } from '@angular/core/testing';
 import { provideIonicAngular } from '@ionic/angular';
 import { CatalogService } from '../catalog/catalog.service';
@@ -22,6 +25,25 @@ function setup(
   return { fixture, control: fixture.componentInstance, locale };
 }
 describe('Directory Ionic select', () => {
+  for (const locale of ['en', 'ta', 'sa'])
+    it(locale + ': keeps the visible external label and Ionic accessible label in sync', async () => {
+      const { fixture } = setup();
+      const select = fixture.debugElement.query(By.directive(IonSelect)).componentInstance as IonSelect;
+      for (const key of ['uiLanguage', 'theme'] as const) {
+        const label = directoryText(locale, key);
+        fixture.componentRef.setInput('label', label);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const host = fixture.nativeElement as HTMLElement;
+        expect(host.querySelectorAll(':scope > .control-label')).toHaveLength(1);
+        expect(host.querySelector('.control-label')?.textContent?.trim()).toBe(label);
+        expect(host.querySelector('.control-label')?.nextElementSibling?.tagName).toBe('ION-SELECT');
+        expect(select.label).toBe(label);
+        expect(select.labelPlacement).not.toBe('stacked');
+        expect(host.querySelector('ion-select .control-label')).toBeNull();
+        expect(host.querySelectorAll('ion-select-option')).toHaveLength(2);
+      }
+    });
   it('uses a modal for long mobile lists, popovers for short lists and desktop', () => {
     const { fixture, control } = setup(
       Array.from({ length: 10 }, (_, i) => ({ id: String(i), name: 'Language ' + i })),

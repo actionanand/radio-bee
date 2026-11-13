@@ -50,6 +50,13 @@ form {
 }
 form label {
   flex: 1;
+  color: var(--muted);
+  line-height: 20px;
+}
+.toolbar form input,
+.toolbar form button {
+  box-sizing: border-box;
+  height: 44px;
 }
 label {
   display: flex;
