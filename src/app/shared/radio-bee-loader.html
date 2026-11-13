@@ -1,0 +1,77 @@
+<div class="radio-loader" role="status" aria-live="polite" aria-label="Tuning in">
+
+  <svg class="radio" aria-hidden="true" focusable="false" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+    <!-- Waves + notes -->
+    <g class="waves" transform="translate(176 6)">
+      <path class="wave w1" d="M 6 -2 A 8 8 0 0 1 6 14" transform="translate(0 -4)"/>
+      <path class="wave w2" d="M 12 -8 A 16 16 0 0 1 12 20" transform="translate(0 -4)"/>
+      <path class="wave w3" d="M 18 -14 A 24 24 0 0 1 18 26" transform="translate(0 -4)"/>
+    </g>
+    <text class="note" x="40" y="34">♪</text>
+    <text class="note n2" x="70" y="30">♫</text>
+
+    <g class="radio-body">
+      <!-- Antenna -->
+      <g class="antenna">
+        <line x1="150" y1="40" x2="176" y2="6" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="176" cy="6" r="4" fill="var(--ink)"/>
+      </g>
+
+      <!-- Body -->
+      <rect x="14" y="40" width="172" height="92" rx="16" fill="var(--radio-body)"/>
+      <rect x="14" y="112" width="172" height="20" rx="10" fill="var(--radio-dark)" opacity=".45"/>
+      <rect x="14" y="40" width="172" height="92" rx="16" fill="none" stroke="var(--ink)" stroke-width="3"/>
+      <!-- Handle -->
+      <path d="M 40 40 Q 40 26 56 26 L 100 26 Q 116 26 116 40" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- Speaker -->
+      <circle cx="62" cy="86" r="30" fill="var(--radio-panel)" stroke="var(--ink)" stroke-width="3"/>
+      <g class="speaker-cone">
+        <circle cx="62" cy="86" r="22" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+        <circle cx="62" cy="86" r="14" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+        <circle cx="62" cy="86" r="6" fill="var(--ink)"/>
+      </g>
+
+      <!-- Tuner panel -->
+      <rect x="104" y="54" width="72" height="26" rx="6" fill="var(--radio-panel)" stroke="var(--ink)" stroke-width="2.5"/>
+      <g stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round">
+        <line x1="112" y1="72" x2="112" y2="76"/><line x1="124" y1="72" x2="124" y2="76"/>
+        <line x1="136" y1="72" x2="136" y2="76"/><line x1="148" y1="72" x2="148" y2="76"/>
+        <line x1="160" y1="72" x2="160" y2="76"/><line x1="170" y1="72" x2="170" y2="76"/>
+      </g>
+      <g class="needle">
+        <line x1="112" y1="58" x2="112" y2="77" stroke="#e5322d" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <!-- Knobs -->
+      <circle cx="122" cy="106" r="11" fill="var(--radio-panel)" stroke="var(--ink)" stroke-width="2.5"/>
+      <line class="knob-mark" x1="122" y1="106" x2="122" y2="98" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="156" cy="106" r="11" fill="var(--radio-panel)" stroke="var(--ink)" stroke-width="2.5"/>
+      <line x1="156" y1="106" x2="162" y2="101" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <!-- Bee -->
+  <div class="bee">
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <!-- Wings -->
+      <ellipse class="wing back" cx="26" cy="22" rx="8" ry="14" fill="var(--wing)" stroke="#7fb2dd" stroke-width="1"/>
+      <ellipse class="wing" cx="33" cy="22" rx="8" ry="14" fill="var(--wing)" stroke="#7fb2dd" stroke-width="1"/>
+      <!-- Stinger -->
+      <path d="M 8 32 L 2 32 L 8 35 Z" fill="var(--bee-ink)"/>
+      <!-- Body -->
+      <ellipse cx="28" cy="33" rx="20" ry="13" fill="var(--bee-yellow)" stroke="var(--bee-ink)" stroke-width="2.5"/>
+      <path d="M 22 21 Q 17 33 22 45" fill="none" stroke="var(--bee-ink)" stroke-width="5"/>
+      <path d="M 33 20.5 Q 28 33 33 45.5" fill="none" stroke="var(--bee-ink)" stroke-width="5"/>
+      <!-- Head -->
+      <circle cx="50" cy="31" r="8" fill="var(--bee-yellow)" stroke="var(--bee-ink)" stroke-width="2.5"/>
+      <circle cx="53" cy="29" r="2" fill="var(--bee-ink)"/>
+      <path d="M 52 35 Q 54 36 56 34" fill="none" stroke="var(--bee-ink)" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Antennae -->
+      <path d="M 50 23 Q 50 16 56 14" fill="none" stroke="var(--bee-ink)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M 46 24 Q 44 17 48 13" fill="none" stroke="var(--bee-ink)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <div class="label" aria-hidden="true">Tuning in</div>
+</div>

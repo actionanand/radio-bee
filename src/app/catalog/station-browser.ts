@@ -1,4 +1,5 @@
 import { V2BrowserComponent } from './v2-browser';
+import { RadioBeeLoaderComponent } from '../shared/radio-bee-loader';
 import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CatalogService } from './catalog.service';
@@ -13,7 +14,7 @@ import { ThemeService } from '../theme/theme.service';
 import { radioIcons } from '../shared/radio-icons';
 @Component({
   selector: 'app-station-browser',
-  imports: [V2BrowserComponent, DatePipe, StationCardComponent, IonIcon, IonSelect, IonSelectOption],
+  imports: [V2BrowserComponent, RadioBeeLoaderComponent, DatePipe, StationCardComponent, IonIcon, IonSelect, IonSelectOption],
   templateUrl: './station-browser.html',
   styleUrl: './station-browser.scss',
   host: { '(document:ionPopoverWillPresent)': 'selectPresented($event)' },

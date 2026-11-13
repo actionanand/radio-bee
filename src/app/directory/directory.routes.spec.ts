@@ -58,6 +58,23 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
     expect(element(h).querySelector('[data-nav=world][aria-current=page]')).not.toBeNull();
   });
+  it('shows animated loader on initial fetch and keeps stations visible during refresh', async () => {
+    const { data } = setup();
+    data.catalog.set(null);
+    data.homeStationIds.set([]);
+    data.loading.set(true);
+    const h = await RouterTestingHarness.create('/home');
+    expect(element(h).querySelector('app-radio-bee-loader [role="status"]')).not.toBeNull();
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(0);
+    data.catalog.set(validateV2(structuredClone(v2Fixture)));
+    data.homeStationIds.set(data.catalog()!.stations.slice(0, 13).map(s => s.id));
+    h.detectChanges();
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
+    expect(element(h).querySelector('app-radio-bee-loader.compact')).not.toBeNull();
+    data.loading.set(false);
+    h.detectChanges();
+    expect(element(h).querySelector('app-radio-bee-loader')).toBeNull();
+  });
   it('opens district deep links with all candidates and discovery identities', async () => {
     setup();
     const h = await RouterTestingHarness.create('/world/asia/in/in-tn/in-tn-kanyakumari');

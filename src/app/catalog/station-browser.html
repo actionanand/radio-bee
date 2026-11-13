@@ -51,8 +51,8 @@
     </button>
     }
   </nav>
-  @if (data.loading()) {
-  <p role="status">{{ ui('loading') }}</p>
+  @if (data.loading() || (!data.catalog() && !data.error())) {
+  <app-radio-bee-loader [compact]="!!data.catalog()" />
   } @if (data.error()) {
   <p role="alert" class="notice">{{ data.error() }}</p>
   } @if (data.storageWarning()) {

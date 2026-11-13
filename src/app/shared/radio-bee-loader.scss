@@ -1,0 +1,130 @@
+:host {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  --radio-body: #3fae6a;
+  --radio-dark: #1f7a45;
+  --radio-panel: var(--surface, #eefaf1);
+  --loader-ink: var(--ink, #14301f);
+  --wave: #3fae6a;
+  --bee-yellow: #ffc61a;
+  --bee-ink: #2b2118;
+  --wing: rgba(190, 225, 255, .75);
+  --loader-text: var(--muted, #5a4a40);
+}
+:host-context(.ion-palette-dark) {
+  --radio-body: #4cc77c;
+  --radio-dark: #2a8a52;
+  --wave: #4cc77c;
+}
+:host(.compact) {
+  min-height: 110px;
+}
+:host(.compact) .radio-loader {
+  transform: scale(.48);
+  transform-origin: center;
+  margin: -50px 0;
+}
+/* ===== Loader: change --size to scale it ===== */
+  .radio-loader {
+    --size: 260px;
+    position: relative;
+    width: var(--size);
+    height: calc(var(--size) * .8);
+    display: grid; place-items: center;
+  }
+  .radio-loader .label {
+    position: absolute; bottom: -28px; left: 0; right: 0;
+    text-align: center; color: var(--loader-text); font-size: 14px; letter-spacing: .04em;
+  }
+  .radio-loader .label::after {
+    content: ""; animation: dots 1.5s steps(4, end) infinite;
+  }
+  @keyframes dots {
+    0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75%, 100% { content: "..."; }
+  }
+
+  .radio { width: 72%; overflow: visible; }
+
+  /* Radio body gently bounces to the beat */
+  .radio-body { transform-origin: 50% 100%; animation: beat 1.2s ease-in-out infinite; }
+  @keyframes beat {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.02, .98); }
+  }
+
+  /* Speaker pulses */
+  .speaker-cone { transform-box: fill-box; transform-origin: center; animation: pump 1.2s ease-in-out infinite; }
+  @keyframes pump {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+
+  /* Tuning needle sweeps back and forth */
+  .needle { animation: tune 3.2s ease-in-out infinite alternate; }
+  @keyframes tune {
+    from { transform: translateX(0); }
+    to { transform: translateX(46px); }
+  }
+
+  /* Knob rotates like a dial being turned */
+  .knob-mark { transform-box: fill-box; transform-origin: center; animation: spin 3.2s ease-in-out infinite alternate; }
+  @keyframes spin { from { transform: rotate(-60deg); } to { transform: rotate(120deg); } }
+
+  /* Antenna wobble */
+  .antenna { transform-origin: 150px 40px; animation: wobble 1.2s ease-in-out infinite; }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  /* Radio waves from the antenna tip */
+  .wave { fill: none; stroke: var(--wave); stroke-width: 3; stroke-linecap: round; opacity: 0; animation: emit 1.8s ease-out infinite; }
+  .wave.w2 { animation-delay: .3s; }
+  .wave.w3 { animation-delay: .6s; }
+  @keyframes emit {
+    0% { opacity: 0; transform: scale(.6); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.15); }
+  }
+  .waves { transform-box: fill-box; transform-origin: left bottom; }
+
+  /* Music notes floating up */
+  .note { font-size: 16px; fill: var(--wave); opacity: 0; animation: float 2.4s ease-in infinite; }
+  .note.n2 { animation-delay: 1.2s; }
+  @keyframes float {
+    0% { opacity: 0; transform: translate(0, 0); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-18px, -34px); }
+  }
+
+  /* ===== Bee ===== */
+  .bee {
+    position: absolute; top: 0; left: 0;
+    width: 15%; aspect-ratio: 1;
+    /* Flight path in the container's coordinate space (260 x 208 reference).
+       Uses percentages-free path, so scale via --size is handled by the wrapper transform below. */
+    offset-path: path("M 30 40 C 90 -20, 220 -10, 235 60 C 250 130, 150 190, 90 150 C 30 115, -10 80, 30 40 Z");
+    offset-rotate: 0deg;
+    offset-anchor: 50% 50%;
+    animation: fly 6s linear infinite;
+  }
+  @keyframes fly {
+    from { offset-distance: 0%; }
+    to { offset-distance: 100%; }
+  }
+  .bee svg { width: 100%; height: 100%; overflow: visible; animation: bob .5s ease-in-out infinite alternate; }
+  @keyframes bob {
+    from { transform: translateY(-3px) rotate(-4deg); }
+    to { transform: translateY(3px) rotate(4deg); }
+  }
+  .wing { transform-box: fill-box; transform-origin: 50% 100%; animation: flap .09s linear infinite alternate; }
+  .wing.back { animation-delay: .045s; opacity: .7; }
+  @keyframes flap {
+    from { transform: rotate(-25deg) scaleY(1); }
+    to { transform: rotate(10deg) scaleY(.55); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .radio-loader *, .radio-loader .label::after { animation: none !important; }
+  }
