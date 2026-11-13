@@ -273,6 +273,17 @@ export class DirectoryPage {
       group = this.query().get('group');
     const result = new Map<string, { id: string; name: string; stations: ReturnType<typeof browseV2> }>();
     for (const s of this.rows()) {
+      if (group === 'artist') {
+        for (const artistId of s.artistIds?.length ? s.artistIds : ['']) {
+          const artist = c?.artists?.find(a => a.id === artistId);
+          const id = artist ? 'artist:' + artist.id : 'artist:other';
+          const name = artist?.name ?? this.text('otherArtistStations');
+          const entry = result.get(id) ?? { id, name, stations: [] };
+          entry.stations.push(s);
+          result.set(id, entry);
+        }
+        continue;
+      }
       const n = c!.networks.find(n => n.id === s.networkId)!;
       const id =
         group === 'broadcaster' && n.broadcasterId
