@@ -138,6 +138,3 @@
     will-change: transform;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .radio-loader *, .radio-loader .label::after { animation: none !important; }
-  }
