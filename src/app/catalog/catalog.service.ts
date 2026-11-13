@@ -1,5 +1,6 @@
 import { stationDisplayName, Station } from './catalog.models';
 import { validateV2, v2Manifest } from './catalog-v2';
+import { catalogStatusText } from './catalog-status';
 import { InjectionToken, Service, inject, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { environment } from '../../environments/environment';
@@ -199,6 +200,9 @@ export class CatalogService {
     } catch {
       this.storageWarning.set('UI language changed but could not be saved.');
     }
+  }
+  statusText(message: string): string {
+    return catalogStatusText(this.locale(), message);
   }
   stationName(station: Pick<Station, 'id' | 'name'>): string {
     return stationDisplayName(this.catalog(), this.locale(), station);
