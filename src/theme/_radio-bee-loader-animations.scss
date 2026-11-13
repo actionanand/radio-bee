@@ -1,0 +1,143 @@
+/* Reusable radio-and-bee catalogue-loading motion. Global to avoid Angular's component-style budget. */
+/* ===== Loader: change --size to scale it ===== */
+  .radio-loader {
+    --size: 260px;
+    position: relative;
+    width: var(--size);
+    height: calc(var(--size) * .8);
+    display: grid; place-items: center;
+  }
+  .radio-loader .label {
+    position: absolute; bottom: -28px; left: 0; right: 0;
+    text-align: center; color: var(--loader-text); font-size: 14px; letter-spacing: .04em;
+  }
+  .radio-loader .label::after {
+    content: ""; animation: dots 1.5s steps(4, end) infinite;
+  }
+  @keyframes dots {
+    0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75%, 100% { content: "..."; }
+  }
+
+  .radio { width: 72%; overflow: visible; }
+
+  /* Radio body gently bounces to the beat */
+  .radio-body { transform-origin: 50% 100%; animation: beat 1.2s ease-in-out -.6s infinite; }
+  @keyframes beat {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.02, .98); }
+  }
+
+  /* Speaker pulses */
+  .speaker-cone { transform-box: fill-box; transform-origin: center; animation: pump 1.2s ease-in-out -.45s infinite; }
+  @keyframes pump {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+
+  /* Tuning needle sweeps back and forth */
+  .needle { animation: tune 3.2s ease-in-out -1.2s infinite alternate; }
+  @keyframes tune {
+    from { transform: translateX(0); }
+    to { transform: translateX(46px); }
+  }
+
+  /* Knob rotates like a dial being turned */
+  .knob-mark { transform-box: fill-box; transform-origin: center; animation: spin 3.2s ease-in-out -.9s infinite alternate; }
+  @keyframes spin { from { transform: rotate(-60deg); } to { transform: rotate(120deg); } }
+
+  /* Antenna wobble */
+  .antenna { transform-origin: 150px 40px; animation: wobble 1.2s ease-in-out -.4s infinite; }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  /* Radio waves from the antenna tip */
+  .wave { fill: none; stroke: var(--wave); stroke-width: 3; stroke-linecap: round; opacity: 0; animation: emit 1.8s ease-out -.4s infinite; }
+  .wave.w2 { animation-delay: .3s; }
+  .wave.w3 { animation-delay: .6s; }
+  @keyframes emit {
+    0% { opacity: 0; transform: scale(.6); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.15); }
+  }
+  .waves { transform-box: fill-box; transform-origin: left bottom; }
+
+  /* Music notes floating up */
+  .note { font-size: 16px; fill: var(--wave); opacity: 0; animation: float 2.4s ease-in -1.1s infinite; }
+  .note.n2 { animation-delay: 1.2s; }
+  @keyframes float {
+    0% { opacity: 0; transform: translate(0, 0); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-18px, -34px); }
+  }
+
+  /* ===== Bee ===== */
+  .bee {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15%;
+    aspect-ratio: 1;
+    /* Transform keyframes work in embedded browser views without CSS motion-path support. */
+    animation: fly 3.6s ease-in-out -1.3s infinite;
+  }
+  @keyframes fly {
+    0%, 100% { transform: translate(30px, 40px); }
+    18% { transform: translate(96px, 6px); }
+    36% { transform: translate(196px, 20px); }
+    51% { transform: translate(224px, 83px); }
+    69% { transform: translate(142px, 158px); }
+    86% { transform: translate(50px, 117px); }
+  }
+  .bee svg { width: 100%; height: 100%; overflow: visible; animation: bob .5s ease-in-out -.2s infinite alternate; }
+  @keyframes bob {
+    from { transform: translateY(-3px) rotate(-4deg); }
+    to { transform: translateY(3px) rotate(4deg); }
+  }
+  .wing { transform-box: fill-box; transform-origin: 50% 100%; animation: flap .09s linear infinite alternate; }
+  .wing.back { animation-delay: .045s; opacity: .7; }
+  @keyframes flap {
+    from { transform: rotate(-25deg) scaleY(1); }
+    to { transform: rotate(10deg) scaleY(.55); }
+  }
+
+  /* Mirror the existing tuner: a running/paused animation timeline keyed to real fetch state. */
+  .radio-loader .label::after,
+  .radio-loader .radio-body,
+  .radio-loader .speaker-cone,
+  .radio-loader .needle,
+  .radio-loader .knob-mark,
+  .radio-loader .antenna,
+  .radio-loader .wave,
+  .radio-loader .note,
+  .radio-loader .bee,
+  .radio-loader .bee svg,
+  .radio-loader .wing {
+    animation-play-state: paused;
+  }
+  .radio-loader[data-fetch-state='loading'] .label::after,
+  .radio-loader[data-fetch-state='loading'] .radio-body,
+  .radio-loader[data-fetch-state='loading'] .speaker-cone,
+  .radio-loader[data-fetch-state='loading'] .needle,
+  .radio-loader[data-fetch-state='loading'] .knob-mark,
+  .radio-loader[data-fetch-state='loading'] .antenna,
+  .radio-loader[data-fetch-state='loading'] .wave,
+  .radio-loader[data-fetch-state='loading'] .note,
+  .radio-loader[data-fetch-state='loading'] .bee,
+  .radio-loader[data-fetch-state='loading'] .bee svg,
+  .radio-loader[data-fetch-state='loading'] .wing {
+    animation-play-state: running;
+  }
+  .radio-loader .radio-body,
+  .radio-loader .speaker-cone,
+  .radio-loader .needle,
+  .radio-loader .antenna,
+  .radio-loader .bee,
+  .radio-loader .bee svg {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .radio-loader *, .radio-loader .label::after { animation: none !important; }
+  }
