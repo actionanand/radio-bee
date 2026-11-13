@@ -64,13 +64,25 @@ describe('Routable v2 directory', () => {
     data.homeStationIds.set([]);
     data.loading.set(true);
     const h = await RouterTestingHarness.create('/home');
-    expect(element(h).querySelector('app-radio-bee-loader [role="status"]')).not.toBeNull();
+    expect(element(h).querySelector('app-radio-bee-loader .radio-loader[data-fetch-state="loading"]')).not.toBeNull();
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(0);
     data.catalog.set(validateV2(structuredClone(v2Fixture)));
     data.homeStationIds.set(data.catalog()!.stations.slice(0, 13).map(s => s.id));
     h.detectChanges();
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
-    expect(element(h).querySelector('app-radio-bee-loader.compact')).not.toBeNull();
+    expect(element(h).querySelector('app-radio-bee-loader.compact .radio-loader.is-loading')).not.toBeNull();
+    data.loading.set(false);
+    h.detectChanges();
+    expect(element(h).querySelector('app-radio-bee-loader')).toBeNull();
+  });
+  it('keeps World station cards visible and animates the loader during refresh', async () => {
+    const { data } = setup();
+    const h = await RouterTestingHarness.create('/world');
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
+    data.loading.set(true);
+    h.detectChanges();
+    expect(element(h).querySelector('app-radio-bee-loader.compact [data-fetch-state="loading"]')).not.toBeNull();
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
     data.loading.set(false);
     h.detectChanges();
     expect(element(h).querySelector('app-radio-bee-loader')).toBeNull();
