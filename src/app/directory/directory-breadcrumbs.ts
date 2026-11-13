@@ -53,9 +53,20 @@ import { Crumb } from './directory.model';
       font-size: 13px;
     }
     a {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       min-height: 44px;
+      padding-inline: 6px;
+      margin-inline: -6px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: color 160ms ease, background-color 160ms ease;
+    }
+    a:hover,
+    a:focus-visible {
+      color: var(--accent-ink);
+      background-color: var(--panel);
+      text-decoration: none;
     }
     span {
       font-weight: 600;
