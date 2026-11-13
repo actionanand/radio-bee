@@ -24,7 +24,6 @@ export interface DirectoryOption {
     <span class="control-label" aria-hidden="true">{{ label() }}</span>
     <ion-select
       mode="md"
-      fill="outline"
       [label]="label()"
       [value]="value()"
       [disabled]="disabled()"
@@ -54,12 +53,11 @@ export interface DirectoryOption {
       box-sizing: border-box;
       height: 44px;
       min-height: 44px;
-      border: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
       padding: 0;
       --background: var(--surface);
       --color: var(--ink);
-      --border-color: var(--line);
-      --border-radius: 8px;
       --padding-start: 10px;
       --padding-end: 10px;
       --highlight-color-focused: var(--accent-ink);
