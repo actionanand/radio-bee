@@ -71,7 +71,7 @@ export class DirectoryPage {
     );
   }
   readonly index = computed(
-    () => ['languages', 'genres', 'networks', 'broadcasters'].includes(this.mode()) && !this.facet(),
+    () => ['languages', 'genres', 'artists', 'networks', 'broadcasters'].includes(this.mode()) && !this.facet(),
   );
   readonly registry = computed(() => {
     const c = this.data.catalog();
@@ -81,6 +81,8 @@ export class DirectoryPage {
         return c.languages.map(l => ({ id: l.code, name: l.nativeName }));
       case 'genres':
         return c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) }));
+      case 'artists':
+        return c.artists ?? [];
       case 'networks':
         return c.networks;
       case 'broadcasters':
@@ -137,6 +139,8 @@ export class DirectoryPage {
         ? 'language'
         : this.mode() === 'genres'
           ? 'genre'
+          : this.mode() === 'artists'
+            ? 'artist'
           : this.mode() === 'networks'
             ? 'network'
             : this.mode() === 'broadcasters'
@@ -178,6 +182,8 @@ export class DirectoryPage {
               ? s.broadcastLanguages.includes(item.id)
               : this.mode() === 'genres'
                 ? s.genres.includes(item.id)
+                : this.mode() === 'artists'
+                  ? s.artistIds?.includes(item.id) ?? false
                 : this.mode() === 'networks'
                   ? s.networkId === item.id
                   : c.networks.find(n => n.id === s.networkId)?.broadcasterId === item.id,
@@ -210,6 +216,7 @@ export class DirectoryPage {
     'broadcaster',
     'language',
     'genre',
+    'artist',
     'availability',
   ];
   readonly controls = computed<
@@ -230,6 +237,7 @@ export class DirectoryPage {
               options: c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) })),
             },
             { key: 'theme', label: this.text('themeFilter'), options: c.programmeThemes ?? [] },
+            { key: 'artist', label: this.text('artist'), options: c.artists ?? [] },
             { key: 'network', label: this.text('network'), options: c.networks },
             { key: 'broadcaster', label: this.text('broadcaster'), options: c.broadcasters ?? [] },
             {
@@ -257,6 +265,7 @@ export class DirectoryPage {
   readonly groupOptions = computed(() => [
     { id: 'none', name: this.text('none') },
     { id: 'network', name: this.text('network') },
+    { id: 'artist', name: this.text('artist') },
     { id: 'broadcaster', name: this.text('broadcaster') },
   ]);
   readonly groups = computed(() => {
@@ -264,6 +273,17 @@ export class DirectoryPage {
       group = this.query().get('group');
     const result = new Map<string, { id: string; name: string; stations: ReturnType<typeof browseV2> }>();
     for (const s of this.rows()) {
+      if (group === 'artist') {
+        for (const artistId of s.artistIds?.length ? s.artistIds : ['']) {
+          const artist = c?.artists?.find(a => a.id === artistId);
+          const id = artist ? 'artist:' + artist.id : 'artist:other';
+          const name = artist?.name ?? this.text('otherArtistStations');
+          const entry = result.get(id) ?? { id, name, stations: [] };
+          entry.stations.push(s);
+          result.set(id, entry);
+        }
+        continue;
+      }
       const n = c!.networks.find(n => n.id === s.networkId)!;
       const id =
         group === 'broadcaster' && n.broadcasterId
@@ -293,7 +313,7 @@ export class DirectoryPage {
     return (
       !!this.facet() &&
       (
-        { languages: 'language', genres: 'genre', networks: 'network', broadcasters: 'broadcaster' } as Record<
+        { languages: 'language', genres: 'genre', artists: 'artist', networks: 'network', broadcasters: 'broadcaster' } as Record<
           string,
           string
         >

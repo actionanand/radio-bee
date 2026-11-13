@@ -33,6 +33,7 @@ export interface BrowseSelection {
   language: string;
   genre: string;
   theme: string;
+  artist: string;
   network: string;
   broadcaster: string;
   classification: string;
@@ -44,6 +45,7 @@ export const initialBrowse: BrowseSelection = {
   language: '',
   genre: '',
   theme: '',
+  artist: '',
   network: '',
   broadcaster: '',
   classification: '',
@@ -62,6 +64,7 @@ export function browseV2(c: Catalog, f: BrowseSelection): Station[] {
       (!f.language || s.broadcastLanguages.includes(f.language)) &&
       (!f.genre || s.genres.includes(f.genre)) &&
       (!f.theme || s.programmeThemeIds?.includes(f.theme)) &&
+      (!f.artist || s.artistIds?.includes(f.artist)) &&
       (!f.network || s.networkId === f.network) &&
       (!f.broadcaster || c.networks.find(n => n.id === s.networkId)?.broadcasterId === f.broadcaster) &&
       (!f.classification || (s.languageProfile?.classification ?? 'unknown') === f.classification),
@@ -82,6 +85,8 @@ export function browseV2(c: Catalog, f: BrowseSelection): Station[] {
         return c.languages.find(l => l.code === (f.language || s.languageProfile?.primaryLanguage))?.name ?? '';
       case 'genre':
         return f.genre ? name(c.categories, f.genre) : (s.genres.map(id => name(c.categories, id)).sort()[0] ?? '');
+      case 'artist':
+        return name(c.artists ?? [], s.artistIds?.[0]);
       case 'availability':
         return s.discovery ? 'discovery-only' : 'stream-bearing';
       default:

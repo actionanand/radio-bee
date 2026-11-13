@@ -32,6 +32,12 @@ export class StationPage {
   readonly station = computed(
     () => allStations(this.data.catalog()).find(s => s.id === this.params().get('stationId')) ?? null,
   );
+  readonly artists = computed(() =>
+    (this.station()?.artistIds ?? []).flatMap(id => {
+      const artist = this.data.catalog()?.artists?.find(row => row.id === id);
+      return artist ? [artist] : [];
+    }),
+  );
   readonly network = computed(() => this.data.catalog()?.networks.find(n => n.id === this.station()?.networkId));
   readonly broadcaster = computed(() =>
     this.data.catalog()?.broadcasters?.find(b => b.id === this.network()?.broadcasterId),

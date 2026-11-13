@@ -88,8 +88,9 @@ const files: Record<string, string> = {
   broadcasters: 'broadcasters.json',
   programmeThemes: 'programme-themes.json',
   browseIndex: 'browse-index.json',
+  artists: 'artists.json',
 };
-const optionalFiles = ['broadcasters', 'programmeThemes', 'browseIndex'];
+const optionalFiles = ['broadcasters', 'programmeThemes', 'browseIndex', 'artists'];
 const countKeys = [
   'networks',
   'stations',
@@ -182,7 +183,7 @@ const stationFields = [
   'sourceIds',
   'notes',
 ];
-const stationOptional = ['languageProfile', 'geographyEvidence', 'programmeThemeIds'];
+const stationOptional = ['languageProfile', 'geographyEvidence', 'programmeThemeIds', 'artistIds'];
 function metadata(s: Row, sources: Map<string, Row>, languages: Map<string, Row>, themes: Map<string, Row>): void {
   const tags = strings(s['broadcastLanguages']);
   if (s['programmeThemeIds'] !== undefined) {
@@ -287,11 +288,12 @@ export function validateV2(value: unknown): Catalog {
     sources = table(raw['sources']),
     stations = table(raw['stations']),
     discovery = table(raw['discoveryStations']);
-  for (const key of ['broadcasters', 'programmeThemes']) {
+  for (const key of ['broadcasters', 'programmeThemes', 'artists']) {
     check(manifest.files[key] ? Array.isArray(raw[key]) : raw[key] === undefined, 'advertised ' + key);
   }
   const broadcasters = table(raw['broadcasters'] ?? []),
-    themes = table(raw['programmeThemes'] ?? []);
+    themes = table(raw['programmeThemes'] ?? []),
+    artists = table(raw['artists'] ?? []);
   for (const row of sources.values()) {
     shape(row, ['id', 'title', 'url', 'kind', 'notes']);
     text(row['title']);
@@ -324,6 +326,12 @@ export function validateV2(value: unknown): Catalog {
     id(t['id']);
     text(t['name']);
     text(t['description']);
+  }
+  for (const a of artists.values()) {
+    shape(a, ['id', 'name', 'aliases']);
+    id(a['id']);
+    text(a['name']);
+    strings(a['aliases']);
   }
   for (const n of networks.values()) {
     shape(
@@ -454,6 +462,10 @@ export function validateV2(value: unknown): Catalog {
       const website = https(s['website']);
       nullable(s['notes']);
       metadata(s, sources, languages, themes);
+      if (s['artistIds'] !== undefined) {
+        refs(s['artistIds'], artists, 1);
+        check(strings(s['genres']).includes('artist-hits'), 'artist membership category');
+      }
       if (isDiscovery) {
         choice(s['availability'], ['no-direct-stream', 'temporarily-unavailable', 'review-pending']);
         date(s['reviewedOn']);

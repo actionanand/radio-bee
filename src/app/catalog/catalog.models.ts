@@ -23,6 +23,7 @@ export interface Named {
   id: string;
   name: string;
 }
+export interface Artist extends Named { aliases: string[]; }
 export interface Network extends Named {
   broadcasterId?: string;
   logoPath?: string;
@@ -73,6 +74,7 @@ export interface Station extends Named {
     coverage: string;
   };
   programmeThemeIds?: string[];
+  artistIds?: string[];
   aliases?: string[];
   discovery?: {
     availability: DiscoveryStation['availability'];
@@ -131,6 +133,7 @@ export function catalogCounts(c: Catalog | null) {
 export type Dictionary = Record<string, Record<string, string>>;
 export interface Catalog {
   broadcasters?: Named[];
+  artists?: Artist[];
   programmeThemes?: Named[];
   discoveryStations?: DiscoveryStation[];
   manifest: Manifest;
@@ -173,6 +176,10 @@ export function filterStations(c: Catalog, f: Filters): Station[] {
         [
           s.name,
           ...(s.aliases ?? []),
+          ...(s.artistIds ?? []).flatMap(artistId => {
+            const a = c.artists?.find(row => row.id === artistId);
+            return a ? [a.name, ...a.aliases] : [];
+          }),
           c.networks.find(n => n.id === s.networkId)?.name,
           ...c.locations.filter(l => [s.regionId, s.districtId, s.localityId].includes(l.id)).map(l => l.name),
         ]
