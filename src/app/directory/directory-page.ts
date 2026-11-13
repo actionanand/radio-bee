@@ -13,6 +13,7 @@ import { PlayerService } from '../player/player.service';
 import { StationCardComponent } from '../catalog/station-card';
 import { RadioIllustrationComponent } from '../home/radio-illustration';
 import { RadioBeeLoaderComponent } from '../shared/radio-bee-loader';
+import { NotFoundPage } from '../not-found/not-found-page';
 import {
   ContinentId,
   Crumb,
@@ -31,6 +32,7 @@ import { DirectoryKey, directoryText } from './directory.labels';
     StationCardComponent,
     RadioIllustrationComponent,
     RadioBeeLoaderComponent,
+    NotFoundPage,
     DirectoryBreadcrumbsComponent,
     DirectorySelectComponent,
   ],
