@@ -47,7 +47,9 @@ export class StationPage {
     () =>
       this.station()?.broadcastLanguages.map(code => ({
         code,
-        name: this.data.catalog()?.languages.find(l => l.code === code)?.nativeName ?? code,
+        name: (this.data.catalog()?.languages.find(l => l.code === code)
+          ? this.data.languageName(this.data.catalog()!.languages.find(l => l.code === code)!)
+          : code),
       })) ?? [],
   );
   readonly crumbs = computed<Crumb[]>(() => {
