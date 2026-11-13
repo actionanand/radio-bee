@@ -111,7 +111,7 @@ describe('Routable v2 directory', () => {
     const h = await RouterTestingHarness.create('/world');
     const host = element(h);
     expect(host.querySelectorAll('select,option')).toHaveLength(0);
-    expect(host.querySelectorAll('ion-select')).toHaveLength(11);
+    expect(host.querySelectorAll('ion-select')).toHaveLength(12);
     const availability = host.querySelector('[data-filter=availability] ion-select')!;
     availability.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'discovery-only' }, bubbles: true }));
     await h.fixture.whenStable();
