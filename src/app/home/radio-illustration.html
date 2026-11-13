@@ -1,4 +1,4 @@
-<div class="tuner" [class.is-playing]="player.state()==='playing'" [attr.lang]="data.locale()">
+<div class="tuner" [class.is-playing]="player.state()==='playing'" [attr.data-playback-state]="player.state()" [attr.lang]="data.locale()">
   <header>
     <div class="tuner-brand">
       <ion-icon [icon]="icons.radioOutline" aria-hidden="true" />
