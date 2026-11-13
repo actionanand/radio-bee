@@ -50,7 +50,8 @@ describe('Directory Ionic select', () => {
     const select = host.querySelector('ion-select');
     expect(select).not.toBeNull();
     expect(select?.hasAttribute('fill')).toBe(false);
-    expect(select?.getAttribute('label')).toBe('Language');
+    const ionicSelect = fixture.debugElement.query(By.directive(IonSelect)).componentInstance as IonSelect;
+    expect(ionicSelect.label).toBe('Language');
     expect(host.querySelector('.control-label')?.textContent).toBe('Language');
     expect(host.querySelector('.control-label')?.nextElementSibling).toBe(select);
   });
