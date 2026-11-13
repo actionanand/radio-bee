@@ -24,6 +24,7 @@ describe('HomePage', () => {
       player.state.set(state);
       fixture.detectChanges();
       expect(tuner().classList.contains('is-playing')).toBe(state === 'playing');
+      expect(tuner().getAttribute('data-playback-state')).toBe(state);
       expect(tuner().querySelectorAll('.segments[aria-hidden="true"] span')).toHaveLength(24);
     }
   });
