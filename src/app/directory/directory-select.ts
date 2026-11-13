@@ -21,10 +21,10 @@ export interface DirectoryOption {
   },
   imports: [IonSelect, IonSelectOption],
   template: `
+    <span class="control-label" aria-hidden="true">{{ label() }}</span>
     <ion-select
       mode="md"
       fill="outline"
-      labelPlacement="stacked"
       [label]="label()"
       [value]="value()"
       [disabled]="disabled()"
@@ -39,12 +39,21 @@ export interface DirectoryOption {
   `,
   styles: `
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
       min-width: 0;
+    }
+    .control-label {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 20px;
     }
     ion-select {
       width: 100%;
-      min-height: 64px;
+      box-sizing: border-box;
+      height: 44px;
+      min-height: 44px;
       border: 0;
       padding: 0;
       --background: var(--surface);
@@ -57,8 +66,8 @@ export interface DirectoryOption {
       --highlight-color-valid: var(--accent-ink);
     }
     ion-select::part(label) {
-      color: var(--muted);
-      font-size: 12px;
+      /* Ionic still derives its reactive button name from [label]. Only its visual label is external. */
+      display: none;
     }
     ion-select::part(text) {
       white-space: normal;
