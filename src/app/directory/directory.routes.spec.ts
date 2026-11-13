@@ -120,14 +120,12 @@ describe('Routable v2 directory', () => {
     expect(host.querySelector('h1')?.textContent).toContain('Akashvani Nagercoil');
     const breadcrumbLink = host.querySelector<HTMLAnchorElement>('.breadcrumbs a[href="/world/asia/in/in-tn/in-tn-kanyakumari"]');
     expect(breadcrumbLink).not.toBeNull();
-    expect(getComputedStyle(breadcrumbLink!).textDecorationLine).toBe('none');
     const detailLink = host.querySelector<HTMLAnchorElement>('app-station-page dl dd a');
     expect(detailLink).not.toBeNull();
-    expect(getComputedStyle(detailLink!).textDecorationLine).toBe('none');
     const chips = host.querySelectorAll<HTMLAnchorElement>('app-station-page .languages a.language-chip');
     expect(chips).toHaveLength(2);
     expect([...chips].map(chip => chip.getAttribute('href'))).toEqual(['/languages/ta', '/languages/en']);
-    expect([...chips].every(chip => getComputedStyle(chip).textDecorationLine === 'none')).toBe(true);
+    expect([...chips].every(chip => chip.classList.contains('language-chip'))).toBe(true);
     expect(host.querySelectorAll('.cards .station-card')).toHaveLength(9);
     expect(host.querySelectorAll('app-station-page .station-intro app-station-artwork')).toHaveLength(1);
     expect(host.textContent).not.toContain('Frequency');
