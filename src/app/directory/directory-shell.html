@@ -43,7 +43,7 @@
     </header>
     <main #content id="directory-main" [attr.aria-busy]="data.loading()">
       @if(data.error()){
-      <p role="alert">{{data.error()}}</p>
+      <p role="alert">{{data.statusText(data.error())}}</p>
       } @if(data.cached()){
       <p role="status">{{text('saved')}}</p>
       } @if(data.storageWarning()){
@@ -53,7 +53,7 @@
       }
       <router-outlet />
       <footer>
-        <span>RadioBee · Stay tuned. Stay buzzing.</span
+        <span>RadioBee · {{tagline()}}</span
         ><button type="button" (click)="data.refresh()" [disabled]="data.loading()">{{text('refresh')}}</button>
       </footer>
     </main>
