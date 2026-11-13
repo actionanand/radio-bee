@@ -50,7 +50,10 @@ describe('Routable v2 directory', () => {
     const selected = TestBed.inject(CatalogService).homeStationIds();
     expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId'])).toEqual(selected);
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
-    expect(element(h).textContent).toContain('Featured Radios');
+    expect(element(h).querySelector('h2')?.textContent?.trim()).toBe('Featured Radios (13)');
+    expect(element(h).querySelector('.selection-note')).toBeNull();
+    expect(element(h).textContent).not.toContain('How these radios are selected');
+    expect(element(h).querySelector('a.browse-all')?.getAttribute('href')).toBe('/world');
     await h.navigateByUrl('/world');
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
     expect(element(h).querySelector('[data-nav=world][aria-current=page]')).not.toBeNull();
