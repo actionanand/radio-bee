@@ -31,6 +31,7 @@ import {
 import { CatalogService } from '../catalog/catalog.service';
 import { FavoritesService } from '../catalog/favorites.service';
 import { uiLabel } from '../catalog/catalog.ui';
+import { uiLanguageChoices } from '../catalog/language-label';
 import { ThemeService } from '../theme/theme.service';
 import { DirectoryKey, directoryText } from './directory.labels';
 
@@ -67,11 +68,9 @@ export class DirectoryShellComponent {
   readonly canBack = signal(false);
   readonly drawerOpen = signal(false);
   readonly icons = { menuOutline, closeOutline, searchOutline };
-  readonly localeOptions = [
-    { id: 'en', name: 'English' },
-    { id: 'ta', name: 'தமிழ்' },
-    { id: 'sa', name: 'संस्कृतम्' },
-  ];
+  readonly localeOptions = computed(() =>
+    uiLanguageChoices.map(language => ({ id: language.code, name: this.data.languageName(language) })),
+  );
   readonly themeOptions = computed(() => [
     { id: 'automatic', name: this.text('automatic') },
     { id: 'light', name: this.text('light') },
