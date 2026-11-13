@@ -23,7 +23,10 @@ export class StationCardComponent {
     const tags = this.station().broadcastLanguages;
     const names = tags
       .slice(0, 3)
-      .map(code => this.data.catalog()?.languages.find(l => l.code === code)?.nativeName ?? code);
+      .map(code => {
+        const language = this.data.catalog()?.languages.find(l => l.code === code);
+        return language ? this.data.languageName(language) : code;
+      });
     return names.join(' · ') + (tags.length > 3 ? ' +' + (tags.length - 3) : '');
   });
   readonly data = inject(CatalogService);
