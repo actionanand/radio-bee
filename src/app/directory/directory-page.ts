@@ -193,7 +193,7 @@ export class DirectoryPage {
                     : c.networks.find(n => n.id === s.networkId)?.broadcasterId === item.id,
           ).length,
         }))
-        .filter(d => d.count > 0);
+        .filter(d => d.count > 0 || this.mode() === 'languages');
     if (this.mode() !== 'world') return [];
     if (!scope.continent)
       return ([...new Set(all.map(s => continentFor(s.countryCode)))] as ContinentId[]).map(id => ({
