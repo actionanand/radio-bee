@@ -213,7 +213,10 @@ export class DirectoryShellComponent {
     else if (this.canBack()) register?.(10, () => this.location.back());
   }
   storageNotice() {
-    return this.data.locale() === 'en' ? this.data.storageWarning() : this.text('storage');
+    return this.data.statusText(this.data.storageWarning());
+  }
+  tagline() {
+    return uiLabel(this.data.locale(), 'tagline');
   }
   favoritesNotice() {
     return uiLabel(this.data.locale(), 'favoritesWarning');
