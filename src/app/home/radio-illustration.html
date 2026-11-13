@@ -8,7 +8,7 @@
         }@else{
         <h1 id="home-title">RadioBee</h1>
         }
-        <p>Stay tuned. Stay buzzing.</p>
+        <p>{{ ui('tagline') }}</p>
       </div>
     </div>
     <span class="tuner-state">{{ player.station() ? ui(player.statusLabel()) : ui('onlineRadio') }}</span>
