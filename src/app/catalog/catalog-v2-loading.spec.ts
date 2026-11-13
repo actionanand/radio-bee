@@ -36,6 +36,10 @@ describe('v2 snapshot loading', () => {
               throw new SyntaxError('Bad index JSON');
             if (fail && url.endsWith(fail)) throw Error('Offline');
             const manifest = snapshot['manifest'] as { files: Record<string, string> };
+            if (url.endsWith('/home-stations.json')) {
+              const ids = (snapshot['stations'] as { id: string }[]).slice(0, 13).map(s => s.id).reverse();
+              return { schemaVersion: 2, count: ids.length, stationIds: ids };
+            }
             if (url.endsWith('/index.json')) return structuredClone(manifest);
             const entry = Object.entries(manifest.files).find(([, file]) => url.endsWith('/' + file));
             if (entry) return structuredClone(snapshot[entry[0]]);
@@ -56,6 +60,24 @@ describe('v2 snapshot loading', () => {
     expect(requests.some(url => url.endsWith('/programme-themes.json'))).toBe(true);
     expect(saved.has(key)).toBe(true);
     expect([...saved.keys()].some(k => k.startsWith('radiobee.catalog.v1:'))).toBe(false);
+  });
+  it('loads the Home selection only from the API in its published order', async () => {
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    const ids = (snapshot['stations'] as { id: string }[]).slice(0, 13).map(s => s.id).reverse();
+    expect(requests).toContain(base + 'home-stations.json');
+    expect(service.homeStationIds()).toEqual(ids);
+    expect(service.catalog()?.stations).toHaveLength(71);
+  });
+  it('shows no fallback when the Home API fails but keeps the full catalogue', async () => {
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    fail = 'home-stations.json';
+    await service.refresh();
+    expect(service.error()).toBe('');
+    expect(service.homeStationIds()).toEqual([]);
+    expect(service.homeSelectionWarning()).toContain('Home');
+    expect(service.catalog()?.stations).toHaveLength(71);
   });
   it('retains the complete previous snapshot when one advertised file fails', async () => {
     const service = TestBed.inject(CatalogService);

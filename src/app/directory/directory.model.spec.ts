@@ -8,7 +8,6 @@ import {
   continentCountries,
   continentFor,
   featuredStations,
-  featuredStationIds,
   geographicScope,
   locationUrl,
   nearbyStations,
@@ -28,56 +27,28 @@ describe('Directory metadata navigation', () => {
     expect(continentFor('AU')).toBe('oceania');
     expect(continentFor('ZZ')).toBe('other');
   });
-  it('uses 10 deterministic existing identities for Featured Radios without mutating or ranking data', () => {
-    const c = data(),
-      before = JSON.stringify(c),
-      featured = featuredStations(c);
-    expect(featured).toHaveLength(10);
-    expect(new Set(featured.map(s => s.id)).size).toBe(10);
-    expect(featured.map(s => s.id)).toEqual([...featuredStationIds]);
-    expect(featured.filter(s => s.discovery)).toHaveLength(4);
-    expect(featured.filter(s => s.districtId === 'in-tn-kanyakumari')).toHaveLength(4);
-    const shuffled = {
-      ...c,
-      stations: [...c.stations].reverse(),
-      discoveryStations: [...c.discoveryStations!].reverse(),
-    };
-    expect(featuredStations(shuffled).map(s => s.id)).toEqual(featured.map(s => s.id));
-    expect(featured.every(s => allStations(c).some(real => real.id === s.id))).toBe(true);
+  it('displays only the API-selected Home radios in their exact order', () => {
+    const c = data();
+    const ids = ['oli-968-sg', 'air-nagercoil', 'sooriyan-srilanka'];
+    const before = JSON.stringify(c);
+    expect(featuredStations(c, ids).map(s => s.id)).toEqual(ids);
     expect(JSON.stringify(c)).toBe(before);
+    const shuffled = { ...c, stations: [...c.stations].reverse(), discoveryStations: [...c.discoveryStations!].reverse() };
+    expect(featuredStations(shuffled, ids).map(s => s.id)).toEqual(ids);
   });
-  it('fills missing curated identities deterministically without recreating missing stations', () => {
+  it('shows no hardcoded fallback stations if API selection is missing', () => {
     const c = data();
-    c.stations = c.stations.filter(s => s.id !== 'air-nagercoil');
-    c.discoveryStations = c.discoveryStations!.filter(s => s.id !== 'atbc-au');
-    const featured = featuredStations(c);
-    expect(featured.map(s => s.id)).toEqual([
-      ...featuredStationIds.filter(id => id !== 'air-nagercoil' && id !== 'atbc-au'),
-      '3zzz-au',
-      '5ebi-au',
-    ]);
-    expect(new Set(featured.map(s => s.id)).size).toBe(10);
-    expect(featured.every(s => allStations(c).some(real => real.id === s.id))).toBe(true);
+    expect(featuredStations(c)).toEqual([]);
+    expect(featuredStations(c, [])).toEqual([]);
+    expect(featuredStations(c, ['missing-id'])).toEqual([]);
+    expect(featuredStations(c, ['air-nagercoil']).map(s => s.id)).toEqual(['air-nagercoil']);
   });
-  it('falls back to canonical name order when none of the curated identities exist', () => {
-    const c = data(),
-      excluded = new Set<string>(featuredStationIds);
-    c.stations = c.stations.filter(s => !excluded.has(s.id));
-    c.discoveryStations = c.discoveryStations!.filter(s => !excluded.has(s.id));
-    const selected = featuredStations(c);
-    expect(selected).toHaveLength(10);
-    expect(selected.slice(0, 2).map(s => s.id)).toEqual(['3zzz-au', '5ebi-au']);
-    c.stations.reverse();
-    c.discoveryStations.reverse();
-    expect(featuredStations(c).map(s => s.id)).toEqual(selected.map(s => s.id));
-  });
-  it('respects small, empty and larger-than-catalogue featured limits without duplicate identities', () => {
+  it('uses the number of Home stations supplied by API without limiting to ten', () => {
     const c = data();
-    expect(featuredStations(c, 3).map(s => s.id)).toEqual(featuredStationIds.slice(0, 3));
-    expect(featuredStations(c, 0)).toEqual([]);
-    expect(featuredStations(c, -1)).toEqual([]);
-    expect(featuredStations(c, 200)).toHaveLength(117);
-    expect(new Set(featuredStations(c, 200).map(s => s.id)).size).toBe(117);
+    const ids = allStations(c).slice(0, 13).map(s => s.id).reverse();
+    expect(featuredStations(c, ids).map(s => s.id)).toEqual(ids);
+    expect(featuredStations(c, ids)).toHaveLength(13);
+    expect(allStations(c)).toHaveLength(117);
   });
   it('keeps all 10 district identities including 2 candidate-bearing and 8 discovery-only', () => {
     const c = data(),

@@ -38,15 +38,18 @@ function setup(base = 'https://catalog.test/v2/') {
   });
   const data = TestBed.inject(CatalogService);
   data.catalog.set(validateV2(structuredClone(v2Fixture)));
+  data.homeStationIds.set(data.catalog()!.stations.slice(0, 13).map(s => s.id).reverse());
   vi.spyOn(data, 'start').mockResolvedValue();
   return { data, audio, load, clear };
 }
 const element = (h: RouterTestingHarness) => h.routeNativeElement as HTMLElement;
 describe('Routable v2 directory', () => {
-  it('renders only 10 featured identities on Home and all identities in World', async () => {
+  it('renders only the API-provided Home identities in API order and all identities in World', async () => {
     setup();
     const h = await RouterTestingHarness.create('/home');
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
+    const selected = TestBed.inject(CatalogService).homeStationIds();
+    expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId'])).toEqual(selected);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
     expect(element(h).textContent).toContain('Featured Radios');
     await h.navigateByUrl('/world');
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);

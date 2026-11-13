@@ -53,6 +53,8 @@ export class CatalogService {
   readonly loading = signal(false);
   readonly error = signal('');
   readonly storageWarning = signal('');
+  readonly homeStationIds = signal<readonly string[]>([]);
+  readonly homeSelectionWarning = signal('');
   readonly cached = signal(false);
   readonly updatedAt = signal('');
   readonly locale = signal('en');
@@ -122,6 +124,35 @@ export class CatalogService {
         ...Object.fromEntries(names.map((name, i) => [name, values[i]])),
         localization: Object.fromEntries(['en', 'ta', 'sa'].map((locale, i) => [locale, dictionaries[i]])),
       });
+      // The v2 Home display is governed by its published sidecar, not a local top-ten list.
+      // A missing or malformed sidecar never inserts substitute stations.
+      let homeStationIds: string[] = [];
+      let homeSelectionWarning = '';
+      if (this.version === 2) {
+        try {
+          const home: unknown = await this.fetchJson(relativePath(this.base, 'home-stations.json'));
+          if (!home || typeof home !== 'object' || Array.isArray(home)) throw Error('Invalid Home selection');
+          const selection = home as Record<string, unknown>;
+          const ids = selection['stationIds'];
+          const known = new Set([
+            ...next.stations.map(station => station.id),
+            ...(next.discoveryStations ?? []).map(station => station.id),
+          ]);
+          if (
+            selection['schemaVersion'] !== 2 ||
+            !Array.isArray(ids) ||
+            !Number.isSafeInteger(selection['count']) ||
+            selection['count'] !== ids.length ||
+            Object.keys(selection).sort().join(',') !== 'count,schemaVersion,stationIds' ||
+            ids.some(id => typeof id !== 'string' || !known.has(id)) ||
+            new Set(ids).size !== ids.length
+          )
+            throw Error('Invalid Home station IDs');
+          homeStationIds = ids as string[];
+        } catch {
+          homeSelectionWarning = 'Home selection unavailable. Browse World for all radios.';
+        }
+      }
       const confirmed = this.manifest(await this.fetchJson(relativePath(this.base, 'index.json')));
       if (JSON.stringify(confirmed) !== JSON.stringify(manifest))
         throw new Error('Catalogue changed during loading; refresh to request a consistent snapshot.');
@@ -133,6 +164,8 @@ export class CatalogService {
         this.storageWarning.set('Catalogue loaded, but could not be saved for offline use.');
       }
       this.catalog.set(next);
+      this.homeStationIds.set(homeStationIds);
+      this.homeSelectionWarning.set(homeSelectionWarning);
       this.updatedAt.set(updatedAt);
       this.cached.set(false);
       this.developmentSeed.set(false);

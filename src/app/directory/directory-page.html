@@ -4,7 +4,8 @@
 } @else if(!valid()){<a routerLink="/home">{{text('returnHome')}}</a>} @else { @if(crumbs().length){
 <app-directory-breadcrumbs [items]="crumbs()" [label]="text('breadcrumbs')" />
 } @if(mode()==='home'){<app-radio-illustration [compact]="true" />
-<h2>{{text('featured')}}</h2>
+@if(data.homeSelectionWarning()){<p role="status">{{data.homeSelectionWarning()}}</p>}
+<h2>{{text('featured')}} ({{rows().length}})</h2>
 <details class="selection-note">
   <summary>{{text('selectionInfo')}}</summary>
   <p>{{text('featuredInfo')}}</p>
@@ -45,7 +46,7 @@
 <h2>{{text('stations')}}</h2>
 <p role="status">{{rows().length}} {{text('stations')}}</p>
 @if(query().keys.length){<button type="button" (click)="reset()">{{text('clear')}}</button>} } @if(!rows().length){
-<p role="status">{{text('empty')}}</p>
+<p role="status">{{mode()==='home' ? text('homeUnavailable') : text('empty')}}</p>
 } @for(group of groups();track group.id){@if(group.name){
 <h2>{{group.name}}</h2>
 }

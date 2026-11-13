@@ -81,26 +81,10 @@ export const compareNames = (a: Station, b: Station) => {
     y = b.name.normalize('NFKC').toLowerCase();
   return (x < y ? -1 : x > y ? 1 : 0) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 };
-/** Editorial selection only: local discovery, Tamil radio and international communities; not a ranking. */
-export const featuredStationIds = [
-  'air-nagercoil',
-  'suryan-nagercoil',
-  'hello-nagercoil',
-  'annai-kuzhithurai',
-  'air-chennai-rainbow',
-  'sooriyan-srilanka',
-  'vasantham-srilanka',
-  'ibc-tamil-uk',
-  'oli-968-sg',
-  'atbc-au',
-] as const;
-/** Resolve IDs from the current catalogue, then fill missing slots in canonical name order. */
-export function featuredStations(c: Catalog, limit = 10): Station[] {
-  const sorted = allStations(c).sort(compareNames),
-    byId = new Map(sorted.map(station => [station.id, station])),
-    selected = featuredStationIds.map(id => byId.get(id)).filter((s): s is Station => !!s),
-    selectedIds = new Set(selected.map(station => station.id));
-  return [...selected, ...sorted.filter(station => !selectedIds.has(station.id))].slice(0, Math.max(0, limit));
+/** Home is exclusively selected and ordered by the published API, never a hardcoded list. */
+export function featuredStations(c: Catalog, stationIds: readonly string[] = []): Station[] {
+  const byId = new Map(allStations(c).map(station => [station.id, station]));
+  return stationIds.map(id => byId.get(id)).filter((station): station is Station => station !== undefined);
 }
 export function nearbyStations(c: Catalog, s: Station): Station[] {
   const location = s.districtId ?? s.localityId;
