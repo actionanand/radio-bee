@@ -337,7 +337,8 @@ export class V2BrowserComponent {
     );
   }
   language(code: string) {
-    return this.data.catalog()?.languages.find(l => l.code === code)?.nativeName ?? code;
+    const language = this.data.catalog()?.languages.find(l => l.code === code);
+    return language ? this.data.languageName(language) : code;
   }
   sortLabel(key: string) {
     const i = this.sorts.indexOf(key);
@@ -379,7 +380,7 @@ export class V2BrowserComponent {
       {
         key: 'language' as const,
         label: this.label('Language', 'மொழி', 'भाषा'),
-        options: c.languages.map(l => ({ id: l.code, name: l.nativeName })),
+        options: c.languages.map(l => ({ id: l.code, name: this.data.languageName(l) })),
       },
       {
         key: 'classification' as const,
