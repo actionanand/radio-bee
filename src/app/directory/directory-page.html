@@ -1,10 +1,13 @@
 <h1 tabindex="-1" [attr.data-directory-favorites-focus]="mode()==='favorites'?'':null">{{heading()}}</h1>
-@if(!data.catalog()){
-<p role="status">{{text('loading')}}</p>
+@if(!data.catalog() && !data.error() || (mode()==='home' && data.loading() && !data.homeStationIds().length)){
+<app-radio-bee-loader />
+} @else if(!data.catalog()){
+<p role="status">{{text('homeUnavailable')}}</p>
 } @else if(!valid()){<a routerLink="/home">{{text('returnHome')}}</a>} @else { @if(crumbs().length){
 <app-directory-breadcrumbs [items]="crumbs()" [label]="text('breadcrumbs')" />
 } @if(mode()==='home'){<app-radio-illustration [compact]="true" />
 @if(data.homeSelectionWarning()){<p role="status">{{data.homeSelectionWarning()}}</p>}
+@if(data.loading()){<app-radio-bee-loader [compact]="true" />}
 <h2>{{text('featured')}} ({{rows().length}})</h2>
 <a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>} @if(destinations().length){
 <div class="destinations">

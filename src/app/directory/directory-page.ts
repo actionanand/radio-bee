@@ -12,6 +12,7 @@ import { FavoritesService } from '../catalog/favorites.service';
 import { PlayerService } from '../player/player.service';
 import { StationCardComponent } from '../catalog/station-card';
 import { RadioIllustrationComponent } from '../home/radio-illustration';
+import { RadioBeeLoaderComponent } from '../shared/radio-bee-loader';
 import {
   ContinentId,
   Crumb,
@@ -29,6 +30,7 @@ import { DirectoryKey, directoryText } from './directory.labels';
     RouterLink,
     StationCardComponent,
     RadioIllustrationComponent,
+    RadioBeeLoaderComponent,
     DirectoryBreadcrumbsComponent,
     DirectorySelectComponent,
   ],
