@@ -8,6 +8,7 @@ export const v2DirectoryGuard: CanMatchFn = () =>
   })();
 export const worldMatcher: UrlMatcher = segments => (segments[0]?.path === 'world' ? { consumed: segments } : null);
 const page = () => import('./directory/directory-page').then(m => m.DirectoryPage);
+const notFound = () => import('./not-found/not-found-page').then(m => m.NotFoundPage);
 export const routes: Routes = [
   {
     path: '',
@@ -24,10 +25,10 @@ export const routes: Routes = [
       { path: 'listen-now', loadComponent: page, data: { mode: 'listenNow' } },
       { path: 'radios/:stationId', loadComponent: () => import('./directory/station-page').then(m => m.StationPage) },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: '**', loadComponent: page, data: { mode: 'notFound' } },
+      { path: '**', loadComponent: notFound },
     ],
   },
   { path: 'home', loadComponent: () => import('./home/home.page').then(m => m.HomePage) },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: '**', redirectTo: 'home' },
+  { path: '**', loadComponent: notFound },
 ];

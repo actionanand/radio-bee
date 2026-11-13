@@ -1,0 +1,137 @@
+/* RadioBee's supplied "Signal Lost" 404 illustration.
+ * Deliberately scoped so the catalogue loader and playback tuner keep their own animations.
+ * Transform-based flight instead of CSS offset-path; negative delays make movement visible at entry.
+ */
+.lost-signal {
+  .code { animation: rb-lost-glitch 4s steps(1, end) -2.1s infinite; }
+  .radio-body { transform-origin: 50% 100%; animation: rb-lost-shudder 3s ease-in-out -.7s infinite; }
+  .antenna { transform-origin: 150px 40px; animation: rb-lost-droop 3s ease-in-out -1.2s infinite; }
+  .static line {
+    stroke: var(--lost-ink);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    animation: rb-lost-fuzz .35s steps(2, end) -.13s infinite;
+  }
+  .static line:nth-child(2) { animation-delay: -.23s; }
+  .static line:nth-child(3) { animation-delay: -.33s; }
+  .static line:nth-child(4) { animation-delay: -.18s; }
+  .static line:nth-child(5) { animation-delay: -.28s; }
+  .needle { animation: rb-lost-search 2.6s ease-in-out -1.1s infinite; }
+  .knob-mark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: rb-lost-twist 2.6s ease-in-out -1.1s infinite;
+  }
+  .readout {
+    font: 700 11px ui-monospace, Menlo, Consolas, monospace;
+    fill: var(--lost-ink);
+    animation: rb-lost-blink 1s steps(1, end) -.4s infinite;
+  }
+  .q {
+    font: 700 18px system-ui, sans-serif;
+    fill: var(--lost-accent);
+    opacity: 0;
+    animation: rb-lost-ask 3s ease-in -1.2s infinite;
+  }
+  .q.q2 { animation-delay: -2.2s; }
+  .q.q3 { animation-delay: -.2s; }
+  .bee {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15%;
+    aspect-ratio: 1;
+    animation: rb-lost-fly 6.4s ease-in-out -2.3s infinite;
+  }
+  .bee svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: rb-lost-bob .5s ease-in-out -.2s infinite alternate;
+  }
+  .wing {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: rb-lost-flap .09s linear -.04s infinite alternate;
+  }
+  .wing.back { animation-delay: -.085s; opacity: .7; }
+  .scene .radio-body,
+  .scene .antenna,
+  .scene .static line,
+  .scene .needle,
+  .scene .knob-mark,
+  .scene .readout,
+  .scene .q,
+  .scene .bee,
+  .scene .bee svg,
+  .scene .wing {
+    animation-play-state: paused;
+  }
+  .scene[data-signal-state='lost'] .radio-body,
+  .scene[data-signal-state='lost'] .antenna,
+  .scene[data-signal-state='lost'] .static line,
+  .scene[data-signal-state='lost'] .needle,
+  .scene[data-signal-state='lost'] .knob-mark,
+  .scene[data-signal-state='lost'] .readout,
+  .scene[data-signal-state='lost'] .q,
+  .scene[data-signal-state='lost'] .bee,
+  .scene[data-signal-state='lost'] .bee svg,
+  .scene[data-signal-state='lost'] .wing {
+    animation-play-state: running;
+  }
+}
+@keyframes rb-lost-glitch {
+  0%, 90%, 100% { transform: translate(0); opacity: 1; }
+  92% { transform: translate(-3px, 1px); opacity: .6; }
+  94% { transform: translate(3px, -1px); opacity: 1; }
+  96% { transform: translate(-2px, 0); opacity: .5; }
+}
+@keyframes rb-lost-shudder {
+  0%, 100% { transform: rotate(0); }
+  8% { transform: rotate(-1.2deg); }
+  12% { transform: rotate(1deg); }
+  16% { transform: rotate(0); }
+}
+@keyframes rb-lost-droop {
+  0%, 100% { transform: rotate(8deg); }
+  50% { transform: rotate(14deg); }
+}
+@keyframes rb-lost-fuzz {
+  0% { opacity: 1; transform: translateX(-3px); }
+  50% { opacity: .15; transform: translateX(3px); }
+  100% { opacity: .8; transform: translateX(-1px); }
+}
+@keyframes rb-lost-search {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(52px); }
+  55% { transform: translateX(18px); }
+  75% { transform: translateX(40px); }
+}
+@keyframes rb-lost-twist {
+  0%, 100% { transform: rotate(-60deg); }
+  30% { transform: rotate(110deg); }
+  55% { transform: rotate(10deg); }
+  75% { transform: rotate(80deg); }
+}
+@keyframes rb-lost-blink { 50% { opacity: .25; } }
+@keyframes rb-lost-ask {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-6px, -40px) rotate(-12deg); }
+}
+@keyframes rb-lost-fly {
+  0%, 100% { transform: translate(30px, 40px) rotate(-8deg); }
+  18% { transform: translate(92px, -12px) rotate(9deg); }
+  36% { transform: translate(220px, 6px) rotate(18deg); }
+  53% { transform: translate(235px, 80px) rotate(-6deg); }
+  72% { transform: translate(142px, 166px) rotate(12deg); }
+  88% { transform: translate(48px, 119px) rotate(-15deg); }
+}
+@keyframes rb-lost-bob {
+  from { transform: translateY(-3px) rotate(-6deg); }
+  to { transform: translateY(3px) rotate(6deg); }
+}
+@keyframes rb-lost-flap {
+  from { transform: rotate(-25deg) scaleY(1); }
+  to { transform: rotate(10deg) scaleY(.55); }
+}
