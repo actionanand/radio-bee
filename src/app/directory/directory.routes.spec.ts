@@ -118,7 +118,14 @@ describe('Routable v2 directory', () => {
     const h = await RouterTestingHarness.create('/radios/air-nagercoil');
     const host = element(h);
     expect(host.querySelector('h1')?.textContent).toContain('Akashvani Nagercoil');
-    expect(host.querySelector('.breadcrumbs a[href="/world/asia/in/in-tn/in-tn-kanyakumari"]')).not.toBeNull();
+    const breadcrumbLink = host.querySelector<HTMLAnchorElement>('.breadcrumbs a[href="/world/asia/in/in-tn/in-tn-kanyakumari"]');
+    expect(breadcrumbLink).not.toBeNull();
+    const detailLink = host.querySelector<HTMLAnchorElement>('app-station-page dl dd a');
+    expect(detailLink).not.toBeNull();
+    const chips = host.querySelectorAll<HTMLAnchorElement>('app-station-page .languages a.language-chip');
+    expect(chips).toHaveLength(2);
+    expect([...chips].map(chip => chip.getAttribute('href'))).toEqual(['/languages/ta', '/languages/en']);
+    expect([...chips].every(chip => chip.classList.contains('language-chip'))).toBe(true);
     expect(host.querySelectorAll('.cards .station-card')).toHaveLength(9);
     expect(host.querySelectorAll('app-station-page .station-intro app-station-artwork')).toHaveLength(1);
     expect(host.textContent).not.toContain('Frequency');

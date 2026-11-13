@@ -87,14 +87,14 @@
     <summary>{{text('moreLanguages')}} ({{languages().length}})</summary>
     <ul class="languages">
       @for(language of languages();track language.code){
-      <li><a [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
+      <li><a class="language-chip" [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
       }
     </ul>
   </details>
   } @else{
   <ul class="languages">
     @for(language of languages();track language.code){
-    <li><a [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
+    <li><a class="language-chip" [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
     }
   </ul>
   }

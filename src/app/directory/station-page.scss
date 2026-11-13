@@ -1,8 +1,27 @@
 :host {
   display: block;
+  --language-chip-bg: #edf8ef;
+  --language-chip-hover: #dcefe1;
+  --language-chip-border: #cfe6d5;
+  --language-chip-ink: #27583b;
+}
+:host-context(.ion-palette-dark) {
+  --language-chip-bg: #254737;
+  --language-chip-hover: #305942;
+  --language-chip-border: #457457;
+  --language-chip-ink: #e0f4e5;
 }
 a {
   color: var(--ink);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+a:hover,
+a:focus-visible {
+  color: var(--accent-ink);
+  background-color: var(--panel);
+  text-decoration: none;
 }
 
 h1 {
@@ -91,12 +110,23 @@ dd a {
   padding: 0;
   list-style: none;
 }
-.languages a {
-  display: block;
+.languages a.language-chip {
+  display: inline-flex;
+  align-items: center;
   min-height: 44px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--language-chip-border);
+  border-radius: 9px;
+  background-color: var(--language-chip-bg);
+  color: var(--language-chip-ink);
+  text-decoration: none;
+}
+.languages a.language-chip:hover,
+.languages a.language-chip:focus-visible {
+  background-color: var(--language-chip-hover);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+  text-decoration: none;
 }
 summary {
   cursor: pointer;
