@@ -314,7 +314,7 @@ describe('Routable v2 directory', () => {
     data.catalog.set(null);
     const h = await RouterTestingHarness.create('/radios/air-nagercoil');
     expect(TestBed.inject(Router).url).toBe('/radios/air-nagercoil');
-    expect(element(h).querySelector('app-not-found-page.ion-page')).not.toBeNull();
+    expect(element(h).matches('app-not-found-page.ion-page')).toBe(true);
     expect(element(h).querySelector('.scene[data-signal-state="lost"]')).not.toBeNull();
     expect(element(h).querySelector('.scene .bee svg')).not.toBeNull();
     expect(element(h).querySelector('.readout')?.textContent?.trim()).toBe('404 MHz');
