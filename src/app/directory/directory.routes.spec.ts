@@ -58,6 +58,22 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
     expect(element(h).querySelector('[data-nav=world][aria-current=page]')).not.toBeNull();
   });
+  it('localizes tuner and footer taglines when UI language changes', async () => {
+    const { data } = setup();
+    const h = await RouterTestingHarness.create('/home');
+    const tunerTagline = () => element(h).querySelector('.tuner-brand p')?.textContent?.trim();
+    const footerTagline = () => element(h).querySelector('.directory-shell footer span')?.textContent?.trim();
+    expect(tunerTagline()).toBe('Stay tuned. Stay buzzing.');
+    expect(footerTagline()).toBe('RadioBee · Stay tuned. Stay buzzing.');
+    data.locale.set('ta');
+    h.detectChanges();
+    expect(tunerTagline()).toBe('இசையில் இணைவோம். இனிமையாய் ஒலிப்போம்.');
+    expect(footerTagline()).toBe('RadioBee · இசையில் இணைவோம். இனிமையாய் ஒலிப்போம்.');
+    data.locale.set('sa');
+    h.detectChanges();
+    expect(tunerTagline()).toBe('सदा शृणुत। मधुरं गुञ्जत।');
+    expect(footerTagline()).toBe('RadioBee · सदा शृणुत। मधुरं गुञ्जत।');
+  });
   it('shows animated loader on initial fetch and keeps stations visible during refresh', async () => {
     const { data } = setup();
     data.catalog.set(null);
