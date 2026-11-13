@@ -48,6 +48,11 @@
       <dt>{{text('frequency')}}</dt>
       <dd>{{station.frequencyMHz}} MHz</dd>
     </div>
+    } @if(artists().length){
+    <div>
+      <dt>{{text('artists')}}</dt>
+      <dd>@for(artist of artists();track artist.id){<a [routerLink]="['/artists',artist.id]">{{artist.name}}</a> }</dd>
+    </div>
     } @if(network();as network){
     <div>
       <dt>{{text('network')}}</dt>
