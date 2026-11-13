@@ -44,6 +44,13 @@ describe('HomePage', () => {
     const fixture = TestBed.createComponent(HomePage);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Stay tuned. Stay buzzing.');
+    const data = fixture.componentInstance.data;
+    data.locale.set('ta');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('இசையில் இணைவோம்.');
+    data.locale.set('sa');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('सदा शृणुत।');
     expect(fixture.nativeElement.querySelector('app-station-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('audio')).toBeNull();
   });
