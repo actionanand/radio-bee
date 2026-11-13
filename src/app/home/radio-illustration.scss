@@ -40,26 +40,72 @@ h2 {
   max-width: 42%;
   text-align: right;
 }
+/* Vintage LED-style meter. It is decorative, not a decoded audio spectrum. */
 .segments {
   display: grid;
   grid-template-columns: repeat(24, minmax(0, 1fr));
+  align-items: end;
   gap: 5px;
+  height: 36px;
   margin: 20px 0 12px;
 }
 .segments span {
-  height: 8px;
-  background: #7fae70;
-  opacity: 0.65;
-  border-radius: 1px;
+  --meter-color: #7fae70;
+  display: block;
+  min-width: 0;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to top,
+    var(--meter-color) 0,
+    var(--meter-color) 5px,
+    transparent 5px,
+    transparent 7px
+  );
+  border-radius: 2px;
+  opacity: 0.55;
+  transform: scaleY(0.26);
+  transform-origin: bottom center;
 }
 .segments .amber {
-  background: #cfaa60;
+  --meter-color: #cfaa60;
 }
 .segments .red {
-  background: #bd756c;
+  --meter-color: #bd756c;
 }
+/* Only the confirmed media 'playing' state starts the animation. */
 .is-playing .segments span {
   opacity: 1;
+  animation: tuner-meter 900ms ease-in-out infinite;
+}
+.is-playing .segments span:nth-child(4n + 1) {
+  animation-duration: 730ms;
+  animation-delay: -470ms;
+}
+.is-playing .segments span:nth-child(4n + 2) {
+  animation-duration: 1040ms;
+  animation-delay: -820ms;
+}
+.is-playing .segments span:nth-child(4n + 3) {
+  animation-duration: 820ms;
+  animation-delay: -220ms;
+}
+.is-playing .segments span:nth-child(4n) {
+  animation-duration: 1180ms;
+  animation-delay: -650ms;
+}
+@keyframes tuner-meter {
+  0%, 100% { transform: scaleY(0.25); }
+  18% { transform: scaleY(0.76); }
+  37% { transform: scaleY(0.43); }
+  59% { transform: scaleY(0.96); }
+  82% { transform: scaleY(0.54); }
+}
+.is-playing .marker {
+  animation: tuner-marker-glow 1800ms ease-in-out infinite;
+}
+@keyframes tuner-marker-glow {
+  0%, 100% { box-shadow: 0 0 5px #ead7a050; }
+  50% { box-shadow: 0 0 16px #ead7a0aa; }
 }
 .dial {
   position: relative;
@@ -105,11 +151,9 @@ h2 {
     font-size: 10px;
   }
   .segments {
+    height: 24px;
     margin: 10px 0 8px;
     gap: 3px;
-  }
-  .segments span {
-    height: 5px;
   }
   .ticks {
     height: 10px;
@@ -120,5 +164,16 @@ h2 {
   .scale {
     font-size: 8px;
     margin-top: 3px;
+  }
+}
+
+/* Never force decorative motion for users who prefer reduced animation. */
+@media (prefers-reduced-motion: reduce) {
+  .is-playing .segments span,
+  .is-playing .marker {
+    animation: none;
+  }
+  .is-playing .segments span {
+    transform: scaleY(0.65);
   }
 }
