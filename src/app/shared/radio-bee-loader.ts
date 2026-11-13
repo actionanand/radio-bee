@@ -1,4 +1,5 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { uiLabel } from '../catalog/catalog.ui';
 import { CatalogService } from '../catalog/catalog.service';
 
 /** Visual-only radio-and-bee progress indicator, adapted from the supplied HTML/CSS. */
@@ -11,5 +12,7 @@ import { CatalogService } from '../catalog/catalog.service';
 export class RadioBeeLoaderComponent {
   readonly compact = input(false);
   // Same state-driven pattern as the playback tuner: the fetch signal controls animation playback.
-  readonly loading = inject(CatalogService).loading;
+  readonly data = inject(CatalogService);
+  readonly loading = this.data.loading;
+  readonly label = computed(() => uiLabel(this.data.locale(), 'tuningIn'));
 }

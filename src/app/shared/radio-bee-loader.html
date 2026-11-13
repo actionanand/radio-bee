@@ -1,4 +1,4 @@
-<div class="radio-loader" [class.is-loading]="loading()" [attr.data-fetch-state]="loading() ? 'loading' : 'idle'" role="status" aria-live="polite" aria-label="Tuning in">
+<div class="radio-loader" [class.is-loading]="loading()" [attr.data-fetch-state]="loading() ? 'loading' : 'idle'" role="status" aria-live="polite" [attr.lang]="data.locale()" [attr.aria-label]="label()">
 
   <svg class="radio" aria-hidden="true" focusable="false" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
     <!-- Waves + notes -->
@@ -73,5 +73,5 @@
     </svg>
   </div>
 
-  <div class="label" aria-hidden="true">Tuning in</div>
+  <div class="label" aria-hidden="true">{{label()}}</div>
 </div>

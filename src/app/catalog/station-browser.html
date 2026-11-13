@@ -54,9 +54,9 @@
   @if (data.loading() || (!data.catalog() && !data.error())) {
   <app-radio-bee-loader [compact]="!!data.catalog()" />
   } @if (data.error()) {
-  <p role="alert" class="notice">{{ data.error() }}</p>
+  <p role="alert" class="notice">{{ data.statusText(data.error()) }}</p>
   } @if (data.storageWarning()) {
-  <p role="status">{{ data.storageWarning() }}</p>
+  <p role="status">{{ data.statusText(data.storageWarning()) }}</p>
   } @if (favorites.warning()) {
   <p role="status">{{ ui('favoritesWarning') }}</p>
   } @if (data.catalog(); as catalog) {

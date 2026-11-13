@@ -7,7 +7,7 @@
 @if(crumbs().length){
 <app-directory-breadcrumbs [items]="crumbs()" [label]="text('breadcrumbs')" />
 } @if(mode()==='home'){<app-radio-illustration [compact]="true" />
-@if(data.homeSelectionWarning()){<p role="status">{{data.homeSelectionWarning()}}</p>}
+@if(data.homeSelectionWarning()){<p role="status">{{data.statusText(data.homeSelectionWarning())}}</p>}
 <h2>{{text('featured')}} ({{rows().length}})</h2>
 <a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>} @if(destinations().length){
 <div class="destinations">
