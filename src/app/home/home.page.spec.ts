@@ -47,10 +47,10 @@ describe('HomePage', () => {
     const data = fixture.componentInstance.data;
     data.locale.set('ta');
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('இசையில் இணைவோம்.');
+    expect(fixture.nativeElement.textContent).toContain('Stay tuned. Stay buzzing.');
     data.locale.set('sa');
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('सदा शृणुत।');
+    expect(fixture.nativeElement.textContent).toContain('Stay tuned. Stay buzzing.');
     expect(fixture.nativeElement.querySelector('app-station-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('audio')).toBeNull();
   });
