@@ -82,7 +82,7 @@ export class DirectoryPage {
     if (!c) return [];
     switch (this.mode()) {
       case 'languages':
-        return c.languages.map(l => ({ id: l.code, name: l.nativeName }));
+        return c.languages.map(l => ({ id: l.code, name: this.data.languageName(l) }));
       case 'genres':
         return c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) }));
       case 'artists':
@@ -233,7 +233,7 @@ export class DirectoryPage {
             {
               key: 'language',
               label: this.text('language'),
-              options: c.languages.map(l => ({ id: l.code, name: l.nativeName })),
+              options: c.languages.map(l => ({ id: l.code, name: this.data.languageName(l) })),
             },
             {
               key: 'genre',
