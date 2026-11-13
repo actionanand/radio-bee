@@ -31,7 +31,7 @@
           data-control="locale"
           [label]="text('uiLanguage')"
           [value]="data.locale()"
-          [options]="localeOptions"
+          [options]="localeOptions()"
           (changed)="data.setLocale($event)" />
         <app-directory-select
           data-control="theme"

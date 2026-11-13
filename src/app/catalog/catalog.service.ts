@@ -1,6 +1,7 @@
-import { stationDisplayName, Station } from './catalog.models';
+import { Language, stationDisplayName, Station } from './catalog.models';
 import { validateV2, v2Manifest } from './catalog-v2';
 import { catalogStatusText } from './catalog-status';
+import { languageDisplayName } from './language-label';
 import { InjectionToken, Service, inject, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { environment } from '../../environments/environment';
@@ -203,6 +204,9 @@ export class CatalogService {
   }
   statusText(message: string): string {
     return catalogStatusText(this.locale(), message);
+  }
+  languageName(language: Language): string {
+    return languageDisplayName(language, this.locale());
   }
   stationName(station: Pick<Station, 'id' | 'name'>): string {
     return stationDisplayName(this.catalog(), this.locale(), station);

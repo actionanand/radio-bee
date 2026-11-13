@@ -283,6 +283,54 @@ describe('Routable v2 directory', () => {
     expect(TestBed.inject(Router).url).toBe('/world/asia/in/in-tn/in-tn-kanyakumari');
     expect(load).toHaveBeenCalledOnce();
   });
+  it('localizes language index, detail titles, filter options and station chips across UI locales', async () => {
+    const { data } = setup();
+    const h = await RouterTestingHarness.create('/languages');
+    const name = (code: string) =>
+      element(h).querySelector<HTMLElement>(`.destinations a[href="/languages/${code}"] strong`)?.textContent?.trim();
+    const options = () => [...element(h).querySelectorAll('app-directory-select[data-control="locale"] ion-select-option')]
+      .map(option => option.textContent?.trim());
+
+    expect(name('ta')).toBe('Tamil (தமிழ்)');
+    expect(name('en')).toBe('English');
+    expect(name('sa')).toBe('Sanskrit (संस्कृतम्)');
+    expect(options()).toEqual(['English', 'Tamil (தமிழ்)', 'Sanskrit (संस्कृतम्)']);
+
+    data.locale.set('ta');
+    h.detectChanges();
+    expect(name('ta')).toBe('தமிழ்');
+    expect(name('en')).toBe('ஆங்கிலம் (English)');
+    expect(name('sa')).toBe('சமஸ்க்ரிதம் (संस्कृतम्)');
+    expect(options()).toEqual(['ஆங்கிலம் (English)', 'தமிழ்', 'சமஸ்க்ரிதம் (संस्कृतम्)']);
+
+    await h.navigateByUrl('/languages/sa');
+    expect(element(h).querySelector('app-directory-page > h1')?.textContent?.trim()).toBe('சமஸ்க்ரிதம் (संस्कृतम्)');
+    data.locale.set('en');
+    h.detectChanges();
+    expect(element(h).querySelector('app-directory-page > h1')?.textContent?.trim()).toBe('Sanskrit (संस्कृतम्)');
+    data.locale.set('sa');
+    h.detectChanges();
+    expect(element(h).querySelector('app-directory-page > h1')?.textContent?.trim()).toBe('संस्कृतम्');
+
+    await h.navigateByUrl('/languages/ml');
+    expect(element(h).querySelector('app-directory-page > h1')?.textContent).toContain('മലയാളം');
+    await h.navigateByUrl('/radios/air-nagercoil');
+    const chips = () => [...element(h).querySelectorAll('app-station-page .languages a.language-chip')]
+      .map(chip => chip.textContent?.trim());
+    expect(chips()).toEqual(['तमिळ् (தமிழ்)', 'आङ्ग्लभाषा (English)']);
+    data.locale.set('ta');
+    h.detectChanges();
+    expect(chips()).toEqual(['தமிழ்', 'ஆங்கிலம் (English)']);
+    data.locale.set('en');
+    h.detectChanges();
+    expect(chips()).toEqual(['Tamil (தமிழ்)', 'English']);
+
+    await h.navigateByUrl('/world');
+    const summary = element(h).querySelector('[data-station-id="air-nagercoil"] .language-summary')?.textContent;
+    expect(summary).toContain('Tamil (தமிழ்)');
+    expect(summary).toContain('English');
+  });
+
   it('limits compact cards to three language labels and expands full documented languages on the station page', async () => {
     const { data } = setup();
     const station = data.catalog()!.stations.find(s => s.broadcastLanguages.length > 3)!;
