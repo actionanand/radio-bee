@@ -114,7 +114,7 @@ export class StationBrowserComponent {
     const c = this.data.catalog();
     if (!c) return [];
     const f = this.filters();
-    if (key === 'language') return c.languages.map(l => ({ id: l.code, name: l.nativeName }));
+    if (key === 'language') return c.languages.map(l => ({ id: l.code, name: this.data.languageName(l) }));
     if (key !== 'country' && f.country !== 'IN') return [];
     const types: Record<string, string> = {
       country: 'country',
