@@ -44,6 +44,16 @@ describe('Directory Ionic select', () => {
         expect(host.querySelectorAll('ion-select-option')).toHaveLength(2);
       }
     });
+  it('uses an external label without the Ionic floating outline', () => {
+    const { fixture } = setup();
+    const host = fixture.nativeElement as HTMLElement;
+    const select = host.querySelector('ion-select');
+    expect(select).not.toBeNull();
+    expect(select?.hasAttribute('fill')).toBe(false);
+    expect(select?.getAttribute('label')).toBe('Language');
+    expect(host.querySelector('.control-label')?.textContent).toBe('Language');
+    expect(host.querySelector('.control-label')?.nextElementSibling).toBe(select);
+  });
   it('uses a modal for long mobile lists, popovers for short lists and desktop', () => {
     const { fixture, control } = setup(
       Array.from({ length: 10 }, (_, i) => ({ id: String(i), name: 'Language ' + i })),
