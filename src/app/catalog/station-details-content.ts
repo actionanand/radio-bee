@@ -107,18 +107,10 @@ export class StationDetailsContentComponent {
       if (value) result.push({ label, value });
     };
     if (station.discovery) {
-      add(
-        'availability',
-        uiLabel(
-          this.data.locale(),
-          station.discovery.availability === 'temporarily-unavailable'
-            ? 'temporarilyUnavailable'
-            : station.discovery.availability === 'review-pending'
-              ? 'streamReviewPending'
-              : 'noDirectStream',
-        ),
-      );
-      add('aboutStation', station.notes ?? undefined);
+      // Never expose internal verification notes from older cached V1 JSON.
+      // Published V1 has safe editorial notes only for discovery entries.
+      const safe = station.notes?.includes(' listed by RadioBee.') ?? false;
+      add('aboutStation', safe ? station.notes! : station.name + ' is a station listed by RadioBee.');
     }
     add(
       'language',

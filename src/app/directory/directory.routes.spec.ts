@@ -507,6 +507,20 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelectorAll('.languages li')).toHaveLength(station.broadcastLanguages.length);
     expect(element(h).querySelector('app-station-page details summary')).not.toBeNull();
   });
+  it('displays only editorial About content, never internal stream review notes', async () => {
+    const { data } = setup();
+    const station = data.catalog()!.stations[0];
+    station.notes = 'FFmpeg HLS stream candidate rights unconfirmed';
+    station.about = 'A public radio service with music, news and community programming, presented for listeners without stream diagnostics.';
+    const h = await RouterTestingHarness.create('/radios/' + station.id);
+    const page = element(h).querySelector('app-station-page')!;
+    expect(page.querySelector('.description')?.textContent).toContain('A public radio service');
+    expect(page.textContent).not.toContain('FFmpeg');
+    expect(page.textContent).not.toContain('stream candidate');
+    expect(page.textContent).not.toContain('Has stream candidates');
+    expect(page.textContent).not.toContain('Discovery only');
+  });
+
   it('keeps Favorites persistence and focus after removing the final routed favorite', async () => {
     const { data } = setup();
     const favorites = TestBed.inject(FavoritesService);
