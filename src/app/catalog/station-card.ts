@@ -27,7 +27,7 @@ export class StationCardComponent {
       const language = this.data.catalog()?.languages.find(l => l.code === code);
       return language ? this.data.languageName(language) : code;
     });
-    return names.join(' · ');
+    return names.join(', ');
   });
   readonly data = inject(CatalogService);
   readonly player = inject(PlayerService);
@@ -92,6 +92,6 @@ export class StationCardComponent {
       country ? this.data.t('countries', station.countryCode, country.name) : station.countryCode,
     ]
       .filter(Boolean)
-      .join(' · ');
+      .join(', ');
   }
 }

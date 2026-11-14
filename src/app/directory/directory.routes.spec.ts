@@ -376,7 +376,8 @@ describe('Routable v2 directory', () => {
     const station = data.catalog()!.stations.find(s => s.broadcastLanguages.length > 3)!;
     const h = await RouterTestingHarness.create('/world');
     const summary = element(h).querySelector(`[data-station-id="${station.id}"] .language-summary`)!.textContent!;
-    expect(summary.split(' · ')).toHaveLength(station.broadcastLanguages.length);
+    expect(summary.split(', ')).toHaveLength(station.broadcastLanguages.length);
+    expect(summary).not.toContain(' · ');
     expect(element(h).querySelector('.language-summary app-ellipsis-text')).not.toBeNull();
     await h.navigateByUrl('/radios/' + station.id);
     expect(element(h).querySelectorAll('.languages li')).toHaveLength(station.broadcastLanguages.length);

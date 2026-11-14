@@ -75,7 +75,7 @@ app-station-artwork {
   font-size: 15px;
   line-height: 1.4;
   font-weight: 700;
-  height: 2.8em;
+  height: 1.4em;
   display: block;
   overflow-wrap: anywhere;
 }
@@ -87,10 +87,11 @@ app-station-artwork {
 }
 .card-actions {
   margin-top: auto;
+  padding-top: 8px;
   flex: none;
   display: flex;
   align-items: center;
-  height: 54px;
+  height: 62px;
 }
 .play {
   width: 100%;
