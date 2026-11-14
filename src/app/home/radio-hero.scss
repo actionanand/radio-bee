@@ -18,6 +18,12 @@
 h1, h2 { font-size: 26px; letter-spacing: -.8px; margin: 0; font-weight: 750; }
 .tuner-brand p { margin: 3px 0 0; font-size: 12px; color: #c5d5c6; }
 .tuner-state { font-size: 11px; color: #cdddac; }
+/* Responsive until desktop, capped on wide and ultrawide monitors. */
+app-radio-led-equalizer {
+  width: 100%;
+  max-width: 760px;
+  justify-self: end;
+}
 @media (max-width: 699px) {
   .radio-hero { grid-template-columns: 1fr; gap: 12px; padding: 14px 16px; border-radius: 14px; }
   .hero-copy { flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
@@ -25,4 +31,5 @@ h1, h2 { font-size: 26px; letter-spacing: -.8px; margin: 0; font-weight: 750; }
   h1, h2 { font-size: 21px; }
   .tuner-brand p { font-size: 10px; }
   .tuner-state { max-width: 35%; text-align: right; }
+  app-radio-led-equalizer { max-width: none; }
 }

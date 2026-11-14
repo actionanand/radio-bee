@@ -228,11 +228,16 @@
 
   
 .rb-led-equalizer .rb-leds { position: relative; width: 100%; }
-.rb-led-equalizer .rb-led::after { opacity: 0; }
-.rb-led-equalizer[data-active='true'] .rb-led::after { opacity: 1; }
+/* Keep the last lit frame visible when playback pauses. */
+.rb-led-equalizer .rb-led::after { opacity: 1; }
+/* Live levels replace only the choreographed pseudo-element keyframes. */
+.rb-led-equalizer[data-mode='audio'] .rb-led::after {
+  animation: none;
+  clip-path: inset(var(--rb-led-inset, 87.5%) 0 0 0);
+}
 .rb-led-equalizer .rb-led-bee {
   position: absolute; top: 25%; left: 3%; width: 30px; height: 30px;
-  pointer-events: none; animation: rb-led-bee-fly 8s linear infinite;
+  pointer-events: none; animation: rb-led-bee-fly var(--fly, 8s) linear infinite;
 }
 @keyframes rb-led-bee-fly {
   0%, 100% { top: 28%; left: 3%; }
@@ -243,7 +248,7 @@
   89% { top: 46%; left: 5%; }
 }
 .rb-led-equalizer .rb-led-bee-turn {
-  width: 100%; height: 100%; animation: rb-led-bee-turn 8s linear infinite;
+  width: 100%; height: 100%; animation: rb-led-bee-turn var(--fly, 8s) linear infinite;
 }
 @keyframes rb-led-bee-turn {
   0%, 46% { transform: scaleX(1); }
@@ -276,7 +281,7 @@
 }
 .rb-led-equalizer .rb-led-dot {
   width: 7px; height: 7px; flex: none; border-radius: 50%;
-  background: var(--led-low); animation: rb-led-dot-pulse .5s ease-out infinite;
+  background: var(--led-low); animation: rb-led-dot-pulse var(--beat, .5s) ease-out infinite;
 }
 @keyframes rb-led-dot-pulse {
   0% { opacity: 1; transform: scale(1.3); }
