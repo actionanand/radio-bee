@@ -300,13 +300,8 @@
   .rb-led-equalizer .rb-led-panel { --cell: 4px; --col-gap: 2px; padding: 8px 9px 7px; }
   .rb-led-equalizer .rb-led-bee { width: 24px; height: 24px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .rb-led-equalizer .rb-led-panel,
-  .rb-led-equalizer .rb-led::after,
-  .rb-led-equalizer .rb-led-bee,
-  .rb-led-equalizer .rb-led-bee-turn,
-  .rb-led-equalizer .rb-led-bee svg,
-  .rb-led-equalizer .rb-led-wing,
-  .rb-led-equalizer .rb-led-dot { animation: none !important; }
-  .rb-led-equalizer .rb-led::after { clip-path: inset(62.5% 0 0); }
-}
+/* Playback state, not the OS reduced-motion preference, controls this hero display.
+ * The old reduced-motion override forced every column into the same fixed six-cell
+ * height, making the equalizer appear broken even while RadioBee was playing.
+ * The component itself always pauses its animation outside the playing state.
+ */
