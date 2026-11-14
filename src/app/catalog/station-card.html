@@ -28,10 +28,13 @@
         ><app-ellipsis-text [text]="data.stationName(station())" /></a
       >} @else {<app-ellipsis-text [text]="data.stationName(station())" />}
     </h3>
-    <p class="language-summary"><app-ellipsis-text [text]="languageSummary()" /></p>
-    <p class="location"><app-ellipsis-text [text]="shortLocation(station())" /></p>
-    <p class="frequency">{{ ui(station().discovery ? 'discoveryOnly' : 'onlineRadio') }}</p>
-    @if (!hideStreamReviewNotices) {
+    @if (languageSummary()) {
+    <p class="language-summary"><app-ellipsis-text [text]="languageSummary()" [lines]="1" /></p>
+    }
+    @if (shortLocation(station()); as location) {
+    <p class="location"><app-ellipsis-text [text]="location" [lines]="1" /></p>
+    }
+    @if (!hideStreamReviewNotices && (trialCandidate() || useReviewPending())) {
     <div class="review-slot">
       @if (trialCandidate()) {
       <p class="trial-label">{{ ui('unverifiedTrial') }}</p>
