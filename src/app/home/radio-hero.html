@@ -13,5 +13,5 @@
     </div>
     <span class="tuner-state">{{ player.station() ? ui(player.statusLabel()) : ui('onlineRadio') }}</span>
   </div>
-  <app-radio-led-equalizer [playing]="player.state() === 'playing'" />
+  <app-radio-led-equalizer [playing]="player.state() === 'playing'" [audio]="player.captureSource()?.audio ?? null" />
 </div>
