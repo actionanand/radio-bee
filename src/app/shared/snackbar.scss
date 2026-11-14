@@ -1,0 +1,97 @@
+:host {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(100% + 12px);
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  padding-inline: 14px;
+  pointer-events: none;
+}
+.announcement {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+.snackbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: min(440px, 100%);
+  min-height: 48px;
+  padding: 7px 8px 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 8px 30px #10251f33;
+  pointer-events: auto;
+}
+.symbol {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #173a32;
+  font-weight: 750;
+}
+.favorite-symbol { position: relative; }
+.favorite-symbol.removed { background: var(--panel); color: var(--muted); }
+.favorite-symbol .symbol-heart { font-size: 17px; }
+.favorite-symbol .symbol-mark {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  right: -4px;
+  bottom: -3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--surface);
+  background: #26824c;
+  color: #fff;
+}
+.favorite-symbol.removed .symbol-mark { background: #ab4e45; }
+.favorite-symbol .symbol-mark ion-icon { font-size: 11px; }
+.warning .symbol {
+  background: #f7dfac;
+  color: #67431b;
+}
+.message {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 25px;
+  cursor: pointer;
+}
+button:hover { background: var(--panel); color: var(--ink); }
+button:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: -2px; }
+@media (max-width: 599px) {
+  :host { bottom: calc(100% + 10px); padding-inline: 10px; }
+  .snackbar { width: 100%; max-width: 420px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .snackbar { animation: snackbar-enter 180ms ease-out both; }
+}
+@keyframes snackbar-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

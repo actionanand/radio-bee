@@ -21,13 +21,13 @@
       <ion-icon [icon]="favorites.has(station().id)?icons.heart:icons.heartOutline" aria-hidden="true" />
     </button>
     @if(state()==='playing'||state()==='loading'){
-    <span class="on-air" [class.now-playing]="state()==='playing'">
+    <span class="on-air" [class.now-playing]="state()==='playing'" role="status">
       @if (state()==='playing') {
       <span class="now-playing-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-      {{ ui('onAirNow') }}
       } @else {
-      {{ ui(player.statusLabel()) }}
+      <ion-icon class="status-sync" [icon]="icons.syncOutline" aria-hidden="true" />
       }
+      <span class="status-label">{{ state()==='playing' ? ui('onAirNow') : ui(player.statusLabel()) }}</span>
     </span>
     }
   </div>

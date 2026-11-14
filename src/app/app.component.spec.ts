@@ -27,6 +27,8 @@ describe('AppComponent', () => {
       expect(host.querySelector('ion-app')).not.toBeNull();
       expect(host.querySelector('ion-router-outlet')).not.toBeNull();
       expect(host.querySelectorAll('app-player')).toHaveLength(1);
+      expect(host.querySelectorAll('app-snackbar')).toHaveLength(1);
+      expect(host.querySelector('.player-dock app-snackbar')).not.toBeNull();
       // Exercise the real lazy recording chunk, rather than disabling it to avoid teardown races.
       expect(host.querySelector('app-recording-controls')).not.toBeNull();
       expect(fixture.isStable()).toBe(true);

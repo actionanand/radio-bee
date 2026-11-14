@@ -100,6 +100,8 @@ describe('India-only detailed geography', () => {
     const button = () => card.querySelector('button.play') as HTMLButtonElement;
     expect(status()?.classList.contains('now-playing')).toBe(true);
     expect(status()?.querySelectorAll('.now-playing-eq span')).toHaveLength(4);
+    expect(status()?.querySelector('.status-sync')).toBeNull();
+    expect(status()?.querySelector('.status-label')?.textContent?.trim()).toBe('Now playing');
     expect(status()?.textContent?.trim()).toBe('Now playing');
     expect(button().classList.contains('is-pause')).toBe(true);
     expect(button().textContent?.trim()).toBe(uiLabel('en', 'pause'));
@@ -111,11 +113,15 @@ describe('India-only detailed geography', () => {
       data.locale.set(locale);
       view.detectChanges();
       expect(status()?.textContent?.trim()).toBe(uiLabel(locale, 'onAirNow'));
+      expect(status()?.querySelector('.status-label')).toBeTruthy();
     }
     playback.set('loading');
     view.detectChanges();
     expect(status()?.classList.contains('now-playing')).toBe(false);
     expect(status()?.querySelector('.now-playing-eq')).toBeNull();
+    expect(status()?.querySelector('.status-sync')).toBeTruthy();
+    expect(status()?.querySelector('.status-label')).toBeTruthy();
+    expect(status()?.getAttribute('role')).toBe('status');
     expect(status()?.textContent?.trim()).toBe(uiLabel('sa', 'connecting'));
     expect(button().classList.contains('is-pause')).toBe(false);
     playback.set('paused');

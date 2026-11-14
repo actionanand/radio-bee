@@ -3,11 +3,12 @@ import { ThemeService } from './theme/theme.service';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { PlayerComponent } from './player/player';
 import { StationDetailsComponent } from './catalog/station-details';
+import { SnackbarComponent } from './shared/snackbar';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, PlayerComponent, StationDetailsComponent],
+  imports: [IonApp, IonRouterOutlet, PlayerComponent, StationDetailsComponent, SnackbarComponent],
   styleUrl: './app.component.scss',
 })
 export class AppComponent {

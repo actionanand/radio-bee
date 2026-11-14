@@ -1,0 +1,16 @@
+<div class="announcement" role="status" aria-live="polite" aria-atomic="true">
+  @if (snackbar.current(); as notice) {
+  <div class="snackbar" [class.warning]="notice.tone === 'warning'" [attr.lang]="locale">
+    @if (notice.content.kind === 'favorite') {
+    <span class="symbol favorite-symbol" [class.removed]="!notice.content.added" aria-hidden="true">
+      <ion-icon class="symbol-heart" [icon]="icons.heart" />
+      <span class="symbol-mark"><ion-icon [icon]="notice.content.added ? icons.checkmarkOutline : icons.close" /></span>
+    </span>
+    } @else {
+    <span class="symbol" aria-hidden="true">{{ notice.tone === 'warning' ? '!' : '✓' }}</span>
+    }
+    <span class="message">{{ message() }}</span>
+    <button type="button" [attr.aria-label]="ui('dismissToast')" (click)="snackbar.dismiss()">×</button>
+  </div>
+  }
+</div>

@@ -49,21 +49,6 @@ app-station-artwork {
   color: #fff;
   border-color: #173a32;
 }
-.on-air {
-  position: absolute;
-  bottom: 10px;
-  left: 16px;
-  right: 16px;
-  border-radius: 6px;
-  padding: 6px;
-  background: #173a32;
-  color: white;
-  text-align: center;
-  font-size: 10px;
-}
-.is-loading .on-air {
-  animation: breathe 1.4s ease-in-out infinite;
-}
 .card-copy {
   flex: 1;
   display: flex;
@@ -123,11 +108,6 @@ app-station-artwork {
 @media (prefers-reduced-motion: reduce) {
   .station-card:hover {
     transform: none;
-  }
-}
-@keyframes breathe {
-  50% {
-    opacity: 0.65;
   }
 }
 :host {
