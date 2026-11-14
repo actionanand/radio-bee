@@ -4,7 +4,7 @@ import { environment } from '../../environments/environment';
 import { Catalog, Station, allStations } from '../catalog/catalog.models';
 
 export const HOME_STATIONS_MIN = 3;
-/** One limit for the API Home list and the personal station picker (up to 10). */
+/** V2 personal Home picker limit only; the API Featured Radios list is uncapped. */
 export const HOME_STATIONS_MAX = Math.max(HOME_STATIONS_MIN, Math.min(10, environment.maxHomeStations));
 const KEY = 'radiobee.v2.personal-home.v1';
 
@@ -72,6 +72,15 @@ export class HomePreferencesService {
   }
 
   save(ids: readonly string[], catalog: Catalog | null): boolean {
+    const allowed = new Set(this.eligible(catalog).map(station => station.id));
+    if (!HomePreferencesService.validIds(ids, allowed)) return false;
+    this.update({ enabled: true, ids: [...ids] });
+    return true;
+  }
+
+  /** Reactivate a previously saved, still-valid selection without asking to save it again. */
+  enableSaved(catalog: Catalog | null): boolean {
+    const ids = this.state().ids;
     const allowed = new Set(this.eligible(catalog).map(station => station.id));
     if (!HomePreferencesService.validIds(ids, allowed)) return false;
     this.update({ enabled: true, ids: [...ids] });

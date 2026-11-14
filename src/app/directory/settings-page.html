@@ -38,12 +38,15 @@
           <input type="search" [value]="query()" (input)="search($event)" />
         </label>
         <p class="selection-count" role="status">{{ draft().length }} / {{ max }} {{ text('count') }}</p>
+        @if (limitReached()) {
+          <p class="limit-hint" role="status">{{ text('limitReached') }}</p>
+        }
         <div class="station-options" role="group" [attr.aria-label]="text('chooseStations')">
           @for (station of stations(); track station.id) {
             <button type="button" class="station-option"
               [class.selected]="draft().includes(station.id)"
               [attr.aria-pressed]="draft().includes(station.id)"
-              [disabled]="!draft().includes(station.id) && draft().length >= max"
+              [disabled]="!draft().includes(station.id) && limitReached()"
               (click)="choose(station.id)">
               <span class="selection-mark" aria-hidden="true">{{ draft().includes(station.id) ? '✓' : '+' }}</span>
               <span>{{ data.stationName(station) }}</span>

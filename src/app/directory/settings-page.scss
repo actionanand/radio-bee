@@ -42,7 +42,14 @@ h3 { font-size: 15px; margin: 0 0 5px; }
   font: inherit; font-size: 13px;
 }
 .station-option.selected { border-color: var(--accent-ink); background: var(--panel); }
-.station-option:disabled { opacity: .45; cursor: not-allowed; }
+.station-option:disabled {
+  opacity: .42;
+  color: var(--muted);
+  background: var(--panel);
+  border-color: var(--line);
+  cursor: not-allowed;
+}
+.limit-hint { margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .selection-mark { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; border: 1px solid var(--line); }
 .save-button {
   min-height: 44px; padding: 10px 20px; border: 0; border-radius: 10px;

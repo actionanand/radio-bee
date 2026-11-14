@@ -16,6 +16,7 @@ import { PlayerService } from '../player/player.service';
 import { PlayerComponent } from '../player/player';
 import { MEDIA_ENGINE } from '../player/media-engine';
 import { DirectoryShellComponent } from './directory-shell';
+import { SettingsPage } from './settings-page';
 
 @Component({ imports: [RouterOutlet, PlayerComponent], template: '<router-outlet/><app-player/>' })
 class RootPlayerHostComponent {}
@@ -52,15 +53,28 @@ function setup(base = 'https://catalog.test/v2/') {
 }
 const element = (h: RouterTestingHarness) => h.routeNativeElement as HTMLElement;
 describe('Routable v2 directory', () => {
-  it('caps API-provided Home identities in API order and retains all identities in World', async () => {
+  it('renders every API Home identity in API order regardless of count, and retains World', async () => {
     setup();
     const h = await RouterTestingHarness.create('/home');
     const selected = TestBed.inject(CatalogService).homeStationIds();
     expect(
       [...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']),
-    ).toEqual(selected.slice(0, 10));
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
-    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (10)');
+    ).toEqual(selected);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (13)');
+    // The API can publish more or fewer than the personal Home limit of 10.
+    const data = TestBed.inject(CatalogService);
+    const more = data.catalog()!.stations.slice(0, 15).map(station => station.id);
+    data.homeStationIds.set(more);
+    h.detectChanges();
+    expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(more);
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (15)');
+    data.homeStationIds.set(more.slice(0, 2));
+    h.detectChanges();
+    expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(more.slice(0, 2));
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (2)');
     expect(element(h).querySelector('.selection-note')).toBeNull();
     expect(element(h).textContent).not.toContain('How these radios are selected');
     expect(element(h).querySelector('a.browse-all')?.getAttribute('href')).toBe('/world');
@@ -114,7 +128,60 @@ describe('Routable v2 directory', () => {
     expect(home.enabled()).toBe(false);
     await h.navigateByUrl('/home');
     expect([...host().querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
-      .toEqual(data.homeStationIds().slice(0, 10));
+      .toEqual(data.homeStationIds());
+    // A saved valid selection is restored immediately when the switch goes back ON.
+    // Do not require Save again and keep the original order on Home.
+    await h.navigateByUrl('/settings');
+    const restoredSwitch = host().querySelector<HTMLButtonElement>('.material-switch')!;
+    expect(restoredSwitch.getAttribute('aria-checked')).toBe('false');
+    restoredSwitch.click();
+    h.detectChanges();
+    expect(restoredSwitch.getAttribute('aria-checked')).toBe('true');
+    expect(home.enabled()).toBe(true);
+    expect(home.state().ids).toEqual(chosen);
+    expect(host().querySelector('.station-picker')).not.toBeNull();
+    expect([...host().querySelectorAll<HTMLButtonElement>('.station-option[aria-pressed="true"]')])
+      .toHaveLength(chosen.length);
+    await h.navigateByUrl('/home');
+    expect([...host().querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(chosen);
+  });
+
+  it('greys out every unselected FM at the configured cap and enables them after deselection', async () => {
+    setup();
+    const home = TestBed.inject(HomePreferencesService);
+    await home.loaded;
+    const h = await RouterTestingHarness.create('/settings');
+    const host = () => element(h);
+    host().querySelector<HTMLButtonElement>('.material-switch')!.click();
+    h.detectChanges();
+    const options = () => [...host().querySelectorAll<HTMLButtonElement>('.station-option')];
+    const save = () => host().querySelector<HTMLButtonElement>('.save-button')!;
+    expect(options().length).toBeGreaterThan(10);
+    expect(home.enabled()).toBe(false);
+    for (let index = 0; index < 10; index++) {
+      options()[index].click();
+      h.detectChanges();
+    }
+    const selected = options().filter(option => option.getAttribute('aria-pressed') === 'true');
+    const unselected = options().filter(option => option.getAttribute('aria-pressed') !== 'true');
+    expect(selected).toHaveLength(10);
+    expect(selected.every(option => !option.disabled)).toBe(true);
+    expect(unselected.length).toBeGreaterThan(0);
+    expect(unselected.every(option => option.disabled)).toBe(true);
+    expect(host().querySelector('.limit-hint')?.textContent).toContain('Maximum reached');
+    expect(save().disabled).toBe(false);
+    // Programmatic calls must not bypass the UI's maximum either.
+    const page = h.fixture.debugElement.query(By.directive(SettingsPage)).componentInstance as SettingsPage;
+    const before = page.draft();
+    page.choose('another-station');
+    expect(page.draft()).toEqual(before);
+    selected[0].click();
+    h.detectChanges();
+    expect(options().filter(option => option.disabled)).toHaveLength(0);
+    expect(options().filter(option => option.getAttribute('aria-pressed') === 'true')).toHaveLength(9);
+    expect(host().querySelector('.limit-hint')).toBeNull();
+    expect(save().disabled).toBe(false);
   });
 
   it('localizes tuner and footer taglines when UI language changes', async () => {
@@ -149,7 +216,7 @@ describe('Routable v2 directory', () => {
         .map(s => s.id),
     );
     h.detectChanges();
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
     expect(element(h).querySelector('app-radio-bee-loader.compact .radio-loader.is-loading')).not.toBeNull();
     data.loading.set(false);
     h.detectChanges();
@@ -511,7 +578,7 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelector('a.btn')?.textContent?.trim()).toBe('मुखपृष्ठं गच्छ');
     await h.navigateByUrl('/home');
     expect(element(h).querySelector('app-not-found-page')).toBeNull();
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
   });
   it('wraps keyboard focus inside the native mobile drawer in both directions', async () => {
     setup();

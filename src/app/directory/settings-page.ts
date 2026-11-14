@@ -36,6 +36,7 @@ export class SettingsPage {
     return this.home.eligible(this.data.catalog())
       .filter(s => !q || this.data.stationName(s).toLocaleLowerCase().includes(q));
   });
+  readonly limitReached = computed(() => this.draft().length >= this.max);
   readonly valid = computed(() => HomePreferencesService.validIds(
     this.draft(),
     new Set(this.home.eligible(this.data.catalog()).map(station => station.id)),
@@ -52,11 +53,17 @@ export class SettingsPage {
   switchHome(checked: boolean) {
     this.saved.set(false);
     if (checked) {
-      this.draft.set([...this.home.state().ids]);
-      this.choosing.set(true);
+      const savedIds = this.home.state().ids;
+      const draftMatchesSaved = this.draft().join('|') === savedIds.join('|');
+      if (draftMatchesSaved && this.home.enableSaved(this.data.catalog())) {
+        this.choosing.set(false);
+      } else {
+        // Preserve an unfinished draft across OFF/ON, but never publish it
+        // until it has passed validation and the user explicitly saves.
+        this.choosing.set(true);
+      }
     } else {
       this.choosing.set(false);
-      this.draft.set([...this.home.state().ids]);
       this.home.disable();
     }
   }
@@ -64,7 +71,9 @@ export class SettingsPage {
     this.saved.set(false);
     this.draft.update(ids => {
       if (ids.includes(id)) return ids.filter(value => value !== id);
-      return ids.length >= this.max ? ids : [...ids, id];
+      if (ids.length >= this.max ||
+          !this.home.eligible(this.data.catalog()).some(station => station.id === id)) return ids;
+      return [...ids, id];
     });
   }
   save() {

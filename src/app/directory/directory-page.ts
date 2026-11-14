@@ -12,7 +12,7 @@ import { FavoritesService } from '../catalog/favorites.service';
 import { PlayerService } from '../player/player.service';
 import { StationCardComponent } from '../catalog/station-card';
 import { RadioHeroComponent } from '../home/radio-hero';
-import { HomePreferencesService, HOME_STATIONS_MAX } from './home-preferences.service';
+import { HomePreferencesService } from './home-preferences.service';
 import { RadioBeeLoaderComponent } from '../shared/radio-bee-loader';
 import { NotFoundPage } from '../not-found/not-found-page';
 import {
@@ -44,7 +44,6 @@ export class DirectoryPage {
   readonly data = inject(CatalogService);
   readonly favorites = inject(FavoritesService);
   readonly personalHome = inject(HomePreferencesService);
-  readonly maxHomeStations = HOME_STATIONS_MAX;
   readonly player = inject(PlayerService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -163,7 +162,9 @@ export class DirectoryPage {
     if (this.mode() === 'home') {
       const personal = this.personalHome.selection(c);
       const ids = personal.length ? personal : this.data.homeStationIds();
-      return featuredStations(c, ids).slice(0, this.maxHomeStations);
+      // The API controls the default list and its length. Only saved personal
+      // selections are restricted by the Settings environment cap.
+      return featuredStations(c, ids);
     }
     const searched = new Set(
       filterStations(c, { ...emptyFilters, search: this.query().get('q') ?? '' }).map(s => s.id),
