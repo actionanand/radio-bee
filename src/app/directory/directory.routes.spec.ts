@@ -38,7 +38,13 @@ function setup(base = 'https://catalog.test/v2/') {
   });
   const data = TestBed.inject(CatalogService);
   data.catalog.set(validateV2(structuredClone(v2Fixture)));
-  data.homeStationIds.set(data.catalog()!.stations.slice(0, 13).map(s => s.id).reverse());
+  data.homeStationIds.set(
+    data
+      .catalog()!
+      .stations.slice(0, 13)
+      .map(s => s.id)
+      .reverse(),
+  );
   vi.spyOn(data, 'start').mockResolvedValue();
   return { data, audio, load, clear };
 }
@@ -48,7 +54,9 @@ describe('Routable v2 directory', () => {
     setup();
     const h = await RouterTestingHarness.create('/home');
     const selected = TestBed.inject(CatalogService).homeStationIds();
-    expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId'])).toEqual(selected);
+    expect(
+      [...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']),
+    ).toEqual(selected);
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
     expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (13)');
     expect(element(h).querySelector('.selection-note')).toBeNull();
@@ -83,7 +91,12 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelector('app-radio-bee-loader .radio-loader[data-fetch-state="loading"]')).not.toBeNull();
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(0);
     data.catalog.set(validateV2(structuredClone(v2Fixture)));
-    data.homeStationIds.set(data.catalog()!.stations.slice(0, 13).map(s => s.id));
+    data.homeStationIds.set(
+      data
+        .catalog()!
+        .stations.slice(0, 13)
+        .map(s => s.id),
+    );
     h.detectChanges();
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
     expect(element(h).querySelector('app-radio-bee-loader.compact .radio-loader.is-loading')).not.toBeNull();
@@ -118,7 +131,9 @@ describe('Routable v2 directory', () => {
     const h = await RouterTestingHarness.create('/radios/air-nagercoil');
     const host = element(h);
     expect(host.querySelector('h1')?.textContent).toContain('Akashvani Nagercoil');
-    const breadcrumbLink = host.querySelector<HTMLAnchorElement>('.breadcrumbs a[href="/world/asia/in/in-tn/in-tn-kanyakumari"]');
+    const breadcrumbLink = host.querySelector<HTMLAnchorElement>(
+      '.breadcrumbs a[href="/world/asia/in/in-tn/in-tn-kanyakumari"]',
+    );
     expect(breadcrumbLink).not.toBeNull();
     const detailLink = host.querySelector<HTMLAnchorElement>('app-station-page dl dd a');
     expect(detailLink).not.toBeNull();
@@ -213,8 +228,10 @@ describe('Routable v2 directory', () => {
     const { data } = setup();
     const h = await RouterTestingHarness.create('/home');
     const picker = element(h).querySelector('[data-control=locale] ion-select')!;
-    const options = () => [...element(h).querySelectorAll('[data-control=locale] ion-select-option')]
-      .map(option => option.textContent?.trim());
+    const options = () =>
+      [...element(h).querySelectorAll('[data-control=locale] ion-select-option')].map(option =>
+        option.textContent?.trim(),
+      );
     expect(options()).toEqual(['Device language', 'Tamil', 'English', 'Sanskrit']);
     expect(data.localePreference()).toBe('device');
     picker.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'sa' }, bubbles: true }));
@@ -307,8 +324,10 @@ describe('Routable v2 directory', () => {
     const h = await RouterTestingHarness.create('/languages');
     const name = (code: string) =>
       element(h).querySelector<HTMLElement>(`.destinations a[href="/languages/${code}"] strong`)?.textContent?.trim();
-    const options = () => [...element(h).querySelectorAll('app-directory-select[data-control="locale"] ion-select-option')]
-      .map(option => option.textContent?.trim());
+    const options = () =>
+      [...element(h).querySelectorAll('app-directory-select[data-control="locale"] ion-select-option')].map(option =>
+        option.textContent?.trim(),
+      );
 
     expect(name('ta')).toBe('Tamil (தமிழ்)');
     expect(name('en')).toBe('English');
@@ -334,8 +353,10 @@ describe('Routable v2 directory', () => {
     await h.navigateByUrl('/languages/ml');
     expect(element(h).querySelector('app-directory-page > h1')?.textContent).toContain('മലയാളം');
     await h.navigateByUrl('/radios/air-nagercoil');
-    const chips = () => [...element(h).querySelectorAll('app-station-page .languages a.language-chip')]
-      .map(chip => chip.textContent?.trim());
+    const chips = () =>
+      [...element(h).querySelectorAll('app-station-page .languages a.language-chip')].map(chip =>
+        chip.textContent?.trim(),
+      );
     expect(chips()).toEqual(['तमिळ् (தமிழ்)', 'आङ्ग्लभाषा (English)']);
     data.locale.set('ta');
     h.detectChanges();
@@ -350,13 +371,13 @@ describe('Routable v2 directory', () => {
     expect(summary).toContain('English');
   });
 
-  it('limits compact cards to three language labels and expands full documented languages on the station page', async () => {
+  it('clamps complete language labels on cards and retains full documented languages on the station page', async () => {
     const { data } = setup();
     const station = data.catalog()!.stations.find(s => s.broadcastLanguages.length > 3)!;
     const h = await RouterTestingHarness.create('/world');
     const summary = element(h).querySelector(`[data-station-id="${station.id}"] .language-summary`)!.textContent!;
-    expect(summary.split(' · ')).toHaveLength(3);
-    expect(summary).toContain('+' + (station.broadcastLanguages.length - 3));
+    expect(summary.split(' · ')).toHaveLength(station.broadcastLanguages.length);
+    expect(element(h).querySelector('.language-summary app-ellipsis-text')).not.toBeNull();
     await h.navigateByUrl('/radios/' + station.id);
     expect(element(h).querySelectorAll('.languages li')).toHaveLength(station.broadcastLanguages.length);
     expect(element(h).querySelector('app-station-page details summary')).not.toBeNull();

@@ -23,21 +23,22 @@
     @if(state()==='playing'||state()==='loading'){<span class="on-air">{{ ui(player.statusLabel()) }}</span>}
   </div>
   <div class="card-copy">
-    <h3 [title]="data.stationName(station())">
-      @if(directoryLinks()){<a [routerLink]="['/radios',station().id]">{{data.stationName(station())}}</a>}@else{
-      {{data.stationName(station())}} }
+    <h3>
+      @if(directoryLinks()) {<a [attr.aria-label]="data.stationName(station())" [routerLink]="['/radios',station().id]"
+        ><app-ellipsis-text [text]="data.stationName(station())" /></a
+      >} @else {<app-ellipsis-text [text]="data.stationName(station())" />}
     </h3>
-    @if(directoryLinks()&&languageSummary()){
-    <p class="language-summary">{{languageSummary()}}</p>
-    }
-    <p class="location">{{ shortLocation(station()) }}</p>
+    <p class="language-summary"><app-ellipsis-text [text]="languageSummary()" /></p>
+    <p class="location"><app-ellipsis-text [text]="shortLocation(station())" /></p>
     <p class="frequency">{{ ui(station().discovery ? 'discoveryOnly' : 'onlineRadio') }}</p>
     @if (!hideStreamReviewNotices) {
+    <div class="review-slot">
       @if (trialCandidate()) {
-        <p class="trial-label">{{ ui('unverifiedTrial') }}</p>
+      <p class="trial-label">{{ ui('unverifiedTrial') }}</p>
       } @else if (useReviewPending()) {
-        <p class="trial-label">{{ ui('permissionPending') }}</p>
+      <p class="trial-label">{{ ui('permissionPending') }}</p>
       }
+    </div>
     }
     <div class="card-actions" [class.has-discovery]="!!station().discovery">
       @if(eligibility.status==='ready'){<button
