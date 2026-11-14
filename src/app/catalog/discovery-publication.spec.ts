@@ -154,13 +154,16 @@ for (const locale of ['en', 'ta', 'sa'])
     for (const id of requiredIds) {
       const article = view.nativeElement.querySelector(`[data-station-id="${id}"]`) as HTMLElement;
       expect(article).toBeTruthy();
-      if (id === 'iskcon-nagercoil') {
-        expect(article.querySelector('button.play')).not.toBeNull();
-        expect(article.textContent).toContain(uiLabel(locale, 'unverifiedTrial'));
-      } else {
-        expect(article.querySelector('button.play')).toBeNull();
-        expect(article.textContent).toContain(uiLabel(locale, 'discoveryOnly'));
-      }
+      expect(article.querySelector('button.play')).toBeNull();
+      const station = allStations(data.catalog()).find(station => station.id === id)!;
+      const status =
+        station.discovery?.availability === 'temporarily-unavailable'
+          ? 'temporarilyUnavailable'
+          : station.discovery?.availability === 'review-pending'
+            ? 'streamReviewPending'
+            : 'noDirectStream';
+      expect(article.querySelector('.discovery-actions .unavailable')?.textContent?.trim()).toBe(uiLabel(locale, status));
+      expect(article.querySelector('.frequency')).toBeNull();
     }
     const annai = view.nativeElement.querySelector('[data-station-id="annai-kuzhithurai"]') as HTMLElement;
     expect(annai.querySelector('a')).toBeNull();

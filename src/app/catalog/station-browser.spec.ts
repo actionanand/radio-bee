@@ -22,6 +22,25 @@ describe('India-only detailed geography', () => {
   const catalog = validateCatalog(structuredClone(fixture));
   const stale = { region: 'in-tn', district: 'in-tn-kanyakumari', locality: 'in-tn-kanyakumari-nagercoil' };
 
+  it('limits language and location to one line each without a radio-type spacer', () => {
+    const service = TestBed.inject(CatalogService);
+    vi.spyOn(service, 'start').mockResolvedValue();
+    service.catalog.set(catalog);
+    service.locale.set('en');
+    const view = TestBed.createComponent(StationBrowserComponent);
+    view.detectChanges();
+    const card = view.nativeElement.querySelector('.station-card') as HTMLElement;
+    expect(card).toBeTruthy();
+    const language = card.querySelector('.language-summary app-ellipsis-text .clamped') as HTMLElement;
+    const location = card.querySelector('.location app-ellipsis-text .clamped') as HTMLElement;
+    expect(language).toBeTruthy();
+    expect(location).toBeTruthy();
+    expect(language.style.blockSize).toBe('1lh');
+    expect(location.style.blockSize).toBe('1lh');
+    expect(card.querySelector('.frequency')).toBeNull();
+    expect(card.textContent).not.toContain('Online radio');
+  });
+
   for (const locale of ['en', 'ta', 'sa']) {
     it(`renders and restores the correct controls in ${locale}`, () => {
       const service = TestBed.inject(CatalogService);

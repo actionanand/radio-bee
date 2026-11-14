@@ -84,20 +84,6 @@ app-station-artwork {
   font-size: 11px;
   line-height: 1.5;
   margin: 0;
-  min-height: 3em;
-}
-.frequency {
-  overflow-wrap: anywhere;
-  font-size: 13px;
-  letter-spacing: 0.4px;
-  font-weight: 650;
-  margin: 12px 0;
-  min-height: 2.8em;
-  line-height: 1.4;
-}
-.frequency span {
-  font-size: 10px;
-  color: var(--muted);
 }
 .card-actions {
   margin-top: auto;
@@ -231,14 +217,12 @@ a:focus-visible {
   outline-offset: 2px;
 }
 .language-summary {
-  margin: 6px 0;
+  margin: 0;
   color: var(--muted);
   font-size: 11px;
   line-height: 1.5;
-  height: 3em;
 }
 .review-slot {
   font-size: 11px;
   line-height: 1.4;
-  min-height: 2.8em;
 }
