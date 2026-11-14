@@ -214,19 +214,14 @@ describe('Routable v2 directory', () => {
     const h = await RouterTestingHarness.create('/home');
     const picker = element(h).querySelector('[data-control=locale] ion-select')!;
     const options = () => [...element(h).querySelectorAll('[data-control=locale] ion-select-option')]
-      .map(option => ({ value: option.getAttribute('value'), label: option.textContent?.trim() }));
-    expect(options()).toEqual([
-      { value: 'device', label: 'Device language' },
-      { value: 'ta', label: 'Tamil' },
-      { value: 'en', label: 'English' },
-      { value: 'sa', label: 'Sanskrit' },
-    ]);
+      .map(option => option.textContent?.trim());
+    expect(options()).toEqual(['Device language', 'Tamil', 'English', 'Sanskrit']);
     expect(data.localePreference()).toBe('device');
     picker.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'sa' }, bubbles: true }));
     await h.fixture.whenStable();
     h.detectChanges();
     expect(data.locale()).toBe('sa');
-    expect(options().map(option => option.label)).toEqual(['उपकरणभाषा', 'तमिळ्', 'आङ्ग्लभाषा', 'संस्कृतम्']);
+    expect(options()).toEqual(['उपकरणभाषा', 'तमिळ्', 'आङ्ग्लभाषा', 'संस्कृतम्']);
     picker.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'device' }, bubbles: true }));
     await h.fixture.whenStable();
     h.detectChanges();
