@@ -11,6 +11,8 @@ export const environment = {
   // Presentation-only: suppress unverified-stream and permission-review notices on station cards.
   // Playback eligibility, recording rules, and stream metadata are unaffected.
   hideStreamReviewNotices: true,
+  // V2 only: maximum Home stations and custom picker selection (3–10).
+  maxHomeStations: 10,
   liveStreamTests: false,
   production: true,
   catalogSeedUrl: null,
