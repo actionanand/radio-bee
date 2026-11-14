@@ -54,6 +54,12 @@ describe('V2 personal Home station settings', () => {
     expect(preferences.enabled()).toBe(false);
     expect(preferences.selection(catalog)).toEqual([]);
     expect(preferences.state().ids).toEqual(ids);
+    // A previously saved set can be re-enabled without a second Save.
+    expect(preferences.enableSaved(catalog)).toBe(true);
+    expect(preferences.enabled()).toBe(true);
+    expect(preferences.selection(catalog)).toEqual(ids);
+    preferences.disable();
+    expect(preferences.enabled()).toBe(false);
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(set).toHaveBeenCalled();
     expect(JSON.parse(saved)).toEqual({ enabled: false, ids });
@@ -75,4 +81,18 @@ describe('V2 personal Home station settings', () => {
     expect(preferences.enabled()).toBe(false);
     expect(preferences.selection(catalog)).toEqual([]);
   });
+  it('refuses to reactivate when there is no saved valid selection', async () => {
+    TestBed.configureTestingModule({
+      providers: [{
+        provide: HOME_PREFERENCES_STORAGE,
+        useValue: { get: async () => ({ value: null }), set: vi.fn(async () => undefined) },
+      }],
+    });
+    const preferences = TestBed.inject(HomePreferencesService);
+    await preferences.loaded;
+    expect(preferences.enableSaved(catalog)).toBe(false);
+    expect(preferences.enabled()).toBe(false);
+    expect(preferences.state().ids).toEqual([]);
+  });
+
 });

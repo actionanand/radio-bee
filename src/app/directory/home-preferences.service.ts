@@ -78,6 +78,15 @@ export class HomePreferencesService {
     return true;
   }
 
+  /** Reactivate a previously saved, still-valid selection without asking to save it again. */
+  enableSaved(catalog: Catalog | null): boolean {
+    const ids = this.state().ids;
+    const allowed = new Set(this.eligible(catalog).map(station => station.id));
+    if (!HomePreferencesService.validIds(ids, allowed)) return false;
+    this.update({ enabled: true, ids: [...ids] });
+    return true;
+  }
+
   disable() {
     this.update({ ...this.state(), enabled: false });
   }
