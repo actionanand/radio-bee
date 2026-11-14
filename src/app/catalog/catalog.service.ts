@@ -63,7 +63,7 @@ export class CatalogService {
   readonly homeSelectionWarning = signal('');
   readonly cached = signal(false);
   readonly updatedAt = signal('');
-  readonly locale = signal(this.deviceLocale);
+  readonly locale = signal<string>(this.deviceLocale);
   async start(): Promise<void> {
     if (this.started) return;
     this.started = true;
