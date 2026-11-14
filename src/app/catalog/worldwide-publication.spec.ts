@@ -51,6 +51,7 @@ for (const locale of ['en', 'ta', 'sa'])
           provide: CatalogService,
           useValue: {
             stationName: CatalogService.prototype.stationName,
+            languageName: CatalogService.prototype.languageName,
             catalog: signal(c),
             locale: selected,
             t: (_section: string, _id: string, fallback: string) => fallback,

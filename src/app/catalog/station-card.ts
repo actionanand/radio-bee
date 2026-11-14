@@ -1,3 +1,4 @@
+import { EllipsisTextComponent } from '../shared/ellipsis-text';
 import { RouterLink } from '@angular/router';
 import { Component, computed, inject, input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
@@ -13,7 +14,7 @@ import { radioIcons } from '../shared/radio-icons';
 import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-station-card',
-  imports: [StationArtworkComponent, IonIcon, RouterLink],
+  imports: [StationArtworkComponent, IonIcon, RouterLink, EllipsisTextComponent],
   templateUrl: './station-card.html',
   styleUrl: './station-card.scss',
 })
@@ -22,13 +23,11 @@ export class StationCardComponent {
   readonly directoryLinks = input(false);
   readonly languageSummary = computed(() => {
     const tags = this.station().broadcastLanguages;
-    const names = tags
-      .slice(0, 3)
-      .map(code => {
-        const language = this.data.catalog()?.languages.find(l => l.code === code);
-        return language ? this.data.languageName(language) : code;
-      });
-    return names.join(' · ') + (tags.length > 3 ? ' +' + (tags.length - 3) : '');
+    const names = tags.map(code => {
+      const language = this.data.catalog()?.languages.find(l => l.code === code);
+      return language ? this.data.languageName(language) : code;
+    });
+    return names.join(' · ');
   });
   readonly data = inject(CatalogService);
   readonly player = inject(PlayerService);

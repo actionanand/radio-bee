@@ -127,8 +127,9 @@ label {
 .stations {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 .network-title {
   font-size: 18px;
