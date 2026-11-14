@@ -74,7 +74,22 @@ summary,
 .browse-all {
   display: inline-flex;
   align-items: center;
+  padding-inline: 12px;
+  border-radius: 10px;
   font-weight: 700;
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.browse-all:hover {
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transform: translateY(-1px);
+}
+.browse-all:active {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .browse-all { transition: none; }
+  .browse-all:hover, .browse-all:active { transform: none; }
 }
 .browse-all,
 .browse-all:hover,
