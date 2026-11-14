@@ -7,6 +7,7 @@ import { FavoritesService } from './favorites.service';
 import { PlayerService } from '../player/player.service';
 import { Catalog, emptyFilters, filterStations } from './catalog.models';
 import { uiLabel } from './catalog.ui';
+import { uiLanguageOptions } from './device-language';
 @Component({
   selector: 'app-v2-browser',
   imports: [StationCardComponent],
@@ -63,11 +64,11 @@ import { uiLabel } from './catalog.ui';
         }}<select
           data-control="locale"
           [attr.aria-label]="label('UI language', 'இடைமுக மொழி', 'अन्तरफलकभाषा')"
-          [value]="data.locale()"
+          [value]="data.localePreference()"
           (change)="data.setLocale(value($event))">
-          <option value="en">English</option>
-          <option value="ta">தமிழ்</option>
-          <option value="sa">संस्कृतम्</option>
+          @for (option of localeOptions(); track option.id) {
+            <option [value]="option.id">{{ option.name }}</option>
+          }
         </select></label
       >
       <label
@@ -350,6 +351,7 @@ export class V2BrowserComponent {
       ['नाम', 'देशः', 'प्रदेशः', 'जनपदः', 'प्रसारणजालम्', 'प्रसारकः', 'भाषा', 'वर्गः', 'उपलब्धता'][i],
     );
   }
+  readonly localeOptions = computed(() => uiLanguageOptions(this.data.locale() as 'en' | 'ta' | 'sa'));
   readonly trail = computed(() =>
     this.data.catalog() ? ancestry(this.data.catalog()!, this.selection().location) : [],
   );
