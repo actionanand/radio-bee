@@ -7,6 +7,8 @@ import { currentPublishedFixture } from './testing/published-1.3.fixture';
 import { validateCatalog } from './catalog.validation';
 import { MEDIA_ENGINE } from '../player/media-engine';
 import { PlayerService } from '../player/player.service';
+import { environment } from '../../environments/environment';
+import { environment as production } from '../../environments/environment.prod';
 
 describe('Cards, player and Listen now share the configured policy', () => {
   for (const AllowUnverified of [false, true])
@@ -54,6 +56,50 @@ describe('Cards, player and Listen now share the configured policy', () => {
           player.stop();
         });
       }
+  it('hides stream review notices in both environments without changing playable station cards', () => {
+    expect(environment.hideStreamReviewNotices).toBe(true);
+    expect(production.hideStreamReviewNotices).toBe(true);
+    const storage = { get: async () => ({ value: null }), set: async () => undefined };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CATALOG_STORAGE, useValue: storage },
+        { provide: FAVORITES_STORAGE, useValue: storage },
+        {
+          provide: MEDIA_ENGINE,
+          useValue: {
+            audio: document.createElement('audio'),
+            load: async () => undefined,
+            clear: () => undefined,
+            supports: () => true,
+          },
+        },
+      ],
+    });
+    const catalog = validateCatalog(structuredClone(currentPublishedFixture));
+    const unverified = catalog.stations.find(station =>
+      station.streams.some(stream => stream.verificationStatus === 'unverified'));
+    expect(unverified).toBeDefined();
+    // A verified candidate with unconfirmed rights would ordinarily display the other notice.
+    const pending = catalog.stations.find(station => station.streams.length > 0 && station.id !== unverified!.id)!;
+    expect(pending).toBeDefined();
+    for (const stream of pending.streams) {
+      stream.verificationStatus = 'verified';
+      stream.rightsStatus = 'unconfirmed';
+    }
+    const data = TestBed.inject(CatalogService);
+    vi.spyOn(data, 'start').mockResolvedValue();
+    data.catalog.set(catalog);
+    const view = TestBed.createComponent(StationBrowserComponent);
+    view.detectChanges();
+    const host = view.nativeElement as HTMLElement;
+    expect(host.querySelector('[data-station-id="' + unverified!.id + '"]')).not.toBeNull();
+    expect(host.querySelector('[data-station-id="' + pending.id + '"]')).not.toBeNull();
+    expect(host.querySelectorAll('.trial-label')).toHaveLength(0);
+    expect(host.textContent).not.toContain('Unverified trial stream');
+    expect(host.textContent).not.toContain('Playback permission pending');
+    expect(host.querySelectorAll('button.play')).toHaveLength(25);
+  });
+
   it('keeps country/language filters combined with Listen now and reacts to explicit restrictions', () => {
     TestBed.configureTestingModule({
       providers: [

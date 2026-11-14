@@ -10,7 +10,7 @@ import { StationDetailsService } from './station-details.service';
 import { PlayerService } from '../player/player.service';
 import { streamEligibility } from './stream-eligibility';
 import { TECHNICAL_RADIO_API_CONFIG, STRICT_RADIO_API_CONFIG } from '../../environments/radio-api.config';
-import { uiLabel } from './catalog.ui';
+import { environment } from '../../environments/environment';
 const catalogue = () => validateCatalog(structuredClone(worldwideContractFixture));
 const capabilities = { available: true, supports: () => true };
 it('loads the published worldwide contract with all requested country filters and separate counts', () => {
@@ -75,19 +75,16 @@ for (const locale of ['en', 'ta', 'sa'])
     );
     view.detectChanges();
     expect(view.nativeElement.querySelector('button.play')).not.toBeNull();
-    expect(view.nativeElement.querySelector('.trial-label').textContent).toContain(uiLabel(locale, 'unverifiedTrial'));
+    expect(environment.hideStreamReviewNotices).toBe(true);
+    expect(view.nativeElement.querySelector('.trial-label')).toBeNull();
     expect(view.nativeElement.textContent).toContain('Singapore');
     const technicallyVerified = structuredClone(c.stations.find(s => s.id === 'oli-968-sg')!);
     technicallyVerified.streams[0].verificationStatus = 'verified';
     technicallyVerified.streams[0].lastVerifiedAt = '2026-11-08T00:00:00.000Z';
     view.componentRef.setInput('station', technicallyVerified);
     view.detectChanges();
-    expect(view.nativeElement.querySelector('.trial-label').textContent).toContain(
-      uiLabel(locale, 'permissionPending'),
-    );
-    expect(view.nativeElement.querySelector('.trial-label').textContent).not.toContain(
-      uiLabel(locale, 'unverifiedTrial'),
-    );
+    expect(view.nativeElement.querySelector('.trial-label')).toBeNull();
+    expect(view.nativeElement.querySelector('button.play')).not.toBeNull();
     view.componentRef.setInput(
       'station',
       allStations(c).find(s => s.id === 'atbc-au'),

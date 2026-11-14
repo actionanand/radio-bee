@@ -10,6 +10,7 @@ import { PlayerService } from '../player/player.service';
 import { uiLabel, UiKey } from './catalog.ui';
 import { StationDetailsService } from './station-details.service';
 import { radioIcons } from '../shared/radio-icons';
+import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-station-card',
   imports: [StationArtworkComponent, IonIcon, RouterLink],
@@ -34,6 +35,7 @@ export class StationCardComponent {
   readonly favorites = inject(FavoritesService);
   readonly details = inject(StationDetailsService);
   readonly icons = radioIcons;
+  readonly hideStreamReviewNotices = environment.hideStreamReviewNotices;
   private readonly document = inject(DOCUMENT);
   readonly discoveryStatus = computed<UiKey>(() =>
     this.station().discovery?.availability === 'temporarily-unavailable'
