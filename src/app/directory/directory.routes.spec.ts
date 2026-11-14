@@ -209,6 +209,25 @@ describe('Routable v2 directory', () => {
     expect(TestBed.inject(THEME_STORAGE).set).toHaveBeenCalledWith('dark');
     expect(document.documentElement.classList.contains('ion-palette-dark')).toBe(true);
   });
+  it('uses device language as the first persistent picker option and switches back from manual choice', async () => {
+    const { data } = setup();
+    const h = await RouterTestingHarness.create('/home');
+    const picker = element(h).querySelector('[data-control=locale] ion-select')!;
+    const options = () => [...element(h).querySelectorAll('[data-control=locale] ion-select-option')]
+      .map(option => option.textContent?.trim());
+    expect(options()).toEqual(['Device language', 'Tamil', 'English', 'Sanskrit']);
+    expect(data.localePreference()).toBe('device');
+    picker.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'sa' }, bubbles: true }));
+    await h.fixture.whenStable();
+    h.detectChanges();
+    expect(data.locale()).toBe('sa');
+    expect(options()).toEqual(['उपकरणभाषा', 'तमिळ्', 'आङ्ग्लभाषा', 'संस्कृतम्']);
+    picker.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'device' }, bubbles: true }));
+    await h.fixture.whenStable();
+    h.detectChanges();
+    expect(data.localePreference()).toBe('device');
+    expect(data.locale()).toBe(data.deviceLocale);
+  });
   it('shows frequencies only when documented in the actual catalogue', async () => {
     const { data } = setup();
     const station = data.catalog()!.stations.find(s => s.frequencyMHz !== null)!;
@@ -294,14 +313,14 @@ describe('Routable v2 directory', () => {
     expect(name('ta')).toBe('Tamil (தமிழ்)');
     expect(name('en')).toBe('English');
     expect(name('sa')).toBe('Sanskrit (संस्कृतम्)');
-    expect(options()).toEqual(['English', 'Tamil (தமிழ்)', 'Sanskrit (संस्कृतम्)']);
+    expect(options()).toEqual(['Device language', 'Tamil', 'English', 'Sanskrit']);
 
     data.locale.set('ta');
     h.detectChanges();
     expect(name('ta')).toBe('தமிழ்');
     expect(name('en')).toBe('ஆங்கிலம் (English)');
     expect(name('sa')).toBe('சமஸ்க்ரிதம் (संस्कृतम्)');
-    expect(options()).toEqual(['ஆங்கிலம் (English)', 'தமிழ்', 'சமஸ்க்ரிதம் (संस्कृतम्)']);
+    expect(options()).toEqual(['சாதன மொழி', 'தமிழ்', 'ஆங்கிலம்', 'சமஸ்க்ரிதம்']);
 
     await h.navigateByUrl('/languages/sa');
     expect(element(h).querySelector('app-directory-page > h1')?.textContent?.trim()).toBe('சமஸ்க்ரிதம் (संस्कृतम्)');

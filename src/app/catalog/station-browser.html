@@ -11,11 +11,11 @@
         [attr.aria-label]="ui('uiLanguage')"
         interface="popover"
         [interfaceOptions]="selectOptions(ui('uiLanguage'))"
-        [value]="data.locale()"
+        [value]="data.localePreference()"
         (ionChange)="data.setLocale($event.detail.value)">
-        <ion-select-option value="en">English</ion-select-option>
-        <ion-select-option value="ta">தமிழ்</ion-select-option>
-        <ion-select-option value="sa">संस्कृतम्</ion-select-option>
+        @for(option of localeOptions(); track option.id) {
+        <ion-select-option [value]="option.id">{{option.name}}</ion-select-option>
+        }
       </ion-select>
       <ion-select
         class="theme-select"

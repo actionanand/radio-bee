@@ -1,5 +1,6 @@
 import { V2BrowserComponent } from './v2-browser';
 import { RadioBeeLoaderComponent } from '../shared/radio-bee-loader';
+import { uiLanguageOptions } from './device-language';
 import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CatalogService } from './catalog.service';
@@ -21,6 +22,7 @@ import { radioIcons } from '../shared/radio-icons';
 })
 export class StationBrowserComponent {
   readonly theme = inject(ThemeService);
+  readonly localeOptions = computed(() => uiLanguageOptions(this.data.locale() as 'en' | 'ta' | 'sa'));
   selectOptions(label: string) {
     return {
       cssClass: 'radio-select-popover',

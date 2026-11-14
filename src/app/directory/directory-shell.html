@@ -30,7 +30,7 @@
         <app-directory-select
           data-control="locale"
           [label]="text('uiLanguage')"
-          [value]="data.locale()"
+          [value]="data.localePreference()"
           [options]="localeOptions()"
           (changed)="data.setLocale($event)" />
         <app-directory-select
