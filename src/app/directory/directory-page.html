@@ -9,7 +9,7 @@
 } @else if(!valid()){<a routerLink="/home">{{text('returnHome')}}</a>} @else { @if(data.loading()){<app-radio-bee-loader [compact]="true" />}
 @if(crumbs().length){
 <app-directory-breadcrumbs [items]="crumbs()" [label]="text('breadcrumbs')" />
-} @if(mode()==='home'){<app-radio-illustration [compact]="true" />
+} @if(mode()==='home'){<app-radio-hero [compact]="true" />
 @if(data.homeSelectionWarning()){<p role="status">{{data.statusText(data.homeSelectionWarning())}}</p>}
 <h2>{{text('featured')}} ({{rows().length}})</h2>
 <a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>} @if(destinations().length){
