@@ -1,5 +1,4 @@
 import { DirectoryBreadcrumbsComponent } from './directory-breadcrumbs';
-import { uiLabel } from '../catalog/catalog.ui';
 import { Component, computed, effect, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -102,11 +101,6 @@ export class StationPage {
       : this.station() && this.player.stateFor(this.station()!) === 'error'
         ? 'retry'
         : 'play',
-  );
-  readonly broadcastType = computed(() =>
-    this.station()?.delivery === 'online'
-      ? uiLabel(this.data.locale(), 'onlineRadio')
-      : (this.station()?.delivery.toUpperCase() ?? ''),
   );
   readonly shortLanguages = computed(() =>
     this.languages()

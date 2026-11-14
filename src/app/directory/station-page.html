@@ -24,13 +24,12 @@
           aria-hidden="true" />{{text(favorites.has(station.id)?'unfavorite':'favorite')}}
       </button>
     </div>
-    <p class="note">{{station.discovery?text('discoveryOnly'):text('streamBearing')}}</p>
   </div>
 </div>
 <section>
   <h2>{{text('about')}}</h2>
-  @if(station.notes){
-  <p class="description">{{station.notes}}</p>
+  @if(station.about){
+  <p class="description">{{station.about}}</p>
   }
   <dl>
     @for(field of fields();track field.id){
@@ -39,10 +38,6 @@
       <dd><a [routerLink]="field.url">{{field.value}}</a></dd>
     </div>
     }
-    <div>
-      <dt>{{text('broadcast')}}</dt>
-      <dd>{{broadcastType()}}</dd>
-    </div>
     @if(station.frequencyMHz!==null){
     <div>
       <dt>{{text('frequency')}}</dt>

@@ -99,6 +99,8 @@ export interface Station extends Named {
   sourceIds: string[];
   streams: Stream[];
   notes: string | null;
+  /** Public editorial description, present in V2 profiles. */
+  about?: string;
 }
 export interface DiscoveryStation extends Omit<Station, 'streams' | 'discovery'> {
   aliases: string[];

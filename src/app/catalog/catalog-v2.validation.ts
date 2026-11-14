@@ -183,7 +183,7 @@ const stationFields = [
   'sourceIds',
   'notes',
 ];
-const stationOptional = ['languageProfile', 'geographyEvidence', 'programmeThemeIds', 'artistIds'];
+const stationOptional = ['languageProfile', 'geographyEvidence', 'programmeThemeIds', 'artistIds', 'about'];
 function metadata(s: Row, sources: Map<string, Row>, languages: Map<string, Row>, themes: Map<string, Row>): void {
   const tags = strings(s['broadcastLanguages']);
   if (s['programmeThemeIds'] !== undefined) {
@@ -461,6 +461,10 @@ export function validateV2(value: unknown): Catalog {
       );
       const website = https(s['website']);
       nullable(s['notes']);
+      if (s['about'] !== undefined) {
+        const about=text(s['about']);
+        check(about.length >= 65 && about.length <= 650, 'public About description length');
+      }
       metadata(s, sources, languages, themes);
       if (s['artistIds'] !== undefined) {
         refs(s['artistIds'], artists, 1);
