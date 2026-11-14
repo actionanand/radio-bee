@@ -89,9 +89,12 @@ describe('Reusable LED equalizer', () => {
       await Promise.resolve();
       expect(onFrame).toBeDefined();
       onFrame?.(120);
+      onFrame?.(530); // Bass updates must not retime or restart the bee.
       fixture.detectChanges();
       const host = fixture.nativeElement as HTMLElement;
       expect(host.getAttribute('data-mode')).toBe('audio');
+      const panel = host.querySelector<HTMLElement>('.rb-led-panel')!;
+      expect(panel.style.getPropertyValue('--fly')).toBe('');
       const bar = host.querySelector<HTMLElement>('.rb-led');
       const heldLevel = bar!.style.getPropertyValue('--rb-led-inset');
       expect(heldLevel).toMatch(/%$/);

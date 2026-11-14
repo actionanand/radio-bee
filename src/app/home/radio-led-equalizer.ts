@@ -79,7 +79,6 @@ export class RadioLedEqualizerComponent {
     let closed = false;
     let lastDraw = 0;
     let silentSince = 0;
-    let lastPace = 0;
     let rollingBass = 0;
     let lastBass = 0;
     let lastBeat = 0;
@@ -110,8 +109,8 @@ export class RadioLedEqualizerComponent {
       });
       this.mode.set('audio');
 
-      // Envelope/onset cues influence the bee flight and display pulse.
-      // These are deliberately approximate, not a claimed BPM measurement.
+      // Bass onsets influence only the pulse indicator, never the bee flight.
+      // This is deliberately approximate, not a claimed BPM measurement.
       const bass = levels.slice(0, 6).reduce((sum, level) => sum + level, 0) / 6;
       rollingBass = rollingBass ? 0.9 * rollingBass + 0.1 * bass : bass;
       if (bass > 4 && bass > rollingBass * 1.18 && bass > lastBass && now - lastBeat >= 280) {
@@ -120,10 +119,6 @@ export class RadioLedEqualizerComponent {
         panel.style.setProperty('--beat', `${(beatInterval / 1000).toFixed(2)}s`);
       }
       lastBass = bass;
-      if (now - lastPace > 400) {
-        panel.style.setProperty('--fly', `${(11 - 5 * (bass / 16)).toFixed(1)}s`);
-        lastPace = now;
-      }
     };
 
     const begin = () => {
