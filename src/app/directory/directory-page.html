@@ -12,7 +12,8 @@
 } @if(mode()==='home'){<app-radio-hero [compact]="true" />
 @if(data.homeSelectionWarning()){<p role="status">{{data.statusText(data.homeSelectionWarning())}}</p>}
 <h2>{{text('featured')}} ({{rows().length}})</h2>
-<a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>} @if(destinations().length){
+<a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>
+<a class="home-settings" routerLink="/settings">{{text('settings')}}</a>} @if(destinations().length){
 <div class="destinations">
   @for(destination of destinations();track destination.id){<a [routerLink]="destination.url"
     ><strong>{{destination.name}}</strong><span>{{destination.count}} {{text('stations')}}</span></a

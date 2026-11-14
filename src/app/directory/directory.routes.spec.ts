@@ -9,6 +9,7 @@ import { provideIonicAngular } from '@ionic/angular';
 import { routes } from '../app.routes';
 import { CatalogService, CATALOG_URL, CATALOG_STORAGE } from '../catalog/catalog.service';
 import { FavoritesService, FAVORITES_STORAGE } from '../catalog/favorites.service';
+import { HomePreferencesService, HOME_PREFERENCES_STORAGE } from './home-preferences.service';
 import { validateV2 } from '../catalog/catalog-v2';
 import { v2Fixture } from '../catalog/testing/v2.fixture';
 import { PlayerService } from '../player/player.service';
@@ -33,6 +34,7 @@ function setup(base = 'https://catalog.test/v2/') {
       { provide: CATALOG_URL, useValue: base },
       { provide: CATALOG_STORAGE, useValue: storage },
       { provide: FAVORITES_STORAGE, useValue: storage },
+      { provide: HOME_PREFERENCES_STORAGE, useValue: { get: async () => ({ value: null }), set: vi.fn(async () => undefined) } },
       { provide: MEDIA_ENGINE, useValue: { audio, load, clear, supports: () => true } },
     ],
   });
@@ -66,6 +68,55 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
     expect(element(h).querySelector('[data-nav=world][aria-current=page]')).not.toBeNull();
   });
+  it('offers v2 Settings as the final navigation item and guards custom Home until three radios are saved', async () => {
+    const { data } = setup();
+    const home = TestBed.inject(HomePreferencesService);
+    await home.loaded;
+    const h = await RouterTestingHarness.create('/settings');
+    h.detectChanges();
+    const host = () => element(h);
+    const nav = [...host().querySelectorAll('[data-nav]')] as HTMLElement[];
+    expect(nav.at(-1)?.dataset['nav']).toBe('settings');
+    expect(host().querySelector('app-settings-page h1')?.textContent?.trim()).toBe('Settings');
+    expect(host().querySelector('[data-control=settings-locale] ion-select')).not.toBeNull();
+    expect(host().querySelector('[data-control=settings-theme] ion-select')).not.toBeNull();
+    const on = host().querySelector<HTMLButtonElement>('.material-switch')!;
+    expect(on.getAttribute('role')).toBe('switch');
+    expect(on.getAttribute('aria-checked')).toBe('false');
+    on.click();
+    h.detectChanges();
+    expect(host().querySelector('.material-switch')?.getAttribute('aria-checked')).toBe('true');
+    const save = () => host().querySelector<HTMLButtonElement>('.save-button')!;
+    const options = [...host().querySelectorAll<HTMLButtonElement>('.station-option')];
+    expect(options.length).toBeGreaterThan(10);
+    expect(save().disabled).toBe(true);
+    options[0].click();
+    options[1].click();
+    h.detectChanges();
+    expect(save().disabled).toBe(true);
+    options[2].click();
+    h.detectChanges();
+    expect(save().disabled).toBe(false);
+    const chosen = options.slice(0, 3).map(option => {
+      const name = option.textContent?.replace(/[✓+]/g, '').trim();
+      return data.catalog()!.stations.find(station => data.stationName(station) === name)!.id;
+    });
+    save().click();
+    h.detectChanges();
+    expect(home.enabled()).toBe(true);
+    expect(home.state().ids).toEqual(chosen);
+    await h.navigateByUrl('/home');
+    expect([...host().querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(chosen);
+    await h.navigateByUrl('/settings');
+    host().querySelector<HTMLButtonElement>('.material-switch')!.click();
+    h.detectChanges();
+    expect(home.enabled()).toBe(false);
+    await h.navigateByUrl('/home');
+    expect([...host().querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(data.homeStationIds().slice(0, 10));
+  });
+
   it('localizes tuner and footer taglines when UI language changes', async () => {
     const { data } = setup();
     const h = await RouterTestingHarness.create('/home');

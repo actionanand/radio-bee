@@ -1,0 +1,64 @@
+<section class="settings" [attr.lang]="data.locale()">
+  <h1 tabindex="-1">{{ text('settings') }}</h1>
+  <section class="setting-card" aria-labelledby="appearance-heading">
+    <h2 id="appearance-heading">{{ text('appearance') }}</h2>
+    <div class="preferences">
+      <app-directory-select data-control="settings-locale"
+        [label]="text('chooseLanguage')"
+        [value]="data.localePreference()"
+        [options]="localeOptions()"
+        (changed)="data.setLocale($event)" />
+      <app-directory-select data-control="settings-theme"
+        [label]="text('chooseTheme')"
+        [value]="theme.mode()"
+        [options]="themeOptions()"
+        (changed)="theme.set($event)" />
+    </div>
+  </section>
+  <section class="setting-card" aria-labelledby="personal-heading">
+    <h2 id="personal-heading">{{ text('homeSection') }}</h2>
+    <div class="toggle-row">
+      <div>
+        <h3 id="personal-toggle-label">{{ text('personalHome') }}</h3>
+        <p>{{ text('personalHelp') }}</p>
+      </div>
+      <button type="button" class="material-switch" role="switch"
+        [attr.aria-checked]="enabled()"
+        aria-labelledby="personal-toggle-label"
+        (click)="switchHome(!enabled())">
+        <span class="thumb" aria-hidden="true"></span>
+      </button>
+    </div>
+    <p class="help" role="status">{{ text(home.enabled() ? 'customHome' : 'defaultHome') }}</p>
+    @if (enabled()) {
+      <div class="station-picker">
+        <h3>{{ text('chooseStations') }}</h3>
+        <p class="help">{{ text('minMax') }}</p>
+        <label class="search">{{ text('search') }}
+          <input type="search" [value]="query()" (input)="search($event)" />
+        </label>
+        <p class="selection-count" role="status">{{ draft().length }} / {{ max }} {{ text('count') }}</p>
+        <div class="station-options" role="group" [attr.aria-label]="text('chooseStations')">
+          @for (station of stations(); track station.id) {
+            <button type="button" class="station-option"
+              [class.selected]="draft().includes(station.id)"
+              [attr.aria-pressed]="draft().includes(station.id)"
+              [disabled]="!draft().includes(station.id) && draft().length >= max"
+              (click)="choose(station.id)">
+              <span class="selection-mark" aria-hidden="true">{{ draft().includes(station.id) ? '✓' : '+' }}</span>
+              <span>{{ data.stationName(station) }}</span>
+            </button>
+          } @empty {
+            <p>{{ text('empty') }}</p>
+          }
+        </div>
+        @if (!valid()) {
+          <p class="help" role="status">{{ text('invalid') }}</p>
+        }
+        <button class="save-button" type="button" [disabled]="!valid()" (click)="save()">{{ text('save') }}</button>
+      </div>
+    }
+    @if (saved()) { <p role="status" class="saved">{{ text('saved') }}</p> }
+    @if (home.warning()) { <p role="alert">{{ text('storage') }}</p> }
+  </section>
+</section>

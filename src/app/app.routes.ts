@@ -28,6 +28,7 @@ export const routes: Routes = [
         { path: mode + '/:facetId', loadComponent: page, data: { mode } },
       ]),
       { path: 'favorites', loadComponent: page, data: { mode: 'favorites' } },
+      { path: 'settings', loadComponent: () => import('./directory/settings-page').then(m => m.SettingsPage) },
       { path: 'listen-now', loadComponent: page, data: { mode: 'listenNow' } },
       { path: 'radios/:stationId', loadComponent: () => import('./directory/station-page').then(m => m.StationPage) },
       { path: '', redirectTo: 'home', pathMatch: 'full' },

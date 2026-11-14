@@ -27,6 +27,7 @@ import {
   menuOutline,
   closeOutline,
   searchOutline,
+  settingsOutline,
 } from 'ionicons/icons';
 import { CatalogService } from '../catalog/catalog.service';
 import { FavoritesService } from '../catalog/favorites.service';
@@ -86,6 +87,7 @@ export class DirectoryShellComponent {
     { key: 'listenNow', path: '/listen-now', icon: playCircleOutline },
     { key: 'networks', path: '/networks', icon: gitNetworkOutline },
     { key: 'broadcasters', path: '/broadcasters', icon: businessOutline },
+    { key: 'settings', path: '/settings', icon: settingsOutline },
   ];
   private restoreOnClose = true;
   private lastPath = '';

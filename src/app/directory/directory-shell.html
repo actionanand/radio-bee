@@ -85,6 +85,7 @@
       ariaCurrentWhenActive="page"
       [routerLinkActiveOptions]="{exact:link.path==='/home'}"
       [attr.data-nav]="link.key"
+      [class.settings-link]="link.key==='settings'"
       ><ion-icon [icon]="link.icon" aria-hidden="true" /><span>{{text(link.key)}}</span></a
     >}}
   </nav></ng-template
