@@ -1,4 +1,6 @@
 import { Language, stationDisplayName, Station } from './catalog.models';
+import { DOCUMENT } from '@angular/common';
+import { effectiveLocale, resolveDeviceLanguage, UiLanguagePreference } from './device-language';
 import { validateV2, v2Manifest } from './catalog-v2';
 import { catalogStatusText } from './catalog-status';
 import { languageDisplayName } from './language-label';
@@ -38,6 +40,8 @@ export const CATALOG_SEED_URL = new InjectionToken<string | null>('CATALOG_SEED_
 @Service()
 export class CatalogService {
   private readonly base = inject(CATALOG_URL);
+  readonly deviceLocale = resolveDeviceLanguage(inject(DOCUMENT).defaultView?.navigator.language);
+  readonly localePreference = signal<UiLanguagePreference>('device');
   private readonly fetchJson = inject(CATALOG_FETCH);
   private readonly storage = inject(CATALOG_STORAGE);
   private readonly seedUrl = inject(CATALOG_SEED_URL);
@@ -59,14 +63,17 @@ export class CatalogService {
   readonly homeSelectionWarning = signal('');
   readonly cached = signal(false);
   readonly updatedAt = signal('');
-  readonly locale = signal('en');
+  readonly locale = signal(this.deviceLocale);
   async start(): Promise<void> {
     if (this.started) return;
     this.started = true;
     this.loading.set(true);
     try {
       const language = await this.storage.get({ key: 'radiobee.ui-language' });
-      if (language.value && ['en', 'ta', 'sa'].includes(language.value)) this.locale.set(language.value);
+      if (language.value === 'device' || language.value === 'en' || language.value === 'ta' || language.value === 'sa') {
+        this.localePreference.set(language.value);
+        this.locale.set(effectiveLocale(language.value, this.deviceLocale));
+      }
     } catch {
       this.storageWarning.set('Language preference could not be read.');
     }
@@ -193,11 +200,13 @@ export class CatalogService {
       this.loading.set(false);
     }
   }
-  async setLocale(locale: string): Promise<void> {
-    if (!['en', 'ta', 'sa'].includes(locale)) return;
-    this.locale.set(locale);
+  async setLocale(preference: string): Promise<void> {
+    if (preference !== 'device' && preference !== 'en' && preference !== 'ta' && preference !== 'sa') return;
+    const selected = preference as UiLanguagePreference;
+    this.localePreference.set(selected);
+    this.locale.set(effectiveLocale(selected, this.deviceLocale));
     try {
-      await this.storage.set({ key: 'radiobee.ui-language', value: locale });
+      await this.storage.set({ key: 'radiobee.ui-language', value: selected });
     } catch {
       this.storageWarning.set('UI language changed but could not be saved.');
     }
