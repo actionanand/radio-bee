@@ -5,6 +5,8 @@ import { Component, computed, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { IonIcon } from '@ionic/angular';
+import { settingsOutline } from 'ionicons/icons';
 import { CatalogService } from '../catalog/catalog.service';
 import { allStations, emptyFilters, filterStations } from '../catalog/catalog.models';
 import { BrowseSelection, browseV2, initialBrowse, locationMembership } from '../catalog/catalog-v2';
@@ -30,6 +32,7 @@ import { DirectoryKey, directoryText } from './directory.labels';
   selector: 'app-directory-page',
   imports: [
     RouterLink,
+    IonIcon,
     StationCardComponent,
     RadioHeroComponent,
     RadioBeeLoaderComponent,
@@ -44,6 +47,7 @@ export class DirectoryPage {
   readonly data = inject(CatalogService);
   readonly favorites = inject(FavoritesService);
   readonly personalHome = inject(HomePreferencesService);
+  readonly settingsIcon = settingsOutline;
   readonly player = inject(PlayerService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

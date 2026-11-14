@@ -76,6 +76,14 @@ summary,
   align-items: center;
   font-weight: 700;
 }
+.browse-all,
+.browse-all:hover,
+.browse-all:focus-visible,
+.home-settings,
+.home-settings:hover,
+.home-settings:focus-visible {
+  text-decoration: none;
+}
 :focus-visible {
   outline: 3px solid var(--accent-ink);
   outline-offset: 3px;
@@ -88,4 +96,20 @@ summary,
   }
 }
 
-.home-settings { display: inline-flex; align-items: center; margin-inline-start: 18px; min-height: 44px; font-size: 13px; font-weight: 650; }
+.home-settings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-inline-start: 12px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.home-settings:hover {
+  background: var(--panel);
+}
+.home-settings ion-icon { font-size: 21px; }
