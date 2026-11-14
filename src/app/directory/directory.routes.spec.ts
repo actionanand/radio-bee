@@ -52,15 +52,28 @@ function setup(base = 'https://catalog.test/v2/') {
 }
 const element = (h: RouterTestingHarness) => h.routeNativeElement as HTMLElement;
 describe('Routable v2 directory', () => {
-  it('caps API-provided Home identities in API order and retains all identities in World', async () => {
+  it('renders every API Home identity in API order regardless of count, and retains World', async () => {
     setup();
     const h = await RouterTestingHarness.create('/home');
     const selected = TestBed.inject(CatalogService).homeStationIds();
     expect(
       [...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']),
-    ).toEqual(selected.slice(0, 10));
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
-    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (10)');
+    ).toEqual(selected);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (13)');
+    // The API can publish more or fewer than the personal Home limit of 10.
+    const data = TestBed.inject(CatalogService);
+    const more = data.catalog()!.stations.slice(0, 15).map(station => station.id);
+    data.homeStationIds.set(more);
+    h.detectChanges();
+    expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(more);
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (15)');
+    data.homeStationIds.set(more.slice(0, 2));
+    h.detectChanges();
+    expect([...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
+      .toEqual(more.slice(0, 2));
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (2)');
     expect(element(h).querySelector('.selection-note')).toBeNull();
     expect(element(h).textContent).not.toContain('How these radios are selected');
     expect(element(h).querySelector('a.browse-all')?.getAttribute('href')).toBe('/world');
@@ -114,7 +127,7 @@ describe('Routable v2 directory', () => {
     expect(home.enabled()).toBe(false);
     await h.navigateByUrl('/home');
     expect([...host().querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']))
-      .toEqual(data.homeStationIds().slice(0, 10));
+      .toEqual(data.homeStationIds());
   });
 
   it('localizes tuner and footer taglines when UI language changes', async () => {
@@ -149,7 +162,7 @@ describe('Routable v2 directory', () => {
         .map(s => s.id),
     );
     h.detectChanges();
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
     expect(element(h).querySelector('app-radio-bee-loader.compact .radio-loader.is-loading')).not.toBeNull();
     data.loading.set(false);
     h.detectChanges();
@@ -511,7 +524,7 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelector('a.btn')?.textContent?.trim()).toBe('मुखपृष्ठं गच्छ');
     await h.navigateByUrl('/home');
     expect(element(h).querySelector('app-not-found-page')).toBeNull();
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
   });
   it('wraps keyboard focus inside the native mobile drawer in both directions', async () => {
     setup();

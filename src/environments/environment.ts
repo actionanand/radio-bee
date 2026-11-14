@@ -15,7 +15,7 @@ export const environment = {
   // Presentation-only: suppress unverified-stream and permission-review notices on station cards.
   // Playback eligibility, recording rules, and stream metadata are unaffected.
   hideStreamReviewNotices: true,
-  // V2 only: maximum Home stations and custom picker selection (3–10).
+  // V2 only: maximum for user-selected Home stations (3–10); API Featured Radios are uncapped.
   maxHomeStations: 10,
   liveStreamTests: false,
   production: false,
