@@ -20,7 +20,16 @@
       (click)="toggleFavorite()">
       <ion-icon [icon]="favorites.has(station().id)?icons.heart:icons.heartOutline" aria-hidden="true" />
     </button>
-    @if(state()==='playing'||state()==='loading'){<span class="on-air">{{ ui(player.statusLabel()) }}</span>}
+    @if(state()==='playing'||state()==='loading'){
+    <span class="on-air" [class.now-playing]="state()==='playing'">
+      @if (state()==='playing') {
+      <span class="now-playing-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+      {{ ui('nowPlaying') }}
+      } @else {
+      {{ ui(player.statusLabel()) }}
+      }
+    </span>
+    }
   </div>
   <div class="card-copy">
     <h3>
@@ -46,6 +55,7 @@
     <div class="card-actions" [class.has-discovery]="!!station().discovery">
       @if(eligibility.status==='ready'){<button
         class="play"
+        [class.is-pause]="state()==='playing'"
         type="button"
         [attr.aria-label]="ui(action())+' · '+data.stationName(station())"
         [attr.aria-busy]="state()==='loading'"

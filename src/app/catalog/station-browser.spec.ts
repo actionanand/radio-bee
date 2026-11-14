@@ -1,4 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { PlayerService } from '../player/player.service';
+import { uiLabel } from './catalog.ui';
 import { fixture } from './catalog.fixture';
 import { validateCatalog } from './catalog.validation';
 import { emptyFilters, filterStations } from './catalog.models';
@@ -66,6 +69,60 @@ describe('India-only detailed geography', () => {
     expect(location.textContent).not.toContain(' · ');
     expect(languages.style.blockSize).toBe('1lh');
     expect(location.style.blockSize).toBe('1lh');
+  });
+
+  it('shows animated Now playing only during playback and gives Pause an outlined state', () => {
+    const playback = signal<'playing' | 'loading' | 'paused'>('playing');
+    const toggle = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: PlayerService,
+          useValue: {
+            eligibility: () => ({ status: 'ready' }),
+            stateFor: () => playback(),
+            statusLabel: () => (playback() === 'loading' ? 'connecting' : playback()),
+            pendingPhase: () => 'connecting',
+            toggle,
+          },
+        },
+      ],
+    });
+    const data = TestBed.inject(CatalogService);
+    data.catalog.set(catalog);
+    data.locale.set('en');
+    const station = catalog.stations.find(s => s.streams.length)!;
+    const view = TestBed.createComponent(StationCardComponent);
+    view.componentRef.setInput('station', station);
+    view.detectChanges();
+    const card = view.nativeElement as HTMLElement;
+    const status = () => card.querySelector('.on-air') as HTMLElement | null;
+    const button = () => card.querySelector('button.play') as HTMLButtonElement;
+    expect(status()?.classList.contains('now-playing')).toBe(true);
+    expect(status()?.querySelectorAll('.now-playing-eq span')).toHaveLength(4);
+    expect(status()?.textContent?.trim()).toBe('Now playing');
+    expect(button().classList.contains('is-pause')).toBe(true);
+    expect(button().textContent?.trim()).toBe(uiLabel('en', 'pause'));
+    expect(button().getAttribute('aria-label')).toContain('Pause');
+    button().click();
+    expect(toggle).toHaveBeenCalledWith(station);
+
+    for (const locale of ['ta', 'sa']) {
+      data.locale.set(locale);
+      view.detectChanges();
+      expect(status()?.textContent?.trim()).toBe(uiLabel(locale, 'nowPlaying'));
+    }
+    playback.set('loading');
+    view.detectChanges();
+    expect(status()?.classList.contains('now-playing')).toBe(false);
+    expect(status()?.querySelector('.now-playing-eq')).toBeNull();
+    expect(status()?.textContent?.trim()).toBe(uiLabel('sa', 'connecting'));
+    expect(button().classList.contains('is-pause')).toBe(false);
+    playback.set('paused');
+    view.detectChanges();
+    expect(status()).toBeNull();
+    expect(button().classList.contains('is-pause')).toBe(false);
+    expect(button().textContent?.trim()).toBe(uiLabel('sa', 'play'));
   });
 
   for (const locale of ['en', 'ta', 'sa']) {

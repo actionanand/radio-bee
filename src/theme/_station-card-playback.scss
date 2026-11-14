@@ -1,0 +1,80 @@
+/* Compact Now-playing status taken from the supplied mini-equalizer reference.
+ * Separate global partial avoids increasing the component stylesheet budget.
+ */
+app-station-card .on-air.now-playing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  right: auto;
+  max-width: calc(100% - 32px);
+  min-height: 28px;
+  padding: 5px 11px;
+  border: 1px solid #b7dec5;
+  border-radius: 999px;
+  background: #eefaf1;
+  color: #173a32;
+  box-shadow: 0 2px 8px rgb(14 26 19 / 22%);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+app-station-card .now-playing-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex: none;
+  height: 15px;
+}
+app-station-card .now-playing-eq span {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: #26824c;
+  transform-origin: bottom center;
+  animation: rb-card-eq 900ms ease-in-out infinite;
+}
+app-station-card .now-playing-eq span:nth-child(2) {
+  animation-duration: 1100ms;
+  animation-delay: -480ms;
+}
+app-station-card .now-playing-eq span:nth-child(3) {
+  animation-duration: 760ms;
+  animation-delay: -260ms;
+}
+app-station-card .now-playing-eq span:nth-child(4) {
+  animation-duration: 1240ms;
+  animation-delay: -670ms;
+}
+@keyframes rb-card-eq {
+  0%, 100% { transform: scaleY(.22); }
+  20% { transform: scaleY(.88); }
+  45% { transform: scaleY(.4); }
+  65% { transform: scaleY(1); }
+  85% { transform: scaleY(.55); }
+}
+/* Pausing is an alternative action, not a second solid-green Play button. */
+app-station-card .play.is-pause {
+  border: 2px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+app-station-card .play.is-pause:hover {
+  background: var(--accent);
+  color: #173a32;
+  border-color: var(--accent-ink);
+}
+app-station-card .play:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  app-station-card .now-playing-eq span {
+    animation: none;
+    transform: scaleY(.65);
+  }
+  app-station-card .now-playing-eq span:nth-child(2) { transform: scaleY(.95); }
+  app-station-card .now-playing-eq span:nth-child(3) { transform: scaleY(.45); }
+}
