@@ -4,6 +4,7 @@ import { validateCatalog } from './catalog.validation';
 import { emptyFilters, filterStations } from './catalog.models';
 import { CatalogService, CATALOG_STORAGE } from './catalog.service';
 import { StationBrowserComponent } from './station-browser';
+import { StationCardComponent } from './station-card';
 
 describe('India-only detailed geography', () => {
   beforeEach(() => {
@@ -39,6 +40,32 @@ describe('India-only detailed geography', () => {
     expect(location.style.blockSize).toBe('1lh');
     expect(card.querySelector('.frequency')).toBeNull();
     expect(card.textContent).not.toContain('Online radio');
+  });
+
+  it('uses commas for metadata and one-line title ellipsis in shared station cards', () => {
+    const service = TestBed.inject(CatalogService);
+    vi.spyOn(service, 'start').mockResolvedValue();
+    service.catalog.set(catalog);
+    service.locale.set('en');
+    const station = catalog.stations.find(s => s.id === 'luminous-radio')!;
+    const view = TestBed.createComponent(StationCardComponent);
+    view.componentRef.setInput('station', {
+      ...station,
+      name: 'An exceptionally long station title that should occupy a single line',
+    });
+    view.detectChanges();
+    const card = view.nativeElement as HTMLElement;
+    const title = card.querySelector('.card-copy h3 app-ellipsis-text .clamped') as HTMLElement;
+    const languages = card.querySelector('.language-summary .clamped') as HTMLElement;
+    const location = card.querySelector('.location .clamped') as HTMLElement;
+    expect(title.textContent).toContain('An exceptionally long station title');
+    expect(title.style.blockSize).toBe('1lh');
+    expect(languages.textContent).toContain(', ');
+    expect(languages.textContent).not.toContain(' · ');
+    expect(location.textContent).toContain(', ');
+    expect(location.textContent).not.toContain(' · ');
+    expect(languages.style.blockSize).toBe('1lh');
+    expect(location.style.blockSize).toBe('1lh');
   });
 
   for (const locale of ['en', 'ta', 'sa']) {
