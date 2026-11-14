@@ -39,6 +39,24 @@
   color: #173a32;
   font-weight: 750;
 }
+.favorite-symbol { position: relative; }
+.favorite-symbol.removed { background: var(--panel); color: var(--muted); }
+.favorite-symbol .symbol-heart { font-size: 17px; }
+.favorite-symbol .symbol-mark {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  right: -4px;
+  bottom: -3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--surface);
+  background: #26824c;
+  color: #fff;
+}
+.favorite-symbol.removed .symbol-mark { background: #ab4e45; }
+.favorite-symbol .symbol-mark ion-icon { font-size: 11px; }
 .warning .symbol {
   background: #f7dfac;
   color: #67431b;

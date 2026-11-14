@@ -1,25 +1,42 @@
-/* Compact Now-playing status taken from the supplied mini-equalizer reference.
- * Separate global partial avoids increasing the component stylesheet budget.
+/* One full-width overlay for connecting and now playing. Supports long
+ * Tamil labels without clipping and keeps status above the artwork.
  */
-app-station-card .on-air.now-playing {
-  display: inline-flex;
-  align-items: center;
+app-station-card .station-card .thumbnail .on-air {
+  position: absolute;
+  inset-inline: 12px;
+  bottom: 10px;
+  box-sizing: border-box;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  min-height: 30px;
+  padding: 6px 8px;
+  display: flex;
   justify-content: center;
+  align-items: center;
   gap: 7px;
-  right: auto;
-  max-width: calc(100% - 32px);
-  min-height: 28px;
-  padding: 5px 11px;
   border: 1px solid #b7dec5;
-  border-radius: 999px;
+  border-radius: 9px;
   background: #eefaf1;
   color: #173a32;
   box-shadow: 0 2px 8px rgb(14 26 19 / 22%);
   font-size: 11px;
   font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
+  line-height: 1.35;
 }
+app-station-card .on-air .status-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  text-align: center;
+}
+app-station-card .on-air .status-sync {
+  display: block;
+  flex: none;
+  font-size: 16px;
+  animation: rb-card-status-spin 900ms linear infinite;
+}
+@keyframes rb-card-status-spin { to { transform: rotate(360deg); } }
 app-station-card .now-playing-eq {
   display: inline-flex;
   align-items: flex-end;
@@ -69,12 +86,4 @@ app-station-card .play.is-pause:hover {
 app-station-card .play:focus-visible {
   outline: 3px solid var(--accent-ink);
   outline-offset: 2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  app-station-card .now-playing-eq span {
-    animation: none;
-    transform: scaleY(.65);
-  }
-  app-station-card .now-playing-eq span:nth-child(2) { transform: scaleY(.95); }
-  app-station-card .now-playing-eq span:nth-child(3) { transform: scaleY(.45); }
 }

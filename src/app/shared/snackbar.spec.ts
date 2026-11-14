@@ -65,6 +65,9 @@ describe('Reusable favorites snackbar', () => {
     view.detectChanges();
     expect(favorites.has(station.id)).toBe(true);
     expect(snackbar.current()?.tone).toBe('success');
+    expect(host.querySelectorAll('.favorite-symbol .symbol-heart')).toHaveLength(1);
+    expect(host.querySelectorAll('.favorite-symbol .symbol-mark ion-icon')).toHaveLength(1);
+    expect(host.querySelector('.favorite-symbol.removed')).toBeNull();
     expect(host.querySelector('.message')?.textContent).toContain('Added to favorites');
     expect(host.querySelector('.message')?.textContent).toContain(catalog.stationName(station));
     expect(persisted).toContain(station.id);
@@ -75,6 +78,8 @@ describe('Reusable favorites snackbar', () => {
     await favorites.toggle(station.id);
     view.detectChanges();
     expect(favorites.has(station.id)).toBe(false);
+    expect(host.querySelectorAll('.favorite-symbol.removed .symbol-heart')).toHaveLength(1);
+    expect(host.querySelectorAll('.favorite-symbol.removed .symbol-mark ion-icon')).toHaveLength(1);
     expect(host.querySelector('.message')?.textContent).toContain('விருப்பங்களிலிருந்து நீக்கப்பட்டது');
     expect(JSON.parse(persisted)).toEqual([]);
 
@@ -107,6 +112,7 @@ describe('Reusable favorites snackbar', () => {
     expect(favorites.has(catalog.catalog()!.stations[0].id)).toBe(true);
     expect(favorites.warning()).toBe(true);
     expect(snackbar.current()?.tone).toBe('warning');
+    expect((view.nativeElement as HTMLElement).querySelector('.favorite-symbol')).toBeNull();
     expect((view.nativeElement as HTMLElement).querySelector('.warning .message')?.textContent).toContain(
       'Favorites could not be saved.',
     );
