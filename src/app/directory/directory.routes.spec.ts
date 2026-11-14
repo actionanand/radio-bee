@@ -78,6 +78,12 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelector('.selection-note')).toBeNull();
     expect(element(h).textContent).not.toContain('How these radios are selected');
     expect(element(h).querySelector('a.browse-all')?.getAttribute('href')).toBe('/world');
+    const settingsLink = element(h).querySelector<HTMLAnchorElement>('a.home-settings');
+    expect(settingsLink?.getAttribute('href')).toBe('/settings');
+    expect(settingsLink?.getAttribute('aria-label')).toBe('Settings');
+    expect(settingsLink?.getAttribute('title')).toBe('Settings');
+    expect(settingsLink?.querySelector('ion-icon[aria-hidden="true"]')).not.toBeNull();
+    expect(settingsLink?.textContent?.trim()).toBe('');
     await h.navigateByUrl('/world');
     expect(element(h).querySelectorAll('.station-card')).toHaveLength(117);
     expect(element(h).querySelector('[data-nav=world][aria-current=page]')).not.toBeNull();
