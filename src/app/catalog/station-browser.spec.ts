@@ -110,7 +110,7 @@ describe('India-only detailed geography', () => {
     for (const locale of ['ta', 'sa']) {
       data.locale.set(locale);
       view.detectChanges();
-      expect(status()?.textContent?.trim()).toBe(uiLabel(locale, 'nowPlaying'));
+      expect(status()?.textContent?.trim()).toBe(uiLabel(locale, 'onAirNow'));
     }
     playback.set('loading');
     view.detectChanges();

@@ -24,7 +24,7 @@
     <span class="on-air" [class.now-playing]="state()==='playing'">
       @if (state()==='playing') {
       <span class="now-playing-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-      {{ ui('nowPlaying') }}
+      {{ ui('onAirNow') }}
       } @else {
       {{ ui(player.statusLabel()) }}
       }
