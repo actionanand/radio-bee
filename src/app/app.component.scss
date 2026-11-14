@@ -4,3 +4,10 @@
   min-height: 0;
   width: 100%;
 }
+
+/* The snackbar is positioned above the actual mini-player height, not an estimated offset. */
+.player-dock {
+  position: relative;
+  flex: none;
+  z-index: 15;
+}

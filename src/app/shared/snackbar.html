@@ -1,0 +1,9 @@
+<div class="announcement" role="status" aria-live="polite" aria-atomic="true">
+  @if (snackbar.current(); as notice) {
+  <div class="snackbar" [class.warning]="notice.tone === 'warning'" [attr.lang]="locale">
+    <span class="symbol" aria-hidden="true">{{ notice.tone === 'warning' ? '!' : '✓' }}</span>
+    <span class="message">{{ message() }}</span>
+    <button type="button" [attr.aria-label]="ui('dismissToast')" (click)="snackbar.dismiss()">×</button>
+  </div>
+  }
+</div>
