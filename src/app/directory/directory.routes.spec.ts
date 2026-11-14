@@ -52,15 +52,15 @@ function setup(base = 'https://catalog.test/v2/') {
 }
 const element = (h: RouterTestingHarness) => h.routeNativeElement as HTMLElement;
 describe('Routable v2 directory', () => {
-  it('renders only the API-provided Home identities in API order and all identities in World', async () => {
+  it('caps API-provided Home identities in API order and retains all identities in World', async () => {
     setup();
     const h = await RouterTestingHarness.create('/home');
     const selected = TestBed.inject(CatalogService).homeStationIds();
     expect(
       [...element(h).querySelectorAll<HTMLElement>('.station-card')].map(card => card.dataset['stationId']),
-    ).toEqual(selected);
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
-    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (13)');
+    ).toEqual(selected.slice(0, 10));
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
+    expect(element(h).querySelector('app-directory-page > h2')?.textContent?.trim()).toBe('Featured Radios (10)');
     expect(element(h).querySelector('.selection-note')).toBeNull();
     expect(element(h).textContent).not.toContain('How these radios are selected');
     expect(element(h).querySelector('a.browse-all')?.getAttribute('href')).toBe('/world');
@@ -149,7 +149,7 @@ describe('Routable v2 directory', () => {
         .map(s => s.id),
     );
     h.detectChanges();
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
     expect(element(h).querySelector('app-radio-bee-loader.compact .radio-loader.is-loading')).not.toBeNull();
     data.loading.set(false);
     h.detectChanges();
@@ -511,7 +511,7 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelector('a.btn')?.textContent?.trim()).toBe('मुखपृष्ठं गच्छ');
     await h.navigateByUrl('/home');
     expect(element(h).querySelector('app-not-found-page')).toBeNull();
-    expect(element(h).querySelectorAll('.station-card')).toHaveLength(13);
+    expect(element(h).querySelectorAll('.station-card')).toHaveLength(10);
   });
   it('wraps keyboard focus inside the native mobile drawer in both directions', async () => {
     setup();
@@ -521,7 +521,7 @@ describe('Routable v2 directory', () => {
     const dialog = element(h).querySelector('dialog')!;
     dialog.open = true;
     const first = dialog.querySelector('button')!;
-    const last = dialog.querySelector('a[data-nav=broadcasters]') as HTMLAnchorElement;
+    const last = dialog.querySelector('a[data-nav=settings]') as HTMLAnchorElement;
     first.focus();
     const reverse = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, cancelable: true });
     shell.trapFocus(reverse);
