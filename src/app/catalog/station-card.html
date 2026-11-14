@@ -32,10 +32,12 @@
     }
     <p class="location">{{ shortLocation(station()) }}</p>
     <p class="frequency">{{ ui(station().discovery ? 'discoveryOnly' : 'onlineRadio') }}</p>
-    @if (trialCandidate()) {
-    <p class="trial-label">{{ ui('unverifiedTrial') }}</p>
-    } @else if (useReviewPending()) {
-    <p class="trial-label">{{ ui('permissionPending') }}</p>
+    @if (!hideStreamReviewNotices) {
+      @if (trialCandidate()) {
+        <p class="trial-label">{{ ui('unverifiedTrial') }}</p>
+      } @else if (useReviewPending()) {
+        <p class="trial-label">{{ ui('permissionPending') }}</p>
+      }
     }
     <div class="card-actions" [class.has-discovery]="!!station().discovery">
       @if(eligibility.status==='ready'){<button

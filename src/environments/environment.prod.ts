@@ -8,6 +8,9 @@ export const environment = {
     CheckVerificationStatus: false,
     CheckRightsStatus: false,
   } satisfies RadioApiConfig,
+  // Presentation-only: suppress unverified-stream and permission-review notices on station cards.
+  // Playback eligibility, recording rules, and stream metadata are unaffected.
+  hideStreamReviewNotices: true,
   liveStreamTests: false,
   production: true,
   catalogSeedUrl: null,
