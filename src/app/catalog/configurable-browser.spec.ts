@@ -64,6 +64,15 @@ describe('Cards, player and Listen now share the configured policy', () => {
       providers: [
         { provide: CATALOG_STORAGE, useValue: storage },
         { provide: FAVORITES_STORAGE, useValue: storage },
+        {
+          provide: MEDIA_ENGINE,
+          useValue: {
+            audio: document.createElement('audio'),
+            load: async () => undefined,
+            clear: () => undefined,
+            supports: () => true,
+          },
+        },
       ],
     });
     const catalog = validateCatalog(structuredClone(currentPublishedFixture));
