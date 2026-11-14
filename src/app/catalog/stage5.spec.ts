@@ -153,7 +153,7 @@ describe('Station artwork', () => {
 
 describe('Localized station presentation', () => {
   for (const locale of ['en', 'ta', 'sa'])
-    it(`localizes radio, delivery and coverage labels in ${locale}`, () => {
+    it(`keeps localized station details and compact metadata without a delivery label in ${locale}`, () => {
       TestBed.configureTestingModule({
         providers: [
           { provide: MEDIA_ENGINE, useValue: null },
@@ -168,13 +168,20 @@ describe('Localized station presentation', () => {
       const station = { ...catalog.stations[0], delivery: 'online', frequencyMHz: null };
       view.componentRef.setInput('station', station);
       view.detectChanges();
-      expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'onlineRadio'));
+      const card = view.nativeElement as HTMLElement;
+      const language = card.querySelector('.language-summary .clamped') as HTMLElement;
+      const location = card.querySelector('.location .clamped') as HTMLElement;
+      expect(language.textContent?.trim()).toBeTruthy();
+      expect(location.textContent?.trim()).toBeTruthy();
+      expect(language.style.blockSize).toBe('1lh');
+      expect(location.style.blockSize).toBe('1lh');
+      expect(card.querySelector('.details-button')?.textContent?.trim()).toBe(uiLabel(locale, 'details'));
+      expect(card.querySelector('.frequency')).toBeNull();
 
       view.componentRef.setInput('station', { ...station, delivery: 'fm' });
       view.detectChanges();
-      expect(view.nativeElement.querySelector('.frequency').textContent.trim()).toBe(uiLabel(locale, 'onlineRadio'));
-      if (locale !== 'en')
-        expect(view.nativeElement.querySelector('.frequency').textContent).not.toMatch(/ONLINE RADIO|\bRadio\b/);
+      expect(card.querySelector('.frequency')).toBeNull();
+      expect(card.textContent).not.toContain(uiLabel(locale, 'onlineRadio'));
     });
 });
 describe('Persistent favorites', () => {
