@@ -1,0 +1,312 @@
+/* LED hero from supplied reference. Scoped to prevent collision with loader and 404 bees. */
+.rb-led-equalizer {
+  --led-low: #2ecc71;
+  --led-mid: #ffb000;
+  --led-high: #ff3b30;
+  --bee-yellow: #ffc61a;
+  --bee-ink: #2b2118;
+  --wing: rgba(190,225,255,.75);
+  --label: #93bda0;
+}
+/* ================= LED equalizer on a radio display ================= */
+  .rb-led-panel {
+    --beat: .5s;          /* 120 BPM: all columns are multiples of this     */
+    --fly: 8s;            /* time for one lap of the bee                    */
+    --cell: 6px;         /* height of one LED cell (LED + gap)             */
+    --seg-gap: 1px;       /* dark gap between LEDs                          */
+    
+    --col-gap: 3px;       /* gap between columns                            */
+
+    display: block; width: 100%; padding: 10px 12px 8px; border-radius: 12px;
+    background: #0e1a13; border: 2px solid #368357;
+    box-shadow: inset 0 0 14px rgba(0,0,0,.6), 0 0 18px rgba(46,204,113,.2);
+    animation: rb-led-glow var(--beat) ease-out infinite;
+  }
+  @keyframes rb-led-glow {
+    0%   { box-shadow: inset 0 0 14px rgba(0,0,0,.6), 0 0 28px rgba(46,204,113,.5); }
+    40%, 100% { box-shadow: inset 0 0 14px rgba(0,0,0,.6), 0 0 12px rgba(46,204,113,.12); }
+  }
+
+  .rb-leds { display: flex; gap: var(--col-gap); }
+
+  .rb-led {
+    position: relative; flex: 1; min-width: 0;
+    width: auto; height: calc(var(--cell) * 16);   /* 16 whole cells, no half pixels */
+    --m: 1; --del: 0s;
+  }
+
+  /* Both layers share the segmented gradient: 10 green, 3 amber, 3 red */
+  .rb-led::before,
+  .rb-led::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top,
+      var(--led-low)  0      62.5%,
+      var(--led-mid)  62.5%  81.25%,
+      var(--led-high) 81.25% 100%);
+    -webkit-mask: linear-gradient(#000 calc(100% - var(--seg-gap)), transparent 0) 0 0 / 100% var(--cell) repeat-y;
+            mask: linear-gradient(#000 calc(100% - var(--seg-gap)), transparent 0) 0 0 / 100% var(--cell) repeat-y;
+  }
+  .rb-led::before { opacity: .14; }                         /* unlit LEDs */
+
+  /* Lit LEDs always grow from the bottom and are cut exactly on a cell edge,
+     so every column is one solid ladder: no loose or floating LEDs. */
+  .rb-led::after {
+    clip-path: inset(87.5% 0 0 0);
+    animation-duration: calc(var(--beat) * var(--m));
+    animation-timing-function: steps(1, end);
+    animation-delay: var(--del);
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+  }
+
+  /* BASS / kick: every beat */
+  .rb-led:nth-child(-n+6) { --m: 1; }
+  /* MIDS / snare: beats 2 and 4 */
+  .rb-led:nth-child(n+7):nth-child(-n+14) { --m: 2; --del: calc(var(--beat) * -1); }
+  /* HIGHS / hi-hat: every half beat */
+  .rb-led:nth-child(n+15) { --m: .5; }
+
+  .rb-led:nth-child(1)::after { animation-name: rb-led-lv-b15; }
+  .rb-led:nth-child(2)::after { animation-name: rb-led-lv-b13; }
+  .rb-led:nth-child(3)::after { animation-name: rb-led-lv-b14; }
+  .rb-led:nth-child(4)::after { animation-name: rb-led-lv-b12; }
+  .rb-led:nth-child(5)::after { animation-name: rb-led-lv-b15; }
+  .rb-led:nth-child(6)::after { animation-name: rb-led-lv-b11; }
+  .rb-led:nth-child(7)::after { animation-name: rb-led-lv-m10; }
+  .rb-led:nth-child(8)::after { animation-name: rb-led-lv-m8; }
+  .rb-led:nth-child(9)::after { animation-name: rb-led-lv-m11; }
+  .rb-led:nth-child(10)::after { animation-name: rb-led-lv-m7; }
+  .rb-led:nth-child(11)::after { animation-name: rb-led-lv-m12; }
+  .rb-led:nth-child(12)::after { animation-name: rb-led-lv-m9; }
+  .rb-led:nth-child(13)::after { animation-name: rb-led-lv-m11; }
+  .rb-led:nth-child(14)::after { animation-name: rb-led-lv-m8; }
+  .rb-led:nth-child(15)::after { animation-name: rb-led-lv-h6; }
+  .rb-led:nth-child(16)::after { animation-name: rb-led-lv-h8; }
+  .rb-led:nth-child(17)::after { animation-name: rb-led-lv-h5; }
+  .rb-led:nth-child(18)::after { animation-name: rb-led-lv-h9; }
+  .rb-led:nth-child(19)::after { animation-name: rb-led-lv-h7; }
+  .rb-led:nth-child(20)::after { animation-name: rb-led-lv-h10; }
+
+  @keyframes rb-led-lv-b15 {
+    0%{clip-path:inset(56.25% 0 0 0)} 3.3333%{clip-path:inset(25% 0 0 0)}
+    6.6667%{clip-path:inset(6.25% 0 0 0)} 10%{clip-path:inset(18.75% 0 0 0)}
+    13.3333%{clip-path:inset(31.25% 0 0 0)} 16.6667%{clip-path:inset(37.5% 0 0 0)}
+    20%{clip-path:inset(43.75% 0 0 0)} 23.3333%{clip-path:inset(50% 0 0 0)}
+    26.6667%{clip-path:inset(56.25% 0 0 0)} 30%{clip-path:inset(62.5% 0 0 0)}
+    33.3333%{clip-path:inset(68.75% 0 0 0)} 40%{clip-path:inset(75% 0 0 0)}
+    50%{clip-path:inset(81.25% 0 0 0)} 73.3333%{clip-path:inset(87.5% 0 0 0)}
+    100%{clip-path:inset(87.5% 0 0 0)}
+  }
+  @keyframes rb-led-lv-b13 {
+    0%{clip-path:inset(62.5% 0 0 0)} 3.3333%{clip-path:inset(31.25% 0 0 0)}
+    6.6667%{clip-path:inset(18.75% 0 0 0)} 10%{clip-path:inset(31.25% 0 0 0)}
+    13.3333%{clip-path:inset(37.5% 0 0 0)} 16.6667%{clip-path:inset(43.75% 0 0 0)}
+    20%{clip-path:inset(50% 0 0 0)} 23.3333%{clip-path:inset(56.25% 0 0 0)}
+    26.6667%{clip-path:inset(62.5% 0 0 0)} 30%{clip-path:inset(68.75% 0 0 0)}
+    36.6667%{clip-path:inset(75% 0 0 0)} 46.6667%{clip-path:inset(81.25% 0 0 0)}
+    70%{clip-path:inset(87.5% 0 0 0)} 100%{clip-path:inset(87.5% 0 0 0)}
+  }
+  @keyframes rb-led-lv-b14 {
+    0%{clip-path:inset(56.25% 0 0 0)} 3.3333%{clip-path:inset(25% 0 0 0)}
+    6.6667%{clip-path:inset(12.5% 0 0 0)} 10%{clip-path:inset(25% 0 0 0)}
+    13.3333%{clip-path:inset(31.25% 0 0 0)} 16.6667%{clip-path:inset(43.75% 0 0 0)}
+    20%{clip-path:inset(50% 0 0 0)} 23.3333%{clip-path:inset(56.25% 0 0 0)}
+    26.6667%{clip-path:inset(62.5% 0 0 0)} 33.3333%{clip-path:inset(68.75% 0 0 0)}
+    40%{clip-path:inset(75% 0 0 0)} 50%{clip-path:inset(81.25% 0 0 0)}
+    73.3333%{clip-path:inset(87.5% 0 0 0)} 100%{clip-path:inset(87.5% 0 0 0)}
+  }
+  @keyframes rb-led-lv-b12 {
+    0%{clip-path:inset(62.5% 0 0 0)} 3.3333%{clip-path:inset(37.5% 0 0 0)}
+    6.6667%{clip-path:inset(25% 0 0 0)} 10%{clip-path:inset(37.5% 0 0 0)}
+    13.3333%{clip-path:inset(43.75% 0 0 0)} 16.6667%{clip-path:inset(50% 0 0 0)}
+    20%{clip-path:inset(56.25% 0 0 0)} 23.3333%{clip-path:inset(62.5% 0 0 0)}
+    30%{clip-path:inset(68.75% 0 0 0)} 36.6667%{clip-path:inset(75% 0 0 0)}
+    46.6667%{clip-path:inset(81.25% 0 0 0)} 66.6667%{clip-path:inset(87.5% 0 0 0)}
+    100%{clip-path:inset(87.5% 0 0 0)}
+  }
+  @keyframes rb-led-lv-b11 {
+    0%{clip-path:inset(62.5% 0 0 0)} 3.3333%{clip-path:inset(43.75% 0 0 0)}
+    6.6667%{clip-path:inset(31.25% 0 0 0)} 10%{clip-path:inset(37.5% 0 0 0)}
+    13.3333%{clip-path:inset(50% 0 0 0)} 16.6667%{clip-path:inset(56.25% 0 0 0)}
+    23.3333%{clip-path:inset(62.5% 0 0 0)} 26.6667%{clip-path:inset(68.75% 0 0 0)}
+    33.3333%{clip-path:inset(75% 0 0 0)} 43.3333%{clip-path:inset(81.25% 0 0 0)}
+    66.6667%{clip-path:inset(87.5% 0 0 0)} 100%{clip-path:inset(87.5% 0 0 0)}
+  }
+  @keyframes rb-led-lv-m10 {
+    0%{clip-path:inset(68.75% 0 0 0)} 1.6667%{clip-path:inset(50% 0 0 0)}
+    3.3333%{clip-path:inset(37.5% 0 0 0)} 5%{clip-path:inset(43.75% 0 0 0)}
+    8.3333%{clip-path:inset(50% 0 0 0)} 10%{clip-path:inset(56.25% 0 0 0)}
+    13.3333%{clip-path:inset(62.5% 0 0 0)} 18.3333%{clip-path:inset(68.75% 0 0 0)}
+    23.3333%{clip-path:inset(75% 0 0 0)} 30%{clip-path:inset(81.25% 0 0 0)}
+    40%{clip-path:inset(87.5% 0 0 0)} 61.6667%{clip-path:inset(93.75% 0 0 0)}
+    100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-m8 {
+    0%{clip-path:inset(75% 0 0 0)} 1.6667%{clip-path:inset(56.25% 0 0 0)}
+    3.3333%{clip-path:inset(50% 0 0 0)} 5%{clip-path:inset(56.25% 0 0 0)}
+    8.3333%{clip-path:inset(62.5% 0 0 0)} 13.3333%{clip-path:inset(68.75% 0 0 0)}
+    18.3333%{clip-path:inset(75% 0 0 0)} 25%{clip-path:inset(81.25% 0 0 0)}
+    35%{clip-path:inset(87.5% 0 0 0)} 56.6667%{clip-path:inset(93.75% 0 0 0)}
+    100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-m11 {
+    0%{clip-path:inset(68.75% 0 0 0)} 1.6667%{clip-path:inset(43.75% 0 0 0)}
+    3.3333%{clip-path:inset(31.25% 0 0 0)} 5%{clip-path:inset(37.5% 0 0 0)}
+    6.6667%{clip-path:inset(43.75% 0 0 0)} 10%{clip-path:inset(50% 0 0 0)}
+    13.3333%{clip-path:inset(56.25% 0 0 0)} 16.6667%{clip-path:inset(62.5% 0 0 0)}
+    20%{clip-path:inset(68.75% 0 0 0)} 25%{clip-path:inset(75% 0 0 0)}
+    31.6667%{clip-path:inset(81.25% 0 0 0)} 41.6667%{clip-path:inset(87.5% 0 0 0)}
+    63.3333%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-m7 {
+    0%{clip-path:inset(81.25% 0 0 0)} 1.6667%{clip-path:inset(62.5% 0 0 0)}
+    3.3333%{clip-path:inset(56.25% 0 0 0)} 6.6667%{clip-path:inset(62.5% 0 0 0)}
+    10%{clip-path:inset(68.75% 0 0 0)} 15%{clip-path:inset(75% 0 0 0)}
+    21.6667%{clip-path:inset(81.25% 0 0 0)} 31.6667%{clip-path:inset(87.5% 0 0 0)}
+    53.3333%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-m12 {
+    0%{clip-path:inset(68.75% 0 0 0)} 1.6667%{clip-path:inset(37.5% 0 0 0)}
+    3.3333%{clip-path:inset(25% 0 0 0)} 5%{clip-path:inset(31.25% 0 0 0)}
+    6.6667%{clip-path:inset(37.5% 0 0 0)} 10%{clip-path:inset(43.75% 0 0 0)}
+    11.6667%{clip-path:inset(50% 0 0 0)} 15%{clip-path:inset(56.25% 0 0 0)}
+    18.3333%{clip-path:inset(62.5% 0 0 0)} 21.6667%{clip-path:inset(68.75% 0 0 0)}
+    26.6667%{clip-path:inset(75% 0 0 0)} 33.3333%{clip-path:inset(81.25% 0 0 0)}
+    43.3333%{clip-path:inset(87.5% 0 0 0)} 66.6667%{clip-path:inset(93.75% 0 0 0)}
+    100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-m9 {
+    0%{clip-path:inset(75% 0 0 0)} 1.6667%{clip-path:inset(56.25% 0 0 0)}
+    3.3333%{clip-path:inset(43.75% 0 0 0)} 5%{clip-path:inset(50% 0 0 0)}
+    8.3333%{clip-path:inset(56.25% 0 0 0)} 11.6667%{clip-path:inset(62.5% 0 0 0)}
+    15%{clip-path:inset(68.75% 0 0 0)} 20%{clip-path:inset(75% 0 0 0)}
+    26.6667%{clip-path:inset(81.25% 0 0 0)} 38.3333%{clip-path:inset(87.5% 0 0 0)}
+    60%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-h6 {
+    0%{clip-path:inset(81.25% 0 0 0)} 6.6667%{clip-path:inset(68.75% 0 0 0)}
+    13.3333%{clip-path:inset(62.5% 0 0 0)} 20%{clip-path:inset(68.75% 0 0 0)}
+    26.6667%{clip-path:inset(75% 0 0 0)} 33.3333%{clip-path:inset(81.25% 0 0 0)}
+    40%{clip-path:inset(87.5% 0 0 0)} 60%{clip-path:inset(93.75% 0 0 0)}
+    100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-h8 {
+    0%{clip-path:inset(75% 0 0 0)} 6.6667%{clip-path:inset(56.25% 0 0 0)}
+    13.3333%{clip-path:inset(50% 0 0 0)} 20%{clip-path:inset(62.5% 0 0 0)}
+    26.6667%{clip-path:inset(68.75% 0 0 0)} 33.3333%{clip-path:inset(75% 0 0 0)}
+    40%{clip-path:inset(81.25% 0 0 0)} 46.6667%{clip-path:inset(87.5% 0 0 0)}
+    66.6667%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-h5 {
+    0%{clip-path:inset(81.25% 0 0 0)} 6.6667%{clip-path:inset(75% 0 0 0)}
+    13.3333%{clip-path:inset(68.75% 0 0 0)} 20%{clip-path:inset(75% 0 0 0)}
+    26.6667%{clip-path:inset(81.25% 0 0 0)} 33.3333%{clip-path:inset(87.5% 0 0 0)}
+    60%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-h9 {
+    0%{clip-path:inset(75% 0 0 0)} 6.6667%{clip-path:inset(56.25% 0 0 0)}
+    13.3333%{clip-path:inset(43.75% 0 0 0)} 20%{clip-path:inset(56.25% 0 0 0)}
+    26.6667%{clip-path:inset(68.75% 0 0 0)} 33.3333%{clip-path:inset(75% 0 0 0)}
+    40%{clip-path:inset(81.25% 0 0 0)} 53.3333%{clip-path:inset(87.5% 0 0 0)}
+    73.3333%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-h7 {
+    0%{clip-path:inset(81.25% 0 0 0)} 6.6667%{clip-path:inset(62.5% 0 0 0)}
+    13.3333%{clip-path:inset(56.25% 0 0 0)} 20%{clip-path:inset(68.75% 0 0 0)}
+    26.6667%{clip-path:inset(75% 0 0 0)} 33.3333%{clip-path:inset(81.25% 0 0 0)}
+    46.6667%{clip-path:inset(87.5% 0 0 0)} 66.6667%{clip-path:inset(93.75% 0 0 0)}
+    100%{clip-path:inset(93.75% 0 0 0)}
+  }
+  @keyframes rb-led-lv-h10 {
+    0%{clip-path:inset(68.75% 0 0 0)} 6.6667%{clip-path:inset(50% 0 0 0)}
+    13.3333%{clip-path:inset(37.5% 0 0 0)} 20%{clip-path:inset(56.25% 0 0 0)}
+    26.6667%{clip-path:inset(62.5% 0 0 0)} 33.3333%{clip-path:inset(75% 0 0 0)}
+    40%{clip-path:inset(81.25% 0 0 0)} 53.3333%{clip-path:inset(87.5% 0 0 0)}
+    73.3333%{clip-path:inset(93.75% 0 0 0)} 100%{clip-path:inset(93.75% 0 0 0)}
+  }
+
+
+  
+.rb-led-equalizer .rb-leds { position: relative; width: 100%; }
+.rb-led-equalizer .rb-led::after { opacity: 0; }
+.rb-led-equalizer[data-active='true'] .rb-led::after { opacity: 1; }
+.rb-led-equalizer .rb-led-bee {
+  position: absolute; top: 25%; left: 3%; width: 30px; height: 30px;
+  pointer-events: none; animation: rb-led-bee-fly 8s linear infinite;
+}
+@keyframes rb-led-bee-fly {
+  0%, 100% { top: 28%; left: 3%; }
+  18% { top: 2%; left: 35%; }
+  38% { top: 18%; left: 82%; }
+  54% { top: 66%; left: 81%; }
+  76% { top: 62%; left: 36%; }
+  89% { top: 46%; left: 5%; }
+}
+.rb-led-equalizer .rb-led-bee-turn {
+  width: 100%; height: 100%; animation: rb-led-bee-turn 8s linear infinite;
+}
+@keyframes rb-led-bee-turn {
+  0%, 46% { transform: scaleX(1); }
+  52%, 94% { transform: scaleX(-1); }
+  100% { transform: scaleX(1); }
+}
+.rb-led-equalizer .rb-led-bee svg {
+  width: 100%; height: 100%; overflow: visible;
+  animation: rb-led-bee-bob .25s ease-in-out infinite alternate;
+}
+@keyframes rb-led-bee-bob {
+  from { transform: translateY(-2px) rotate(-5deg); }
+  to { transform: translateY(2px) rotate(5deg); }
+}
+.rb-led-equalizer .rb-led-wing {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  animation: rb-led-bee-flap .09s linear infinite alternate;
+}
+.rb-led-equalizer .rb-led-wing.back { animation-delay: .045s; opacity: .7; }
+@keyframes rb-led-bee-flap {
+  from { transform: rotate(-25deg) scaleY(1); }
+  to { transform: rotate(10deg) scaleY(.55); }
+}
+.rb-led-equalizer .rb-led-foot {
+  display: flex; align-items: center; margin-top: 7px; color: var(--label);
+  font: 600 9px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .03em;
+}
+.rb-led-equalizer .rb-led-scale {
+  display: flex; flex: 1; justify-content: space-between; gap: 6px; margin-left: 10px;
+}
+.rb-led-equalizer .rb-led-dot {
+  width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: var(--led-low); animation: rb-led-dot-pulse .5s ease-out infinite;
+}
+@keyframes rb-led-dot-pulse {
+  0% { opacity: 1; transform: scale(1.3); }
+  60%, 100% { opacity: .25; transform: scale(1); }
+}
+.rb-led-equalizer .rb-led-panel,
+.rb-led-equalizer .rb-led::after,
+.rb-led-equalizer .rb-led-bee,
+.rb-led-equalizer .rb-led-bee-turn,
+.rb-led-equalizer .rb-led-bee svg,
+.rb-led-equalizer .rb-led-wing,
+.rb-led-equalizer .rb-led-dot { animation-play-state: paused; }
+.rb-led-equalizer[data-active='true'] .rb-led-panel,
+.rb-led-equalizer[data-active='true'] .rb-led::after,
+.rb-led-equalizer[data-active='true'] .rb-led-bee,
+.rb-led-equalizer[data-active='true'] .rb-led-bee-turn,
+.rb-led-equalizer[data-active='true'] .rb-led-bee svg,
+.rb-led-equalizer[data-active='true'] .rb-led-wing,
+.rb-led-equalizer[data-active='true'] .rb-led-dot { animation-play-state: running; }
+@media (max-width: 599px) {
+  .rb-led-equalizer .rb-led-panel { --cell: 4px; --col-gap: 2px; padding: 8px 9px 7px; }
+  .rb-led-equalizer .rb-led-bee { width: 24px; height: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rb-led-equalizer .rb-led-panel,
+  .rb-led-equalizer .rb-led::after,
+  .rb-led-equalizer .rb-led-bee,
+  .rb-led-equalizer .rb-led-bee-turn,
+  .rb-led-equalizer .rb-led-bee svg,
+  .rb-led-equalizer .rb-led-wing,
+  .rb-led-equalizer .rb-led-dot { animation: none !important; }
+  .rb-led-equalizer .rb-led::after { clip-path: inset(62.5% 0 0); }
+}

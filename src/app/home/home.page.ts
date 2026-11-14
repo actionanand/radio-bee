@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { RadioIllustrationComponent } from './radio-illustration';
+import { RadioHeroComponent } from './radio-hero';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CatalogService } from '../catalog/catalog.service';
@@ -18,7 +18,7 @@ import { LiveStreamLabComponent } from '../live-test/live-stream-lab';
     RouterLink,
     StationBrowserComponent,
     LiveStreamLabComponent,
-    RadioIllustrationComponent,
+    RadioHeroComponent,
   ],
 })
 export class HomePage {

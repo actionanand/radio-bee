@@ -1,0 +1,28 @@
+<div class="rb-led-panel" aria-hidden="true">
+  <div class="rb-leds">
+    @for (column of columns; track column) {
+      <span class="rb-led"></span>
+    }
+    <div class="rb-led-bee">
+      <div class="rb-led-bee-turn">
+        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse class="rb-led-wing back" cx="26" cy="22" rx="8" ry="14" fill="var(--wing)" stroke="#7fb2dd" stroke-width="1"/>
+                  <ellipse class="rb-led-wing" cx="33" cy="22" rx="8" ry="14" fill="var(--wing)" stroke="#7fb2dd" stroke-width="1"/>
+                  <path d="M 8 32 L 2 32 L 8 35 Z" fill="var(--bee-ink)"/>
+                  <ellipse cx="28" cy="33" rx="20" ry="13" fill="var(--bee-yellow)" stroke="var(--bee-ink)" stroke-width="2.5"/>
+                  <path d="M 22 21 Q 17 33 22 45" fill="none" stroke="var(--bee-ink)" stroke-width="5"/>
+                  <path d="M 33 20.5 Q 28 33 33 45.5" fill="none" stroke="var(--bee-ink)" stroke-width="5"/>
+                  <circle cx="50" cy="31" r="8" fill="var(--bee-yellow)" stroke="var(--bee-ink)" stroke-width="2.5"/>
+                  <circle cx="53" cy="29" r="2" fill="var(--bee-ink)"/>
+                  <path d="M 52 35 Q 54 36 56 34" fill="none" stroke="var(--bee-ink)" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M 50 23 Q 50 16 56 14" fill="none" stroke="var(--bee-ink)" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 46 24 Q 44 17 48 13" fill="none" stroke="var(--bee-ink)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+      </div>
+    </div>
+  </div>
+  <div class="rb-led-foot">
+    <span class="rb-led-dot"></span>
+    <div class="rb-led-scale"><span>60</span><span>250</span><span>1k</span><span>4k</span><span>16k Hz</span></div>
+  </div>
+</div>

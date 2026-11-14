@@ -19,13 +19,14 @@ describe('HomePage', () => {
     });
     const fixture = TestBed.createComponent(HomePage);
     const player = TestBed.inject(PlayerService);
-    const tuner = () => fixture.nativeElement.querySelector('.tuner') as HTMLElement;
+    const hero = () => fixture.nativeElement.querySelector('.radio-hero') as HTMLElement;
+    const equalizer = () => fixture.nativeElement.querySelector('app-radio-led-equalizer') as HTMLElement;
     for (const state of ['idle', 'loading', 'paused', 'error', 'playing', 'loading'] as const) {
       player.state.set(state);
       fixture.detectChanges();
-      expect(tuner().classList.contains('is-playing')).toBe(state === 'playing');
-      expect(tuner().getAttribute('data-playback-state')).toBe(state);
-      expect(tuner().querySelectorAll('.segments[aria-hidden="true"] span')).toHaveLength(24);
+      expect(hero().getAttribute('data-playback-state')).toBe(state);
+      expect(equalizer().getAttribute('data-active')).toBe(String(state === 'playing'));
+      expect(equalizer().querySelectorAll('.rb-leds > .rb-led')).toHaveLength(20);
     }
   });
   it('retains RadioBee branding and renders the discovery browser without playback', () => {

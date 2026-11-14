@@ -11,7 +11,7 @@ import { BrowseSelection, browseV2, initialBrowse, locationMembership } from '..
 import { FavoritesService } from '../catalog/favorites.service';
 import { PlayerService } from '../player/player.service';
 import { StationCardComponent } from '../catalog/station-card';
-import { RadioIllustrationComponent } from '../home/radio-illustration';
+import { RadioHeroComponent } from '../home/radio-hero';
 import { RadioBeeLoaderComponent } from '../shared/radio-bee-loader';
 import { NotFoundPage } from '../not-found/not-found-page';
 import {
@@ -30,7 +30,7 @@ import { DirectoryKey, directoryText } from './directory.labels';
   imports: [
     RouterLink,
     StationCardComponent,
-    RadioIllustrationComponent,
+    RadioHeroComponent,
     RadioBeeLoaderComponent,
     NotFoundPage,
     DirectoryBreadcrumbsComponent,

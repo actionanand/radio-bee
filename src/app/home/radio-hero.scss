@@ -1,0 +1,27 @@
+:host { display: block; min-width: 0; }
+.radio-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(16px, 3vw, 38px);
+  border-radius: 18px;
+  border: 1px solid #47604b;
+  padding: 18px clamp(16px, 2.5vw, 30px);
+  background: linear-gradient(140deg, #19372e, #0c211d);
+  color: #f4f5e9;
+  box-shadow: inset 0 1px 0 #ffffff13;
+}
+.hero-copy { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.tuner-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.tuner-brand ion-icon { font-size: 34px; color: #cdddac; flex: none; }
+h1, h2 { font-size: 26px; letter-spacing: -.8px; margin: 0; font-weight: 750; }
+.tuner-brand p { margin: 3px 0 0; font-size: 12px; color: #c5d5c6; }
+.tuner-state { font-size: 11px; color: #cdddac; }
+@media (max-width: 699px) {
+  .radio-hero { grid-template-columns: 1fr; gap: 12px; padding: 14px 16px; border-radius: 14px; }
+  .hero-copy { flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+  .tuner-brand ion-icon { font-size: 26px; }
+  h1, h2 { font-size: 21px; }
+  .tuner-brand p { font-size: 10px; }
+  .tuner-state { max-width: 35%; text-align: right; }
+}

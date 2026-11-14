@@ -1,0 +1,17 @@
+<div class="radio-hero" [class.compact]="compact()" [attr.data-playback-state]="player.state()" [attr.lang]="data.locale()">
+  <div class="hero-copy">
+    <div class="tuner-brand">
+      <ion-icon [icon]="icons.radioOutline" aria-hidden="true" />
+      <div>
+        @if (compact()) {
+          <h2 id="home-title">RadioBee</h2>
+        } @else {
+          <h1 id="home-title">RadioBee</h1>
+        }
+        <p>{{ ui('tagline') }}</p>
+      </div>
+    </div>
+    <span class="tuner-state">{{ player.station() ? ui(player.statusLabel()) : ui('onlineRadio') }}</span>
+  </div>
+  <app-radio-led-equalizer [playing]="player.state() === 'playing'" />
+</div>
