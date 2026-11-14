@@ -11,7 +11,6 @@
 /* ================= LED equalizer on a radio display ================= */
   .rb-led-panel {
     --beat: .5s;          /* 120 BPM: all columns are multiples of this     */
-    --fly: 8s;            /* time for one lap of the bee                    */
     --cell: 6px;         /* height of one LED cell (LED + gap)             */
     --seg-gap: 1px;       /* dark gap between LEDs                          */
     
@@ -235,39 +234,57 @@
   animation: none;
   clip-path: inset(var(--rb-led-inset, 87.5%) 0 0 0);
 }
+/* Bee motion has its own constant clock: changing animation-duration while
+ * playing caused the bee to jump and appear to flicker on every bass update.
+ * It crosses the display, turns once at each end, and drifts gently in height.
+ */
 .rb-led-equalizer .rb-led-bee {
-  position: absolute; top: 25%; left: 3%; width: 30px; height: 30px;
-  pointer-events: none; animation: rb-led-bee-fly var(--fly, 8s) linear infinite;
+  --bee-size: 30px;
+  position: absolute;
+  top: 36%;
+  left: 3%;
+  width: var(--bee-size);
+  height: var(--bee-size);
+  pointer-events: none;
+  animation: rb-led-bee-fly 12s ease-in-out infinite;
 }
 @keyframes rb-led-bee-fly {
-  0%, 100% { top: 28%; left: 3%; }
-  18% { top: 2%; left: 35%; }
-  38% { top: 18%; left: 82%; }
-  54% { top: 66%; left: 81%; }
-  76% { top: 62%; left: 36%; }
-  89% { top: 46%; left: 5%; }
+  0%, 100% { left: 3%; top: 36%; }
+  12.5% { left: 26%; top: 23%; }
+  25% { left: 49%; top: 38%; }
+  37.5% { left: 73%; top: 26%; }
+  50% { left: calc(97% - var(--bee-size)); top: 34%; }
+  62.5% { left: 72%; top: 22%; }
+  75% { left: 49%; top: 42%; }
+  87.5% { left: 25%; top: 29%; }
 }
 .rb-led-equalizer .rb-led-bee-turn {
-  width: 100%; height: 100%; animation: rb-led-bee-turn var(--fly, 8s) linear infinite;
+  width: 100%;
+  height: 100%;
+  animation: rb-led-bee-turn 12s steps(1, end) infinite;
 }
 @keyframes rb-led-bee-turn {
-  0%, 46% { transform: scaleX(1); }
-  52%, 94% { transform: scaleX(-1); }
+  /* Face the travel direction; flip only at the two turning points. */
+  0%, 49.9% { transform: scaleX(1); }
+  50%, 99.9% { transform: scaleX(-1); }
   100% { transform: scaleX(1); }
 }
 .rb-led-equalizer .rb-led-bee svg {
-  width: 100%; height: 100%; overflow: visible;
-  animation: rb-led-bee-bob .25s ease-in-out infinite alternate;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: rb-led-bee-bob .55s ease-in-out infinite alternate;
 }
 @keyframes rb-led-bee-bob {
-  from { transform: translateY(-2px) rotate(-5deg); }
-  to { transform: translateY(2px) rotate(5deg); }
+  from { transform: translateY(-2px) rotate(-4deg); }
+  to { transform: translateY(2px) rotate(4deg); }
 }
 .rb-led-equalizer .rb-led-wing {
-  transform-box: fill-box; transform-origin: 50% 100%;
-  animation: rb-led-bee-flap .09s linear infinite alternate;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rb-led-bee-flap .16s ease-in-out infinite alternate;
 }
-.rb-led-equalizer .rb-led-wing.back { animation-delay: .045s; opacity: .7; }
+.rb-led-equalizer .rb-led-wing.back { animation-delay: -.08s; opacity: .7; }
 @keyframes rb-led-bee-flap {
   from { transform: rotate(-25deg) scaleY(1); }
   to { transform: rotate(10deg) scaleY(.55); }
@@ -303,7 +320,7 @@
 .rb-led-equalizer[data-active='true'] .rb-led-dot { animation-play-state: running; }
 @media (max-width: 599px) {
   .rb-led-equalizer .rb-led-panel { --cell: 4px; --col-gap: 2px; padding: 8px 9px 7px; }
-  .rb-led-equalizer .rb-led-bee { width: 24px; height: 24px; }
+  .rb-led-equalizer .rb-led-bee { --bee-size: 24px; }
 }
 /* Playback state, not the OS reduced-motion preference, controls this hero display.
  * The old reduced-motion override forced every column into the same fixed six-cell
