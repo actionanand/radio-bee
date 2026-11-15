@@ -28,6 +28,9 @@ describe('reviewed network brand artwork', () => {
     expect(logoUrl(base, 'assets/artwork/stations/../other.svg')).toBeNull();
     expect(logoUrl(base, 'assets/artwork/stations/pic.svg?unsafe=true')).toBeNull();
     expect(logoUrl(base, 'assets/artwork/networks/random.svg')).toBeNull();
+    expect(logoUrl(base, 'assets/artwork/artists/justin-bieber.svg')).toBe(base + 'assets/artwork/artists/justin-bieber.svg');
+    expect(logoUrl(base, 'assets/artwork/genres/hindu-devotional.svg')).toBe(base + 'assets/artwork/genres/hindu-devotional.svg');
+    expect(logoUrl(base, 'assets/artwork/artists/../genres/music.svg')).toBeNull();
   });
   it('keeps approved catalogue-local station images ahead of their network brand', () => {
     const local = 'assets/logos/stations/custom-mark.webp';
