@@ -29,6 +29,24 @@ describe('reviewed network brand artwork', () => {
       .toEqual([logoUrl(base, local), shared, FALLBACK_ARTWORK]);
   });
 
+  it('accepts every new reviewed image host in the V2 data release', () => {
+    // These URLs are published in radio-bee-data/data/v2/networks.json.
+    // Keep this list in sync with radio-bee-data/scripts/validate.mjs.
+    const links = [
+      'https://www.kexp.org/media/filer_public_thumbnails/filer_public/4f/52/4f52b5aa-bd93-4fe7-ab94-2d3258a3804c/kexp_primarylogo_black.png__300x356_q85_crop_subsampling-2_upscale.png',
+      'https://upload.wikimedia.org/wikipedia/commons/e/ec/WNYC_logo.png',
+      'https://raw.githubusercontent.com/FreemediaMY/FreemediaMY/main/assets/freelisten/logos/local/AstroRadio/raaga.png',
+      'https://cdn.brandfetch.io/id7dYvpMT-/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1767766219614',
+      'https://higherlogicdownload.s3.amazonaws.com/CBAA/f91521e2-cb7a-4f99-8ca0-552342c290f7/UploadedImages/Photos/DAB_Logos/4EB_Logo_G.png',
+      'https://rtm-images.glueapi.io/720x0/radio-asset/MINNAL_FM.png',
+      'https://admango.cdn.mangomolo.com/analytics/uploads/194/688348f504.png',
+    ];
+    for (const link of links) {
+      expect(reviewedArtworkUrl(link)).toBe(link);
+      expect(artworkCandidates(base, {}, { logoUrl: link })).toEqual([link, FALLBACK_ARTWORK]);
+    }
+  });
+
   it('rejects unapproved hosts, SVGs, insecure, credentialed and malformed URLs', () => {
     for (const value of [
       'http://i1.sndcdn.com/pic.jpg',
@@ -41,6 +59,7 @@ describe('reviewed network brand artwork', () => {
     ]) {
       expect(reviewedArtworkUrl(value)).toBeNull();
       expect(artworkCandidates(base, { logoUrl: value as string }, {})).toEqual([FALLBACK_ARTWORK]);
+      expect(artworkCandidates(base, {}, { logoUrl: value as string })).toEqual([FALLBACK_ARTWORK]);
     }
   });
 });
