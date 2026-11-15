@@ -1,22 +1,30 @@
-/** Publisher and curated radio-directory image hosts only.
- * External images are referenced, not copied into the RadioBee distribution.
- * Keep this allow-list aligned with radio-bee-data/scripts/validate.mjs.
+/**
+ * Optional catalogue artwork can be hosted either by radio-bee-data or by any
+ * public HTTPS publisher, image service, or Wikimedia media URL. Rendering an
+ * unsupported image is handled by the browser and falls back to RadioBee art.
+ *
+ * Only accept public web destinations; never turn arbitrary catalogue strings
+ * into local-network image requests. Images render as <img> with no referrer.
+ * This checks URL safety, not the artwork's identity or redistribution rights.
  */
-const BRAND_IMAGE_HOSTS = new Set([
-  'i1.sndcdn.com', 'static-media.streema.com', 'onecms-res.cloudinary.com',
-  'cdn-profiles.tunein.com', 'www.americantamilradio.com',
-  'static.tuneyou.com', 'exchange4media.gumlet.io',
-  'djhonz7dexnot.cloudfront.net',
-  'www.kexp.org', 'upload.wikimedia.org', 'raw.githubusercontent.com',
-  'cdn.brandfetch.io', 'higherlogicdownload.s3.amazonaws.com',
-  'rtm-images.glueapi.io', 'admango.cdn.mangomolo.com',
-]);
+const BLOCKED_TLDS = new Set(['localhost', 'local', 'internal', 'lan', 'onion', 'invalid', 'test', 'example']);
+const BLOCKED_HOSTS = new Set(['localhost', 'localhost.localdomain']);
 export function reviewedArtworkUrl(value: unknown): string | null {
-  if (typeof value !== 'string' || value !== value.trim()) return null;
+  if (typeof value !== 'string' || !value || value.length > 4096 ||
+      value !== value.trim() || /[\s\u0000-\u001f\u007f]/u.test(value)) return null;
   try {
-    const u = new URL(value);
-    return u.protocol === 'https:' && BRAND_IMAGE_HOSTS.has(u.hostname) &&
-      !u.username && !u.password && !u.hash &&
-      /\.(?:png|jpe?g|webp)$/i.test(u.pathname) ? u.href : null;
-  } catch { return null; }
+    const url = new URL(value);
+    const hostname = url.hostname.toLowerCase().replace(/\.$/, '');
+    const labels = hostname.split('.');
+    // IP literals and internal/reserved hostnames are not public publisher URLs.
+    if (url.protocol !== 'https:' || url.username || url.password || url.hash ||
+        (url.port && url.port !== '443') || hostname.includes(':') ||
+        !labels.every(label => label.length > 0) || labels.length < 2 ||
+        BLOCKED_HOSTS.has(hostname) || BLOCKED_TLDS.has(labels.at(-1) ?? '') ||
+        hostname.endsWith('.home.arpa') || hostname.endsWith('.localdomain') ||
+        /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) return null;
+    return url.href;
+  } catch {
+    return null;
+  }
 }

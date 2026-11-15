@@ -22,6 +22,13 @@ describe('reviewed network brand artwork', () => {
     })).toEqual(['https://i1.sndcdn.com/artworks-000070154341-a8vv1u-t1080x1080.jpg', FALLBACK_ARTWORK]);
   });
 
+  it('resolves data-repo-hosted station-specific editorial SVG covers', () => {
+    const local = 'assets/artwork/stations/missing-fm.svg';
+    expect(artworkCandidates(base, { logoPath: local }, {})).toEqual([logoUrl(base, local), FALLBACK_ARTWORK]);
+    expect(logoUrl(base, 'assets/artwork/stations/../other.svg')).toBeNull();
+    expect(logoUrl(base, 'assets/artwork/stations/pic.svg?unsafe=true')).toBeNull();
+    expect(logoUrl(base, 'assets/artwork/networks/random.svg')).toBeNull();
+  });
   it('keeps approved catalogue-local station images ahead of their network brand', () => {
     const local = 'assets/logos/stations/custom-mark.webp';
     const shared = 'https://i1.sndcdn.com/artworks-000070154341-a8vv1u-t1080x1080.jpg';
@@ -47,14 +54,36 @@ describe('reviewed network brand artwork', () => {
     }
   });
 
-  it('rejects unapproved hosts, SVGs, insecure, credentialed and malformed URLs', () => {
+  it('accepts arbitrary public HTTPS image providers including data-repo hosted and extensionless URLs', () => {
+    const urls = [
+      'https://actionanand.github.io/radio-bee-data/v2/assets/logos/networks/real-brand.webp',
+      'https://publisher.fm/brand/station-logo.svg',
+      'https://cdn.music.example.com/radio/image?id=123&sz=240',
+      'https://www.givenow.com.au/organisation/file/logo.jpg?fileId=64053&parentId=516',
+      'https://unknown-image-host.org/logos/station.avif',
+    ];
+    for (const url of urls) {
+      expect(reviewedArtworkUrl(url)).toBe(url);
+      expect(artworkCandidates(base, { logoUrl: url }, {})).toEqual([url, FALLBACK_ARTWORK]);
+    }
+  });
+
+  it('rejects private destinations, non-HTTPS, credentials, fragments and malformed URLs', () => {
     for (const value of [
       'http://i1.sndcdn.com/pic.jpg',
       'https://evil.example/pic.jpg',
       'https://i1.sndcdn.com@evil.example/pic.jpg',
-      'https://i1.sndcdn.com/pic.svg',
+      'https://localhost/image.png',
+      'https://127.0.0.1/image.png',
+      'https://192.168.0.1/image.jpg',
+      'https://printer.local/image.png',
+      'https://example.internal/logo.png',
+      'https://i1.sndcdn.com:8080/image.png',
+      'data:image/png;base64,SGVsbG8=',
+      'javascript:alert(1)',
       'https://i1.sndcdn.com/pic.png#fragment',
       'https://user:pass@i1.sndcdn.com/pic.png',
+      'https://i1.sndcdn.com/pic.png\n',
       null, 42,
     ]) {
       expect(reviewedArtworkUrl(value)).toBeNull();

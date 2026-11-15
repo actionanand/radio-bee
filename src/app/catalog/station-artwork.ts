@@ -9,7 +9,7 @@ export const FALLBACK_ARTWORK = 'assets/icon/radio-fallback.svg';
 export function logoUrl(base: string, path: unknown): string | null {
   if (
     typeof path !== 'string' ||
-    !/^assets\/logos\/(?:stations|networks)\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png)$/.test(path)
+    !/^(?:assets\/logos\/(?:stations|networks)\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png)|assets\/artwork\/stations\/[a-z0-9]+(?:-[a-z0-9]+)*\.svg)$/.test(path)
   )
     return null;
   try {
