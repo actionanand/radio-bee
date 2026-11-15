@@ -14,6 +14,6 @@ export function reviewedArtworkUrl(value: unknown): string | null {
     const u = new URL(value);
     return u.protocol === 'https:' && BRAND_IMAGE_HOSTS.has(u.hostname) &&
       !u.username && !u.password && !u.hash &&
-      /\\.(?:png|jpe?g|webp)$/i.test(u.pathname) ? u.href : null;
+      /\.(?:png|jpe?g|webp)$/i.test(u.pathname) ? u.href : null;
   } catch { return null; }
 }
