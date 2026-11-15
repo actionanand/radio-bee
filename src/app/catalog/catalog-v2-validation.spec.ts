@@ -18,6 +18,12 @@ describe('Strict v2 snapshot validation', () => {
     expect(catalog.stations.flatMap(s => s.streams)).toHaveLength(74);
     expect(JSON.stringify(snapshot)).toBe(before);
   });
+  it('does not reject a healthy catalogue because optional artwork uses an unrecognized host', () => {
+    const snapshot = structuredClone(v2Fixture) as Snapshot;
+    rows(snapshot, 'networks')[0]['logoUrl'] = 'https://new-publisher.example/logo.png';
+    rows(snapshot, 'stations')[0]['logoUrl'] = 'http://untrusted.example/logo.svg';
+    expect(validateV2(snapshot).stations).toHaveLength(71);
+  });
   it('retains canonical fallback for stale or malformed index objects', () => {
     for (const index of [null, {}, 'not an index', { schemaVersion: 1 }]) {
       const snapshot = structuredClone(v2Fixture) as Snapshot;

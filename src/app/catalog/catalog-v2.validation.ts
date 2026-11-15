@@ -1,4 +1,3 @@
-import { reviewedArtworkUrl } from './station-artwork-url';
 import { Catalog, Manifest, catalogCounts } from './catalog.models';
 import { relativePath } from './catalog.validation';
 
@@ -71,7 +70,9 @@ function https(value: unknown, allowNull = true): URL | null {
   return url;
 }
 function logo(row: Row): void {
-  if (row['logoUrl'] !== undefined) check(reviewedArtworkUrl(row['logoUrl']) !== null, 'reviewed brand image URL');
+  // Artwork is optional display metadata: an unknown host must never disable
+  // the entire directory. station-artwork.ts independently rejects unreviewed
+  // URLs and uses the RadioBee fallback; publisher validation remains strict.
   if (row['logoPath'] !== undefined)
     check(
       /^assets\/logos\/(stations|networks)\/[a-z0-9]+(?:-[a-z0-9]+)*\.(webp|png)$/.test(text(row['logoPath'])),
