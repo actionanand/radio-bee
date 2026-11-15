@@ -2,6 +2,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Component, Service, computed, inject, input, linkedSignal } from '@angular/core';
 import { CatalogService, CATALOG_URL } from './catalog.service';
 import { Network, Station } from './catalog.models';
+import { reviewedArtworkUrl } from './station-artwork-url';
 
 export const FALLBACK_ARTWORK = 'assets/icon/radio-fallback.svg';
 // Only catalogue-owned raster files. No origins, encodings, traversal, query strings or SVG payloads.
@@ -21,18 +22,28 @@ export function logoUrl(base: string, path: unknown): string | null {
     return null;
   }
 }
+/** The original v1/v2 logo paths below are generic radio graphics, not brand marks.
+ * Do not surface them even when an older catalogue is restored from offline cache.
+ */
+const LEGACY_GENERIC_NETWORK_LOGOS = new Set([
+  'akashvani-radio.png', 'big-fm-radio.png', 'boom-tamil-radio.png',
+  'hello-fm-radio.png', 'mirchi-radio.png', 'radio-city-radio.png',
+  'red-fm-radio.png', 'shaivam-radio.png', 'sooriyan-lk-radio.png',
+  'star-fm-lk-radio.png', 'suryan-in-radio.png',
+].map(name => 'assets/logos/networks/' + name));
+
 export function artworkCandidates(
   base: string,
-  station: Pick<Station, 'logoPath'>,
-  network?: Pick<Network, 'logoPath'>,
+  station: Pick<Station, 'logoPath' | 'logoUrl'>,
+  network?: Pick<Network, 'logoPath' | 'logoUrl'>,
 ): string[] {
-  return [
-    ...new Set(
-      [logoUrl(base, station.logoPath), logoUrl(base, network?.logoPath), FALLBACK_ARTWORK].filter(
-        (url): url is string => !!url,
-      ),
-    ),
-  ];
+  return [...new Set([
+    reviewedArtworkUrl(station.logoUrl),
+    logoUrl(base, station.logoPath),
+    reviewedArtworkUrl(network?.logoUrl),
+    LEGACY_GENERIC_NETWORK_LOGOS.has(network?.logoPath ?? '') ? null : logoUrl(base, network?.logoPath),
+    FALLBACK_ARTWORK,
+  ].filter((url): url is string => !!url))];
 }
 @Service()
 export class ArtworkFailures {
@@ -57,6 +68,7 @@ export class ArtworkFailures {
       height="240"
       alt=""
       loading="lazy"
+      referrerpolicy="no-referrer"
       (error)="failed(image.currentSrc || image.src)" />
     @if (source() === fallback) {
       <span class="initials" aria-hidden="true">{{ initials() }}</span
@@ -85,7 +97,7 @@ export class ArtworkFailures {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 14%;
+      padding: 8%;
     }
     .fallback img {
       opacity: 0.16;
