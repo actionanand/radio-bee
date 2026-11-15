@@ -1,3 +1,4 @@
+import { reviewedArtworkUrl } from './station-artwork-url';
 import { Catalog, Manifest, catalogCounts } from './catalog.models';
 import { relativePath } from './catalog.validation';
 
@@ -70,6 +71,7 @@ function https(value: unknown, allowNull = true): URL | null {
   return url;
 }
 function logo(row: Row): void {
+  if (row['logoUrl'] !== undefined) check(reviewedArtworkUrl(row['logoUrl']) !== null, 'reviewed brand image URL');
   if (row['logoPath'] !== undefined)
     check(
       /^assets\/logos\/(stations|networks)\/[a-z0-9]+(?:-[a-z0-9]+)*\.(webp|png)$/.test(text(row['logoPath'])),
@@ -337,7 +339,7 @@ export function validateV2(value: unknown): Catalog {
     shape(
       n,
       ['id', 'name', 'aliases', 'countryCodes', 'kind', 'website'],
-      ['logoPath', 'broadcasterId', 'broadcasterSourceIds', 'broadcasterRelationship'],
+      ['logoPath', 'logoUrl', 'broadcasterId', 'broadcasterSourceIds', 'broadcasterRelationship'],
     );
     text(n['name']);
     strings(n['aliases']);
@@ -409,7 +411,7 @@ export function validateV2(value: unknown): Catalog {
       shape(
         s,
         [...stationFields, ...(isDiscovery ? ['aliases', 'availability', 'reviewedOn', 'websiteKind'] : ['streams'])],
-        [...stationOptional, ...(isDiscovery ? [] : ['aliases', 'logoPath'])],
+        [...stationOptional, ...(isDiscovery ? [] : ['aliases', 'logoPath', 'logoUrl'])],
       );
       const key = id(s['id']);
       check(!isDiscovery || !stations.has(key), 'duplicate station ID');

@@ -29,6 +29,8 @@ export interface Artist extends Named {
 export interface Network extends Named {
   broadcasterId?: string;
   logoPath?: string;
+  /** Curated HTTPS station/network brand image URL. */
+  logoUrl?: string;
   aliases: string[];
   countryCodes: string[];
   kind: string;
@@ -84,6 +86,8 @@ export interface Station extends Named {
     websiteKind: DiscoveryStation['websiteKind'];
   };
   logoPath?: string;
+  /** Optional station-specific image; network brand remains shared by default. */
+  logoUrl?: string;
   networkId: string;
   countryCode: string;
   regionId: string | null;
