@@ -75,7 +75,7 @@ function logo(row: Row): void {
   // URLs and uses the RadioBee fallback; publisher validation remains strict.
   if (row['logoPath'] !== undefined)
     check(
-      /^assets\/logos\/(stations|networks)\/[a-z0-9]+(?:-[a-z0-9]+)*\.(webp|png)$/.test(text(row['logoPath'])),
+      /^(?:assets\/logos\/(?:stations|networks)\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png)|assets\/artwork\/stations\/[a-z0-9]+(?:-[a-z0-9]+)*\.svg)$/.test(text(row['logoPath'])),
       'logo path',
     );
 }
