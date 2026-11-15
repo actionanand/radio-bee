@@ -7,6 +7,7 @@ const BRAND_IMAGE_HOSTS = new Set([
   'cdn-profiles.tunein.com', 'www.americantamilradio.com',
   'static.tuneyou.com', 'exchange4media.gumlet.io',
   'djhonz7dexnot.cloudfront.net',
+  'www.kexp.org', 'upload.wikimedia.org',
 ]);
 export function reviewedArtworkUrl(value: unknown): string | null {
   if (typeof value !== 'string' || value !== value.trim()) return null;
