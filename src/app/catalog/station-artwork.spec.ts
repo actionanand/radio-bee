@@ -22,6 +22,13 @@ describe('reviewed network brand artwork', () => {
     })).toEqual(['https://i1.sndcdn.com/artworks-000070154341-a8vv1u-t1080x1080.jpg', FALLBACK_ARTWORK]);
   });
 
+  it('resolves data-repo-hosted station-specific editorial SVG covers', () => {
+    const local = 'assets/artwork/stations/missing-fm.svg';
+    expect(artworkCandidates(base, { logoPath: local }, {})).toEqual([logoUrl(base, local), FALLBACK_ARTWORK]);
+    expect(logoUrl(base, 'assets/artwork/stations/../other.svg')).toBeNull();
+    expect(logoUrl(base, 'assets/artwork/stations/pic.svg?unsafe=true')).toBeNull();
+    expect(logoUrl(base, 'assets/artwork/networks/random.svg')).toBeNull();
+  });
   it('keeps approved catalogue-local station images ahead of their network brand', () => {
     const local = 'assets/logos/stations/custom-mark.webp';
     const shared = 'https://i1.sndcdn.com/artworks-000070154341-a8vv1u-t1080x1080.jpg';
