@@ -68,6 +68,7 @@ export class ArtworkFailures {
       height="240"
       alt=""
       loading="lazy"
+      referrerpolicy="no-referrer"
       (error)="failed(image.currentSrc || image.src)" />
     @if (source() === fallback) {
       <span class="initials" aria-hidden="true">{{ initials() }}</span
@@ -96,7 +97,7 @@ export class ArtworkFailures {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 14%;
+      padding: 8%;
     }
     .fallback img {
       opacity: 0.16;
