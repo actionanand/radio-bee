@@ -47,14 +47,36 @@ describe('reviewed network brand artwork', () => {
     }
   });
 
-  it('rejects unapproved hosts, SVGs, insecure, credentialed and malformed URLs', () => {
+  it('accepts arbitrary public HTTPS image providers including data-repo hosted and extensionless URLs', () => {
+    const urls = [
+      'https://actionanand.github.io/radio-bee-data/v2/assets/logos/networks/real-brand.webp',
+      'https://publisher.fm/brand/station-logo.svg',
+      'https://cdn.music.example.com/radio/image?id=123&sz=240',
+      'https://www.givenow.com.au/organisation/file/logo.jpg?fileId=64053&parentId=516',
+      'https://unknown-image-host.org/logos/station.avif',
+    ];
+    for (const url of urls) {
+      expect(reviewedArtworkUrl(url)).toBe(url);
+      expect(artworkCandidates(base, { logoUrl: url }, {})).toEqual([url, FALLBACK_ARTWORK]);
+    }
+  });
+
+  it('rejects private destinations, non-HTTPS, credentials, fragments and malformed URLs', () => {
     for (const value of [
       'http://i1.sndcdn.com/pic.jpg',
       'https://evil.example/pic.jpg',
       'https://i1.sndcdn.com@evil.example/pic.jpg',
-      'https://i1.sndcdn.com/pic.svg',
+      'https://localhost/image.png',
+      'https://127.0.0.1/image.png',
+      'https://192.168.0.1/image.jpg',
+      'https://printer.local/image.png',
+      'https://example.internal/logo.png',
+      'https://i1.sndcdn.com:8080/image.png',
+      'data:image/png;base64,SGVsbG8=',
+      'javascript:alert(1)',
       'https://i1.sndcdn.com/pic.png#fragment',
       'https://user:pass@i1.sndcdn.com/pic.png',
+      'https://i1.sndcdn.com/pic.png\n',
       null, 42,
     ]) {
       expect(reviewedArtworkUrl(value)).toBeNull();
