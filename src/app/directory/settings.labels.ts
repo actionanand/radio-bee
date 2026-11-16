@@ -20,6 +20,25 @@ const en = {
   storage: 'Home preferences could not be saved on this device.',
   empty: 'No matching playable radio stations.',
   homeLink: 'Customize Home stations',
+  recordingFolder: 'Recording destination',
+  recordingFolderHelp: 'Choose a folder once. Recordings and automatic segments are saved there until you change it.',
+  recordingFolderSelected: 'Folder',
+  recordingFolderMissing: 'No destination selected',
+  recordingFolderChoose: 'Choose recording folder',
+  recordingFolderChange: 'Change recording folder',
+  recordingFolderError: 'Folder selection failed or access was denied.',,recordingFolder: 'பதிவுகள் சேமிக்கும் இடம்',
+  recordingFolderHelp: 'ஒருமுறை கோப்புறையைத் தேர்ந்தெடுக்கவும். மாற்றும் வரை பதிவுகள் அதில் சேமிக்கப்படும்.',
+  recordingFolderSelected: 'கோப்புறை',
+  recordingFolderMissing: 'சேமிக்கும் இடம் தேர்ந்தெடுக்கப்படவில்லை',
+  recordingFolderChoose: 'பதிவு கோப்புறையைத் தேர்ந்தெடு',
+  recordingFolderChange: 'பதிவு கோப்புறையை மாற்று',
+  recordingFolderError: 'கோப்புறையைத் தேர்வு செய்ய முடியவில்லை.',,recordingFolder: 'ध्वनिमुद्रणसञ्चयस्थानम्',
+  recordingFolderHelp: 'एकवारं सञ्चयस्थानं चिनोतु। परिवर्तनपर्यन्तं मुद्रणानि तत्र रक्ष्यन्ते।',
+  recordingFolderSelected: 'सञ्चयस्थानम्',
+  recordingFolderMissing: 'सञ्चयस्थानं न चितम्',
+  recordingFolderChoose: 'सञ्चयस्थानं चिनोतु',
+  recordingFolderChange: 'सञ्चयस्थानं परिवर्तयतु',
+  recordingFolderError: 'सञ्चयस्थानं चिनोतुं न शक्यते।'
 };
 export type SettingsKey = keyof typeof en;
 const ta: Record<SettingsKey, string> = {
@@ -43,6 +62,7 @@ const ta: Record<SettingsKey, string> = {
   storage: 'முகப்பு அமைப்புகளைச் சேமிக்க முடியவில்லை.',
   empty: 'பொருந்தும் வானொலிகள் இல்லை.',
   homeLink: 'முகப்பு வானொலிகளை அமைக்கவும்',
+  undefined
 };
 const sa: Record<SettingsKey, string> = {
   settings: 'सेटिङ्ग्स्',
@@ -65,6 +85,7 @@ const sa: Record<SettingsKey, string> = {
   storage: 'मुखपृष्ठविकल्पाः न रक्षिताः।',
   empty: 'अनुरूपाणि वाणीकेन्द्राणि न सन्ति।',
   homeLink: 'मुखपृष्ठकेन्द्राणि परिवर्तयतु',
+  undefined
 };
 export function settingsText(locale: string, key: SettingsKey, vars: {min?:number;max?:number} = {}): string {
   return (locale === 'ta' ? ta : locale === 'sa' ? sa : en)[key]
