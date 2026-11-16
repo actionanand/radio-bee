@@ -115,7 +115,8 @@ export class RecordingService implements OnDestroy {
       !this.config.Enabled ||
       !source ||
       this.destroyed ||
-      ['preparing', 'starting', 'recording', 'stopping', 'exporting'].includes(this.state())
+      ['preparing', 'starting', 'recording', 'stopping', 'exporting'].includes(this.state()) ||
+      !!this.file()
     )
       return;
     const permission = recordingPermission(source.stream, this.config.AllowProhibitedRecording === true);
@@ -196,7 +197,8 @@ export class RecordingService implements OnDestroy {
           if (!blob) {
             this.state.set('error');
             this.message.set('recordingEmpty');
-          } else if (this.config.AutoContinue === true) {
+          } else if (this.config.AutoContinue === true && reason === 'limit' &&
+                     !this.stopRequested && !this.continuationCancelled) {
             // Never discard a segment or start another unless a durable save
             // has succeeded. External browser downloads cannot be trusted to
             // complete without a user gesture, so auto mode requires a folder.
