@@ -51,11 +51,11 @@ h3 { font-size: 15px; margin: 0 0 5px; }
 }
 .limit-hint { margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .selection-mark { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; border: 1px solid var(--line); }
-.save-button {
+.save-button, .folder-button {
   min-height: 44px; padding: 10px 20px; border: 0; border-radius: 10px;
   background: var(--ink); color: var(--paper); font: inherit; font-weight: 700; cursor: pointer;
 }
-.save-button:disabled { opacity: .4; cursor: not-allowed; }
+.save-button:disabled, .folder-button:disabled { opacity: .4; cursor: not-allowed; }
 .saved { color: var(--accent-ink); font-weight: 700; }
 :focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
 @media (max-width: 599px) {
