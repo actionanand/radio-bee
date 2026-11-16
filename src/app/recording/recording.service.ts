@@ -89,10 +89,15 @@ export class RecordingService implements OnDestroy {
     this.document.defaultView?.addEventListener('pagehide', this.leaving);
     effect(() => {
       const source = this.player.captureSource();
-      if (
-        ['starting', 'recording'].includes(this.state()) &&
-        (!source || recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) === 'blocked')
-      )
+      if (!['starting', 'recording'].includes(this.state())) return;
+      // A temporary waiting/stalled event puts the player into "loading"
+      // with phase "buffering". The same audio stream remains attached, so
+      // keep recording until playback resumes or the player reports a real
+      // boundary (pause, stop, switch, failure), which stops it synchronously.
+      if (!source && this.player.state() === 'loading' &&
+          this.player.pendingPhase() === 'buffering') return;
+      if (!source ||
+          recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) === 'blocked')
         this.stop();
     });
     if (this.config.Enabled && Capacitor.isNativePlatform()) void this.observeApp();
