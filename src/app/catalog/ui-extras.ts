@@ -107,7 +107,7 @@ export const extraSanskrit: typeof extraEnglish = {
   recordingSaveError: 'निर्यातः न उद्घाटितः। पुनः प्रयत्नाय मुद्रणं विद्यते।',
   recordingExported: 'अस्मिन् साधने निर्यातः उद्घाटितः।',
   recordingLimit: 'प्रत्येकं ध्वनिमुद्रणखण्डं {duration} अथवा {size} सीमायां स्थग्यते।',
-  recordingAutoContinue: 'अग्रिमखण्डस्य आरम्भात् पूर्वं पूर्णखण्डः स्वयमेव रक्ष्यते।'
+  recordingAutoContinue: 'अग्रिमखण्डस्य आरम्भात् पूर्वं पूर्णखण्डः स्वयमेव रक्ष्यते।',
   recordingFolderRequired: 'मुद्रणात् पूर्वं सेटिङ्ग्स् मध्ये सञ्चयस्थानं चिनोतु।',
   recordingStart: 'मुद्रणम् आरभस्व',
   recordingPauseEnded: 'श्रवणपरिवर्तनेन मुद्रणं समाप्तम्।',
