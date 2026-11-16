@@ -7,7 +7,7 @@ import { fixture } from '../catalog/catalog.fixture';
 import { validateCatalog } from '../catalog/catalog.validation';
 import { CatalogService } from '../catalog/catalog.service';
 import { MEDIA_ENGINE, MediaEngine } from './media-engine';
-import { PlayerService } from './player.service';
+import { PlayerService, PLAYER_AUDIO_STORAGE, PLAYER_AUDIO_STORAGE_KEY, DEFAULT_PLAYER_VOLUME } from './player.service';
 import type { Mock } from 'vitest';
 // Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
 beforeEach(() => {
@@ -21,6 +21,7 @@ describe('Functional player service', () => {
   let clear: Mock<MediaEngine['clear']>;
   let player: PlayerService;
   let catalog: { catalog: ReturnType<typeof signal<Catalog>> };
+  let savedPreferences: Map<string, string>;
   beforeEach(() => {
     c = validateCatalog(structuredClone(fixture));
     station = c.stations.find(s => s.streams.length)!;
@@ -36,9 +37,14 @@ describe('Functional player service', () => {
     load = vi.fn().mockResolvedValue(undefined);
     clear = vi.fn();
     catalog = { catalog: signal(c) };
+    savedPreferences = new Map();
     TestBed.configureTestingModule({
       providers: [
         { provide: CatalogService, useValue: catalog },
+        { provide: PLAYER_AUDIO_STORAGE, useValue: {
+          get: async ({ key }: { key: string }) => ({ value: savedPreferences.get(key) ?? null }),
+          set: async ({ key, value }: { key: string; value: string }) => { savedPreferences.set(key, value); },
+        } },
         { provide: MEDIA_ENGINE, useValue: { audio, load, clear, supports: () => true } satisfies MediaEngine },
       ],
     });
@@ -47,6 +53,33 @@ describe('Functional player service', () => {
   afterEach(() => {
     player.stop();
     vi.useRealTimers();
+  });
+  it('starts at 80 percent and persists volume and mute adjustments', async () => {
+    await player.preferencesLoaded;
+    expect(player.volume()).toBe(DEFAULT_PLAYER_VOLUME);
+    expect(player.volume()).toBe(0.8);
+    expect(player.muted()).toBe(false);
+    await player.play(station);
+    expect(audio.volume).toBe(0.8);
+    player.setVolume(0.35);
+    player.toggleMute();
+    expect(audio.volume).toBe(0.35);
+    expect(audio.muted).toBe(true);
+    await vi.waitFor(() => expect(savedPreferences.get(PLAYER_AUDIO_STORAGE_KEY)).toBe(
+      JSON.stringify({ volume: 0.35, muted: true }),
+    ));
+  });
+  it('clamps out-of-range volume and does not conflate zero volume with mute', async () => {
+    await player.preferencesLoaded;
+    player.setVolume(0);
+    expect(player.volume()).toBe(0);
+    expect(player.muted()).toBe(false);
+    player.setVolume(5);
+    player.setVolume(Number.NaN);
+    expect(player.volume()).toBe(1);
+    await vi.waitFor(() => expect(savedPreferences.get(PLAYER_AUDIO_STORAGE_KEY)).toBe(
+      JSON.stringify({ volume: 1, muted: false }),
+    ));
   });
   it('loads and actually invokes audio play only on an approved selection', async () => {
     await player.play(station);
