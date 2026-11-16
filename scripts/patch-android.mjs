@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import versioning from './android-version.cjs';
@@ -73,6 +73,29 @@ export function patchAndroid(root = process.cwd()) {
   write('android/variables.gradle', variables);
   write('android/app/src/main/AndroidManifest.xml', manifest);
   write('android/app/proguard-rules.pro', rules);
+  // Register the Storage Access Framework bridge in generated Android builds.
+  // The fixture for node tests omits MainActivity; actual Capacitor projects
+  // have it after 'cap add android'. Never replace unrelated native code.
+  const activityPath = 'android/app/src/main/java/com/getcapacitor/myapp/MainActivity.java';
+  if (existsSync(path.join(root, activityPath))) {
+    let activity = read(activityPath);
+    if (!activity.includes('registerPlugin(RadioBeeRecordingStoragePlugin.class)')) {
+      const pluginRegistration = 'registerPlugin(RadioBeeRecordingStoragePlugin.class);';
+      if (/super\\.onCreate\\(savedInstanceState\\);/.test(activity)) {
+        activity = activity.replace('super.onCreate(savedInstanceState);',
+          pluginRegistration + '\\n        super.onCreate(savedInstanceState);');
+      } else {
+        activity = replace(activity, /public class MainActivity extends BridgeActivity\\s*\\{/,
+          'public class MainActivity extends BridgeActivity {\\n    @Override\\n    public void onCreate(android.os.Bundle savedInstanceState) {\\n        ' +
+          pluginRegistration + '\\n        super.onCreate(savedInstanceState);\\n    }',
+          'MainActivity bridge');
+      }
+      write(activityPath, activity);
+    }
+    const nativeSource = read('scripts/native/RadioBeeRecordingStoragePlugin.java');
+    write('android/app/src/main/java/com/getcapacitor/myapp/RadioBeeRecordingStoragePlugin.java', nativeSource);
+  }
+
   // Update only managed splash items; retain unrelated theme items and custom styles.
   const stylesFile = 'android/app/src/main/res/values/styles.xml';
   const styles = replace(
