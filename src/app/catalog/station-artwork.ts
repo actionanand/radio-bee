@@ -37,11 +37,16 @@ export function artworkCandidates(
   station: Pick<Station, 'logoPath' | 'logoUrl'>,
   network?: Pick<Network, 'logoPath' | 'logoUrl'>,
 ): string[] {
+  // A network's brand must be identical on every station card (including
+  // fallback behavior). Ignore station-specific editorial artwork whenever
+  // the network supplies a usable brand logo.
+  const networkLogo =
+    reviewedArtworkUrl(network?.logoUrl) ??
+    (LEGACY_GENERIC_NETWORK_LOGOS.has(network?.logoPath ?? '') ? null : logoUrl(base, network?.logoPath));
+  if (networkLogo) return [networkLogo, FALLBACK_ARTWORK];
   return [...new Set([
     reviewedArtworkUrl(station.logoUrl),
     logoUrl(base, station.logoPath),
-    reviewedArtworkUrl(network?.logoUrl),
-    LEGACY_GENERIC_NETWORK_LOGOS.has(network?.logoPath ?? '') ? null : logoUrl(base, network?.logoPath),
     FALLBACK_ARTWORK,
   ].filter((url): url is string => !!url))];
 }
