@@ -258,11 +258,11 @@ describe('Configured recording and explicit source policy', () => {
     const pending = s.player.play(s.station);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
-    expect(view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(true);
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(true);
     await pending;
     s.audio.dispatchEvent(new Event('playing'));
     view.detectChanges();
-    expect(view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(false);
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(false);
     view.destroy();
   });
   it('starts only on request and claims recording only after genuine-data confirmation', async () => {
