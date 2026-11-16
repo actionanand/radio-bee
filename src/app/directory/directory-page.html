@@ -16,7 +16,7 @@
 <a class="home-settings" routerLink="/settings" [attr.aria-label]="text('settings')" [attr.title]="text('settings')"><ion-icon [icon]="settingsIcon" aria-hidden="true" /></a>} @if(destinations().length){
 <div class="destinations">
   @for(destination of destinations();track destination.id){<a [routerLink]="destination.url"
-    ><strong>{{destination.name}}</strong><span>{{destination.count}} {{text('stations')}}</span></a
+    ><strong>{{destination.name}}</strong>@if(mode()==='broadcasters' && broadcasterBrands().get(destination.id); as brands){<span class="broadcaster-brands" [title]="brands">{{brands}}</span>}<span>{{destination.count}} {{text('stations')}}</span></a
   >}
 </div>
 } @if(!index()){ @if(mode()!=='home'){
