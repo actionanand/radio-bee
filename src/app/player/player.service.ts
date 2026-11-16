@@ -1,4 +1,5 @@
-import { Service, inject, signal, computed, effect, OnDestroy } from '@angular/core';
+import { InjectionToken, Service, inject, signal, computed, effect, OnDestroy } from '@angular/core';
+import { Preferences } from '@capacitor/preferences';
 import { CatalogService } from '../catalog/catalog.service';
 import { Station, Stream } from '../catalog/catalog.models';
 import { eligibleStreams, streamEligibility } from '../catalog/stream-eligibility';
@@ -7,6 +8,18 @@ import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
 import { MEDIA_ENGINE } from './media-engine';
 import { PlaybackFailure, playbackFailure, safeFailure } from './playback-failure';
 import { RECOVERY_POLICY, RECOVERY_RANDOM, recoveryDelay } from './recovery-policy';
+
+export const PLAYER_AUDIO_STORAGE = new InjectionToken('PLAYER_AUDIO_STORAGE', {
+  providedIn: 'root',
+  // Capacitor Preferences uses browser local storage on the web and persistent
+  // native preferences on mobile. Keep the proxy hidden from Angular lifecycle hooks.
+  factory: () => ({
+    get: (options: { key: string }) => Preferences.get(options),
+    set: (options: { key: string; value: string }) => Preferences.set(options),
+  }),
+});
+export const PLAYER_AUDIO_STORAGE_KEY = 'radiobee.player.audio.v1';
+export const DEFAULT_PLAYER_VOLUME = 0.8;
 
 export type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 export const MAX_STREAM_ATTEMPTS = RECOVERY_POLICY.maxDistinctUrls;
@@ -32,6 +45,7 @@ export class PlayerService implements OnDestroy {
   private readonly engine = inject(MEDIA_ENGINE);
   private readonly catalog = inject(CatalogService);
   private readonly random = inject(RECOVERY_RANDOM);
+  private readonly audioStorage = inject(PLAYER_AUDIO_STORAGE);
   private attempt = 0;
   private loaded = false;
   private attempted = new Map<string, number>();
@@ -79,12 +93,54 @@ export class PlayerService implements OnDestroy {
   readonly station = signal<Station | null>(null);
   readonly state = signal<PlaybackState>('idle');
   readonly error = signal('');
-  readonly volume = signal(1);
+  readonly volume = signal(DEFAULT_PLAYER_VOLUME);
   readonly muted = signal(false);
+  private volumeEdited = false;
+  private muteEdited = false;
+  private preferenceWrites = Promise.resolve();
+  readonly preferencesLoaded = this.restoreAudioPreferences();
   readonly capabilities = {
     available: !!this.engine,
     supports: (format: string) => this.engine?.supports(format) ?? false,
   };
+
+  private applyAudioPreferences(): void {
+    if (!this.engine) return;
+    this.engine.audio.volume = this.volume();
+    this.engine.audio.muted = this.muted();
+  }
+
+  private async restoreAudioPreferences(): Promise<void> {
+    try {
+      const { value } = await this.audioStorage.get({ key: PLAYER_AUDIO_STORAGE_KEY });
+      if (!value) return;
+      const saved: unknown = JSON.parse(value);
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
+      const record = saved as Record<string, unknown>;
+      if (typeof record['volume'] !== 'number' || !Number.isFinite(record['volume']) ||
+          record['volume'] < 0 || record['volume'] > 1 || typeof record['muted'] !== 'boolean')
+        return;
+      // A user adjustment made while storage was loading always wins.
+      if (!this.volumeEdited) this.volume.set(record['volume']);
+      if (!this.muteEdited) this.muted.set(record['muted']);
+      this.applyAudioPreferences();
+    } catch {
+      // Browsers with disabled storage still support normal playback at 80%.
+    }
+  }
+
+  private saveAudioPreferences(): void {
+    this.preferenceWrites = this.preferenceWrites
+      .catch(() => undefined)
+      .then(async () => {
+        await this.preferencesLoaded;
+        await this.audioStorage.set({
+          key: PLAYER_AUDIO_STORAGE_KEY,
+          value: JSON.stringify({ volume: this.volume(), muted: this.muted() }),
+        });
+      })
+      .catch(() => undefined);
+  }
 
   constructor() {
     effect(() => {
@@ -207,6 +263,7 @@ export class PlayerService implements OnDestroy {
     if (this.testsEnabled) await this.begin(id, true, streamId);
   }
   private async begin(id: string, technical: boolean, pinned?: string): Promise<void> {
+    await this.preferencesLoaded;
     const station = this.current(id);
     if (!station || !this.engine || !this.candidates(station, technical, pinned).length) return;
     ++this.attempt;
@@ -249,8 +306,7 @@ export class PlayerService implements OnDestroy {
       await this.engine.load(stream);
       if (attempt !== this.attempt) return;
       this.loaded = true;
-      this.engine.audio.volume = this.volume();
-      this.engine.audio.muted = this.muted();
+      this.applyAudioPreferences();
       await this.engine.audio.play();
       // Only the actual playing event changes Connecting to Playing.
     } catch (cause) {
@@ -385,12 +441,16 @@ export class PlayerService implements OnDestroy {
   setVolume(value: number): void {
     if (!Number.isFinite(value)) return;
     const level = Math.max(0, Math.min(1, value));
+    this.volumeEdited = true;
     this.volume.set(level);
-    if (this.engine) this.engine.audio.volume = level;
+    this.applyAudioPreferences();
+    this.saveAudioPreferences();
   }
   toggleMute(): void {
+    this.muteEdited = true;
     this.muted.update(value => !value);
-    if (this.engine) this.engine.audio.muted = this.muted();
+    this.applyAudioPreferences();
+    this.saveAudioPreferences();
   }
   private recordOutcome(url: string, outcome: 'playing' | 'failed') {
     this.outcomes.update(previous => new Map(previous).set(url, outcome));
