@@ -121,9 +121,12 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
       if (ended) return;
       const elapsed = performance.now() - started;
       analyser.getFloatTimeDomainData(samples);
-      // Bytes alone can represent silence. Require measurable captured audio and advancing source time.
+      // Bytes alone can represent silence. Require measurable captured audio.
+      // Live radio streams may expose a fixed currentTime even while audio is
+      // playing; using timestamp progression as a mandatory gate rejects them.
       const rms = Math.sqrt(samples.reduce((power, sample) => power + sample * sample, 0) / samples.length);
-      if (audio.currentTime > initialTime && rms >= 0.001) signalWindows++;
+      if (rms >= 0.001 && (audio.currentTime > initialTime || audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA))
+        signalWindows++;
       // Three real observations above -60 dBFS: tiny codec noise or one click is insufficient proof.
       heard ||= signalWindows >= 3;
       callbacks.progress(Math.floor(elapsed / 1000), heard && bytes > 256);
