@@ -18,6 +18,7 @@ import { radioIcons } from '../shared/radio-icons';
             type="button"
             aria-controls="radio-recording-panel"
             [attr.aria-expanded]="expanded()"
+            [disabled]="player.state() === 'loading' && (recorder.state() === 'idle' || recorder.state() === 'error')"
             (click)="expanded.update(value => !value)">
             <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />
             <span>{{ ui('record') }}</span>
