@@ -39,7 +39,7 @@ function setup(enabled = true, allowProhibitedRecording = false) {
   const data = { stationName: CatalogService.prototype.stationName, catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
-      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording } },
+      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording, MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024, AutoContinue: false } },
       { provide: CatalogService, useValue: data },
       { provide: MEDIA_ENGINE, useValue: { audio, supports: () => true, load: async () => undefined, clear: vi.fn() } },
       { provide: CAPTURE_FACTORY, useValue: create },
@@ -96,9 +96,12 @@ describe('Configured recording and explicit source policy', () => {
   });
   it('accepts independently configured recording booleans in both environments without altering RadioApi', () => {
     for (const e of [environment, production]) {
-      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled', 'AllowProhibitedRecording']);
+      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled', 'AllowProhibitedRecording', 'MaxDurationMs', 'MaxBytes', 'AutoContinue']);
       expect(typeof e.RadioRecording.Enabled).toBe('boolean'); // Neither true nor false is a CI release gate.
       expect(typeof e.RadioRecording.AllowProhibitedRecording).toBe('boolean');
+      expect(e.RadioRecording.MaxDurationMs).toBe(3_600_000);
+      expect(e.RadioRecording.MaxBytes).toBe(80 * 1024 * 1024);
+      expect(e.RadioRecording.AutoContinue).toBe(true);
       expect(e.RadioApi).toEqual({ AllowUnverified: true, CheckVerificationStatus: false, CheckRightsStatus: false });
     }
   });
