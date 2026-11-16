@@ -31,6 +31,7 @@ export const extraEnglish = {
   recordingSaveError: 'Export could not be opened. Your recording is still available to retry.',
   recordingExported: 'Export opened on this device.',
   recordingLimit: 'Each recording segment stops at 1 hour or 80 MB. When auto-continue is enabled, completed segments are exported before the next starts.',
+  recordingFolderRequired: 'Choose your recording folder in Settings before recording.',
   recordingStart: 'Start recording',
   recordingPauseEnded: 'Recording ended when playback changed.',
 };
@@ -67,6 +68,7 @@ export const extraTamil: typeof extraEnglish = {
   recordingSaveError: 'ஏற்றுமதியைத் திறக்க முடியவில்லை. பதிவை மீண்டும் ஏற்றுமதி செய்யலாம்.',
   recordingExported: 'இந்தச் சாதனத்தில் ஏற்றுமதி திறக்கப்பட்டது.',
   recordingLimit: 'ஒவ்வொரு பதிவும் 1 மணி நேரம் அல்லது 80 MB-இல் நிறுத்தப்படும். தானியங்கித் தொடர்ச்சி இயங்கினால், அடுத்த பதிவு தொடங்கும்முன் முந்தையது சேமிக்கப்படும்.',
+  recordingFolderRequired: 'பதிவிற்கு முன் அமைப்புகளில் கோப்புறையைத் தேர்ந்தெடுக்கவும்.',
   recordingStart: 'பதிவைத் தொடங்கு',
   recordingPauseEnded: 'ஒலிபரப்பு மாறியதால் பதிவு முடிந்தது.',
 };
@@ -103,6 +105,7 @@ export const extraSanskrit: typeof extraEnglish = {
   recordingSaveError: 'निर्यातः न उद्घाटितः। पुनः प्रयत्नाय मुद्रणं विद्यते।',
   recordingExported: 'अस्मिन् साधने निर्यातः उद्घाटितः।',
   recordingLimit: 'प्रत्येकं ध्वनिमुद्रणं एकघण्टायाम् अथवा 80 MB सीमायां स्थग्यते। स्वचालिते पुनरारम्भे पूर्वखण्डस्य निर्यातः भवति।',
+  recordingFolderRequired: 'मुद्रणात् पूर्वं सेटिङ्ग्स् मध्ये सञ्चयस्थानं चिनोतु।',
   recordingStart: 'मुद्रणम् आरभस्व',
   recordingPauseEnded: 'श्रवणपरिवर्तनेन मुद्रणं समाप्तम्।',
 };
