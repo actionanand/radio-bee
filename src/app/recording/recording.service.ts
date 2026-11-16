@@ -8,7 +8,8 @@ import { captureRadio, captureSupported, CaptureFactory, CaptureHandle } from '.
 import { exportRecording, recordingFilename } from './export-recording';
 import { Stream } from '../catalog/catalog.models';
 import { UiKey } from '../catalog/catalog.ui';
-import { checkCaptureAccess } from './capture-access';
+import { CatalogService } from '../catalog/catalog.service';
+import { CaptureAccessError, checkCaptureAccess } from './capture-access';
 import { RecordingDestination } from './recording-destination';
 export const CAPTURE_FACTORY = new InjectionToken<CaptureFactory>('CAPTURE_FACTORY', {
   providedIn: 'root',
@@ -24,7 +25,13 @@ export const RECORDING_EXPORT = new InjectionToken('RECORDING_EXPORT', {
 });
 export const CAPTURE_ACCESS = new InjectionToken('CAPTURE_ACCESS', {
   providedIn: 'root',
-  factory: () => ({ check: checkCaptureAccess }),
+  factory: () => {
+    const catalog = inject(CatalogService);
+    return {
+      check: (url: string, signal: AbortSignal) =>
+        checkCaptureAccess(url, signal, catalog.catalog()?.manifest.schemaVersion === 2 ? 'GET' : 'HEAD'),
+    };
+  },
 });
 export function recordingPermission(
   stream: Stream,
@@ -38,6 +45,7 @@ export function recordingPermission(
 @Service()
 export class RecordingService implements OnDestroy {
   private readonly config = inject(RADIO_RECORDING);
+  private readonly catalog = inject(CatalogService);
   private readonly player = inject(PlayerService);
   private readonly document = inject(DOCUMENT);
   private readonly create = inject(CAPTURE_FACTORY);
@@ -94,10 +102,8 @@ export class RecordingService implements OnDestroy {
       // with phase "buffering". The same audio stream remains attached, so
       // keep recording until playback resumes or the player reports a real
       // boundary (pause, stop, switch, failure), which stops it synchronously.
-      if (!source && this.player.state() === 'loading' &&
-          this.player.pendingPhase() === 'buffering') return;
-      if (!source ||
-          recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) === 'blocked')
+      if (!source && this.player.state() === 'loading' && this.player.pendingPhase() === 'buffering') return;
+      if (!source || recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) === 'blocked')
         this.stop();
     });
     if (this.config.Enabled && Capacitor.isNativePlatform()) void this.observeApp();
@@ -131,8 +137,10 @@ export class RecordingService implements OnDestroy {
     }
     // Android requires one persisted, user-chosen folder. Unattended web
     // segments also require a previously granted writable directory.
-    if ((this.destination.requiresSelection || this.config.AutoContinue === true) &&
-        !await this.destination.hasAccess()) {
+    if (
+      (this.destination.requiresSelection || this.config.AutoContinue === true) &&
+      !(await this.destination.hasAccess())
+    ) {
       this.message.set('recordingFolderRequired');
       this.router?.navigate(['/settings']);
       return;
@@ -187,46 +195,55 @@ export class RecordingService implements OnDestroy {
         throw Error('Cancelled');
       this.preparation = undefined;
       this.state.set('starting');
-      const handle = await this.create(source.audio, this.controller.signal, {
-        progress: (seconds, genuine) => {
-          if (generation === this.generation) {
-            this.seconds.set(seconds);
-            if (genuine) this.state.set('recording');
-          }
-        },
-        finished: (blob, reason) => {
-          if (generation !== this.generation) return;
-          this.handle = undefined;
-          this.restoreAccess?.();
-          this.file.set(blob);
-          if (!blob) {
-            this.state.set('error');
-            this.message.set('recordingEmpty');
-          } else if (this.config.AutoContinue === true && reason === 'limit' &&
-                     !this.stopRequested && !this.continuationCancelled) {
-            // Never discard a segment or start another unless a durable save
-            // has succeeded. External browser downloads cannot be trusted to
-            // complete without a user gesture, so auto mode requires a folder.
-            this.state.set('exporting');
-            void this.saveAutomatic(blob, generation, reason === 'limit');
-          } else {
-            this.state.set('ready');
-            this.message.set('recordingReady');
-          }
-        },
-        failed: () => {
-          if (generation === this.generation) {
+      const handle = await this.create(
+        source.audio,
+        this.controller.signal,
+        {
+          progress: (seconds, genuine) => {
+            if (generation === this.generation) {
+              this.seconds.set(seconds);
+              if (genuine) this.state.set('recording');
+            }
+          },
+          finished: (blob, reason) => {
+            if (generation !== this.generation) return;
             this.handle = undefined;
             this.restoreAccess?.();
-            this.file.set(null);
-            this.state.set('error');
-            this.message.set('recordingError');
-          }
+            this.file.set(blob);
+            if (!blob) {
+              this.state.set('error');
+              this.message.set('recordingEmpty');
+            } else if (
+              this.config.AutoContinue === true &&
+              reason === 'limit' &&
+              !this.stopRequested &&
+              !this.continuationCancelled
+            ) {
+              // Never discard a segment or start another unless a durable save
+              // has succeeded. External browser downloads cannot be trusted to
+              // complete without a user gesture, so auto mode requires a folder.
+              this.state.set('exporting');
+              void this.saveAutomatic(blob, generation, reason === 'limit');
+            } else {
+              this.state.set('ready');
+              this.message.set('recordingReady');
+            }
+          },
+          failed: () => {
+            if (generation === this.generation) {
+              this.handle = undefined;
+              this.restoreAccess?.();
+              this.file.set(null);
+              this.state.set('error');
+              this.message.set('recordingError');
+            }
+          },
         },
-      }, this.config);
+        this.config,
+      );
       if (generation !== this.generation || this.controller.signal.aborted) handle.stop(true);
       else this.handle = handle;
-    } catch {
+    } catch (error) {
       if (generation !== this.generation && !(preparation.failed && !preparation.cancelled)) return;
       this.ownRestart = false;
       const restorePlayback =
@@ -245,7 +262,11 @@ export class RecordingService implements OnDestroy {
       }
       if (generation === this.generation || (preparation.failed && !preparation.cancelled)) {
         this.state.set('error');
-        this.message.set('recordingUnsupported');
+        this.message.set(
+          this.catalog.catalog()?.manifest.schemaVersion === 2 && error instanceof CaptureAccessError
+            ? 'recordingAccessUnavailable'
+            : 'recordingUnsupported',
+        );
       }
     }
   }
@@ -307,8 +328,13 @@ export class RecordingService implements OnDestroy {
       this.file.set(null);
       this.state.set('ready');
       this.message.set('recordingExported');
-      if (dueToLimit && !this.stopRequested && !this.continuationCancelled &&
-          this.player.state() === 'playing' && this.player.captureSource()) {
+      if (
+        dueToLimit &&
+        !this.stopRequested &&
+        !this.continuationCancelled &&
+        this.player.state() === 'playing' &&
+        this.player.captureSource()
+      ) {
         // A new capture is never started after user stop, station switch,
         // paused playback, a policy revocation or unsuccessful export.
         await this.start(this.acknowledgedSession);
