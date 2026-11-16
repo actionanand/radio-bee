@@ -89,6 +89,17 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'manual');
     expect(track.stop).toHaveBeenCalled();
   });
+  it('recognizes audible live streams even when currentTime remains fixed', async () => {
+    const element = audio(), cb = callbacks();
+    Object.defineProperty(element, 'readyState', { configurable: true, value: HTMLMediaElement.HAVE_CURRENT_DATA });
+    const handle = await captureRadio(element, new AbortController().signal, cb);
+    recorder.data();
+    await vi.advanceTimersByTimeAsync(800);
+    expect(cb.progress).toHaveBeenLastCalledWith(0, true);
+    expect(element.currentTime).toBe(10);
+    handle.stop();
+    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'manual');
+  });
   it('excludes and stops HLS video tracks before constructing an audio recorder', async () => {
     const element = audio(),
       video = { kind: 'video', readyState: 'live', stop: vi.fn() };
