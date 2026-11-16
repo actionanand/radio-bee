@@ -2,8 +2,8 @@ import type { Language } from './catalog.models';
 
 const uiNames: Record<string, Record<string, string>> = {
   en: { ta: 'Tamil (தமிழ்)', en: 'English', sa: 'Sanskrit (संस्कृतम्)' },
-  ta: { ta: 'தமிழ்', en: 'ஆங்கிலம் (English)', sa: 'சமஸ்க்ரிதம் (संस्कृतम्)' },
-  sa: { ta: 'तमिळ् (தமிழ்)', en: 'आङ्ग्लभाषा (English)', sa: 'संस्कृतम्' },
+  ta: { ta: 'தமிழ்', en: 'ஆங்கிலம் (English)', sa: 'சமஸ்க்ரிதம் (संस्कृतम्)', mfe: 'மொரிஷிய கிரியோல் (கிரியோல் மொரிசியன்)' },
+  sa: { ta: 'तमिळ् (தமிழ்)', en: 'आङ्ग्लभाषा (English)', sa: 'संस्कृतम्', mfe: 'मॉरीशसदेशीया क्रियोलभाषा (क्रियोल मोरिसियन्)' },
 };
 
 export const uiLanguageChoices: readonly Language[] = [
