@@ -4,11 +4,11 @@ import { reviewedArtworkUrl } from './station-artwork-url';
 const base = 'https://actionanand.github.io/radio-bee-data/v2/';
 
 describe('reviewed network brand artwork', () => {
-  it('uses the station brand, then shared network brand, then RadioBee fallback', () => {
+  it('uses the shared network brand for every station, then RadioBee fallback', () => {
     const network = { logoUrl: 'https://i1.sndcdn.com/artworks-000070154341-a8vv1u-t1080x1080.jpg' };
     const station = { logoUrl: 'https://onecms-res.cloudinary.com/image/upload/v1678108773/mediacorp/mel/image/2023-03/oli-968_0.png' };
     expect(artworkCandidates(base, station, network)).toEqual([
-      station.logoUrl, network.logoUrl, FALLBACK_ARTWORK,
+      network.logoUrl, FALLBACK_ARTWORK,
     ]);
     expect(artworkCandidates(base, {}, network)).toEqual([network.logoUrl, FALLBACK_ARTWORK]);
     expect(artworkCandidates(base, {}, {})).toEqual([FALLBACK_ARTWORK]);
@@ -32,11 +32,28 @@ describe('reviewed network brand artwork', () => {
     expect(logoUrl(base, 'assets/artwork/genres/hindu-devotional.svg')).toBe(base + 'assets/artwork/genres/hindu-devotional.svg');
     expect(logoUrl(base, 'assets/artwork/artists/../genres/music.svg')).toBeNull();
   });
-  it('keeps approved catalogue-local station images ahead of their network brand', () => {
+  it('keeps a common network logo even when a station has its own approved image', () => {
     const local = 'assets/logos/stations/custom-mark.webp';
     const shared = 'https://i1.sndcdn.com/artworks-000070154341-a8vv1u-t1080x1080.jpg';
     expect(artworkCandidates(base, { logoPath: local }, { logoUrl: shared }))
-      .toEqual([logoUrl(base, local), shared, FALLBACK_ARTWORK]);
+      .toEqual([shared, FALLBACK_ARTWORK]);
+  });
+
+  it('uses the same image and fallback for Mirchi city stations regardless of generic station artwork', () => {
+    const mirchi = { logoUrl: 'https://static.tuneyou.com/images/logos/500_500/46/12946/RadioMirchi98.3FM.jpg' };
+    const cityVariants = [
+      {},
+      { logoPath: 'assets/artwork/genres/music.svg' },
+      { logoUrl: 'https://publisher.fm/other-city.png' },
+    ];
+    for (const station of cityVariants) {
+      expect(artworkCandidates(base, station, mirchi)).toEqual([mirchi.logoUrl, FALLBACK_ARTWORK]);
+    }
+  });
+
+  it('keeps unique station artwork when the network has no reviewed brand logo', () => {
+    const station = { logoPath: 'assets/artwork/stations/local-fm.svg' };
+    expect(artworkCandidates(base, station, {})).toEqual([logoUrl(base, station.logoPath), FALLBACK_ARTWORK]);
   });
 
   it('accepts every new reviewed image host in the V2 data release', () => {

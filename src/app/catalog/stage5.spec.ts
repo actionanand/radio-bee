@@ -55,13 +55,7 @@ describe('Station artwork', () => {
     view.detectChanges();
     const image = () => view.nativeElement.querySelector('img') as HTMLImageElement;
     for (let attempt = 0; attempt < 2; attempt++) {
-      expect(image().src).toBe(base + 'assets/logos/stations/retry.webp');
-      image().dispatchEvent(new Event('error'));
-      view.detectChanges();
-      const network = image().src;
-      view.componentInstance.failed(base + 'assets/logos/stations/retry.webp');
-      view.detectChanges();
-      expect(image().src).toBe(network);
+      expect(image().src).toBe(base + 'assets/logos/networks/retry.png');
       image().dispatchEvent(new Event('error'));
       view.detectChanges();
       expect(view.componentInstance.source()).toBe(FALLBACK_ARTWORK);
@@ -88,7 +82,7 @@ describe('Station artwork', () => {
       }
     }
   });
-  it('selects station, network and bundled artwork in order, supporting old data', () => {
+  it('selects network brand consistently and falls back to station art when unbranded', () => {
     expect(
       artworkCandidates(
         base,
@@ -96,8 +90,11 @@ describe('Station artwork', () => {
         { logoPath: 'assets/logos/networks/network.png' },
       ),
     ).toEqual([
-      base + 'assets/logos/stations/station.webp',
       base + 'assets/logos/networks/network.png',
+      FALLBACK_ARTWORK,
+    ]);
+    expect(artworkCandidates(base, {logoPath: 'assets/logos/stations/station.webp'}, {})).toEqual([
+      base + 'assets/logos/stations/station.webp',
       FALLBACK_ARTWORK,
     ]);
     expect(artworkCandidates(base, {}, { logoPath: 'assets/logos/networks/network.png' })).toEqual([
@@ -137,9 +134,6 @@ describe('Station artwork', () => {
     view.componentRef.setInput('station', station);
     view.detectChanges();
     const image = () => view.nativeElement.querySelector('img') as HTMLImageElement;
-    expect(image().src).toContain('station.webp');
-    image().dispatchEvent(new Event('error'));
-    view.detectChanges();
     expect(image().src).toContain('network.png');
     image().dispatchEvent(new Event('error'));
     view.detectChanges();
