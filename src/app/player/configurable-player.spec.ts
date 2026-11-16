@@ -116,6 +116,45 @@ describe('Configurable player and bounded fallback', () => {
     audio.dispatchEvent(new Event('playing'));
     expect(player.state()).toBe('playing');
   });
+  it('restores a fresh bounded retry budget after more than a minute of continuous playback', async () => {
+    vi.useFakeTimers();
+    const { player, station, load, audio } = setup(production.RadioApi, [candidate('murugan')]);
+    await player.play(station);
+    audio.dispatchEvent(new Event('playing'));
+    await vi.advanceTimersByTimeAsync(65_000);
+    audio.dispatchEvent(new Event('ended'));
+    await settle();
+    expect(load).toHaveBeenCalledTimes(2);
+    audio.dispatchEvent(new Event('playing'));
+    await vi.advanceTimersByTimeAsync(65_000);
+    audio.dispatchEvent(new Event('ended'));
+    await settle();
+    expect(load).toHaveBeenCalledTimes(3);
+    expect(player.state()).toBe('loading');
+    player.stop();
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(load).toHaveBeenCalledTimes(3);
+  });
+  it('reconnects when once-advancing playback silently stops making progress', async () => {
+    vi.useFakeTimers();
+    const { player, station, load, audio } = setup();
+    let position = 0;
+    vi.spyOn(audio, 'currentTime', 'get').mockImplementation(() => position);
+    await player.play(station);
+    audio.dispatchEvent(new Event('playing'));
+    position = 3;
+    audio.dispatchEvent(new Event('timeupdate'));
+    await vi.advanceTimersByTimeAsync(5_000);
+    position = 8;
+    audio.dispatchEvent(new Event('timeupdate'));
+    await vi.advanceTimersByTimeAsync(21_000);
+    await settle();
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(player.diagnostics().some(d => d.result === 'failure' && d.failure?.kind === 'timeout')).toBe(true);
+    player.pause();
+    await vi.advanceTimersByTimeAsync(35_000);
+    expect(load).toHaveBeenCalledTimes(2);
+  });
   it('never exceeds the URL budget and gives an explicit Retry a fresh bounded budget', async () => {
     const { player, station, load } = setup(production.RadioApi, ['a', 'b', 'c', 'd'].map(candidate));
     load.mockRejectedValue(Error('Offline'));

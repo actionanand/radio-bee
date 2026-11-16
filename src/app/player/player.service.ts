@@ -54,6 +54,11 @@ export class PlayerService implements OnDestroy {
   private startedAt = 0;
   private pending: ReturnType<typeof setTimeout> | undefined;
   private lastStream: Stream | null = null;
+  private playingSince = 0;
+  private progressAt = 0;
+  private lastMediaTime: number | null = null;
+  private hasMediaProgress = false;
+  private monitor: ReturnType<typeof setInterval> | undefined;
   readonly pendingPhase = signal<'connecting' | 'reconnecting' | 'buffering'>('connecting');
   readonly statusLabel = computed(() => {
     const state = this.state();
@@ -188,17 +193,24 @@ export class PlayerService implements OnDestroy {
         this.clearTimer();
         this.recordOutcome(selected.url, 'playing');
         this.state.set('playing');
+        this.playingSince = Date.now();
+        this.progressAt = Date.now();
+        this.lastMediaTime = Number.isFinite(audio.currentTime) ? audio.currentTime : null;
+        this.hasMediaProgress = false;
+        this.startProgressMonitor();
         this.trace('playing');
       }
     });
     const buffering = () => {
       if (this.state() === 'playing') {
+        this.stopProgressMonitor();
         this.state.set('loading');
         this.pendingPhase.set('buffering');
         this.trace('buffering');
         this.watchdog(true);
       }
     };
+    listen('timeupdate', () => this.observeProgress());
     listen('waiting', buffering);
     listen('stalled', buffering);
     listen('error', () => {
@@ -220,6 +232,8 @@ export class PlayerService implements OnDestroy {
         this.playbackBoundary('pause');
         ++this.attempt;
         this.clearTimer();
+        this.stopProgressMonitor();
+        this.playingSince = 0;
         this.state.set('paused');
         this.trace('cancelled');
       }
@@ -273,6 +287,8 @@ export class PlayerService implements OnDestroy {
     this.retryable.clear();
     this.totalAttempts = 0;
     this.startedAt = Date.now();
+    this.playingSince = 0;
+    this.stopProgressMonitor();
     this.lastStream = null;
     this.pendingPhase.set('connecting');
     this.pinnedStreamId = pinned;
@@ -316,6 +332,18 @@ export class PlayerService implements OnDestroy {
     }
   }
   private async recover(message: string, failure: PlaybackFailure, mediaFailure = true): Promise<void> {
+    // A station that played reliably for a sustained period deserves a fresh
+    // bounded retry budget for a *new* outage. Never lift startup/offline limits.
+    // Do not reset the budget for permission changes, unsupported codecs, or
+    // errors that require a new user gesture.
+    if (failure.transient && this.playingSince &&
+        Date.now() - this.playingSince >= RECOVERY_POLICY.stablePlaybackMs) {
+      this.attempted.clear();
+      this.retryable.clear();
+      this.totalAttempts = 0;
+    }
+    this.playingSince = 0;
+    this.stopProgressMonitor();
     this.playbackBoundary('failure');
     const selected = this.selectedStream();
     if (selected) {
@@ -377,6 +405,8 @@ export class PlayerService implements OnDestroy {
     return !!current && this.candidates(current).length > 0;
   }
   pause(): void {
+    this.stopProgressMonitor();
+    this.playingSince = 0;
     this.playbackBoundary('pause');
     if (!this.station()) return;
     ++this.attempt;
@@ -423,6 +453,8 @@ export class PlayerService implements OnDestroy {
     else await this.play(station);
   }
   stop(): void {
+    this.stopProgressMonitor();
+    this.playingSince = 0;
     this.playbackBoundary('stop');
     this.trace('cancelled');
     ++this.attempt;
@@ -456,6 +488,35 @@ export class PlayerService implements OnDestroy {
   private recordOutcome(url: string, outcome: 'playing' | 'failed') {
     this.outcomes.update(previous => new Map(previous).set(url, outcome));
   }
+  private observeProgress(): void {
+    const audio = this.engine?.audio;
+    if (!audio || this.state() !== 'playing') return;
+    const current = audio.currentTime;
+    if (!Number.isFinite(current)) return;
+    if (this.lastMediaTime !== null && current > this.lastMediaTime + 0.05) {
+      this.hasMediaProgress = true;
+      this.progressAt = Date.now();
+    }
+    this.lastMediaTime = current;
+  }
+  private startProgressMonitor(): void {
+    this.stopProgressMonitor();
+    this.monitor = setInterval(() => {
+      if (this.state() !== 'playing' || !this.selectedStream() || !this.engine) return;
+      this.observeProgress();
+      // Streams may not expose an advancing playback position, especially on
+      // native media implementations. Observe only after progress is proven.
+      if (this.hasMediaProgress && Date.now() - this.progressAt >= RECOVERY_POLICY.silentStallMs) {
+        void this.recover('playbackTimeout', { kind: 'timeout', transient: true });
+      }
+    }, RECOVERY_POLICY.progressCheckMs);
+  }
+  private stopProgressMonitor(): void {
+    if (this.monitor !== undefined) clearInterval(this.monitor);
+    this.monitor = undefined;
+    this.lastMediaTime = null;
+    this.hasMediaProgress = false;
+  }
   private clearTimer() {
     if (this.timer) clearTimeout(this.timer);
     this.timer = undefined;
@@ -473,6 +534,8 @@ export class PlayerService implements OnDestroy {
     );
   }
   private terminate(message: string, failure?: PlaybackFailure) {
+    this.stopProgressMonitor();
+    this.playingSince = 0;
     this.playbackBoundary('failure');
     ++this.attempt;
     this.clearTimer();
