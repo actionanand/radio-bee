@@ -3,56 +3,141 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import { exportRecording } from './export-recording';
 
 interface AndroidRecordingStorage {
-  chooseFolder(): Promise<{ selected: boolean }>;
+  getFolder(): Promise<{ selected: boolean; name?: string }>;
+  chooseFolder(): Promise<{ selected: boolean; name?: string }>;
   beginFile(options: { filename: string; mimeType: string }): Promise<{ id: string }>;
   appendData(options: { id: string; base64: string }): Promise<void>;
   finishFile(options: { id: string }): Promise<void>;
   cancelFile(options: { id: string }): Promise<void>;
 }
 const androidStorage = registerPlugin<AndroidRecordingStorage>('RadioBeeRecordingStorage');
-type DirectoryWindow = Window & { showDirectoryPicker?: () => Promise<FileSystemDirectoryHandle> };
+type FolderAccess = 'granted' | 'prompt' | 'denied';
+type FolderHandle = FileSystemDirectoryHandle & {
+  queryPermission?(descriptor: { mode: 'readwrite' }): Promise<FolderAccess>;
+  requestPermission?(descriptor: { mode: 'readwrite' }): Promise<FolderAccess>;
+};
+type DirectoryWindow = Window & { showDirectoryPicker?: (options?: { mode: 'readwrite' }) => Promise<FolderHandle> };
+const FOLDER_DATABASE = 'radiobee-recording-folder';
+const FOLDER_STORE = 'selections';
+const FOLDER_KEY = 'selected';
 
-/** Explicit user-selected destinations; never upload radio recordings to an external server. */
+/** A recording destination is device-local. It is never sent to a server. */
 @Injectable({ providedIn: 'root' })
 export class RecordingDestination {
   readonly selected = signal(false);
-  private directory: FileSystemDirectoryHandle | undefined;
+  readonly name = signal('');
+  readonly loaded = this.restore();
+  private directory: FolderHandle | undefined;
 
   get requiresSelection(): boolean {
     return Capacitor.getPlatform() === 'android';
   }
 
-  /** The browser only supports unattended segment saves when a user grants directory access. */
+  private async database(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      if (typeof indexedDB === 'undefined') { reject(Error('Directory persistence unavailable')); return; }
+      const request = indexedDB.open(FOLDER_DATABASE, 1);
+      request.onupgradeneeded = () => {
+        if (!request.result.objectStoreNames.contains(FOLDER_STORE)) request.result.createObjectStore(FOLDER_STORE);
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  private async savedHandle(): Promise<FolderHandle | undefined> {
+    const db = await this.database();
+    try {
+      return await new Promise<FolderHandle | undefined>((resolve, reject) => {
+        const request = db.transaction(FOLDER_STORE, 'readonly').objectStore(FOLDER_STORE).get(FOLDER_KEY);
+        request.onsuccess = () => resolve(request.result as FolderHandle | undefined);
+        request.onerror = () => reject(request.error);
+      });
+    } finally { db.close(); }
+  }
+
+  private async remember(handle: FolderHandle): Promise<void> {
+    const db = await this.database();
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction(FOLDER_STORE, 'readwrite');
+        transaction.objectStore(FOLDER_STORE).put(handle, FOLDER_KEY);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+    } finally { db.close(); }
+  }
+
+  private async restore(): Promise<void> {
+    if (Capacitor.getPlatform() === 'android') {
+      try {
+        const result = await androidStorage.getFolder();
+        this.selected.set(result.selected);
+        this.name.set(result.selected ? result.name ?? '' : '');
+      } catch { this.selected.set(false); }
+      return;
+    }
+    try {
+      const handle = await this.savedHandle();
+      if (!handle) return;
+      this.directory = handle;
+      const permission = await handle.queryPermission?.({ mode: 'readwrite' });
+      this.selected.set(permission === 'granted');
+      this.name.set(handle.name);
+    } catch { /* Manual browser Downloads remain usable if folder persistence is unavailable. */ }
+  }
+
+  /** Call only from a user gesture; it opens the system folder picker once per setup. */
   async chooseFolder(): Promise<boolean> {
+    await this.loaded;
     if (Capacitor.getPlatform() === 'android') {
       try {
         const result = await androidStorage.chooseFolder();
-        this.selected.set(result.selected);
-        return result.selected;
-      } catch {
-        this.selected.set(false);
-        return false;
-      }
+        if (!result.selected) return false;
+        this.selected.set(true);
+        this.name.set(result.name ?? '');
+        return true;
+      } catch { return false; }
     }
     const picker = (window as DirectoryWindow).showDirectoryPicker;
     if (!picker) return false;
     try {
-      const directory = await picker.call(window);
-      if (!directory) return false;
-      this.directory = directory;
+      const handle = await picker.call(window, { mode: 'readwrite' });
+      if (!handle) return false;
+      // Picker access is a user gesture; don't demand a second picker on later visits.
+      this.directory = handle;
+      this.name.set(handle.name);
       this.selected.set(true);
+      await this.remember(handle).catch(() => undefined);
       return true;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
 
-  async save(blob: Blob, filename: string): Promise<void> {
+  /** A previously selected folder may have its permission revoked in Settings. */
+  async hasAccess(): Promise<boolean> {
+    await this.loaded;
     if (Capacitor.getPlatform() === 'android') {
-      if (!this.selected()) throw Error('Choose an Android recording folder first');
+      try {
+        const result = await androidStorage.getFolder();
+        this.selected.set(result.selected);
+        this.name.set(result.selected ? result.name ?? '' : '');
+        return result.selected;
+      } catch { this.selected.set(false); return false; }
+    }
+    if (!this.directory) return false;
+    try {
+      const permission = await this.directory.queryPermission?.({ mode: 'readwrite' });
+      this.selected.set(permission === 'granted');
+      return permission === 'granted';
+    } catch { this.selected.set(false); return false; }
+  }
+
+  async save(blob: Blob, filename: string, requireFolder = false): Promise<void> {
+    if (Capacitor.getPlatform() === 'android') {
+      if (!await this.hasAccess()) throw Error('Recording folder access was removed');
       const { id } = await androidStorage.beginFile({ filename, mimeType: blob.type || 'application/octet-stream' });
       try {
-        // Small transfers avoid materializing an 80 MB recording as a >100 MB base64 string.
         const chunkSize = 48 * 1024;
         for (let offset = 0; offset < blob.size; offset += chunkSize) {
           const bytes = new Uint8Array(await blob.slice(offset, offset + chunkSize).arrayBuffer());
@@ -67,9 +152,9 @@ export class RecordingDestination {
       }
       return;
     }
-    if (this.directory) {
-      const entry = await this.directory.getFileHandle(filename, { create: true });
-      const writer = await entry.createWritable();
+    if (await this.hasAccess() && this.directory) {
+      const file = await this.directory.getFileHandle(filename, { create: true });
+      const writer = await file.createWritable();
       try {
         await writer.write(blob);
         await writer.close();
@@ -79,7 +164,7 @@ export class RecordingDestination {
       }
       return;
     }
-    // A manual export is a user gesture, so ordinary Downloads is available.
+    if (requireFolder) throw Error('A persistent recording folder is required for auto-save');
     await exportRecording(blob, filename);
   }
 }
