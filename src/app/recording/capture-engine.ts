@@ -59,7 +59,6 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
   let heard = false,
     chunks: Blob[] = [],
     started = 0;
-  const initialTime = audio.currentTime;
   const release = () => {
     clearInterval(timer);
     stream?.getTracks().forEach(track => track.stop());
@@ -90,8 +89,22 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
     context = new AudioContext();
     const analyser = context.createAnalyser();
     context.createMediaStreamSource(stream).connect(analyser);
-    await context.resume();
+    // AudioContext.resume() can remain pending after asynchronous permission
+    // checks have lost the browser's user activation. Never leave the UI at
+    // "Waiting for stream audio… 0 s" indefinitely.
+    let resumeTimeout: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        context.resume(),
+        new Promise<never>((_, reject) => {
+          resumeTimeout = setTimeout(() => reject(Error('Audio capture context timed out')), 4000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(resumeTimeout);
+    }
     if (signal.aborted || ended) throw Error('Cancelled');
+    if (context.state !== 'running') throw Error('Audio capture context unavailable');
     recorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: 128000 });
     recorder.ondataavailable = event => {
       if (discard || !event.data.size) return;
@@ -121,9 +134,12 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
       if (ended) return;
       const elapsed = performance.now() - started;
       analyser.getFloatTimeDomainData(samples);
-      // Bytes alone can represent silence. Require measurable captured audio and advancing source time.
+      // Live radio streams can expose a stationary/non-finite playback
+      // position even while audio is audible. Require real analyser energy
+      // and encoded data rather than a changing HTMLAudioElement.currentTime.
       const rms = Math.sqrt(samples.reduce((power, sample) => power + sample * sample, 0) / samples.length);
-      if (audio.currentTime > initialTime && rms >= 0.001) signalWindows++;
+      if (rms >= 0.001) signalWindows++;
+      else signalWindows = 0;
       // Three real observations above -60 dBFS: tiny codec noise or one click is insufficient proof.
       heard ||= signalWindows >= 3;
       callbacks.progress(Math.floor(elapsed / 1000), heard && bytes > 256);
