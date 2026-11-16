@@ -21,6 +21,13 @@ describe('language display labels', () => {
     expect(languageDisplayName(known['sa'], 'sa')).toBe('संस्कृतम्');
   });
 
+  it('translates Mauritian Creole consistently in Tamil and Sanskrit regardless of Intl support', () => {
+    const mauritianCreole = { code: 'mfe', name: 'Mauritian Creole', nativeName: 'Kreol Morisien' };
+    expect(languageDisplayName(mauritianCreole, 'en')).toBe('Mauritian Creole (Kreol Morisien)');
+    expect(languageDisplayName(mauritianCreole, 'ta')).toBe('மொரிஷிய கிரியோல் (கிரியோல் மொரிசியன்)');
+    expect(languageDisplayName(mauritianCreole, 'sa')).toBe('मॉरीशसदेशीया क्रियोलभाषा (क्रियोल मोरिसियन्)');
+  });
+
   it('retains native writing for other catalogue languages', () => {
     const other = { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' };
     expect(languageDisplayName(other, 'en')).toBe('Malayalam (മലയാളം)');
