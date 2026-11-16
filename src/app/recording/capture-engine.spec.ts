@@ -1,4 +1,4 @@
-import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES } from './capture-engine';
+import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES, MAX_RECORDING_MS, recordingLimits } from './capture-engine';
 describe('Bounded output-only capture adapter (controlled API unit tests)', () => {
   let recorder: FakeRecorder,
     samples = 0.05;
@@ -86,7 +86,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     await vi.advanceTimersByTimeAsync(600);
     expect(cb.progress).toHaveBeenLastCalledWith(0, true);
     handle.stop();
-    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob));
+    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'manual');
     expect(track.stop).toHaveBeenCalled();
   });
   it('excludes and stops HLS video tracks before constructing an audio recorder', async () => {
@@ -115,7 +115,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
       element.currentTime = 20;
       await vi.advanceTimersByTimeAsync(8000);
       expect(cb.failed).not.toHaveBeenCalled();
-      expect(cb.finished).toHaveBeenCalledWith(null);
+      expect(cb.finished).toHaveBeenCalledWith(null, 'manual');
     });
   it('reports an encoder error once without overwriting it with an empty-file outcome', async () => {
     const cb = callbacks();
@@ -132,7 +132,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     recorder.data();
     abort.abort();
     expect(track.stop).toHaveBeenCalled();
-    expect(cb.finished).toHaveBeenCalledWith(null);
+    expect(cb.finished).toHaveBeenCalledWith(null, 'manual');
     expect(element.currentTime).toBe(10);
   });
   it('bounds duration and buffered bytes', async () => {
@@ -150,8 +150,19 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     await captureRadio(element, new AbortController().signal, next);
     element.currentTime = 12;
     recorder.data();
-    await vi.advanceTimersByTimeAsync(120000);
+    await vi.advanceTimersByTimeAsync(MAX_RECORDING_MS);
     expect(recorder.state).toBe('inactive');
+  });
+  it('honors configurable limits and reports automatic segment boundaries', async () => {
+    const cb = callbacks(), element = audio();
+    await captureRadio(element, new AbortController().signal, cb, { MaxDurationMs: 1000, MaxBytes: 4096 });
+    element.currentTime = 15;
+    recorder.data(512);
+    await vi.advanceTimersByTimeAsync(1200);
+    expect(recorder.state).toBe('inactive');
+    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'limit');
+    expect(recordingLimits({ MaxDurationMs: 2000, MaxBytes: 2048 })).toEqual({ maxMs: 2000, maxBytes: 2048 });
+    expect(recordingLimits({ MaxDurationMs: Number.NaN, MaxBytes: -1 })).toEqual({ maxMs: MAX_RECORDING_MS, maxBytes: MAX_RECORDING_BYTES });
   });
   it('rejects unsupported MIME/security failures without asking for microphone access', async () => {
     const element = audio();

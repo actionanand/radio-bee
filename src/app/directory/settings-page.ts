@@ -6,6 +6,8 @@ import { DirectorySelectComponent } from './directory-select';
 import { HOME_STATIONS_MAX, HOME_STATIONS_MIN, HomePreferencesService } from './home-preferences.service';
 import { SettingsKey, settingsText } from './settings.labels';
 import { directoryText } from './directory.labels';
+import { RADIO_RECORDING } from '../recording/recording.config';
+import { RecordingDestination } from '../recording/recording-destination';
 
 /** v2 Settings: a draft selection never changes Home until the user saves it. */
 @Component({
@@ -18,6 +20,10 @@ export class SettingsPage {
   readonly data = inject(CatalogService);
   readonly theme = inject(ThemeService);
   readonly home = inject(HomePreferencesService);
+  readonly recording = inject(RADIO_RECORDING);
+  readonly recordingFolder = inject(RecordingDestination);
+  readonly folderError = signal(false);
+  readonly choosingFolder = signal(false);
   readonly min = HOME_STATIONS_MIN;
   readonly max = HOME_STATIONS_MAX;
   readonly choosing = signal(false);
@@ -81,6 +87,15 @@ export class SettingsPage {
     if (this.home.save(this.draft(), this.data.catalog())) {
       this.choosing.set(false);
       this.saved.set(true);
+    }
+  }
+  async chooseRecordingFolder() {
+    if (!this.recording.Enabled || this.choosingFolder()) return;
+    this.choosingFolder.set(true);
+    try {
+      this.folderError.set(!await this.recordingFolder.chooseFolder());
+    } finally {
+      this.choosingFolder.set(false);
     }
   }
   search(event: Event) {

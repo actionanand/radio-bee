@@ -1,3 +1,6 @@
+@defer (when recording.Enabled) {
+<app-recording-controls />
+}
 @if (player.station(); as station) {
 <section
   class="rb-ui"
@@ -46,6 +49,4 @@
   </p>
   }
 </section>
-} @defer (when recording.Enabled) {
-<app-recording-controls />
 }

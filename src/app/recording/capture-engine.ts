@@ -1,8 +1,18 @@
-export const MAX_RECORDING_MS = 120_000;
-export const MAX_RECORDING_BYTES = 8 * 1024 * 1024;
+import { RadioRecordingConfig } from '../../environments/radio-recording.config';
+export const MAX_RECORDING_MS = 60 * 60_000;
+export const MAX_RECORDING_BYTES = 80 * 1024 * 1024;
+/** Fail closed to bounded capture if the environment contains invalid values. */
+export function recordingLimits(config?: Pick<RadioRecordingConfig, 'MaxDurationMs' | 'MaxBytes'>) {
+  const duration = config?.MaxDurationMs;
+  const bytes = config?.MaxBytes;
+  return {
+    maxMs: typeof duration === 'number' && Number.isFinite(duration) && duration >= 1_000 && duration <= 24 * 60 * 60_000 ? duration : MAX_RECORDING_MS,
+    maxBytes: typeof bytes === 'number' && Number.isSafeInteger(bytes) && bytes >= 1024 && bytes <= 512 * 1024 * 1024 ? bytes : MAX_RECORDING_BYTES,
+  };
+}
 export interface CaptureCallbacks {
   progress(seconds: number, genuine: boolean): void;
-  finished(blob: Blob | null): void;
+  finished(blob: Blob | null, reason?: 'manual' | 'limit'): void;
   failed(): void;
 }
 export interface CaptureHandle {
@@ -12,6 +22,7 @@ export type CaptureFactory = (
   audio: HTMLAudioElement,
   signal: AbortSignal,
   callbacks: CaptureCallbacks,
+  config?: Pick<RadioRecordingConfig, 'MaxDurationMs' | 'MaxBytes'>,
 ) => Promise<CaptureHandle>;
 interface CapturableAudio extends HTMLAudioElement {
   captureStream?: () => MediaStream;
@@ -26,7 +37,8 @@ export function captureSupported(audio: HTMLAudioElement): boolean {
   );
 }
 /** Captures only the existing player output. Never requests a microphone, fetches or relays a stream. */
-export const captureRadio: CaptureFactory = async (audio, signal, callbacks) => {
+export const captureRadio: CaptureFactory = async (audio, signal, callbacks, config) => {
+  const { maxMs, maxBytes } = recordingLimits(config);
   const capture = (audio as CapturableAudio).captureStream;
   const mimeType =
     typeof MediaRecorder === 'undefined'
@@ -42,6 +54,7 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks) => 
     discard = false,
     bytes = 0;
   let failed = false;
+  let stopReason: 'manual' | 'limit' = 'manual';
   let signalWindows = 0;
   let heard = false,
     chunks: Blob[] = [],
@@ -53,7 +66,8 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks) => 
     if (context && context.state !== 'closed') void context.close().catch(() => undefined);
     signal.removeEventListener('abort', abort);
   };
-  const stop = (drop = false) => {
+  const stop = (drop = false, reason: 'manual' | 'limit' = 'manual') => {
+    stopReason = reason;
     if (ended) return;
     discard ||= drop;
     ended = true;
@@ -81,8 +95,8 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks) => 
     recorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: 128000 });
     recorder.ondataavailable = event => {
       if (discard || !event.data.size) return;
-      if (bytes + event.data.size > MAX_RECORDING_BYTES) {
-        stop();
+      if (bytes + event.data.size > maxBytes) {
+        stop(false, 'limit');
         return;
       }
       chunks.push(event.data);
@@ -92,7 +106,7 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks) => 
       release();
       const blob = !discard && heard && bytes > 256 ? new Blob(chunks, { type: recorder?.mimeType || mimeType }) : null;
       chunks = [];
-      if (!failed) callbacks.finished(blob);
+      if (!failed) callbacks.finished(blob, stopReason);
     };
     recorder.onerror = () => {
       failed = true;
@@ -113,7 +127,7 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks) => 
       // Three real observations above -60 dBFS: tiny codec noise or one click is insufficient proof.
       heard ||= signalWindows >= 3;
       callbacks.progress(Math.floor(elapsed / 1000), heard && bytes > 256);
-      if (elapsed >= MAX_RECORDING_MS) stop();
+      if (elapsed >= maxMs) stop(false, 'limit');
       else if (elapsed >= 8000 && !heard) {
         stop(true);
       }

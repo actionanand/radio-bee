@@ -119,6 +119,26 @@ test('identity, native patch idempotency and preservation of custom native chang
   f.write('capacitor.config.ts', "appId: 'wrong.identity'");
   assert.throws(() => patchAndroid(f.root), /app ID/);
 });
+test('Capacitor sync injects the SAF recording plugin in the generated package exactly once', t => {
+  const f = nativeFixture(t);
+  const activity = 'android/app/src/main/java/com/actionanand/radiobee/app/MainActivity.java';
+  const native = 'android/app/src/main/java/com/actionanand/radiobee/app/RadioBeeRecordingStoragePlugin.java';
+  f.write(activity, [
+    'package com.actionanand.radiobee.app;',
+    'import com.getcapacitor.BridgeActivity;',
+    'public class MainActivity extends BridgeActivity {}',
+  ].join('\n'));
+  f.write('scripts/native/RadioBeeRecordingStoragePlugin.java',
+    read('scripts/native/RadioBeeRecordingStoragePlugin.java'));
+  patchAndroid(f.root);
+  assert.match(f.read(activity), /registerPlugin\(RadioBeeRecordingStoragePlugin\.class\)/);
+  assert.match(f.read(native), /package com\.actionanand\.radiobee\.app;/);
+  assert.match(f.read(native), /ACTION_OPEN_DOCUMENT_TREE/);
+  const first = f.read(activity);
+  patchAndroid(f.root);
+  assert.equal(f.read(activity), first);
+  assert.equal((first.match(/registerPlugin\(/g) ?? []).length, 1);
+});
 test('release collection rejects stale/empty Gradle outputs and preserves approved history', t => {
   const f = nativeFixture(t);
   const sources = [

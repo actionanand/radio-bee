@@ -11,109 +11,201 @@ import { radioIcons } from '../shared/radio-icons';
   providers: [RecordingService],
   template: `
     @if (player.station() || recorder.state() !== 'idle') {
-      <section class="recording-controls rb-ui" [attr.lang]="catalog.locale()" [attr.aria-label]="ui('record')">
-        @if (!expanded() && recorder.state() === 'idle') {
-          <button type="button" (click)="expanded.set(true)">
-            <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />{{ ui('record') }}
-          </button>
-        } @else {
-          @if (recorder.state() === 'idle' || recorder.state() === 'error') {
-            @if (recorder.permission() === 'blocked') {
-              <p>{{ ui('recordingProhibited') }}</p>
-            } @else if (recorder.permission() === 'unavailable') {
-              <p>{{ ui('recordingPlaybackRequired') }}</p>
-            } @else {
-              @if (recorder.permission() === 'acknowledgment') {
-                <label class="consent"
-                  ><input type="checkbox" [checked]="acknowledged()" (change)="acknowledge($event)" />{{
-                    ui('recordingConsent')
-                  }}</label
-                >
-              }
-              <button
-                type="button"
-                [disabled]="
-                  player.state() !== 'playing' || (recorder.permission() === 'acknowledgment' && !acknowledged())
-                "
-                (click)="recorder.start(acknowledged())">
-                <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />{{ ui('recordingStart') }}
-              </button>
+      <div class="recording-dock rb-ui" [attr.lang]="catalog.locale()">
+        <div class="recording-launcher">
+          <button
+            class="recording-toggle"
+            type="button"
+            aria-controls="radio-recording-panel"
+            [attr.aria-expanded]="expanded()"
+            (click)="expanded.update(value => !value)">
+            <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />
+            <span>{{ ui('record') }}</span>
+            @if (recorder.state() === 'recording') {
+              <span class="recording-time" role="status">{{ recorder.seconds() }} s</span>
+            } @else if (recorder.file()) {
+              <span class="recording-time">{{ ui('recordingReady') }}</span>
             }
-          }
+          </button>
           @if (
             recorder.state() === 'preparing' ||
             recorder.state() === 'starting' ||
-            recorder.state() === 'recording' ||
-            recorder.state() === 'stopping'
+            recorder.state() === 'recording'
           ) {
-            <p role="status">
-              {{ ui(recorder.state() === 'recording' ? 'recording' : 'recordingStarting') }} ·
-              {{ recorder.seconds() }} s
-            </p>
-            <button type="button" (click)="recorder.stop()" [disabled]="recorder.state() === 'stopping'">
-              <ion-icon [icon]="icons.stop" aria-hidden="true" />{{ ui('stopRecording') }}
+            <button class="quick-action" type="button" (click)="recorder.stop()">
+              <ion-icon [icon]="icons.stop" aria-hidden="true" />
+              {{ ui('stopRecording') }}
             </button>
           }
           @if (recorder.file()) {
-            <button type="button" (click)="recorder.save()" [disabled]="recorder.state() === 'exporting'">
-              <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />{{ ui('exportRecording') }}
+            <button
+              class="quick-action"
+              type="button"
+              (click)="recorder.save()"
+              [disabled]="recorder.state() === 'exporting'">
+              <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
+              {{ ui('exportRecording') }}
             </button>
           }
-          <button type="button" (click)="discard()" [disabled]="recorder.state() === 'exporting'">
-            <ion-icon [icon]="icons.close" aria-hidden="true" />{{ ui('discard') }}
-          </button>
-          <small>{{ ui('recordingLimit') }}</small>
-          @if (recorder.message(); as message) {
-            <p [attr.role]="recorder.state() === 'error' ? 'alert' : 'status'">{{ ui(message) }}</p>
-          }
+        </div>
+        @if (expanded()) {
+          <section
+            id="radio-recording-panel"
+            class="recording-panel"
+            [attr.aria-label]="ui('record')">
+            <header>
+              <strong>{{ ui('record') }}</strong>
+              <button class="close-panel" type="button" [attr.aria-label]="ui('close')" (click)="expanded.set(false)">
+                <ion-icon [icon]="icons.close" aria-hidden="true" />
+              </button>
+            </header>
+            @if (recorder.state() === 'idle' || recorder.state() === 'error') {
+              @if (recorder.permission() === 'blocked') {
+                <p>{{ ui('recordingProhibited') }}</p>
+              } @else if (recorder.permission() === 'unavailable') {
+                <p>{{ ui('recordingPlaybackRequired') }}</p>
+              } @else {
+                @if (recorder.permission() === 'acknowledgment') {
+                  <label class="consent">
+                    <input type="checkbox" [checked]="acknowledged()" (change)="acknowledge($event)" />
+                    <span>{{ ui('recordingConsent') }}</span>
+                  </label>
+                }
+                <button
+                  class="primary-action"
+                  type="button"
+                  [disabled]="player.state() !== 'playing' || (recorder.permission() === 'acknowledgment' && !acknowledged())"
+                  (click)="recorder.start(acknowledged())">
+                  <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />{{ ui('recordingStart') }}
+                </button>
+              }
+            }
+            @if (
+              recorder.state() === 'preparing' ||
+              recorder.state() === 'starting' ||
+              recorder.state() === 'recording' ||
+              recorder.state() === 'stopping'
+            ) {
+              <p role="status">
+                {{ ui(recorder.state() === 'recording' ? 'recording' : 'recordingStarting') }}
+                - {{ recorder.seconds() }} s
+              </p>
+              <button
+                class="primary-action"
+                type="button"
+                (click)="recorder.stop()"
+                [disabled]="recorder.state() === 'stopping'">
+                <ion-icon [icon]="icons.stop" aria-hidden="true" />{{ ui('stopRecording') }}
+              </button>
+            }
+            @if (recorder.file()) {
+              <button
+                class="primary-action"
+                type="button"
+                (click)="recorder.save()"
+                [disabled]="recorder.state() === 'exporting'">
+                <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />{{ ui('exportRecording') }}
+              </button>
+            }
+            <button
+              class="secondary-action"
+              type="button"
+              (click)="discard()"
+              [disabled]="recorder.state() === 'exporting'">
+              <ion-icon [icon]="icons.close" aria-hidden="true" />{{ ui('discard') }}
+            </button>
+            <small>{{ ui('recordingLimit') }}</small>
+            @if (recorder.message(); as message) {
+              <p [attr.role]="recorder.state() === 'error' ? 'alert' : 'status'">{{ ui(message) }}</p>
+            }
+          </section>
         }
-      </section>
+      </div>
     }
   `,
   styles: `
-    section {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      padding: 6px 16px;
+    :host {
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+    .recording-dock {
       color: var(--ink);
       background: var(--surface);
+    }
+    .recording-launcher {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 48px;
+      padding: 4px clamp(12px, 4vw, 64px);
       border-top: 1px solid var(--line);
-      max-height: 32dvh;
-      overflow: auto;
     }
     button {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 9px 14px;
+      color: var(--ink);
+      background: var(--paper);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      touch-action: manipulation;
     }
-    ion-icon {
-      font-size: 18px;
-    }
-    label {
+    button:disabled { opacity: .55; cursor: default; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; }
+    ion-icon { font-size: 19px; flex: none; }
+    .recording-toggle { border-color: var(--accent-ink); }
+    .recording-toggle ion-icon { color: var(--accent-ink); }
+    .recording-time { font-size: 11px; font-variant-numeric: tabular-nums; }
+    .recording-panel {
+      position: absolute;
+      right: clamp(12px, 4vw, 64px);
+      bottom: calc(100% + 8px);
+      z-index: 3;
+      width: min(440px, calc(100vw - 24px));
+      max-height: min(65dvh, 560px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
       display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      max-width: 600px;
-      line-height: 1.5;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 36px #10251f35;
+      background: var(--surface);
     }
-    input {
-      flex: none;
-      width: 20px;
-      height: 20px;
-      accent-color: var(--accent-ink);
-    }
-    p,
-    small {
-      font-size: 12px;
-      margin: 4px 0;
-    }
-    small {
-      color: var(--muted);
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    header strong { font-size: 16px; }
+    .close-panel { min-width: 44px; padding: 8px; }
+    .consent { display: flex; align-items: flex-start; gap: 12px; font-size: 13px; line-height: 1.5; }
+    .consent input { width: 20px; height: 20px; flex: none; accent-color: var(--accent-ink); }
+    .primary-action { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .secondary-action { align-self: flex-start; }
+    p { margin: 0; font-size: 13px; line-height: 1.5; }
+    small { font-size: 12px; line-height: 1.5; color: var(--muted); }
+    @media (max-width: 599px) {
+      .recording-launcher {
+        padding: 4px 12px;
+        gap: 6px;
+      }
+      .recording-panel {
+        right: 8px;
+        width: calc(100vw - 16px);
+        max-height: min(65dvh, 480px);
+        padding: 16px;
+      }
+      .recording-time { font-size: 11px; }
     }
   `,
 })
