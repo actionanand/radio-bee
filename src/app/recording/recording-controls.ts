@@ -16,6 +16,7 @@ import { radioIcons } from '../shared/radio-icons';
           <button
             class="recording-toggle"
             type="button"
+            [disabled]="player.state() === 'loading' && !recorder.file() && (recorder.state() === 'idle' || recorder.state() === 'error')"
             aria-controls="radio-recording-panel"
             [attr.aria-expanded]="expanded()"
             (click)="expanded.update(value => !value)">
