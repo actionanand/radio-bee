@@ -2,7 +2,7 @@ import type { RadioRecordingConfig } from './radio-recording.config';
 import type { RadioApiConfig } from './radio-api.config';
 
 export const environment = {
-  RadioRecording: { Enabled: true, AllowProhibitedRecording: false } satisfies RadioRecordingConfig,
+  RadioRecording: { Enabled: true, AllowProhibitedRecording: false, MaxDurationMs: 60 * 60_000, MaxBytes: 80 * 1024 * 1024, AutoContinue: true } satisfies RadioRecordingConfig,
   RadioApi: {
     AllowUnverified: true,
     CheckVerificationStatus: false,
