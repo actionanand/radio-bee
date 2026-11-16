@@ -5,15 +5,15 @@ describe('Explicit recording access check', () => {
     vi.useRealTimers();
   });
   function response(url: string, ok = true) {
-    return { url, ok } as Response;
+    return { url, ok, body: { cancel: vi.fn(async () => undefined) } } as unknown as Response;
   }
-  it('uses a bounded credential-free CORS HEAD request, not a hidden stream download', async () => {
+  it('uses a bounded credential-free CORS GET request, cancelling the body instead of downloading the stream', async () => {
     const fetch = vi.fn(async () => response('https://broadcaster.test/final'));
     vi.stubGlobal('fetch', fetch);
     await checkCaptureAccess('https://broadcaster.test/live', new AbortController().signal);
     expect(fetch).toHaveBeenCalledWith(
       'https://broadcaster.test/live',
-      expect.objectContaining({ method: 'HEAD', mode: 'cors', credentials: 'omit' }),
+      expect.objectContaining({ method: 'GET', mode: 'cors', credentials: 'omit' }),
     );
   });
   it('rejects failed or insecure final responses', async () => {
@@ -24,7 +24,7 @@ describe('Explicit recording access check', () => {
     ]) {
       vi.stubGlobal('fetch', async () => r);
       await expect(checkCaptureAccess('https://broadcaster.test/live', new AbortController().signal)).rejects.toThrow(
-        'Capture access unavailable',
+        'Recording media access unavailable',
       );
     }
   });
@@ -45,8 +45,28 @@ describe('Explicit recording access check', () => {
     );
     const pending = expect(
       checkCaptureAccess('https://broadcaster.test/live', new AbortController().signal),
-    ).rejects.toThrow('Aborted');
+    ).rejects.toThrow('Recording media access unavailable');
     await vi.advanceTimersByTimeAsync(8000);
     await pending;
+  });
+  it('cancels successful infinite bodies and retains explicit legacy HEAD behavior', async () => {
+    const result = response('https://broadcaster.test/live');
+    const fetch = vi.fn(async () => result);
+    vi.stubGlobal('fetch', fetch);
+    await checkCaptureAccess(result.url, new AbortController().signal);
+    expect(result.body!.cancel).toHaveBeenCalledOnce();
+    await checkCaptureAccess(result.url, new AbortController().signal, 'HEAD');
+    expect(fetch).toHaveBeenLastCalledWith(result.url, expect.objectContaining({ method: 'HEAD' }));
+  });
+  it('does not treat a successful HEAD as proof that the media GET is allowed', async () => {
+    const fetch = vi.fn(async (_url: string, options: RequestInit) => {
+      if (options.method === 'HEAD') return response('https://broadcaster.test/live');
+      throw new TypeError('Failed to fetch');
+    });
+    vi.stubGlobal('fetch', fetch);
+    await checkCaptureAccess('https://broadcaster.test/live', new AbortController().signal, 'HEAD');
+    await expect(checkCaptureAccess('https://broadcaster.test/live', new AbortController().signal)).rejects.toThrow(
+      'Recording media access unavailable',
+    );
   });
 });

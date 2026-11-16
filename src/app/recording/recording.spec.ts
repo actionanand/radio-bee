@@ -1,3 +1,4 @@
+import { CaptureAccessError } from './capture-access';
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { CatalogService } from '../catalog/catalog.service';
@@ -23,8 +24,13 @@ import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
 import { PlaybackError } from '../player/playback-failure';
 
-function setup(enabled = true, allowProhibitedRecording = false, autoContinue = false,
-  maxDurationMs = 3_600_000, maxBytes = 80 * 1024 * 1024) {
+function setup(
+  enabled = true,
+  allowProhibitedRecording = false,
+  autoContinue = false,
+  maxDurationMs = 3_600_000,
+  maxBytes = 80 * 1024 * 1024,
+) {
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -43,8 +49,25 @@ function setup(enabled = true, allowProhibitedRecording = false, autoContinue = 
   const data = { stationName: CatalogService.prototype.stationName, catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
-      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording, MaxDurationMs: maxDurationMs, MaxBytes: maxBytes, AutoContinue: autoContinue } },
-      { provide: RecordingDestination, useValue: { requiresSelection: false, selected: signal(autoContinue), hasAccess: async () => true, save: folderSave } },
+      {
+        provide: RADIO_RECORDING,
+        useValue: {
+          Enabled: enabled,
+          AllowProhibitedRecording: allowProhibitedRecording,
+          MaxDurationMs: maxDurationMs,
+          MaxBytes: maxBytes,
+          AutoContinue: autoContinue,
+        },
+      },
+      {
+        provide: RecordingDestination,
+        useValue: {
+          requiresSelection: false,
+          selected: signal(autoContinue),
+          hasAccess: async () => true,
+          save: folderSave,
+        },
+      },
       { provide: CatalogService, useValue: data },
       { provide: MEDIA_ENGINE, useValue: { audio, supports: () => true, load: async () => undefined, clear: vi.fn() } },
       { provide: CAPTURE_FACTORY, useValue: create },
@@ -98,9 +121,7 @@ describe('Configured recording and explicit source policy', () => {
     const segment = new Blob(['radio segment'], { type: 'audio/webm' });
     s.hooks().progress(12, true);
     s.hooks().finished(segment, 'limit');
-    await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledWith(
-      segment, expect.stringContaining('.webm'), true,
-    ));
+    await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledWith(segment, expect.stringContaining('.webm'), true));
     await vi.waitFor(() => expect(s.create).toHaveBeenCalledTimes(2));
     s.hooks().progress(3, true);
     service.stop();
@@ -163,7 +184,13 @@ describe('Configured recording and explicit source policy', () => {
   });
   it('accepts independently configured recording booleans in both environments without altering RadioApi', () => {
     for (const e of [environment, production]) {
-      expect(Object.keys(e.RadioRecording)).toEqual(['Enabled', 'AllowProhibitedRecording', 'MaxDurationMs', 'MaxBytes', 'AutoContinue']);
+      expect(Object.keys(e.RadioRecording)).toEqual([
+        'Enabled',
+        'AllowProhibitedRecording',
+        'MaxDurationMs',
+        'MaxBytes',
+        'AutoContinue',
+      ]);
       expect(typeof e.RadioRecording.Enabled).toBe('boolean'); // Neither true nor false is a CI release gate.
       expect(typeof e.RadioRecording.AllowProhibitedRecording).toBe('boolean');
       expect(e.RadioRecording.MaxDurationMs).toBe(3_600_000);
@@ -260,10 +287,14 @@ describe('Configured recording and explicit source policy', () => {
     s.audio.dispatchEvent(new Event('waiting'));
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
-    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(true);
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(
+      true,
+    );
     s.audio.dispatchEvent(new Event('playing'));
     view.detectChanges();
-    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(false);
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(
+      false,
+    );
     view.destroy();
   });
   it('keeps manual stops exportable instead of auto-saving them in continuation mode', async () => {
@@ -302,11 +333,15 @@ describe('Configured recording and explicit source policy', () => {
     const pending = s.player.play(s.station);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
-    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(true);
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(
+      true,
+    );
     await pending;
     s.audio.dispatchEvent(new Event('playing'));
     view.detectChanges();
-    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(false);
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(
+      false,
+    );
     view.destroy();
   });
   it('starts only on request and claims recording only after genuine-data confirmation', async () => {
@@ -315,7 +350,12 @@ describe('Configured recording and explicit source policy', () => {
     const service = TestBed.inject(RecordingService);
     expect(s.create).not.toHaveBeenCalled();
     await service.start(true);
-    expect(s.create).toHaveBeenCalledWith(s.audio, expect.any(AbortSignal), expect.any(Object), expect.objectContaining({ MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024 }));
+    expect(s.create).toHaveBeenCalledWith(
+      s.audio,
+      expect.any(AbortSignal),
+      expect.any(Object),
+      expect.objectContaining({ MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024 }),
+    );
     s.hooks().progress(1, false);
     expect(service.state()).toBe('starting');
     s.hooks().progress(2, true);
@@ -568,4 +608,19 @@ describe('Configured recording and explicit source policy', () => {
       );
       if (action === 'pause') expect(s.player.state()).toBe('paused');
     });
+  it('reports v2 media access failures distinctly without restarting normal playback', async () => {
+    const s = setup();
+    await playing(s);
+    nativeSource(s);
+    const c = structuredClone(s.c);
+    c.manifest.schemaVersion = 2;
+    s.data.catalog.set(c);
+    s.access.mockRejectedValueOnce(new CaptureAccessError());
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    expect(service.message()).toBe('recordingAccessUnavailable');
+    expect(s.player.state()).toBe('playing');
+    expect(s.audio.getAttribute('crossorigin')).toBeNull();
+    expect(s.create).not.toHaveBeenCalled();
+  });
 });
