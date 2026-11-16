@@ -63,13 +63,28 @@ describe('Browser media adapter', () => {
     expect(engine.supports('mp3')).toBe(true);
     expect(engine.supports('aac')).toBe(true);
     expect(engine.supports('hls')).toBe(false);
-    for (const format of ['mp3', 'aac']) {
+    expect(engine.supports('unknown')).toBe(true);
+    expect(engine.supports('wav')).toBe(false);
+    for (const format of ['mp3', 'aac', 'unknown']) {
       await engine.load({ ...stream, format });
       expect(engine.audio.src).toBe(stream.url);
     }
     engine.clear();
     expect(engine.audio.getAttribute('src')).toBeNull();
     expect(fake.factory.create).not.toHaveBeenCalled();
+  });
+  it('attempts unknown-format directory endpoints as native audio without invoking hls.js', async () => {
+    vi.mocked(HTMLMediaElement.prototype.canPlayType).mockImplementation(mime =>
+      mime === 'audio/mpeg' ? 'maybe' : '',
+    );
+    const fake = fakeHls(false);
+    const engine = existing(createMediaEngine(fake.factory));
+    const url = 'https://s2.radio.co/sbb640c97c/listen';
+    expect(engine.supports('unknown')).toBe(true);
+    await engine.load({ ...stream, url, format: 'unknown' });
+    expect(engine.audio.src).toBe(url);
+    expect(fake.factory.create).not.toHaveBeenCalled();
+    engine.clear();
   });
   it('can explicitly select native HLS for a same-browser diagnostic', async () => {
     vi.mocked(HTMLMediaElement.prototype.canPlayType).mockReturnValue('probably');
