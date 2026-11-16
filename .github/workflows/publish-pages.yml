@@ -1,4 +1,4 @@
-name: Publish RadioBee Web to GitHub Pages
+name: Publish RadioBee Web to gh-pages
 
 on:
   push:
@@ -6,21 +6,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: radiobee-pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -41,20 +41,18 @@ jobs:
           npm run copy-error-page
           cmp www/index.html www/404.html
           node scripts/check-web-artifact.mjs
-      - name: Set up GitHub Pages
-        uses: actions/configure-pages@v5
-      - name: Upload production build
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: www
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish validated build to gh-pages
+        shell: bash
+        run: |
+          git fetch origin gh-pages
+          mkdir -p "$RUNNER_TEMP/radiobee-pages"
+          git worktree add -B gh-pages "$RUNNER_TEMP/radiobee-pages" origin/gh-pages
+          rsync -a --delete --exclude=.git www/ "$RUNNER_TEMP/radiobee-pages/"
+          cd "$RUNNER_TEMP/radiobee-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "deploy: RadioBee web from ${GITHUB_SHA}"
+            git push origin HEAD:gh-pages
+          fi
