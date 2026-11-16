@@ -5,8 +5,6 @@ import { PlayerService } from '../player/player.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { UiKey, uiLabel } from '../catalog/catalog.ui';
 import { radioIcons } from '../shared/radio-icons';
-import { RADIO_RECORDING } from './recording.config';
-import { recordingLimits } from './capture-engine';
 @Component({
   selector: 'app-recording-controls',
   imports: [IonIcon],
@@ -116,12 +114,6 @@ import { recordingLimits } from './capture-engine';
               [disabled]="recorder.state() === 'exporting'">
               <ion-icon [icon]="icons.close" aria-hidden="true" />{{ ui('discard') }}
             </button>
-            @if (recorder.permission() !== 'blocked' && recorder.permission() !== 'unavailable') {
-              <small data-recording-limit>{{ recordingLimitNotice() }}</small>
-              @if (recording.AutoContinue) {
-                <small>{{ ui('recordingAutoContinue') }}</small>
-              }
-            }
             @if (recorder.message(); as message) {
               <p [attr.role]="recorder.state() === 'error' ? 'alert' : 'status'">{{ ui(message) }}</p>
             }
@@ -218,7 +210,6 @@ import { recordingLimits } from './capture-engine';
 })
 export class RecordingControlsComponent {
   readonly recorder = inject(RecordingService);
-  readonly recording = inject(RADIO_RECORDING);
   readonly player = inject(PlayerService);
   readonly catalog = inject(CatalogService);
   readonly icons = radioIcons;
@@ -232,26 +223,6 @@ export class RecordingControlsComponent {
   }
   ui(key: UiKey) {
     return uiLabel(this.catalog.locale(), key);
-  }
-  recordingLimitNotice(): string {
-    // Render the *configured* limits rather than hard-coded copy so edits to
-    // environment.ts/environment.prod.ts never leave a stale recording notice.
-    const { maxMs, maxBytes } = recordingLimits(this.recording);
-    const locale = this.catalog.locale();
-    const units = locale === 'ta'
-      ? { hour: 'மணி நேரம்', minute: 'நிமிடங்கள்', second: 'விநாடிகள்' }
-      : locale === 'sa'
-        ? { hour: 'घण्टाः', minute: 'निमेषाः', second: 'क्षणाः' }
-        : { hour: 'hour', minute: 'minute', second: 'second' };
-    const duration = maxMs % 3_600_000 === 0
-      ? `${maxMs / 3_600_000} ${units.hour}${locale === 'en' && maxMs !== 3_600_000 ? 's' : ''}`
-      : maxMs % 60_000 === 0
-        ? `${maxMs / 60_000} ${units.minute}${locale === 'en' && maxMs !== 60_000 ? 's' : ''}`
-        : `${Math.ceil(maxMs / 1000)} ${units.second}${locale === 'en' && maxMs > 1000 ? 's' : ''}`;
-    const megabytes = Number((maxBytes / (1024 * 1024)).toFixed(2));
-    return this.ui('recordingLimit')
-      .replace('{duration}', duration)
-      .replace('{size}', `${megabytes} MB`);
   }
   acknowledge(event: Event) {
     if (event.target instanceof HTMLInputElement) this.acknowledged.set(event.target.checked);
