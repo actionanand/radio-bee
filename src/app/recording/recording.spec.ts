@@ -124,30 +124,29 @@ describe('Configured recording and explicit source policy', () => {
     expect(view.nativeElement.textContent).not.toContain('2 minutes');
     view.destroy();
   });
-  it('displays current environment duration and size, never the obsolete 2-minute limit', async () => {
+  it('keeps recording limits and automatic-save notices out of the recording panel', async () => {
     const s = setup(true, false, true);
     await playing(s);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
     (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')!.click();
     view.detectChanges();
-    const notice = (view.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-recording-limit]');
-    expect(notice?.textContent).toContain('1 hour');
-    expect(notice?.textContent).toContain('80 MB');
-    expect(notice?.textContent).not.toContain('2 minutes');
-    expect(view.nativeElement.textContent).toContain('saved automatically');
+    expect(view.nativeElement.querySelector('[data-recording-limit]')).toBeNull();
+    expect(view.nativeElement.textContent).not.toContain('80 MB');
+    expect(view.nativeElement.textContent).not.toContain('2 minutes');
+    expect(view.nativeElement.textContent).not.toContain('saved automatically');
     view.destroy();
   });
-  it('follows future recording limit configuration changes in the rendered notice', async () => {
+  it('does not show changed recording limits in the recording panel', async () => {
     const s = setup(true, false, false, 5 * 60_000, 12 * 1024 * 1024);
     await playing(s);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
     (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')!.click();
     view.detectChanges();
-    const notice = (view.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-recording-limit]');
-    expect(notice?.textContent).toContain('5 minutes');
-    expect(notice?.textContent).toContain('12 MB');
+    expect(view.nativeElement.querySelector('[data-recording-limit]')).toBeNull();
+    expect(view.nativeElement.textContent).not.toContain('5 minutes');
+    expect(view.nativeElement.textContent).not.toContain('12 MB');
     expect(view.nativeElement.textContent).not.toContain('saved automatically');
     view.destroy();
   });
