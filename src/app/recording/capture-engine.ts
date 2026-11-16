@@ -1,5 +1,5 @@
-export const MAX_RECORDING_MS = 120_000;
-export const MAX_RECORDING_BYTES = 8 * 1024 * 1024;
+export const MAX_RECORDING_MS = 30 * 60_000;
+export const MAX_RECORDING_BYTES = 32 * 1024 * 1024;
 export interface CaptureCallbacks {
   progress(seconds: number, genuine: boolean): void;
   finished(blob: Blob | null): void;
