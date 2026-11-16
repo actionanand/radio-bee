@@ -114,7 +114,7 @@ describe('Configured recording and explicit source policy', () => {
     await playing(s);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
-    const toggle = view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle');
+    const toggle = (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle');
     expect(toggle).not.toBeNull();
     toggle!.click();
     view.detectChanges();
@@ -129,9 +129,9 @@ describe('Configured recording and explicit source policy', () => {
     await playing(s);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
-    view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')!.click();
     view.detectChanges();
-    const notice = view.nativeElement.querySelector<HTMLElement>('[data-recording-limit]');
+    const notice = (view.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-recording-limit]');
     expect(notice?.textContent).toContain('1 hour');
     expect(notice?.textContent).toContain('80 MB');
     expect(notice?.textContent).not.toContain('2 minutes');
@@ -143,9 +143,9 @@ describe('Configured recording and explicit source policy', () => {
     await playing(s);
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
-    view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')!.click();
     view.detectChanges();
-    const notice = view.nativeElement.querySelector<HTMLElement>('[data-recording-limit]');
+    const notice = (view.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-recording-limit]');
     expect(notice?.textContent).toContain('5 minutes');
     expect(notice?.textContent).toContain('12 MB');
     expect(view.nativeElement.textContent).not.toContain('saved automatically');
