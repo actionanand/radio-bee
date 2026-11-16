@@ -27,6 +27,8 @@ const en = {
   recordingFolderChoose: 'Choose recording folder',
   recordingFolderChange: 'Change recording folder',
   recordingFolderError: 'Folder selection failed or access was denied.',
+  recordingLimits: 'Each recording segment stops at {duration} or {size}.',
+  recordingAutoContinue: 'Segments are saved automatically, and recording continues while playback remains active.',
 };
 export type SettingsKey = keyof typeof en;
 const ta: Record<SettingsKey, string> = {
@@ -57,6 +59,8 @@ const ta: Record<SettingsKey, string> = {
   recordingFolderChoose: 'பதிவு கோப்புறையைத் தேர்ந்தெடு',
   recordingFolderChange: 'பதிவு கோப்புறையை மாற்று',
   recordingFolderError: 'கோப்புறையைத் தேர்வு செய்ய முடியவில்லை.',
+  recordingLimits: 'ஒவ்வொரு பதிவுப் பகுதியும் {duration} அல்லது {size} அளவில் முடிவடையும்.',
+  recordingAutoContinue: 'பதிவுப் பகுதிகள் தானாகச் சேமிக்கப்படும்; ஒலிபரப்பு தொடரும் வரை பதிவு மீண்டும் தொடங்கும்.',
 };
 const sa: Record<SettingsKey, string> = {
   settings: 'सेटिङ्ग्स्',
@@ -85,7 +89,9 @@ const sa: Record<SettingsKey, string> = {
   recordingFolderMissing: 'सञ्चयस्थानं न चितम्',
   recordingFolderChoose: 'सञ्चयस्थानं चिनोतु',
   recordingFolderChange: 'सञ्चयस्थानं परिवर्तयतु',
-  recordingFolderError: 'सञ्चयस्थानं चिनोतुं न शक्यते।'
+  recordingFolderError: 'सञ्चयस्थानं चिनोतुं न शक्यते।',
+  recordingLimits: 'प्रत्येकं ध्वनिमुद्रणखण्डं {duration} अथवा {size} पर्यन्तं भवति।',
+  recordingAutoContinue: 'मुद्रणखण्डाः स्वयमेव रक्ष्यन्ते; श्रवणं यावत् प्रवर्तते तावत् पुनर्मुद्रणं भवति।'
 };
 export function settingsText(locale: string, key: SettingsKey, vars: {min?:number;max?:number} = {}): string {
   return (locale === 'ta' ? ta : locale === 'sa' ? sa : en)[key]
