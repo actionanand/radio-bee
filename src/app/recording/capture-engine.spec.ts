@@ -86,7 +86,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     await vi.advanceTimersByTimeAsync(600);
     expect(cb.progress).toHaveBeenLastCalledWith(0, true);
     handle.stop();
-    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob));
+    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'manual');
     expect(track.stop).toHaveBeenCalled();
   });
   it('excludes and stops HLS video tracks before constructing an audio recorder', async () => {
@@ -115,7 +115,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
       element.currentTime = 20;
       await vi.advanceTimersByTimeAsync(8000);
       expect(cb.failed).not.toHaveBeenCalled();
-      expect(cb.finished).toHaveBeenCalledWith(null);
+      expect(cb.finished).toHaveBeenCalledWith(null, 'manual');
     });
   it('reports an encoder error once without overwriting it with an empty-file outcome', async () => {
     const cb = callbacks();
@@ -132,7 +132,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     recorder.data();
     abort.abort();
     expect(track.stop).toHaveBeenCalled();
-    expect(cb.finished).toHaveBeenCalledWith(null);
+    expect(cb.finished).toHaveBeenCalledWith(null, 'manual');
     expect(element.currentTime).toBe(10);
   });
   it('bounds duration and buffered bytes', async () => {
