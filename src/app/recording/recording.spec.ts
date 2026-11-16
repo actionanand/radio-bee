@@ -18,11 +18,13 @@ import { CaptureCallbacks, CaptureFactory } from './capture-engine';
 import { recordingFilename } from './export-recording';
 import { RecordingDestination } from './recording-destination';
 import { PlayerComponent } from '../player/player';
+import { RecordingControlsComponent } from './recording-controls';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
 import { PlaybackError } from '../player/playback-failure';
 
-function setup(enabled = true, allowProhibitedRecording = false, autoContinue = false) {
+function setup(enabled = true, allowProhibitedRecording = false, autoContinue = false,
+  maxDurationMs = 3_600_000, maxBytes = 80 * 1024 * 1024) {
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -41,7 +43,7 @@ function setup(enabled = true, allowProhibitedRecording = false, autoContinue = 
   const data = { stationName: CatalogService.prototype.stationName, catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
-      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording, MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024, AutoContinue: autoContinue } },
+      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording, MaxDurationMs: maxDurationMs, MaxBytes: maxBytes, AutoContinue: autoContinue } },
       { provide: RecordingDestination, useValue: { requiresSelection: false, selected: signal(autoContinue), hasAccess: async () => true, save: folderSave } },
       { provide: CatalogService, useValue: data },
       { provide: MEDIA_ENGINE, useValue: { audio, supports: () => true, load: async () => undefined, clear: vi.fn() } },
@@ -105,6 +107,49 @@ describe('Configured recording and explicit source policy', () => {
     s.hooks().finished(segment, 'manual');
     await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledTimes(2));
     expect(s.create).toHaveBeenCalledTimes(2);
+  });
+  it('hides recording limits entirely when the current stream prohibits recording', async () => {
+    const s = setup();
+    s.station.streams[0].directListening!.recording = 'prohibited';
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const toggle = (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle');
+    expect(toggle).not.toBeNull();
+    toggle!.click();
+    view.detectChanges();
+    expect(view.nativeElement.textContent).toContain('Recording is prohibited for this stream.');
+    expect(view.nativeElement.querySelector('[data-recording-limit]')).toBeNull();
+    expect(view.nativeElement.textContent).not.toContain('80 MB');
+    expect(view.nativeElement.textContent).not.toContain('2 minutes');
+    view.destroy();
+  });
+  it('displays current environment duration and size, never the obsolete 2-minute limit', async () => {
+    const s = setup(true, false, true);
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const notice = (view.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-recording-limit]');
+    expect(notice?.textContent).toContain('1 hour');
+    expect(notice?.textContent).toContain('80 MB');
+    expect(notice?.textContent).not.toContain('2 minutes');
+    expect(view.nativeElement.textContent).toContain('saved automatically');
+    view.destroy();
+  });
+  it('follows future recording limit configuration changes in the rendered notice', async () => {
+    const s = setup(true, false, false, 5 * 60_000, 12 * 1024 * 1024);
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    (view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const notice = (view.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-recording-limit]');
+    expect(notice?.textContent).toContain('5 minutes');
+    expect(notice?.textContent).toContain('12 MB');
+    expect(view.nativeElement.textContent).not.toContain('saved automatically');
+    view.destroy();
   });
   it('distinguishes paused or absent playback from prohibited recording metadata', async () => {
     const s = setup();
