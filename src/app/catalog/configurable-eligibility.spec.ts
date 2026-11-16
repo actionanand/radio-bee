@@ -76,10 +76,11 @@ describe('Environment-controlled stream policy', () => {
         'https://user@radio.example/live',
       ])
         expect(streamEligibility({ streams: [{ ...base, url }] }, supported, policy).status).toBe('invalidStream');
-      for (const format of ['unknown', 'html', 'wav'])
+      for (const format of ['html', 'wav'])
         expect(streamEligibility({ streams: [{ ...base, format }] }, supported, policy).status).toBe(
           'incompatibleStream',
         );
+      expect(streamEligibility({ streams: [{ ...base, format: 'unknown' }] }, { available: true, supports: () => false }, policy).status).toBe('incompatibleStream');
       expect(streamEligibility({ streams: [base] }, { available: false, supports: () => true }, policy).status).toBe(
         'playerUnavailable',
       );

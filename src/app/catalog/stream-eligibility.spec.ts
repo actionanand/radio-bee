@@ -71,10 +71,10 @@ describe('Shared stream eligibility', () => {
   ])
     it(`rejects URL ${url}`, () =>
       expect(streamEligibility({ streams: [{ ...approved, url }] }, supported).status).toBe('invalidStream'));
-  for (const format of ['unknown', 'wav', 'html'])
+  for (const format of ['wav', 'html'])
     it(`rejects format ${format}`, () =>
       expect(streamEligibility({ streams: [{ ...approved, format }] }, supported).status).toBe('incompatibleStream'));
-  for (const format of ['mp3', 'aac', 'hls'])
+  for (const format of ['mp3', 'aac', 'hls', 'unknown'])
     it(`checks platform support for ${format}`, () => {
       expect(streamEligibility({ streams: [{ ...approved, format }] }, supported).status).toBe('ready');
       expect(
@@ -84,6 +84,13 @@ describe('Shared stream eligibility', () => {
         streamEligibility({ streams: [{ ...approved, format }] }, { available: false, supports: () => true }).status,
       ).toBe('playerUnavailable');
     });
+  it('allows browser probing of unknown-format HTTPS streams but keeps policy restrictions intact', () => {
+    const candidate: Stream = { ...approved, format: 'unknown', url: 'https://s2.radio.co/sbb640c97c/listen' };
+    expect(streamEligibility({ streams: [candidate] }, supported).status).toBe('ready');
+    expect(streamEligibility({ streams: [candidate] }, { available: true, supports: () => false }).status).toBe('incompatibleStream');
+    expect(streamEligibility({ streams: [{ ...candidate, rightsStatus: 'unconfirmed' }] }, supported).status).toBe('permissionPending');
+    expect(streamEligibility({ streams: [{ ...candidate, verificationStatus: 'unverified' }] }, supported).status).toBe('verificationPending');
+  });
   it('chooses an eligible alternative instead of enabling a blocked stream', () => {
     const denied = { ...approved, id: 'denied', rightsStatus: 'unconfirmed' };
     const result = streamEligibility({ streams: [denied, approved] }, supported);

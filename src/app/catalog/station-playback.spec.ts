@@ -27,9 +27,10 @@ const cases: { status: StreamStatus; streams: Stream[] }[] = [
   { status: 'permissionPending', streams: [{ ...approved, rightsStatus: 'unconfirmed' }] },
   { status: 'streamUnavailable', streams: [{ ...approved, verificationStatus: 'unavailable' }] },
   { status: 'invalidStream', streams: [{ ...approved, url: 'http://unsafe.test/live' }] },
-  { status: 'incompatibleStream', streams: [{ ...approved, format: 'unknown' }] },
+  { status: 'incompatibleStream', streams: [{ ...approved, format: 'wav' }] },
   { status: 'playerUnavailable', streams: [approved] },
   { status: 'ready', streams: [approved] },
+  { status: 'ready', streams: [{ ...approved, format: 'unknown', url: 'https://s2.radio.co/sbb640c97c/listen' }] },
 ];
 // Retain the Stage 3–6 strict-policy contract; Stage 7 separately tests the new environment defaults.
 beforeEach(() => {

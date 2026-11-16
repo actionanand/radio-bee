@@ -76,7 +76,10 @@ function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioA
   } catch {
     return 'invalidStream';
   }
-  if (!['mp3', 'aac', 'hls'].includes(stream.format)) return 'incompatibleStream';
+  // A source with unknown metadata can still contain decodable audio. Let the
+  // browser inspect it rather than refusing to offer Play before trying.
+  // Explicit unsupported formats remain blocked.
+  if (!['mp3', 'aac', 'hls', 'unknown'].includes(stream.format)) return 'incompatibleStream';
   if (!player.available) return 'playerUnavailable';
   if (!player.supports(stream.format)) return 'incompatibleStream';
   return 'ready';

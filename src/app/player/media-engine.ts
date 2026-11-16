@@ -101,11 +101,15 @@ export function createMediaEngine(factory: HlsFactory = defaultHlsFactory, prefe
         ? !!audio.canPlayType('audio/mpeg')
         : format === 'aac'
           ? !!audio.canPlayType('audio/aac')
-          : format === 'hls' && (nativeHls() || factory.isSupported()),
+          : format === 'hls'
+            ? nativeHls() || factory.isSupported()
+            : format === 'unknown' && (!!audio.canPlayType('audio/mpeg') || !!audio.canPlayType('audio/aac')),
     clear,
     load: async stream => {
       clear();
       lastFailure = null;
+      // Unknown formats are probed by the browser's native audio decoder.
+      // The source is never promoted to "verified" merely because Play is offered.
       if (stream.format !== 'hls' || (nativeHls() && (!preferHlsJs || !factory.isSupported()))) {
         audio.src = stream.url;
         audio.load();
