@@ -118,6 +118,12 @@ export class RecordingService implements OnDestroy {
       ['preparing', 'starting', 'recording', 'stopping', 'exporting'].includes(this.state())
     )
       return;
+    // A previous manual recording must be exported or discarded explicitly.
+    // Switching stations must never silently replace its pending Blob.
+    if (this.file()) {
+      this.message.set('recordingExportFirst');
+      return;
+    }
     const permission = recordingPermission(source.stream, this.config.AllowProhibitedRecording === true);
     if (permission === 'blocked' || (permission === 'acknowledgment' && !acknowledged)) {
       this.message.set(permission === 'blocked' ? 'recordingProhibited' : 'recordingConsent');
@@ -196,12 +202,13 @@ export class RecordingService implements OnDestroy {
           if (!blob) {
             this.state.set('error');
             this.message.set('recordingEmpty');
-          } else if (this.config.AutoContinue === true) {
-            // Never discard a segment or start another unless a durable save
-            // has succeeded. External browser downloads cannot be trusted to
-            // complete without a user gesture, so auto mode requires a folder.
+          } else if (this.config.AutoContinue === true &&
+                     reason === 'limit' && !this.stopRequested && !this.continuationCancelled) {
+            // Auto-save/continue only at an unattended segment limit. On Pause,
+            // Stop, station changes or failure, keep the draft for manual export.
+            // Never discard a segment or start another unless the durable save succeeds.
             this.state.set('exporting');
-            void this.saveAutomatic(blob, generation, reason === 'limit');
+            void this.saveAutomatic(blob, generation, true);
           } else {
             this.state.set('ready');
             this.message.set('recordingReady');
@@ -325,7 +332,9 @@ export class RecordingService implements OnDestroy {
         await this.exporter.save(file, recordingFilename(this.name, file.type));
       }
       if (generation === this.generation) {
-        this.state.set('ready');
+        // Only a successful export releases the old recording for a new session.
+        this.file.set(null);
+        this.state.set('idle');
         this.message.set('recordingExported');
       }
     } catch {
