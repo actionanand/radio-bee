@@ -81,13 +81,14 @@ export function patchAndroid(root = process.cwd()) {
     let activity = read(activityPath);
     if (!activity.includes('registerPlugin(RadioBeeRecordingStoragePlugin.class)')) {
       const pluginRegistration = 'registerPlugin(RadioBeeRecordingStoragePlugin.class);';
-      if (/super\\.onCreate\\(savedInstanceState\\);/.test(activity)) {
+      if (/super\.onCreate\(savedInstanceState\);/.test(activity)) {
         activity = activity.replace('super.onCreate(savedInstanceState);',
-          pluginRegistration + '\\n        super.onCreate(savedInstanceState);');
+          pluginRegistration + '\n        super.onCreate(savedInstanceState);');
       } else {
-        activity = replace(activity, /public class MainActivity extends BridgeActivity\\s*\\{/,
-          'public class MainActivity extends BridgeActivity {\\n    @Override\\n    public void onCreate(android.os.Bundle savedInstanceState) {\\n        ' +
-          pluginRegistration + '\\n        super.onCreate(savedInstanceState);\\n    }',
+        activity = replace(activity, /public class MainActivity extends BridgeActivity\s*\{/,
+          'public class MainActivity extends BridgeActivity {\n    @Override\n' +
+          '    public void onCreate(android.os.Bundle savedInstanceState) {\n        ' +
+          pluginRegistration + '\n        super.onCreate(savedInstanceState);\n    }',
           'MainActivity bridge');
       }
       write(activityPath, activity);
