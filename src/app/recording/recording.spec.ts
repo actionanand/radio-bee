@@ -105,8 +105,10 @@ describe('Configured recording and explicit source policy', () => {
     s.hooks().progress(3, true);
     service.stop();
     s.hooks().finished(segment, 'manual');
-    await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledTimes(2));
+    expect(s.folderSave).toHaveBeenCalledTimes(1);
     expect(s.create).toHaveBeenCalledTimes(2);
+    expect(service.state()).toBe('ready');
+    expect(service.file()).toBe(segment);
   });
   it('hides recording limits entirely when the current stream prohibits recording', async () => {
     const s = setup();
