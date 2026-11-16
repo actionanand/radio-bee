@@ -1,4 +1,4 @@
-import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES, MAX_RECORDING_MS } from './capture-engine';
+import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES, MAX_RECORDING_MS, recordingLimits } from './capture-engine';
 describe('Bounded output-only capture adapter (controlled API unit tests)', () => {
   let recorder: FakeRecorder,
     samples = 0.05;
@@ -152,6 +152,17 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     recorder.data();
     await vi.advanceTimersByTimeAsync(MAX_RECORDING_MS);
     expect(recorder.state).toBe('inactive');
+  });
+  it('honors configurable limits and reports automatic segment boundaries', async () => {
+    const cb = callbacks(), element = audio();
+    await captureRadio(element, new AbortController().signal, cb, { MaxDurationMs: 1000, MaxBytes: 4096 });
+    element.currentTime = 15;
+    recorder.data(512);
+    await vi.advanceTimersByTimeAsync(1200);
+    expect(recorder.state).toBe('inactive');
+    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'limit');
+    expect(recordingLimits({ MaxDurationMs: 2000, MaxBytes: 2048 })).toEqual({ maxMs: 2000, maxBytes: 2048 });
+    expect(recordingLimits({ MaxDurationMs: Number.NaN, MaxBytes: -1 })).toEqual({ maxMs: MAX_RECORDING_MS, maxBytes: MAX_RECORDING_BYTES });
   });
   it('rejects unsupported MIME/security failures without asking for microphone access', async () => {
     const element = audio();
