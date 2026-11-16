@@ -1,0 +1,1 @@
+import{t as D}from"./chunk-BNnkhKoj.js";var t=D(`Share`,{web:()=>import(`./chunk-DX4QvMbk.js`).then(r=>new r.ShareWeb)});export{t as Share};

@@ -1,0 +1,1 @@
+import{t as D}from"./chunk-BNnkhKoj.js";var r;(function(t){t.Dark=`DARK`,t.Light=`LIGHT`,t.Default=`DEFAULT`})(r||(r={}));var o;(function(t){t.None=`NONE`,t.Slide=`SLIDE`,t.Fade=`FADE`})(o||(o={}));var i=D(`StatusBar`);export{i as StatusBar,r as Style};
