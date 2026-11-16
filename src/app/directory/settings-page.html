@@ -15,6 +15,19 @@
         (changed)="theme.set($event)" />
     </div>
   </section>
+  @if (recording.Enabled) {
+    <section class="setting-card" aria-labelledby="recording-heading">
+      <h2 id="recording-heading">{{ text('recordingFolder') }}</h2>
+      <p class="help">{{ text('recordingFolderHelp') }}</p>
+      <p class="help" role="status">
+        {{ destination.selected() ? text('recordingFolderSelected') + ': ' + destination.name() : text('recordingFolderMissing') }}
+      </p>
+      <button class="save-button" type="button" (click)="changeRecordingFolder()">
+        {{ destination.selected() ? text('recordingFolderChange') : text('recordingFolderChoose') }}
+      </button>
+      @if (folderError()) { <p class="help" role="alert">{{ text('recordingFolderError') }}</p> }
+    </section>
+  }
   <section class="setting-card" aria-labelledby="personal-heading">
     <h2 id="personal-heading">{{ text('homeSection') }}</h2>
     <div class="toggle-row">
