@@ -342,7 +342,7 @@ export class DirectoryPage {
     return this.text(key as DirectoryKey);
   }
   constructor() {
-    effect(() => this.title.setTitle(this.heading() + ' · RadioBee'));
+    effect(() => this.title.setTitle(this.heading() + ' - RadioBee'));
   }
   fixed(key: string) {
     return (

@@ -118,7 +118,7 @@ export class StationPage {
   constructor() {
     effect(() =>
       this.title.setTitle(
-        (this.station() ? this.data.stationName(this.station()!) : this.text('notFound')) + ' · RadioBee',
+        (this.station() ? this.data.stationName(this.station()!) : this.text('notFound')) + ' - RadioBee',
       ),
     );
   }
