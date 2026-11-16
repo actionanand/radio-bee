@@ -9,6 +9,7 @@ import { exportRecording, recordingFilename } from './export-recording';
 import { Stream } from '../catalog/catalog.models';
 import { UiKey } from '../catalog/catalog.ui';
 import { checkCaptureAccess } from './capture-access';
+import { RecordingDestination } from './recording-destination';
 export const CAPTURE_FACTORY = new InjectionToken<CaptureFactory>('CAPTURE_FACTORY', {
   providedIn: 'root',
   factory: () => captureRadio,
@@ -42,6 +43,7 @@ export class RecordingService implements OnDestroy {
   private readonly create = inject(CAPTURE_FACTORY);
   private readonly support = inject(CAPTURE_SUPPORT);
   private readonly exporter = inject(RECORDING_EXPORT);
+  private readonly destination = inject(RecordingDestination);
   private readonly access = inject(CAPTURE_ACCESS);
   private readonly router = inject(Router, { optional: true });
   readonly state = signal<
@@ -60,10 +62,14 @@ export class RecordingService implements OnDestroy {
   private name = '';
   private destroyed = false;
   private ownRestart = false;
+  private acknowledgedSession = false;
+  private stopRequested = false;
+  private continuationCancelled = false;
   private preparation: { failed: boolean; cancelled: boolean } | undefined;
   private restoreAccess: (() => void) | undefined;
   private readonly removeBoundary = this.player.onPlaybackBoundary(reason => {
     if (this.ownRestart && reason === 'source') return;
+    this.continuationCancelled = true;
     if (this.preparation) {
       if (reason === 'failure') this.preparation.failed = true;
       else this.preparation.cancelled = true;
@@ -117,7 +123,18 @@ export class RecordingService implements OnDestroy {
       this.message.set(permission === 'blocked' ? 'recordingProhibited' : 'recordingConsent');
       return;
     }
+    // Android requires one persisted, user-chosen folder. Unattended web
+    // segments also require a previously granted writable directory.
+    if ((this.destination.requiresSelection || this.config.AutoContinue === true) &&
+        !await this.destination.hasAccess()) {
+      this.message.set('recordingFolderRequired');
+      this.router?.navigate(['/settings']);
+      return;
+    }
     this.discard();
+    this.acknowledgedSession = acknowledged;
+    this.stopRequested = false;
+    this.continuationCancelled = false;
     const generation = ++this.generation;
     this.controller = new AbortController();
     this.name = source.station.name;
@@ -171,13 +188,23 @@ export class RecordingService implements OnDestroy {
             if (genuine) this.state.set('recording');
           }
         },
-        finished: blob => {
-          if (generation === this.generation) {
-            this.handle = undefined;
-            this.restoreAccess?.();
-            this.file.set(blob);
-            this.state.set(blob ? 'ready' : 'error');
-            this.message.set(blob ? 'recordingReady' : 'recordingEmpty');
+        finished: (blob, reason) => {
+          if (generation !== this.generation) return;
+          this.handle = undefined;
+          this.restoreAccess?.();
+          this.file.set(blob);
+          if (!blob) {
+            this.state.set('error');
+            this.message.set('recordingEmpty');
+          } else if (this.config.AutoContinue === true) {
+            // Never discard a segment or start another unless a durable save
+            // has succeeded. External browser downloads cannot be trusted to
+            // complete without a user gesture, so auto mode requires a folder.
+            this.state.set('exporting');
+            void this.saveAutomatic(blob, generation, reason === 'limit');
+          } else {
+            this.state.set('ready');
+            this.message.set('recordingReady');
           }
         },
         failed: () => {
@@ -189,7 +216,7 @@ export class RecordingService implements OnDestroy {
             this.message.set('recordingError');
           }
         },
-      });
+      }, this.config);
       if (generation !== this.generation || this.controller.signal.aborted) handle.stop(true);
       else this.handle = handle;
     } catch {
@@ -241,6 +268,8 @@ export class RecordingService implements OnDestroy {
   }
   stop() {
     if (!['preparing', 'starting', 'recording'].includes(this.state())) return;
+    this.stopRequested = true;
+    this.continuationCancelled = true;
     this.state.set('stopping');
     if (this.handle) this.handle.stop();
     else {
@@ -251,6 +280,7 @@ export class RecordingService implements OnDestroy {
     this.restoreAccess?.();
   }
   discard() {
+    this.continuationCancelled = true;
     if (this.preparation) this.preparation.cancelled = true;
     ++this.generation;
     this.controller?.abort();
@@ -263,13 +293,37 @@ export class RecordingService implements OnDestroy {
     this.state.set('idle');
     this.seconds.set(0);
   }
+  private async saveAutomatic(blob: Blob, generation: number, dueToLimit: boolean): Promise<void> {
+    try {
+      await this.destination.save(blob, recordingFilename(this.name, blob.type), true);
+      if (generation !== this.generation || this.destroyed) return;
+      this.file.set(null);
+      this.state.set('ready');
+      this.message.set('recordingExported');
+      if (dueToLimit && !this.stopRequested && !this.continuationCancelled &&
+          this.player.state() === 'playing' && this.player.captureSource()) {
+        // A new capture is never started after user stop, station switch,
+        // paused playback, a policy revocation or unsuccessful export.
+        await this.start(this.acknowledgedSession);
+      }
+    } catch {
+      if (generation !== this.generation || this.destroyed) return;
+      this.state.set('ready');
+      this.message.set('recordingSaveError');
+      // Keep the completed Blob available for a deliberate Export retry.
+    }
+  }
   async save() {
     const file = this.file();
     if (!file || this.state() === 'exporting') return;
     this.state.set('exporting');
     const generation = this.generation;
     try {
-      await this.exporter.save(file, recordingFilename(this.name, file.type));
+      if (this.destination.requiresSelection || this.destination.selected()) {
+        await this.destination.save(file, recordingFilename(this.name, file.type));
+      } else {
+        await this.exporter.save(file, recordingFilename(this.name, file.type));
+      }
       if (generation === this.generation) {
         this.state.set('ready');
         this.message.set('recordingExported');
@@ -282,6 +336,7 @@ export class RecordingService implements OnDestroy {
     }
   }
   ngOnDestroy() {
+    this.continuationCancelled = true;
     this.destroyed = true;
     this.discard();
     this.removeBoundary();
