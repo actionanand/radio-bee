@@ -53,6 +53,22 @@ function setup(base = 'https://catalog.test/v2/') {
 }
 const element = (h: RouterTestingHarness) => h.routeNativeElement as HTMLElement;
 describe('Routable v2 directory', () => {
+  it('shows familiar radio brand names beside their documented broadcaster companies', async () => {
+    setup();
+    const h = await RouterTestingHarness.create('/broadcasters');
+    const cards: [string, string][] = [
+      ['enil', 'Radio Mirchi'],
+      ['sun-tv-network', 'Suryan FM'],
+      ['reliance-broadcast-network', 'BIG FM'],
+    ];
+    for (const [id, brand] of cards) {
+      const card = element(h).querySelector<HTMLAnchorElement>(`.destinations a[href="/broadcasters/${id}"]`);
+      expect(card?.querySelector('.broadcaster-brands')?.textContent).toContain(brand);
+      expect(card?.querySelector('.broadcaster-brands')?.getAttribute('title')).toContain(brand);
+      expect(card?.textContent).toContain('stations');
+    }
+    expect(element(h).querySelectorAll('.destinations a')).toHaveLength(10);
+  });
   it('renders every API Home identity in API order regardless of count, and retains World', async () => {
     setup();
     const h = await RouterTestingHarness.create('/home');

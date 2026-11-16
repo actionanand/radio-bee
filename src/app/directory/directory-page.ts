@@ -181,6 +181,21 @@ export class DirectoryPage {
         (this.mode() !== 'listenNow' || this.player.eligibility(s).status === 'ready'),
     );
   });
+  // Legal broadcasters and on-air network brands are different catalogue entities.
+  readonly broadcasterBrands = computed(() => {
+    const c = this.data.catalog();
+    const names = new Map<string, string>();
+    if (!c) return names;
+    const occupied = new Set(allStations(c).map(station => station.networkId));
+    for (const broadcaster of c.broadcasters ?? []) {
+      const brands = c.networks
+        .filter(network => network.broadcasterId === broadcaster.id && occupied.has(network.id))
+        .map(network => network.name)
+        .sort((a, b) => a.localeCompare(b));
+      if (brands.length) names.set(broadcaster.id, brands.join(' · '));
+    }
+    return names;
+  });
   readonly destinations = computed(() => {
     const c = this.data.catalog();
     if (!c || !this.valid()) return [];
