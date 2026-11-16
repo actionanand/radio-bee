@@ -1,4 +1,4 @@
-import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES } from './capture-engine';
+import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES, MAX_RECORDING_MS } from './capture-engine';
 describe('Bounded output-only capture adapter (controlled API unit tests)', () => {
   let recorder: FakeRecorder,
     samples = 0.05;
@@ -150,7 +150,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     await captureRadio(element, new AbortController().signal, next);
     element.currentTime = 12;
     recorder.data();
-    await vi.advanceTimersByTimeAsync(120000);
+    await vi.advanceTimersByTimeAsync(MAX_RECORDING_MS);
     expect(recorder.state).toBe('inactive');
   });
   it('rejects unsupported MIME/security failures without asking for microphone access', async () => {
