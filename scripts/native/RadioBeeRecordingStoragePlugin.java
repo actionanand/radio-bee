@@ -95,7 +95,8 @@ public class RadioBeeRecordingStoragePlugin extends Plugin {
         if (folderUri == null) { call.reject("Choose a recording folder in Settings"); return; }
         String name = call.getString("filename");
         String mime = call.getString("mimeType", "audio/webm");
-        if (name == null || name.length() > 180 || !name.matches("[^/\\\\\\u0000-\\u001f]+\\.(webm|ogg|m4a)")) {
+        if (name == null || name.length() > 180 || name.contains("/") || name.contains("\\") ||
+            name.contains("..") || !(name.endsWith(".webm") || name.endsWith(".ogg") || name.endsWith(".m4a"))) {
             call.reject("Invalid recording filename"); return;
         }
         if (!mime.startsWith("audio/")) { call.reject("Invalid recording MIME type"); return; }
