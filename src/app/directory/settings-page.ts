@@ -8,8 +8,6 @@ import { SettingsKey, settingsText } from './settings.labels';
 import { directoryText } from './directory.labels';
 import { RADIO_RECORDING } from '../recording/recording.config';
 import { RecordingDestination } from '../recording/recording-destination';
-import { RADIO_RECORDING } from '../recording/recording.config';
-import { RecordingDestination } from '../recording/recording-destination';
 
 /** v2 Settings: a draft selection never changes Home until the user saves it. */
 @Component({
@@ -22,12 +20,6 @@ export class SettingsPage {
   readonly data = inject(CatalogService);
   readonly theme = inject(ThemeService);
   readonly home = inject(HomePreferencesService);
-  readonly recording = inject(RADIO_RECORDING);
-  readonly destination = inject(RecordingDestination);
-  readonly folderError = signal(false);
-  async changeRecordingFolder() {
-    this.folderError.set(!(await this.destination.chooseFolder()));
-  }
   readonly recording = inject(RADIO_RECORDING);
   readonly recordingFolder = inject(RecordingDestination);
   readonly folderError = signal(false);
