@@ -8,6 +8,7 @@ import { SettingsKey, settingsText } from './settings.labels';
 import { directoryText } from './directory.labels';
 import { RADIO_RECORDING } from '../recording/recording.config';
 import { RecordingDestination } from '../recording/recording-destination';
+import { recordingLimits } from '../recording/capture-engine';
 
 /** v2 Settings: a draft selection never changes Home until the user saves it. */
 @Component({
@@ -24,6 +25,20 @@ export class SettingsPage {
   readonly recordingFolder = inject(RecordingDestination);
   readonly folderError = signal(false);
   readonly choosingFolder = signal(false);
+  readonly recordingLimitText = computed(() => {
+    const { maxMs, maxBytes } = recordingLimits(this.recording);
+    const locale = this.data.locale();
+    const hour = locale === 'ta' ? 'மணி நேரம்' : locale === 'sa' ? 'घण्टाः' : 'hour';
+    const minute = locale === 'ta' ? 'நிமிடங்கள்' : locale === 'sa' ? 'निमेषाः' : 'minute';
+    const second = locale === 'ta' ? 'விநாடிகள்' : locale === 'sa' ? 'क्षणाः' : 'second';
+    const duration = maxMs % 3_600_000 === 0
+      ? `${maxMs / 3_600_000} ${hour}${locale === 'en' && maxMs !== 3_600_000 ? 's' : ''}`
+      : maxMs % 60_000 === 0
+        ? `${maxMs / 60_000} ${minute}${locale === 'en' && maxMs !== 60_000 ? 's' : ''}`
+        : `${Math.ceil(maxMs / 1000)} ${second}${locale === 'en' && maxMs > 1000 ? 's' : ''}`;
+    const size = Number((maxBytes / (1024 * 1024)).toFixed(2));
+    return this.text('recordingLimits').replace('{duration}', duration).replace('{size}', `${size} MB`);
+  });
   readonly min = HOME_STATIONS_MIN;
   readonly max = HOME_STATIONS_MAX;
   readonly choosing = signal(false);
