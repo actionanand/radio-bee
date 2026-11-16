@@ -161,7 +161,7 @@ describe('Configured recording and explicit source policy', () => {
     const service = TestBed.inject(RecordingService);
     expect(s.create).not.toHaveBeenCalled();
     await service.start(true);
-    expect(s.create).toHaveBeenCalledWith(s.audio, expect.any(AbortSignal), expect.any(Object));
+    expect(s.create).toHaveBeenCalledWith(s.audio, expect.any(AbortSignal), expect.any(Object), expect.objectContaining({ MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024 }));
     s.hooks().progress(1, false);
     expect(service.state()).toBe('starting');
     s.hooks().progress(2, true);
