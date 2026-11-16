@@ -47,12 +47,37 @@ jobs:
           git fetch origin gh-pages
           mkdir -p "$RUNNER_TEMP/radiobee-pages"
           git worktree add -B gh-pages "$RUNNER_TEMP/radiobee-pages" origin/gh-pages
-          rsync -a --delete --exclude=.git www/ "$RUNNER_TEMP/radiobee-pages/"
+          # Keep old fingerprinted bundles for browsers that cached older HTML.
+          rsync -a --exclude=.git www/ "$RUNNER_TEMP/radiobee-pages/"
+          touch "$RUNNER_TEMP/radiobee-pages/.nojekyll"
           cd "$RUNNER_TEMP/radiobee-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          # Force-add built assets, even if global/local gitignore rules apply.
+          git add --force -A
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const html = fs.readFileSync('index.html', 'utf8');
+          const refs = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css))"/g)].map(x => x[1]);
+          if (!refs.some(p => /^main-[^/]+\.js$/.test(p))) throw Error('Missing application entrypoint in index.html');
+          for (const file of refs) {
+            if (!fs.existsSync(file)) throw Error('Missing built asset: ' + file);
+            const tracked = execFileSync('git', ['ls-files', '--cached', '--', file], { encoding: 'utf8' }).trim();
+            if (tracked !== file) throw Error('Asset not included in deployment commit: ' + file);
+          }
+          console.log('Verified', refs.length, 'referenced JS/CSS assets in staged deployment');
+          NODE
           if ! git diff --cached --quiet; then
             git commit -m "deploy: RadioBee web from ${GITHUB_SHA}"
-            git push origin HEAD:gh-pages
           fi
+          # Check the outgoing tree, not just the worktree.
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const html = fs.readFileSync('index.html', 'utf8');
+          for (const [, file] of html.matchAll(/(?:src|href)="([^"]+\.(?:js|css))"/g)) {
+            execFileSync('git', ['cat-file', '-e', 'HEAD:' + file]);
+          }
+          NODE
+          git push origin HEAD:gh-pages
