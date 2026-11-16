@@ -220,6 +220,49 @@ describe('Configured recording and explicit source policy', () => {
     stream.directListening!.status = 'restricted';
     expect(recordingPermission(stream, true)).toBe('blocked');
   });
+  it('keeps manual stops exportable instead of auto-saving them in continuation mode', async () => {
+    const s = setup(true, false, true);
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    const blob = new Blob(['manual segment'], { type: 'audio/webm' });
+    s.player.pause();
+    s.hooks().finished(blob, 'manual');
+    expect(service.state()).toBe('ready');
+    expect(service.file()).toBe(blob);
+    expect(s.folderSave).not.toHaveBeenCalled();
+    await service.save();
+    expect(s.folderSave).toHaveBeenCalledWith(blob, expect.any(String));
+  });
+  it('keeps a station-switch recording available until exported or discarded', async () => {
+    const s = setup();
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    const next = s.player.play(s.other);
+    expect(s.stop).toHaveBeenCalledOnce();
+    const blob = new Blob(['previous station'], { type: 'audio/webm' });
+    s.hooks().finished(blob, 'manual');
+    await next;
+    expect(service.state()).toBe('ready');
+    expect(service.file()).toBe(blob);
+    await service.start(true);
+    expect(s.create).toHaveBeenCalledOnce();
+    await service.save();
+    expect(s.save).toHaveBeenCalledWith(blob, expect.any(String));
+  });
+  it('disables the Record launcher while playback is still connecting', async () => {
+    const s = setup();
+    const pending = s.player.play(s.station);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    expect(view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(true);
+    await pending;
+    s.audio.dispatchEvent(new Event('playing'));
+    view.detectChanges();
+    expect(view.nativeElement.querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(false);
+    view.destroy();
+  });
   it('starts only on request and claims recording only after genuine-data confirmation', async () => {
     const s = setup();
     await playing(s);
