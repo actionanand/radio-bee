@@ -1,0 +1,58 @@
+name: Publish RadioBee Web to gh-pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radiobee-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.16.0'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint and typecheck
+        run: |
+          npm run lint
+          npm run typecheck
+      - name: Test playback and catalogue integration
+        run: npm run test:ci
+      - name: Build production app for /radio-bee/
+        run: npm run build:gh -- --configuration=production
+      - name: Publish deep-link fallback
+        run: |
+          npm run copy-error-page
+          cmp www/index.html www/404.html
+          node scripts/check-web-artifact.mjs
+      - name: Publish validated build to gh-pages
+        shell: bash
+        run: |
+          git fetch origin gh-pages
+          mkdir -p "$RUNNER_TEMP/radiobee-pages"
+          git worktree add -B gh-pages "$RUNNER_TEMP/radiobee-pages" origin/gh-pages
+          rsync -a --delete --exclude=.git www/ "$RUNNER_TEMP/radiobee-pages/"
+          cd "$RUNNER_TEMP/radiobee-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "deploy: RadioBee web from ${GITHUB_SHA}"
+            git push origin HEAD:gh-pages
+          fi
