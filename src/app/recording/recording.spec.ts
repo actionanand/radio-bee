@@ -16,12 +16,13 @@ import {
 } from './recording.service';
 import { CaptureCallbacks, CaptureFactory } from './capture-engine';
 import { recordingFilename } from './export-recording';
+import { RecordingDestination } from './recording-destination';
 import { PlayerComponent } from '../player/player';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
 import { PlaybackError } from '../player/playback-failure';
 
-function setup(enabled = true, allowProhibitedRecording = false) {
+function setup(enabled = true, allowProhibitedRecording = false, autoContinue = false) {
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -35,11 +36,13 @@ function setup(enabled = true, allowProhibitedRecording = false) {
     return { stop };
   });
   const save = vi.fn(async () => undefined);
+  const folderSave = vi.fn(async (_blob: Blob, _filename: string) => undefined);
   const access = vi.fn<(url: string, signal: AbortSignal) => Promise<void>>(async () => undefined);
   const data = { stationName: CatalogService.prototype.stationName, catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
-      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording, MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024, AutoContinue: false } },
+      { provide: RADIO_RECORDING, useValue: { Enabled: enabled, AllowProhibitedRecording: allowProhibitedRecording, MaxDurationMs: 3_600_000, MaxBytes: 80 * 1024 * 1024, AutoContinue: autoContinue } },
+      { provide: RecordingDestination, useValue: { requiresSelection: false, selected: signal(autoContinue), hasAccess: async () => true, save: folderSave } },
       { provide: CatalogService, useValue: data },
       { provide: MEDIA_ENGINE, useValue: { audio, supports: () => true, load: async () => undefined, clear: vi.fn() } },
       { provide: CAPTURE_FACTORY, useValue: create },
@@ -49,7 +52,7 @@ function setup(enabled = true, allowProhibitedRecording = false) {
     ],
   });
   const player = TestBed.inject(PlayerService);
-  return { player, station, other, audio, create, save, stop, access, data, c, hooks: () => callbacks };
+  return { player, station, other, audio, create, save, folderSave, stop, access, data, c, hooks: () => callbacks };
 }
 async function playing(s: ReturnType<typeof setup>) {
   await s.player.play(s.station);
@@ -84,6 +87,24 @@ describe('Configured recording and explicit source policy', () => {
     expect(service.state()).toBe('ready');
     await service.save();
     expect(s.save).toHaveBeenCalledWith(blob, expect.any(String));
+  });
+  it('saves a completed segment before automatic continuation and keeps manual stop from restarting', async () => {
+    const s = setup(true, false, true);
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    const segment = new Blob(['radio segment'], { type: 'audio/webm' });
+    s.hooks().progress(12, true);
+    s.hooks().finished(segment, 'limit');
+    await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledWith(
+      segment, expect.stringContaining('.webm'), true,
+    ));
+    await vi.waitFor(() => expect(s.create).toHaveBeenCalledTimes(2));
+    s.hooks().progress(3, true);
+    service.stop();
+    s.hooks().finished(segment, 'manual');
+    await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledTimes(2));
+    expect(s.create).toHaveBeenCalledTimes(2);
   });
   it('distinguishes paused or absent playback from prohibited recording metadata', async () => {
     const s = setup();
