@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import versioning from './android-version.cjs';
@@ -76,9 +76,23 @@ export function patchAndroid(root = process.cwd()) {
   // Register the Storage Access Framework bridge in generated Android builds.
   // The fixture for node tests omits MainActivity; actual Capacitor projects
   // have it after 'cap add android'. Never replace unrelated native code.
-  const activityPath = 'android/app/src/main/java/com/getcapacitor/myapp/MainActivity.java';
-  if (existsSync(path.join(root, activityPath))) {
-    let activity = read(activityPath);
+  const javaRoot = path.join(root, 'android/app/src/main/java');
+  const findMainActivity = dir => {
+    if (!existsSync(dir)) return null;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        const found = findMainActivity(file);
+        if (found) return found;
+      } else if (entry.name === 'MainActivity.java') return file;
+    }
+    return null;
+  };
+  const mainActivity = findMainActivity(javaRoot);
+  if (mainActivity) {
+    let activity = readFileSync(mainActivity, 'utf8');
+    const packageName = activity.match(/^package\s+([\w.]+)\s*;/m)?.[1];
+    if (!packageName) throw new Error('Generated MainActivity has no Java package');
     if (!activity.includes('registerPlugin(RadioBeeRecordingStoragePlugin.class)')) {
       const pluginRegistration = 'registerPlugin(RadioBeeRecordingStoragePlugin.class);';
       if (/super\.onCreate\(savedInstanceState\);/.test(activity)) {
@@ -91,10 +105,11 @@ export function patchAndroid(root = process.cwd()) {
           pluginRegistration + '\n        super.onCreate(savedInstanceState);\n    }',
           'MainActivity bridge');
       }
-      write(activityPath, activity);
+      writeFileSync(mainActivity, activity);
     }
-    const nativeSource = read('scripts/native/RadioBeeRecordingStoragePlugin.java');
-    write('android/app/src/main/java/com/getcapacitor/myapp/RadioBeeRecordingStoragePlugin.java', nativeSource);
+    const nativeSource = read('scripts/native/RadioBeeRecordingStoragePlugin.java')
+      .replace(/^package\s+[\w.]+\s*;/m, 'package ' + packageName + ';');
+    writeFileSync(path.join(path.dirname(mainActivity), 'RadioBeeRecordingStoragePlugin.java'), nativeSource);
   }
 
   // Update only managed splash items; retain unrelated theme items and custom styles.
