@@ -263,7 +263,8 @@ export class PlayerService implements OnDestroy {
     if (this.testsEnabled) await this.begin(id, true, streamId);
   }
   private async begin(id: string, technical: boolean, pinned?: string): Promise<void> {
-    await this.preferencesLoaded;
+    // Never delay player startup or cancellation on asynchronous preference storage.
+    // Restoration updates the current audio element when the value becomes available.
     const station = this.current(id);
     if (!station || !this.engine || !this.candidates(station, technical, pinned).length) return;
     ++this.attempt;
