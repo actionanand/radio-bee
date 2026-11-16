@@ -1,6 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { exportRecording } from './export-recording';
+import { inject } from '@angular/core';
+import { RADIO_RECORDING } from './recording.config';
 
 interface AndroidRecordingStorage {
   getFolder(): Promise<{ selected: boolean; name?: string }>;
@@ -24,9 +26,10 @@ const FOLDER_KEY = 'selected';
 /** A recording destination is device-local. It is never sent to a server. */
 @Injectable({ providedIn: 'root' })
 export class RecordingDestination {
+  private readonly recording = inject(RADIO_RECORDING);
   readonly selected = signal(false);
   readonly name = signal('');
-  readonly loaded = this.restore();
+  readonly loaded = this.recording.Enabled ? this.restore() : Promise.resolve();
   private directory: FolderHandle | undefined;
 
   get requiresSelection(): boolean {
@@ -90,6 +93,7 @@ export class RecordingDestination {
 
   /** Call only from a user gesture; it opens the system folder picker once per setup. */
   async chooseFolder(): Promise<boolean> {
+    if (!this.recording.Enabled) return false;
     await this.loaded;
     if (Capacitor.getPlatform() === 'android') {
       try {
@@ -116,6 +120,7 @@ export class RecordingDestination {
 
   /** A previously selected folder may have its permission revoked in Settings. */
   async hasAccess(): Promise<boolean> {
+    if (!this.recording.Enabled) return false;
     await this.loaded;
     if (Capacitor.getPlatform() === 'android') {
       try {
@@ -134,6 +139,7 @@ export class RecordingDestination {
   }
 
   async save(blob: Blob, filename: string, requireFolder = false): Promise<void> {
+    if (!this.recording.Enabled) throw Error('Recording is disabled');
     if (Capacitor.getPlatform() === 'android') {
       if (!await this.hasAccess()) throw Error('Recording folder access was removed');
       const { id } = await androidStorage.beginFile({ filename, mimeType: blob.type || 'application/octet-stream' });
