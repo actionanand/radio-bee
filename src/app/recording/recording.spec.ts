@@ -222,6 +222,50 @@ describe('Configured recording and explicit source policy', () => {
     stream.directListening!.status = 'restricted';
     expect(recordingPermission(stream, true)).toBe('blocked');
   });
+  it('keeps an active capture running through temporary stream buffering', async () => {
+    const s = setup();
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    s.hooks().progress(7, true);
+    expect(service.state()).toBe('recording');
+
+    s.audio.dispatchEvent(new Event('waiting'));
+    expect(s.player.state()).toBe('loading');
+    expect(s.player.pendingPhase()).toBe('buffering');
+    TestBed.tick();
+    expect(s.stop).not.toHaveBeenCalled();
+    expect(service.state()).toBe('recording');
+
+    // A second Record click must not initiate a new recording while buffering.
+    await service.start(true);
+    expect(s.create).toHaveBeenCalledOnce();
+    s.audio.dispatchEvent(new Event('playing'));
+    expect(s.player.state()).toBe('playing');
+    TestBed.tick();
+    expect(s.stop).not.toHaveBeenCalled();
+
+    s.player.pause();
+    expect(s.stop).toHaveBeenCalledOnce();
+    const captured = new Blob(['captured audio'], { type: 'audio/webm' });
+    s.hooks().finished(captured, 'manual');
+    expect(service.file()).toBe(captured);
+    expect(service.state()).toBe('ready');
+    await service.save();
+    expect(s.save).toHaveBeenCalledWith(captured, expect.any(String));
+  });
+  it('disables starting a recording while playback temporarily buffers', async () => {
+    const s = setup();
+    await playing(s);
+    s.audio.dispatchEvent(new Event('waiting'));
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(true);
+    s.audio.dispatchEvent(new Event('playing'));
+    view.detectChanges();
+    expect((view.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.recording-toggle')?.disabled).toBe(false);
+    view.destroy();
+  });
   it('keeps manual stops exportable instead of auto-saving them in continuation mode', async () => {
     const s = setup(true, false, true);
     await playing(s);
