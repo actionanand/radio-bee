@@ -19,6 +19,10 @@
     <section class="setting-card" aria-labelledby="recording-heading">
       <h2 id="recording-heading">{{ text('recordingFolder') }}</h2>
       <p class="help">{{ text('recordingFolderHelp') }}</p>
+      <p class="help" data-recording-settings-limit>{{ recordingLimitText() }}</p>
+      @if (recording.AutoContinue) {
+        <p class="help">{{ text('recordingAutoContinue') }}</p>
+      }
       <p class="help" role="status">
         {{ recordingFolder.selected() ? text('recordingFolderSelected') + ': ' + recordingFolder.name() : text('recordingFolderMissing') }}
       </p>
