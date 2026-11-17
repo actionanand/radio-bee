@@ -220,6 +220,10 @@ export class CatalogService {
   stationName(station: Pick<Station, 'id' | 'name'>): string {
     return stationDisplayName(this.catalog(), this.locale(), station);
   }
+  stationAbout(station: Pick<Station, 'id' | 'about'>): string {
+    const localized = this.catalog()?.localization[this.locale()]?.['stationDescriptions']?.[station.id];
+    return typeof localized === 'string' && localized.trim() ? localized : (station.about ?? '');
+  }
   artistName(artist: { id: string; name: string }): string {
     const value =
       this.locale() === 'en' ? undefined : this.catalog()?.localization[this.locale()]?.['artistNames']?.[artist.id];
