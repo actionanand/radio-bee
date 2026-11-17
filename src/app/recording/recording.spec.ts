@@ -317,6 +317,7 @@ describe('Configured recording and explicit source policy', () => {
     consent.dispatchEvent(new Event('change'));
     view.detectChanges();
     root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    await view.whenStable();
     view.detectChanges();
     expect(root.querySelector('.recording-panel')).toBeNull();
     expect(s.create).toHaveBeenCalledOnce();
