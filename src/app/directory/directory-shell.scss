@@ -132,6 +132,33 @@ footer {
 footer .footer-policies { display: flex; flex-wrap: wrap; gap: 5px 12px; align-items: center; }
 footer .footer-policies a { font-size: 11px; color: var(--muted); text-decoration: none; }
 footer .footer-policies a:hover { color: var(--accent-ink); }
+.footer-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+.footer-refresh ion-icon { font-size: 21px; }
+.footer-refresh:hover:not(:disabled) {
+  background: var(--panel);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+  transform: rotate(22deg);
+}
+.footer-refresh:active:not(:disabled) { transform: scale(.94); }
+.footer-refresh:disabled { opacity: .55; cursor: wait; }
+.footer-refresh[aria-busy="true"] ion-icon { animation: footer-refresh-spin .8s linear infinite; }
+@keyframes footer-refresh-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .footer-refresh { transition: none; }
+  .footer-refresh:hover:not(:disabled), .footer-refresh:active:not(:disabled) { transform: none; }
+  .footer-refresh[aria-busy="true"] ion-icon { animation: none; }
+}
 .mobile-brand {
   display: none;
 }
