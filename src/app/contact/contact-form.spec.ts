@@ -33,8 +33,22 @@ describe('RadioBee contact modal', () => {
     expect(component.form.controls.purpose.value).toBe('Interested in contributing content');
     expect(component.form.invalid).toBe(true);
     expect(component.form.controls.consent.value).toBe(false);
+    expect(component.open()).toBe(false);
     expect((fixture.nativeElement as HTMLElement).querySelector('ion-select')).toBeNull();
     // Ionic modal content is projected into an overlay on presentation, not into the page.
+    fixture.destroy();
+  });
+
+  it('opens only on explicit click and can preset a valid contact purpose', () => {
+    const { component, fixture } = setup();
+    expect(component.open()).toBe(false);
+    component.show('Correction in content');
+    expect(component.open()).toBe(true);
+    expect(component.form.controls.purpose.value).toBe('Correction in content');
+    component.open.set(false);
+    component.show();
+    expect(component.open()).toBe(true);
+    expect(component.form.controls.purpose.value).toBe('Correction in content');
     fixture.destroy();
   });
 
