@@ -49,14 +49,16 @@ import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
             <span aria-hidden="true">↗</span>
           </a>
         }
-        <footer class="legal-end">
-          <nav aria-label="RadioBee policies">
-            @for (link of links; track link.path) {
-              <a [routerLink]="link.path" [attr.aria-current]="link.path === routePath ? 'page' : null">{{ link.label }}</a>
-            }
-          </nav>
-          <p>{{ copyright }}</p>
-        </footer>
+        @if (!isV2) {
+          <footer class="legal-end">
+            <nav aria-label="RadioBee policies">
+              @for (link of links; track link.path) {
+                <a [routerLink]="link.path" [attr.aria-current]="link.path === routePath ? 'page' : null">{{ link.label }}</a>
+              }
+            </nav>
+            <p>{{ copyright }}</p>
+          </footer>
+        }
       </article>
     </ng-template>
   `,
