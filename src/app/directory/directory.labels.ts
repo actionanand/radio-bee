@@ -73,6 +73,9 @@ const en = {
   favorite: 'Add to favorites',
   unfavorite: 'Remove from favorites',
   refresh: 'Refresh catalogue',
+  refreshing: 'Refreshing catalogue…',
+  refreshed: 'Catalogue refreshed successfully.',
+  refreshFailed: 'Could not refresh catalogue. Please try again.'
   saved: 'Using saved catalogue',
   storage: 'Saved catalogue or preferences could not be accessed. You can continue for this session.',
   africa: 'Africa',
@@ -158,6 +161,9 @@ const ta: Record<DirectoryKey, string> = {
   favorite: 'விருப்பங்களில் சேர்',
   unfavorite: 'விருப்பங்களிலிருந்து நீக்கு',
   refresh: 'பட்டியலைப் புதுப்பி',
+  refreshing: 'வானொலிப் பட்டியல் புதுப்பிக்கப்படுகிறது…',
+  refreshed: 'வானொலிப் பட்டியல் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டது.',
+  refreshFailed: 'வானொலிப் பட்டியலைப் புதுப்பிக்க முடியவில்லை. மீண்டும் முயலவும்.'
   saved: 'சேமித்த பட்டியல் பயன்பாட்டில்',
   storage: 'சேமித்த பட்டியல் அல்லது விருப்ப அமைப்புகளை அணுக முடியவில்லை. இவ்வமர்வில் பயன்பாட்டைத் தொடரலாம்.',
   africa: 'ஆப்பிரிக்கா',
@@ -242,6 +248,9 @@ const sa: Record<DirectoryKey, string> = {
   favorite: 'प्रियेभ्यः योजय',
   unfavorite: 'प्रियेभ्यः निष्कासय',
   refresh: 'सूचीं नवीकुरु',
+  refreshing: 'वाणीसूची नवीक्रियते…',
+  refreshed: 'वाणीसूची सफलतया नवीकृता।',
+  refreshFailed: 'वाणीसूचीं नवीकर्तुं न शक्यते। पुनः प्रयतस्व।'
   saved: 'सञ्चिता सूची प्रयुज्यते',
   storage: 'सञ्चितसूची अथवा अभिरुचयः न उपलब्धाः। अस्मिन् सत्रे उपयोगः सम्भवति।',
   africa: 'आफ्रिका',
