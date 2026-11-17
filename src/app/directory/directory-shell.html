@@ -18,7 +18,7 @@
           [attr.aria-expanded]="drawerOpen()"
           (click)="openMenu()">
           <ion-icon [icon]="icons.menuOutline" aria-hidden="true" /></button
-        ><a routerLink="/home">RadioBee</a>
+        ><a class="mobile-brand-link" routerLink="/home"><img ngSrc="assets/icon/radio-bee.png" width="36" height="36" alt="" /><span>RadioBee</span></a>
       </div>
       <div class="tools" [class.legal-tools]="legalPage()">
         @if (!legalPage()) {
