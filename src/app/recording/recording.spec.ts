@@ -129,7 +129,7 @@ describe('Configured recording and explicit source policy', () => {
     await playing(s);
     const service = TestBed.inject(RecordingService);
     let finishSave!: () => void;
-    s.folderSave.mockImplementationOnce(() => new Promise<void>(resolve => { finishSave = resolve; }));
+    s.folderSave.mockImplementationOnce(() => new Promise<undefined>(resolve => { finishSave = () => resolve(undefined); }));
     await service.start(true);
     const segment = new Blob(['radio segment'], { type: 'audio/webm' });
     s.hooks().progress(12, true);
