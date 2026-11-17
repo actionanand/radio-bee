@@ -323,6 +323,14 @@ describe('Configured recording and explicit source policy', () => {
     expect(root.querySelector('.recording-panel')).toBeNull();
     expect(s.create).toHaveBeenCalledOnce();
     s.hooks().progress(4, true);
+    s.hooks().progress(62, true);
+    view.detectChanges();
+    expect(root.querySelector('.recording-time')?.textContent).toBe('1 minute 2 s');
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    expect(root.querySelector('.recording-panel [role="status"]')?.textContent).toContain('1 minute 2 s');
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
     s.player.pause();
     const draft = new Blob(['previous audio'], { type: 'audio/webm' });
     s.hooks().finished(draft, 'manual');
