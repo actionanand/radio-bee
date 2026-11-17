@@ -49,6 +49,14 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
               {{ savingText() }}
             </span>
           }
+          @if (recorder.unsavedAutoSegments().length > 0) {
+            <button class="quick-action" type="button"
+              [disabled]="recorder.automaticSavesInProgress() > 0"
+              (click)="recorder.retryUnsavedSegment()">
+              <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
+              {{ retryText() }} ({{ recorder.unsavedAutoSegments().length }})
+            </button>
+          }
           @if (recorder.file()) {
             <button
               class="quick-action"
@@ -258,6 +266,12 @@ export class RecordingControlsComponent {
       this.acknowledged.set(false);
       this.confirmReplace.set(false);
     });
+  }
+  retryText() {
+    const locale = this.catalog.locale();
+    return locale === 'ta' ? 'சேமிப்பை மீண்டும் முயலவும்'
+      : locale === 'sa' ? 'सञ्चयं पुनः प्रयतताम्'
+      : 'Retry unsaved segment';
   }
   savingText() {
     const locale = this.catalog.locale();
