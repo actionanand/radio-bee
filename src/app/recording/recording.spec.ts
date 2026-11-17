@@ -357,6 +357,7 @@ describe('Configured recording and explicit source policy', () => {
     view.detectChanges();
     const control = view.componentInstance;
     await control.recorder.start(true);
+    s.hooks().progress(3, true);
     const root = view.nativeElement as HTMLElement;
     root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
     view.detectChanges();
