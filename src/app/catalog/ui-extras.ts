@@ -31,6 +31,8 @@ export const extraEnglish = {
     'Recording unavailable: this browser could not securely access the stream audio. Listening can continue.',
   recordingUnsupported: 'This browser or stream does not support recording. Listening can continue.',
   recordingError: 'Recording could not continue. Listening is unaffected. Try another supported stream.',
+  recordingCaptureUnavailable:
+    'The browser did not supply recordable audio. Playback can continue; try recording again.',
   recordingEmpty: 'No genuine audio could be captured. No recording was saved.',
   recordingSaveError: 'Export could not be opened. Your recording is still available to retry.',
   recordingExported: 'Export opened on this device.',
@@ -38,7 +40,8 @@ export const extraEnglish = {
   recordingAutoContinue: 'Completed segments are saved automatically before the next recording starts.',
   recordingFolderRequired: 'Recording folder access is unavailable. Change or restore the folder in Settings.',
   recordingFolderFirstUse: 'Choose a recording folder to start. No audio was recorded.',
-  recordingReplaceConfirm: 'A previous recording is still available in Export below. Starting a new recording will discard that unsaved draft.',
+  recordingReplaceConfirm:
+    'A previous recording is still available in Export below. Starting a new recording will discard that unsaved draft.',
   recordingReplaceStart: 'Discard previous and start',
   recordingReplaceCancel: 'Keep previous recording',
   recordingStart: 'Start recording',
@@ -77,14 +80,18 @@ export const extraTamil: typeof extraEnglish = {
     'பதிவு கிடைக்கவில்லை: ஒலிபரப்பு ஒலியை இந்த உலாவி பாதுகாப்பாக அணுக முடியவில்லை. தொடர்ந்து கேட்கலாம்.',
   recordingUnsupported: 'இந்த உலாவி அல்லது ஒலிபரப்பில் பதிவு ஆதரவு இல்லை. தொடர்ந்து கேட்கலாம்.',
   recordingError: 'பதிவைத் தொடர முடியவில்லை. கேட்பது பாதிக்கப்படாது. வேறு ஒலிபரப்பை முயலவும்.',
+  recordingCaptureUnavailable:
+    'உலாவி பதிவுக்கான ஒலியை வழங்கவில்லை. தொடர்ந்து கேட்கலாம்; மீண்டும் பதிவு செய்ய முயலவும்.',
   recordingEmpty: 'உண்மையான ஒலியைப் பதிவு செய்ய முடியவில்லை. பதிவு சேமிக்கப்படவில்லை.',
   recordingSaveError: 'ஏற்றுமதியைத் திறக்க முடியவில்லை. பதிவை மீண்டும் ஏற்றுமதி செய்யலாம்.',
   recordingExported: 'இந்தச் சாதனத்தில் ஏற்றுமதி திறக்கப்பட்டது.',
   recordingLimit: 'ஒவ்வொரு பதிவுப் பகுதியும் {duration} அல்லது {size} வரம்பை எட்டும்போது நிறுத்தப்படும்.',
   recordingAutoContinue: 'அடுத்த பதிவு தொடங்கும் முன் முந்தைய பகுதி தானாகச் சேமிக்கப்படும்.',
-  recordingFolderRequired: 'பதிவுக் கோப்புறை அணுகல் இல்லை. அமைப்புகளில் கோப்புறையை மாற்றவும் அல்லது மீண்டும் அனுமதிக்கவும்.',
+  recordingFolderRequired:
+    'பதிவுக் கோப்புறை அணுகல் இல்லை. அமைப்புகளில் கோப்புறையை மாற்றவும் அல்லது மீண்டும் அனுமதிக்கவும்.',
   recordingFolderFirstUse: 'பதிவைத் தொடங்க ஒரு கோப்புறையைத் தேர்ந்தெடுக்கவும். ஒலி எதுவும் பதிவு செய்யப்படவில்லை.',
-  recordingReplaceConfirm: 'முந்தைய பதிவு கீழேயுள்ள ஏற்றுமதி பொத்தானில் கிடைக்கிறது. புதிய பதிவைத் தொடங்கினால் சேமிக்கப்படாத முந்தைய பதிவு நீக்கப்படும்.',
+  recordingReplaceConfirm:
+    'முந்தைய பதிவு கீழேயுள்ள ஏற்றுமதி பொத்தானில் கிடைக்கிறது. புதிய பதிவைத் தொடங்கினால் சேமிக்கப்படாத முந்தைய பதிவு நீக்கப்படும்.',
   recordingReplaceStart: 'முந்தையதை நீக்கிப் பதிவைத் தொடங்கு',
   recordingReplaceCancel: 'முந்தைய பதிவை வைத்திரு',
   recordingStart: 'பதிவைத் தொடங்கு',
@@ -122,14 +129,18 @@ export const extraSanskrit: typeof extraEnglish = {
     'ध्वनिमुद्रणम् अनुपलब्धम्: ब्राउज़रः प्रसारध्वनिं सुरक्षिततया प्राप्तुं न शक्तः। श्रवणं निरन्तरं भवतु।',
   recordingUnsupported: 'अत्र ब्राउज़रे अथवा प्रसारे मुद्रणं न समर्थितम्। श्रवणं निरन्तरं भवतु।',
   recordingError: 'मुद्रणं न चलति। श्रवणं न बाध्यते। अन्यं प्रसारं प्रयतस्व।',
+  recordingCaptureUnavailable:
+    'ब्राउज़र् मुद्रणयोग्यं ध्वनिं न दत्तवान्। श्रवणं निरन्तरं भवतु; पुनः मुद्रणं प्रयतताम्।',
   recordingEmpty: 'यथार्थध्वनिः न गृहीतः। मुद्रणं न रक्षितम्।',
   recordingSaveError: 'निर्यातः न उद्घाटितः। पुनः प्रयत्नाय मुद्रणं विद्यते।',
   recordingExported: 'अस्मिन् साधने निर्यातः उद्घाटितः।',
   recordingLimit: 'प्रत्येकं ध्वनिमुद्रणखण्डं {duration} अथवा {size} सीमायां स्थग्यते।',
   recordingAutoContinue: 'अग्रिमखण्डस्य आरम्भात् पूर्वं पूर्णखण्डः स्वयमेव रक्ष्यते।',
-  recordingFolderRequired: 'मुद्रणसञ्चयस्थानस्य प्रवेशः अनुपलब्धः। सेटिङ्ग्स् मध्ये पुनः अनुमतिं ददातु अथवा स्थानं परिवर्तयतु।',
+  recordingFolderRequired:
+    'मुद्रणसञ्चयस्थानस्य प्रवेशः अनुपलब्धः। सेटिङ्ग्स् मध्ये पुनः अनुमतिं ददातु अथवा स्थानं परिवर्तयतु।',
   recordingFolderFirstUse: 'मुद्रणस्य आरम्भार्थं सञ्चयस्थानं चिनोतु। ध्वनिः न गृहीतः।',
-  recordingReplaceConfirm: 'पूर्वमुद्रणं अधोलिखितेन निर्यातबटनेन उपलब्धम्। नूतनमुद्रणेन अरक्षितं पूर्वमुद्रणं परित्यज्यते।',
+  recordingReplaceConfirm:
+    'पूर्वमुद्रणं अधोलिखितेन निर्यातबटनेन उपलब्धम्। नूतनमुद्रणेन अरक्षितं पूर्वमुद्रणं परित्यज्यते।',
   recordingReplaceStart: 'पूर्वमुद्रणं त्यक्त्वा आरभस्व',
   recordingReplaceCancel: 'पूर्वमुद्रणं रक्ष',
   recordingStart: 'मुद्रणम् आरभस्व',

@@ -4,7 +4,7 @@ import { Router, NavigationStart } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
 import { PlayerService } from '../player/player.service';
 import { RADIO_RECORDING } from './recording.config';
-import { captureRadio, captureSupported, CaptureFactory, CaptureHandle } from './capture-engine';
+import { captureRadio, captureSupported, CaptureFactory, CaptureHandle, CaptureDiagnostic } from './capture-engine';
 import { exportRecording, recordingFilename } from './export-recording';
 import { Stream } from '../catalog/catalog.models';
 import { UiKey } from '../catalog/catalog.ui';
@@ -89,6 +89,8 @@ export class RecordingService implements OnDestroy {
   private readonly history = signal<readonly RecordingDiagnostic[]>([]);
   readonly diagnostics = this.history.asReadonly();
   readonly lastStopReason = signal<string | null>(null);
+  private readonly captureHistory = signal<readonly CaptureDiagnostic[]>([]);
+  readonly captureDiagnostics = this.captureHistory.asReadonly();
   private get v2Web() {
     return this.catalog.catalog()?.manifest.schemaVersion === 2 && !Capacitor.isNativePlatform();
   }
@@ -172,10 +174,7 @@ export class RecordingService implements OnDestroy {
       /* No background capture is promised on unsupported native platforms. */
     }
   }
-  async start(
-    acknowledged: boolean,
-    options: { promptFirstFolder?: boolean; replaceDraft?: boolean } = {},
-  ) {
+  async start(acknowledged: boolean, options: { promptFirstFolder?: boolean; replaceDraft?: boolean } = {}) {
     const source = this.player.captureSource();
     if (
       !this.config.Enabled ||
@@ -199,18 +198,18 @@ export class RecordingService implements OnDestroy {
     const folderRequired = this.destination.requiresSelection || this.config.AutoContinue === true;
     // Only a deliberate V2 Start gesture opens the folder picker. A previously
     // chosen folder is managed in Settings; never replace it silently.
-    const firstFolder = folderRequired &&
+    const firstFolder =
+      folderRequired &&
       options.promptFirstFolder === true &&
       this.catalog.catalog()?.manifest.schemaVersion === 2 &&
-      !this.destination.selected() && !this.destination.name();
+      !this.destination.selected() &&
+      !this.destination.name();
     let folderReady = true;
     try {
       if (folderRequired) {
         // First use must call the picker before the first await in this path.
         // Chrome requires transient user activation for showDirectoryPicker().
-        folderReady = firstFolder
-          ? await this.destination.chooseFolder()
-          : await this.destination.hasAccess();
+        folderReady = firstFolder ? await this.destination.chooseFolder() : await this.destination.hasAccess();
       }
     } catch {
       folderReady = false;
@@ -231,6 +230,7 @@ export class RecordingService implements OnDestroy {
     this.name = source.station.name;
     this.recordingStationId = source.station.id;
     this.seconds.set(0);
+    this.captureHistory.set([]);
     this.lastStopReason.set(null);
     this.message.set(null);
     if (!this.support.available(source.audio)) {
@@ -278,6 +278,17 @@ export class RecordingService implements OnDestroy {
         source.audio,
         this.controller.signal,
         {
+          diagnostic: snapshot => {
+            if (generation !== this.generation || this.catalog.catalog()?.manifest.schemaVersion !== 2) return;
+            this.captureHistory.update(rows => [...rows.slice(-11), snapshot]);
+            this.document.defaultView?.dispatchEvent(
+              new CustomEvent('radiobee-recording-diagnostic', {
+                detail: { stationId: source.station.id, ...snapshot },
+              }),
+            );
+            if (snapshot.reason === 'no-audio')
+              console.warn('[RadioBee recording] No captured audio; playback may still work.', snapshot);
+          },
           progress: (seconds, genuine) => {
             if (generation === this.generation) {
               this.seconds.set(seconds);
@@ -294,7 +305,15 @@ export class RecordingService implements OnDestroy {
             this.file.set(blob);
             if (!blob) {
               this.state.set('error');
-              this.message.set('recordingEmpty');
+              const evidence = this.captureDiagnostics().at(-1);
+              this.message.set(
+                this.catalog.catalog()?.manifest.schemaVersion === 2 &&
+                  reason === 'no-audio' &&
+                  evidence?.bytes === 0 &&
+                  evidence.maxRms === 0
+                  ? 'recordingCaptureUnavailable'
+                  : 'recordingEmpty',
+              );
             } else if (
               this.config.AutoContinue === true &&
               reason === 'limit' &&
@@ -329,7 +348,9 @@ export class RecordingService implements OnDestroy {
             }
           },
         },
-        this.config,
+        this.catalog.catalog()?.manifest.schemaVersion === 2
+          ? { ...this.config, retryEmptyCapture: true }
+          : this.config,
       );
       if (generation !== this.generation || this.controller.signal.aborted) handle.stop(true);
       else this.handle = handle;
@@ -412,6 +433,7 @@ export class RecordingService implements OnDestroy {
     this.message.set(null);
     this.state.set('idle');
     this.seconds.set(0);
+    this.captureHistory.set([]);
   }
   private async saveAutomatic(blob: Blob, generation: number, dueToLimit: boolean): Promise<void> {
     try {
