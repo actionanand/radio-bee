@@ -23,6 +23,7 @@ import { recordingFilename } from './export-recording';
 import { RecordingDestination } from './recording-destination';
 import { PlayerComponent } from '../player/player';
 import { RecordingControlsComponent } from './recording-controls';
+import { SnackbarService } from '../shared/snackbar.service';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
 import { PlaybackError } from '../player/playback-failure';
@@ -453,6 +454,97 @@ describe('Configured recording and explicit source policy', () => {
     expect(chooser).not.toHaveBeenCalled();
     expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/settings']);
     expect(recorder.message()).toBe('recordingFolderRequired');
+  });
+
+  it('shows a localized success snackbar, clears the draft and removes dock Export only after successful save', async () => {
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const recorder = view.componentInstance.recorder;
+    await recorder.start(true);
+    const draft = new Blob(['saved broadcast audio'], { type: 'audio/webm' });
+    s.hooks().finished(draft, 'manual');
+    view.detectChanges();
+    const root = view.nativeElement as HTMLElement;
+    expect(root.querySelector('.recording-launcher')?.textContent).toContain('Export recording');
+    const snackbar = TestBed.inject(SnackbarService);
+    expect(snackbar.current()).toBeNull();
+    await recorder.save();
+    view.detectChanges();
+    expect(s.save).toHaveBeenCalledWith(draft, expect.any(String));
+    expect(recorder.file()).toBeNull();
+    expect(recorder.state()).toBe('idle');
+    expect(recorder.seconds()).toBe(0);
+    expect(recorder.message()).toBeNull();
+    expect(root.querySelector('.recording-launcher')?.textContent).not.toContain('Export recording');
+    expect(snackbar.current()).toMatchObject({
+      tone: 'success',
+      content: { kind: 'localized', key: 'recordingExported' },
+    });
+    view.destroy();
+  });
+
+  it('retains the recording and Export control on failed save, then clears after a retry', async () => {
+    const s = setup();
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const recorder = view.componentInstance.recorder;
+    const snackbar = TestBed.inject(SnackbarService);
+    await recorder.start(true);
+    const draft = new Blob(['audio'], { type: 'audio/webm' });
+    s.hooks().finished(draft, 'manual');
+    s.save.mockRejectedValueOnce(new Error('Folder write failed'));
+    await recorder.save();
+    view.detectChanges();
+    expect(recorder.file()).toBe(draft);
+    expect(recorder.message()).toBe('recordingSaveError');
+    expect(snackbar.current()).toBeNull();
+    expect((view.nativeElement as HTMLElement).querySelector('.recording-launcher')?.textContent).toContain(
+      'Export recording',
+    );
+    await recorder.save();
+    view.detectChanges();
+    expect(s.save).toHaveBeenCalledTimes(2);
+    expect(recorder.file()).toBeNull();
+    expect(snackbar.current()?.tone).toBe('success');
+    view.destroy();
+  });
+
+  it('does not clear a newer draft when a stale export finishes after it was discarded', async () => {
+    const s = setup();
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    const snackbar = TestBed.inject(SnackbarService);
+    await recorder.start(true);
+    const draft = new Blob(['old audio'], { type: 'audio/webm' });
+    s.hooks().finished(draft, 'manual');
+    let resolveSave!: () => void;
+    s.save.mockImplementationOnce(() => new Promise<void>(resolve => { resolveSave = resolve; }));
+    const pending = recorder.save();
+    expect(recorder.state()).toBe('exporting');
+    recorder.discard();
+    expect(recorder.file()).toBeNull();
+    resolveSave();
+    await pending;
+    expect(recorder.file()).toBeNull();
+    expect(recorder.message()).toBeNull();
+    expect(snackbar.current()).toBeNull();
+  });
+
+  it('does not consume an unsaved segment while automatic continuation saves and restarts', async () => {
+    const s = setup(true, false, true);
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    const snackbar = TestBed.inject(SnackbarService);
+    await recorder.start(true);
+    const segment = new Blob(['first segment'], { type: 'audio/webm' });
+    s.hooks().finished(segment, 'limit');
+    await vi.waitFor(() => expect(s.create).toHaveBeenCalledTimes(2));
+    expect(snackbar.current()).toBeNull();
+    expect(recorder.file()).toBeNull();
   });
 
   it('keeps manual stops exportable instead of auto-saving them in continuation mode', async () => {
