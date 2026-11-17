@@ -117,7 +117,11 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
               </label>
               <a routerLink="/privacy" (click)="open.set(false)">{{ copy().privacy }}</a>
             </div>
-            @if (attempted() && form.invalid) {
+            @if (sending()) {
+              <p class="submission-status" role="status" aria-live="polite">{{ copy().sending }}</p>
+            } @else if (failed()) {
+              <p class="form-error" role="alert">{{ copy().failed }}</p>
+            } @else if (attempted() && form.invalid) {
               <p class="form-error" role="alert">{{ copy().validation }}</p>
             }
             <div class="form-actions">
@@ -169,6 +173,7 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
     .consent-line input { margin: 3px 0 0; width: 18px; height: 18px; flex: none; accent-color: var(--accent-ink); }
     .consent a { font-size: 12px; color: var(--accent-ink); }
     .form-error { color: #b42b21; font-size: 12px; }
+    .submission-status { color: var(--accent-ink); font-size: 13px; font-weight: 650; }
     .form-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
     .form-actions ion-button { min-width: 170px; text-transform: none; font-weight: 700; min-height: 44px; }
     @media (max-width: 600px) {
@@ -187,6 +192,7 @@ export class ContactFormComponent {
   readonly open = signal(true);
   readonly sending = signal(false);
   readonly attempted = signal(false);
+  readonly failed = signal(false);
   readonly closeIcon = closeOutline;
   readonly sendIcon = sendOutline;
   readonly form = inject(FormBuilder).nonNullable.group({
@@ -208,6 +214,7 @@ export class ContactFormComponent {
   async send() {
     if (this.sending()) return;
     this.attempted.set(true);
+    this.failed.set(false);
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       this.snackbar.show({ kind: 'text', message: this.copy().validation }, 'warning');
@@ -231,6 +238,7 @@ export class ContactFormComponent {
       this.form.reset({ purpose: defaultContactPurpose, consent: false });
       this.attempted.set(false);
     } catch {
+      this.failed.set(true);
       this.snackbar.show({ kind: 'text', message: this.copy().failed }, 'warning', 6500);
     } finally {
       this.sending.set(false);
