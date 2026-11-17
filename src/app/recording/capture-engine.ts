@@ -43,7 +43,7 @@ export interface CaptureCallbacks {
 export interface CaptureHandle {
   stop(discard?: boolean): void;
 }
-export type CaptureConfig = Pick<RadioRecordingConfig, 'MaxDurationMs' | 'MaxBytes'> & { retryEmptyCapture?: boolean };
+export type CaptureConfig = Pick<RadioRecordingConfig, 'MaxDurationMs' | 'MaxBytes'> & { retryEmptyCapture?: boolean; audioBitrate?: number };
 export type CaptureFactory = (
   audio: HTMLAudioElement,
   signal: AbortSignal,
@@ -186,7 +186,7 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
       releaseAttempt(attempt, true);
       throw Error('Cancelled');
     }
-    const recorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: 128000 });
+    const recorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: [64000, 96000, 128000].includes(config?.audioBitrate ?? 128000) ? config!.audioBitrate ?? 128000 : 128000 });
     attempt.recorder = recorder;
     recorder.ondataavailable = event => {
       if (active !== attempt || discard || !event.data.size) return;
