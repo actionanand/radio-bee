@@ -16,6 +16,7 @@ import { PlayerService } from '../player/player.service';
 import { PlayerComponent } from '../player/player';
 import { MEDIA_ENGINE } from '../player/media-engine';
 import { DirectoryShellComponent } from './directory-shell';
+import { ContactFormComponent } from '../contact/contact-form';
 import { SettingsPage } from './settings-page';
 
 @Component({ imports: [RouterOutlet, PlayerComponent], template: '<router-outlet/><app-player/>' })
@@ -235,7 +236,30 @@ describe('Routable v2 directory', () => {
       expect(element(h).querySelectorAll('app-legal-page .legal-end')).toHaveLength(0);
     }
     expect(element(h).querySelector('app-contact-form ion-modal')).not.toBeNull();
-    expect(element(h).querySelector('app-contact-form .open-form')).not.toBeNull();
+    expect(element(h).querySelector('app-contact-form .open-form')).toBeNull();
+    const contactPage = element(h).querySelector('app-legal-page')!;
+    expect(contactPage.querySelector('h1')?.textContent).toBe('Contact Us');
+    expect(contactPage.querySelectorAll<HTMLButtonElement>('.contact-topic')).toHaveLength(4);
+    const contactForm = h.fixture.debugElement.query(By.directive(ContactFormComponent))
+      .componentInstance as ContactFormComponent;
+    expect(contactForm.open()).toBe(false);
+    (contactPage.querySelector('.contact-primary') as HTMLButtonElement).click();
+    h.detectChanges();
+    expect(contactForm.open()).toBe(true);
+    contactForm.open.set(false);
+    (contactPage.querySelector('.contact-topic') as HTMLButtonElement).click();
+    h.detectChanges();
+    expect(contactForm.open()).toBe(true);
+    expect(contactForm.form.controls.purpose.value).toBe('Correction in content');
+    contactForm.open.set(false);
+    await h.navigateByUrl('/privacy');
+    const legalButton = element(h).querySelector<HTMLButtonElement>('.legal-contact-cta button');
+    expect(legalButton).not.toBeNull();
+    legalButton!.click();
+    h.detectChanges();
+    const privacyForm = h.fixture.debugElement.query(By.directive(ContactFormComponent))
+      .componentInstance as ContactFormComponent;
+    expect(privacyForm.open()).toBe(true);
     expect(element(h).querySelector('app-legal-page .issue-link')).toBeNull();
   });
 
