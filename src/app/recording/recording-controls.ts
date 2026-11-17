@@ -43,7 +43,7 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
               {{ ui('stopRecording') }}
             </button>
           }
-          @if (recorder.state() === 'exporting') {
+          @if (recorder.state() === 'exporting' || destination.converting() > 0) {
             <span class="recording-export-progress" role="status" aria-live="polite">
               <ion-spinner name="crescent" aria-hidden="true" />
               {{ savingText() }}
