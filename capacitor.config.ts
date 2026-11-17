@@ -5,10 +5,12 @@ const config: CapacitorConfig = {
   appName: 'RadioBee',
   webDir: 'www',
   loggingBehavior: 'none',
-  server: { androidScheme: 'https', cleartext: false },
+  // Legacy HTTP radio sources require cleartext support in the Android WebView.
+  // Only three explicitly allowlisted URLs are accepted by the catalogue/player.
+  server: { androidScheme: 'https', cleartext: true },
   android: {
     backgroundColor: '#fff8e7',
-    allowMixedContent: false,
+    allowMixedContent: true,
     webContentsDebuggingEnabled: false,
   },
 };
