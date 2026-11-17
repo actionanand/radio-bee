@@ -1,3 +1,4 @@
+import { allowedStreamUrl } from './stream-url-policy';
 import { Catalog, Manifest, catalogCounts } from './catalog.models';
 import { relativePath } from './catalog.validation';
 
@@ -506,7 +507,9 @@ export function validateV2(value: unknown): Catalog {
         const streamId = id(stream['id']);
         check(!streamIds.has(streamId), 'duplicate stream ID');
         streamIds.add(streamId);
-        const url = https(stream['url'], false)!;
+        const rawUrl = text(stream['url']);
+        check(allowedStreamUrl(rawUrl), 'permitted stream URL');
+        const url = new URL(rawUrl);
         check(!streamUrls.has(url.href), 'duplicate programme stream URL');
         streamUrls.add(url.href);
         ref(sources, stream['sourceId']);
