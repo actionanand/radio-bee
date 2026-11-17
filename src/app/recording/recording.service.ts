@@ -42,6 +42,28 @@ export function recordingPermission(
     return allowProhibitedRecording ? 'acknowledgment' : 'blocked';
   return stream.directListening?.recording === 'permission-granted' ? 'allowed' : 'acknowledgment';
 }
+export type RecordingStopReason =
+  | 'manual'
+  | 'source'
+  | 'pause'
+  | 'stop'
+  | 'failure'
+  | 'permission'
+  | 'unavailable'
+  | 'navigation'
+  | 'hidden'
+  | 'pagehide'
+  | 'native-background';
+export interface RecordingDiagnostic {
+  at: number;
+  event: 'start' | 'boundary' | 'stop' | 'finish' | 'error' | 'navigation' | 'visibility';
+  reason?: string;
+  state: string;
+  seconds: number;
+  bytes: number;
+  stationId?: string;
+  playerStationId?: string;
+}
 @Service()
 export class RecordingService implements OnDestroy {
   private readonly config = inject(RADIO_RECORDING);
@@ -64,10 +86,32 @@ export class RecordingService implements OnDestroy {
     const source = this.player.captureSource();
     return source ? recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) : 'unavailable';
   });
+  private readonly history = signal<readonly RecordingDiagnostic[]>([]);
+  readonly diagnostics = this.history.asReadonly();
+  readonly lastStopReason = signal<string | null>(null);
+  private get v2Web() {
+    return this.catalog.catalog()?.manifest.schemaVersion === 2 && !Capacitor.isNativePlatform();
+  }
+  private trace(event: RecordingDiagnostic['event'], reason?: string, bytes = this.file()?.size ?? 0) {
+    this.history.update(rows => [
+      ...rows.slice(-79),
+      {
+        at: Date.now(),
+        event,
+        reason,
+        state: this.state(),
+        seconds: this.seconds(),
+        bytes,
+        stationId: this.recordingStationId,
+        playerStationId: this.player.station()?.id,
+      },
+    ]);
+  }
   private handle: CaptureHandle | undefined;
   private controller: AbortController | undefined;
   private generation = 0;
   private name = '';
+  private recordingStationId: string | undefined;
   private destroyed = false;
   private ownRestart = false;
   private acknowledgedSession = false;
@@ -76,22 +120,30 @@ export class RecordingService implements OnDestroy {
   private preparation: { failed: boolean; cancelled: boolean } | undefined;
   private restoreAccess: (() => void) | undefined;
   private readonly removeBoundary = this.player.onPlaybackBoundary(reason => {
+    this.trace('boundary', this.ownRestart && reason === 'source' ? 'capture-preparation' : reason);
     if (this.ownRestart && reason === 'source') return;
     this.continuationCancelled = true;
     if (this.preparation) {
       if (reason === 'failure') this.preparation.failed = true;
       else this.preparation.cancelled = true;
     }
-    this.stop();
+    this.stop(reason);
   });
   private readonly navigation = this.router?.events.subscribe(event => {
-    if (event instanceof NavigationStart) this.stop();
+    if (event instanceof NavigationStart) {
+      this.trace(
+        'navigation',
+        this.catalog.catalog()?.manifest.schemaVersion === 2 ? 'internal-route-retained' : 'legacy-route',
+      );
+      if (this.catalog.catalog()?.manifest.schemaVersion !== 2) this.stop('navigation');
+    }
   });
   private removeAppListener: (() => Promise<void>) | undefined;
   private readonly hidden = () => {
-    if (this.document.hidden) this.stop();
+    this.trace('visibility', this.document.visibilityState);
+    if (this.document.hidden && !this.v2Web) this.stop('hidden');
   };
-  private readonly leaving = () => this.stop();
+  private readonly leaving = () => this.stop('pagehide');
   constructor() {
     this.document.addEventListener('visibilitychange', this.hidden);
     this.document.defaultView?.addEventListener('pagehide', this.leaving);
@@ -104,7 +156,7 @@ export class RecordingService implements OnDestroy {
       // boundary (pause, stop, switch, failure), which stops it synchronously.
       if (!source && this.player.state() === 'loading' && this.player.pendingPhase() === 'buffering') return;
       if (!source || recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) === 'blocked')
-        this.stop();
+        this.stop(source ? 'permission' : 'unavailable');
     });
     if (this.config.Enabled && Capacitor.isNativePlatform()) void this.observeApp();
   }
@@ -112,7 +164,7 @@ export class RecordingService implements OnDestroy {
     try {
       const { App } = await import('@capacitor/app');
       const listener = await App.addListener('appStateChange', state => {
-        if (!state.isActive) this.stop();
+        if (!state.isActive) this.stop('native-background');
       });
       if (this.destroyed) await listener.remove();
       else this.removeAppListener = () => listener.remove();
@@ -135,14 +187,23 @@ export class RecordingService implements OnDestroy {
       this.message.set(permission === 'blocked' ? 'recordingProhibited' : 'recordingConsent');
       return;
     }
-    // Android requires one persisted, user-chosen folder. Unattended web
-    // segments also require a previously granted writable directory.
-    if (
-      (this.destination.requiresSelection || this.config.AutoContinue === true) &&
-      !(await this.destination.hasAccess())
-    ) {
+    // Claim startup before asynchronous folder permission/persistence work. A
+    // second click must not discard/abort the first in-flight preparation.
+    const request = ++this.generation;
+    this.state.set('preparing');
+    this.trace('start');
+    let folderReady = true;
+    try {
+      if (this.destination.requiresSelection || this.config.AutoContinue === true)
+        folderReady = await this.destination.hasAccess();
+    } catch {
+      folderReady = false;
+    }
+    if (request !== this.generation || this.destroyed || this.state() !== 'preparing') return;
+    if (!folderReady) {
+      this.state.set('idle');
       this.message.set('recordingFolderRequired');
-      this.router?.navigate(['/settings']);
+      void this.router?.navigate(['/settings']);
       return;
     }
     this.discard();
@@ -152,7 +213,9 @@ export class RecordingService implements OnDestroy {
     const generation = ++this.generation;
     this.controller = new AbortController();
     this.name = source.station.name;
+    this.recordingStationId = source.station.id;
     this.seconds.set(0);
+    this.lastStopReason.set(null);
     this.message.set(null);
     if (!this.support.available(source.audio)) {
       this.state.set('error');
@@ -207,6 +270,9 @@ export class RecordingService implements OnDestroy {
           },
           finished: (blob, reason) => {
             if (generation !== this.generation) return;
+            this.trace('finish', reason ?? 'manual', blob?.size ?? 0);
+            if (!this.lastStopReason() || reason === 'limit' || reason === 'source-ended' || reason === 'no-audio')
+              this.lastStopReason.set(reason ?? 'manual');
             this.handle = undefined;
             this.restoreAccess?.();
             this.file.set(blob);
@@ -226,11 +292,19 @@ export class RecordingService implements OnDestroy {
               void this.saveAutomatic(blob, generation, reason === 'limit');
             } else {
               this.state.set('ready');
-              this.message.set('recordingReady');
+              this.message.set(
+                this.catalog.catalog()?.manifest.schemaVersion === 2 &&
+                  ['source', 'failure', 'source-ended', 'unavailable', 'permission'].includes(
+                    this.lastStopReason() ?? '',
+                  )
+                  ? 'recordingInterrupted'
+                  : 'recordingReady',
+              );
             }
           },
           failed: () => {
             if (generation === this.generation) {
+              this.trace('error', 'encoder');
               this.handle = undefined;
               this.restoreAccess?.();
               this.file.set(null);
@@ -294,8 +368,10 @@ export class RecordingService implements OnDestroy {
       if (signal.aborted) abort();
     });
   }
-  stop() {
+  stop(reason: RecordingStopReason = 'manual') {
     if (!['preparing', 'starting', 'recording'].includes(this.state())) return;
+    this.trace('stop', reason);
+    this.lastStopReason.set(reason);
     this.stopRequested = true;
     this.continuationCancelled = true;
     this.state.set('stopping');

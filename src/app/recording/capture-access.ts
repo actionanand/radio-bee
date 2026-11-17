@@ -24,7 +24,14 @@ export async function checkCaptureAccess(
         throw new CaptureAccessError();
     } finally {
       // A radio GET may never finish. Stop its body immediately after checking response headers.
-      await response.body?.cancel();
+      // Cleanup is best effort, not an additional permission test. In particular a
+      // rejected/never-settling cancel must not undo valid headers or stall Start.
+      // The request-local controller is also aborted in the outer finally.
+      try {
+        void response.body?.cancel().catch(() => undefined);
+      } catch {
+        /* Already closed/locked body. */
+      }
     }
   } catch (error) {
     if (signal.aborted) throw error;

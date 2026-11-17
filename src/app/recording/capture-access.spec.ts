@@ -1,3 +1,7 @@
+import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { CatalogService } from '../catalog/catalog.service';
+import { CAPTURE_ACCESS } from './recording.service';
 import { checkCaptureAccess } from './capture-access';
 describe('Explicit recording access check', () => {
   afterEach(() => {
@@ -69,4 +73,33 @@ describe('Explicit recording access check', () => {
       'Recording media access unavailable',
     );
   });
+  for (const schemaVersion of [1, 2])
+    it(`selects ${schemaVersion === 1 ? 'HEAD' : 'GET'} through the real V${schemaVersion} access token`, async () => {
+      const catalog = signal({ manifest: { schemaVersion } });
+      TestBed.configureTestingModule({ providers: [{ provide: CatalogService, useValue: { catalog } }] });
+      const fetch = vi.fn(async () => response('https://broadcaster.test/live'));
+      vi.stubGlobal('fetch', fetch);
+      await TestBed.inject(CAPTURE_ACCESS).check('https://broadcaster.test/live', new AbortController().signal);
+      expect(fetch).toHaveBeenCalledExactlyOnceWith(
+        'https://broadcaster.test/live',
+        expect.objectContaining({ method: schemaVersion === 1 ? 'HEAD' : 'GET' }),
+      );
+    });
+  for (const failure of ['reject', 'throw', 'pending'] as const)
+    it(`accepts valid GET headers when body cancellation ${failure}s, aborting only that request`, async () => {
+      const result = response('https://broadcaster.test/live');
+      vi.mocked(result.body!.cancel).mockImplementation(() => {
+        if (failure === 'throw') throw Error('Already closed');
+        return failure === 'pending'
+          ? new Promise<void>(() => undefined)
+          : Promise.reject(Error('Cancellation failed'));
+      });
+      const caller = new AbortController(),
+        fetch = vi.fn(async () => result);
+      vi.stubGlobal('fetch', fetch);
+      await expect(checkCaptureAccess(result.url, caller.signal)).resolves.toBeUndefined();
+      expect(caller.signal.aborted).toBe(false);
+      const request = fetch.mock.calls[0] as unknown as [string, RequestInit];
+      expect(request[1].signal?.aborted).toBe(true);
+    });
 });

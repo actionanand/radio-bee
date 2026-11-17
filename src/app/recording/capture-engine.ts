@@ -6,13 +6,20 @@ export function recordingLimits(config?: Pick<RadioRecordingConfig, 'MaxDuration
   const duration = config?.MaxDurationMs;
   const bytes = config?.MaxBytes;
   return {
-    maxMs: typeof duration === 'number' && Number.isFinite(duration) && duration >= 1_000 && duration <= 24 * 60 * 60_000 ? duration : MAX_RECORDING_MS,
-    maxBytes: typeof bytes === 'number' && Number.isSafeInteger(bytes) && bytes >= 1024 && bytes <= 512 * 1024 * 1024 ? bytes : MAX_RECORDING_BYTES,
+    maxMs:
+      typeof duration === 'number' && Number.isFinite(duration) && duration >= 1_000 && duration <= 24 * 60 * 60_000
+        ? duration
+        : MAX_RECORDING_MS,
+    maxBytes:
+      typeof bytes === 'number' && Number.isSafeInteger(bytes) && bytes >= 1024 && bytes <= 512 * 1024 * 1024
+        ? bytes
+        : MAX_RECORDING_BYTES,
   };
 }
+export type CaptureEndReason = 'manual' | 'limit' | 'source-ended' | 'no-audio';
 export interface CaptureCallbacks {
   progress(seconds: number, genuine: boolean): void;
-  finished(blob: Blob | null, reason?: 'manual' | 'limit'): void;
+  finished(blob: Blob | null, reason?: CaptureEndReason): void;
   failed(): void;
 }
 export interface CaptureHandle {
@@ -54,7 +61,7 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
     discard = false,
     bytes = 0;
   let failed = false;
-  let stopReason: 'manual' | 'limit' = 'manual';
+  let stopReason: CaptureEndReason = 'manual';
   let signalWindows = 0;
   let heard = false,
     chunks: Blob[] = [],
@@ -66,9 +73,9 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
     if (context && context.state !== 'closed') void context.close().catch(() => undefined);
     signal.removeEventListener('abort', abort);
   };
-  const stop = (drop = false, reason: 'manual' | 'limit' = 'manual') => {
-    stopReason = reason;
+  const stop = (drop = false, reason: CaptureEndReason = 'manual') => {
     if (ended) return;
+    stopReason = reason;
     discard ||= drop;
     ended = true;
     // Stop captured tracks synchronously before the player can attach another station/source.
@@ -103,6 +110,10 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
       bytes += event.data.size;
     };
     recorder.onstop = () => {
+      if (!ended) {
+        ended = true;
+        stopReason = 'source-ended';
+      }
       release();
       const blob = !discard && heard && bytes > 256 ? new Blob(chunks, { type: recorder?.mimeType || mimeType }) : null;
       chunks = [];
@@ -132,7 +143,7 @@ export const captureRadio: CaptureFactory = async (audio, signal, callbacks, con
       callbacks.progress(Math.floor(elapsed / 1000), heard && bytes > 256);
       if (elapsed >= maxMs) stop(false, 'limit');
       else if (elapsed >= 8000 && !heard) {
-        stop(true);
+        stop(true, 'no-audio');
       }
     }, 200);
     return { stop };

@@ -1,3 +1,4 @@
+const { exportDownload } = require('./recording-browser-support.cjs');
 // Manual browser regression: generated audio is a deterministic test, never proof of live radio.
 // Linux Node only. No microphone, raw-radio download, relay or security bypass.
 const assert = require('node:assert/strict');
@@ -81,7 +82,7 @@ const listen = server => new Promise(resolve => server.listen(0, '127.0.0.1', re
         url.protocol === 'https:' && !url.username && !url.password,
         'Live source requires credential-free HTTPS',
       );
-      cases.push({ name: 'live-sooriyan', url: url.href, genuine: true, live: true });
+      cases.push({ name: 'live-stream', url: url.href, genuine: true, live: true });
     }
     for (const test of cases) {
       const page = await context.newPage(),
@@ -169,9 +170,8 @@ const listen = server => new Promise(resolve => server.listen(0, '127.0.0.1', re
         assert.ok(!result.error, JSON.stringify(result));
         assert.ok(result.progress.some(row => row.genuine));
         assert.ok(result.size > 256);
-        const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#export').click()]);
         const file = path.join(output, test.name + '.webm');
-        await download.saveAs(file);
+        result.export = await exportDownload(browser, context, page, file, () => page.locator('#export').click());
         const bytes = fs.readFileSync(file);
         assert.equal(bytes.length, result.size);
         result.decoded = await page.evaluate(async base64 => {
@@ -206,6 +206,7 @@ const listen = server => new Promise(resolve => server.listen(0, '127.0.0.1', re
     }
     const page = await context.newPage();
     await page.goto(origin);
+    await page.locator('#start').click();
     const cors = await page.evaluate(async url => {
       const head = await fetch(url, { method: 'HEAD', mode: 'cors', credentials: 'omit' });
       let getBlocked = false;
