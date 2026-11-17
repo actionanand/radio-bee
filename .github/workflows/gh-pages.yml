@@ -47,6 +47,11 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Generate Open Graph image from official app icon
+        run: |
+          python3 -m venv "$RUNNER_TEMP/radiobee-og-venv"
+          "$RUNNER_TEMP/radiobee-og-venv/bin/pip" install --disable-pip-version-check Pillow==11.3.0
+          "$RUNNER_TEMP/radiobee-og-venv/bin/python" scripts/generate-og-image.py
       - name: Build Angular app for GitHub Pages
         id: angular
         run: npm run build:gh -- --configuration=production
