@@ -110,6 +110,9 @@ export function patchAndroid(root = process.cwd()) {
     const nativeSource = read('scripts/native/RadioBeeRecordingStoragePlugin.java')
       .replace(/^package\s+[\w.]+\s*;/m, 'package ' + packageName + ';');
     writeFileSync(path.join(path.dirname(mainActivity), 'RadioBeeRecordingStoragePlugin.java'), nativeSource);
+    const converterSource = read('scripts/native/RadioBeeAudioConverter.java')
+      .replace(/^package\s+[\w.]+\s*;/m, 'package ' + packageName + ';');
+    writeFileSync(path.join(path.dirname(mainActivity), 'RadioBeeAudioConverter.java'), converterSource);
   }
 
   // Update only managed splash items; retain unrelated theme items and custom styles.
