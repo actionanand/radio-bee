@@ -124,23 +124,42 @@ describe('Configured recording and explicit source policy', () => {
     await service.save();
     expect(s.save).toHaveBeenCalledWith(blob, expect.any(String));
   });
-  it('saves a completed segment before automatic continuation and keeps manual stop from restarting', async () => {
+  it('restarts capture without waiting for a previous segment to finish saving', async () => {
     const s = setup(true, false, true);
     await playing(s);
     const service = TestBed.inject(RecordingService);
+    let finishSave!: () => void;
+    s.folderSave.mockImplementationOnce(() => new Promise<void>(resolve => { finishSave = resolve; }));
     await service.start(true);
     const segment = new Blob(['radio segment'], { type: 'audio/webm' });
     s.hooks().progress(12, true);
     s.hooks().finished(segment, 'limit');
-    await vi.waitFor(() => expect(s.folderSave).toHaveBeenCalledWith(segment, expect.stringContaining('.webm'), true));
     await vi.waitFor(() => expect(s.create).toHaveBeenCalledTimes(2));
+    expect(s.folderSave).toHaveBeenCalledWith(segment, expect.stringContaining('.webm'), true);
+    expect(service.automaticSavesInProgress()).toBe(1);
     s.hooks().progress(3, true);
     service.stop();
     s.hooks().finished(segment, 'manual');
+    finishSave();
+    await vi.waitFor(() => expect(service.automaticSavesInProgress()).toBe(0));
     expect(s.folderSave).toHaveBeenCalledTimes(1);
     expect(s.create).toHaveBeenCalledTimes(2);
     expect(service.state()).toBe('ready');
     expect(service.file()).toBe(segment);
+  });
+  it('retains a failed automatic segment for retry instead of silently dropping it', async () => {
+    const s = setup(true, false, true);
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    s.folderSave.mockRejectedValueOnce(Error('Disk full'));
+    await service.start(true);
+    const segment = new Blob(['important audio'], { type: 'audio/webm' });
+    s.hooks().finished(segment, 'limit');
+    await vi.waitFor(() => expect(service.unsavedAutoSegments()).toHaveLength(1));
+    expect(service.unsavedAutoSegments()[0].blob).toBe(segment);
+    s.folderSave.mockResolvedValueOnce(undefined);
+    await service.retryUnsavedSegment();
+    expect(service.unsavedAutoSegments()).toHaveLength(0);
   });
   it('hides recording limits entirely when the current stream prohibits recording', async () => {
     const s = setup();
