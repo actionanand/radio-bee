@@ -288,7 +288,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
   contact: {
     title: 'Contact Us',
     summary:
-      'Questions, station corrections, broadcaster rights concerns or suggestions? Choose a topic below to send a message to RadioBee.',
+      'Questions, station corrections, broadcaster rights concerns or suggestions? Choose a topic below to open the RadioBee contact form.',
     sections: [
       {
         heading: 'Contact RadioBee',
