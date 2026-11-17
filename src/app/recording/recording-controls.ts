@@ -6,9 +6,10 @@ import { PlayerService } from '../player/player.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { UiKey, uiLabel } from '../catalog/catalog.ui';
 import { radioIcons } from '../shared/radio-icons';
+import { RecordingDurationPipe } from './recording-duration.pipe';
 @Component({
   selector: 'app-recording-controls',
-  imports: [IonIcon],
+  imports: [IonIcon, RecordingDurationPipe],
   providers: [RecordingService],
   template: `
     @if (player.station() || recorder.state() !== 'idle') {
@@ -24,7 +25,7 @@ import { radioIcons } from '../shared/radio-icons';
             <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />
             <span>{{ ui('record') }}</span>
             @if (recorder.state() === 'recording') {
-              <span class="recording-time" role="status">{{ recorder.seconds() }} s</span>
+              <span class="recording-time" role="status">{{ recorder.seconds() | recordingDuration: catalog.locale() }}</span>
             } @else if (recorder.file()) {
               <span class="recording-time">{{ ui('recordingReady') }}</span>
             }
@@ -98,7 +99,7 @@ import { radioIcons } from '../shared/radio-icons';
             ) {
               <p role="status">
                 {{ ui(recorder.state() === 'recording' ? 'recording' : 'recordingStarting') }}
-                - {{ recorder.seconds() }} s
+                - {{ recorder.seconds() | recordingDuration: catalog.locale() }}
               </p>
               <button
                 class="primary-action"
