@@ -225,12 +225,32 @@ describe('Routable v2 directory', () => {
       await h.navigateByUrl(url);
       h.detectChanges();
       expect(element(h).querySelector('app-legal-page h1')?.textContent).toBe(heading);
+      expect(element(h).querySelector('.toolbar form')).toBeNull();
+      expect(element(h).querySelector('input[type="search"]')).toBeNull();
+      expect(element(h).querySelectorAll('.toolbar .tools app-directory-select')).toHaveLength(2);
+      const back = element(h).querySelector<HTMLButtonElement>('app-legal-page button.back-link');
+      expect(back?.textContent?.trim()).toBe('Back');
+      expect(back?.querySelector('ion-icon[aria-hidden="true"]')).not.toBeNull();
       expect(element(h).querySelectorAll('.directory-shell footer .footer-policies')).toHaveLength(1);
       expect(element(h).querySelectorAll('app-legal-page .legal-end')).toHaveLength(0);
     }
     const issueLink = element(h).querySelector<HTMLAnchorElement>('app-legal-page .issue-link');
     expect(issueLink?.href).toBe('https://github.com/actionanand/radio-bee/issues/new');
     expect(issueLink?.getAttribute('rel')).toContain('noopener');
+  });
+
+  it('shows the station search on ordinary pages and returns from a direct legal URL to Home', async () => {
+    setup();
+    const h = await RouterTestingHarness.create('/privacy');
+    h.detectChanges();
+    expect(element(h).querySelector('.toolbar form')).toBeNull();
+    const back = element(h).querySelector<HTMLButtonElement>('app-legal-page button.back-link')!;
+    expect(back.querySelector('ion-icon')).not.toBeNull();
+    back.click();
+    await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/home'));
+    h.detectChanges();
+    expect(element(h).querySelector('.toolbar form input[type="search"]')).not.toBeNull();
+    expect(element(h).querySelector('.toolbar .tools.legal-tools')).toBeNull();
   });
 
   it('localizes tuner and footer taglines when UI language changes', async () => {
