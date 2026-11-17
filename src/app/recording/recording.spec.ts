@@ -522,7 +522,7 @@ describe('Configured recording and explicit source policy', () => {
     const draft = new Blob(['old audio'], { type: 'audio/webm' });
     s.hooks().finished(draft, 'manual');
     let resolveSave!: () => void;
-    s.save.mockImplementationOnce(() => new Promise<void>(resolve => { resolveSave = resolve; }));
+    s.save.mockImplementationOnce(() => new Promise<undefined>(resolve => { resolveSave = () => resolve(undefined); }));
     const pending = recorder.save();
     expect(recorder.state()).toBe('exporting');
     recorder.discard();
