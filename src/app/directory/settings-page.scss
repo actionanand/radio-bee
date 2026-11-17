@@ -9,6 +9,11 @@ h3 { font-size: 15px; margin: 0 0 5px; }
 }
 .preferences { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .preferences app-directory-select { min-width: 0; }
+.recording-preferences { margin: 18px 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.recording-preferences .help { margin-top: 12px; }
+.recording-artwork { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
+.recording-artwork .help { margin: 2px 0 0; }
+.recording-artwork .material-switch { min-width: 54px; }
 .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .toggle-row p, .help { font-size: 13px; line-height: 1.5; color: var(--muted); margin: 4px 0 12px; }
 .material-switch {
