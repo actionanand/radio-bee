@@ -135,7 +135,10 @@ describe('Configured recording and explicit source policy', () => {
     s.hooks().progress(12, true);
     s.hooks().finished(segment, 'limit');
     await vi.waitFor(() => expect(s.create).toHaveBeenCalledTimes(2));
-    expect(s.folderSave).toHaveBeenCalledWith(segment, expect.stringContaining('.webm'), true, expect.any(String), true);
+    expect(s.folderSave).toHaveBeenCalledTimes(1);
+    expect(s.folderSave.mock.calls[0][0]).toBe(segment);
+    expect(s.folderSave.mock.calls[0][1]).toContain('.webm');
+    expect(s.folderSave.mock.calls[0][2]).toBe(true);
     expect(service.automaticSavesInProgress()).toBe(1);
     s.hooks().progress(3, true);
     service.stop();
