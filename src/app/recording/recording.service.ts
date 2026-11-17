@@ -179,6 +179,7 @@ export class RecordingService implements OnDestroy {
     const source = this.player.captureSource();
     if (
       !this.config.Enabled ||
+      !this.destination.ready() ||
       !source ||
       this.destroyed ||
       ['preparing', 'starting', 'recording', 'stopping', 'exporting'].includes(this.state()) ||
