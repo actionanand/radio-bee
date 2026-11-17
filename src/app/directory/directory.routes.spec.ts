@@ -548,6 +548,62 @@ describe('Routable v2 directory', () => {
     expect(TestBed.inject(Router).url).toBe('/world/asia/in/in-tn/in-tn-kanyakumari');
     expect(load).toHaveBeenCalledOnce();
   });
+  it('sorts language index by station count by default, breaks ties alphabetically and supports user selected order', async () => {
+    const { data } = setup();
+    const h = await RouterTestingHarness.create('/languages');
+    const host = () => element(h);
+    const entries = () => [...host().querySelectorAll<HTMLAnchorElement>('.destinations > a')].map(a => ({
+      name: a.querySelector('strong')?.textContent?.trim() ?? '',
+      count: Number(a.querySelector('span')?.textContent?.match(/\\d+/)?.[0] ?? -1),
+      href: a.getAttribute('href'),
+    }));
+    const original = entries();
+    expect(original.length).toBe(data.catalog()!.languages.length);
+    expect(original.every((entry, i) => i === 0 || original[i - 1].count >= entry.count)).toBe(true);
+    const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+    expect(original.every((entry, i) =>
+      i === 0 || original[i - 1].count !== entry.count ||
+      collator.compare(original[i - 1].name, entry.name) <= 0)).toBe(true);
+    const sort = () => host().querySelector('[data-control=index-sort] ion-select')!;
+    expect(sort()).not.toBeNull();
+    expect(host().querySelectorAll('[data-control=index-sort] ion-select-option')).toHaveLength(4);
+    sort().dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'name-desc' }, bubbles: true }));
+    await h.fixture.whenStable();
+    h.detectChanges();
+    expect(TestBed.inject(Router).url).toBe('/languages?order=name-desc');
+    const reverseNames = entries().map(row => row.name);
+    expect(reverseNames).toEqual([...reverseNames].sort((a, b) => collator.compare(b, a)));
+    await h.navigateByUrl('/languages?order=count-asc');
+    const ascending = entries();
+    expect(ascending.every((entry, i) => i === 0 || ascending[i - 1].count <= entry.count)).toBe(true);
+    await h.navigateByUrl('/languages?order=invalid');
+    expect(entries()).toEqual(original);
+  });
+
+  it('offers artists alphabetical sorting only, without count sort options', async () => {
+    setup();
+    const h = await RouterTestingHarness.create('/artists');
+    const host = () => element(h);
+    const entries = () => [...host().querySelectorAll<HTMLAnchorElement>('.destinations > a')].map(a =>
+      a.querySelector('strong')?.textContent?.trim() ?? '');
+    const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+    const names = entries();
+    expect(names.length).toBeGreaterThan(0);
+    expect(names).toEqual([...names].sort((a, b) => collator.compare(a, b)));
+    expect(host().querySelectorAll('[data-control=index-sort] ion-select-option')).toHaveLength(2);
+    host().querySelector('[data-control=index-sort] ion-select')!.dispatchEvent(
+      new CustomEvent('ionChange', { detail: { value: 'name-desc' }, bubbles: true }),
+    );
+    await h.fixture.whenStable();
+    h.detectChanges();
+    expect(TestBed.inject(Router).url).toBe('/artists?order=name-desc');
+    expect(entries()).toEqual([...names].reverse());
+    await h.navigateByUrl('/artists?order=count-asc');
+    expect(entries()).toEqual(names);
+    await h.navigateByUrl('/genres');
+    expect(host().querySelector('[data-control=index-sort]')).toBeNull();
+  });
+
   it('localizes language index, detail titles, filter options and station chips across UI locales', async () => {
     const { data } = setup();
     const h = await RouterTestingHarness.create('/languages');
