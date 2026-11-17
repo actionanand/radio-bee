@@ -32,6 +32,7 @@ import {
 import { CatalogService } from '../catalog/catalog.service';
 import { FavoritesService } from '../catalog/favorites.service';
 import { radioBeeCopyright } from '../shared/copyright';
+import { legalLinks } from '../legal/legal-content';
 import { uiLabel } from '../catalog/catalog.ui';
 import { uiLanguageOptions } from '../catalog/device-language';
 import { ThemeService } from '../theme/theme.service';
@@ -56,6 +57,7 @@ export class DirectoryShellComponent {
   readonly data = inject(CatalogService);
   readonly favorites = inject(FavoritesService);
   readonly copyright = radioBeeCopyright();
+  readonly legalLinks = legalLinks;
   readonly theme = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
