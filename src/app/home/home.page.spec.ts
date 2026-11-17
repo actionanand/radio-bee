@@ -56,6 +56,11 @@ describe('HomePage', () => {
     expect(fixture.nativeElement.querySelector('.site-footer > span')?.textContent).toBe(
       radioBeeCopyright(),
     );
+    expect(
+      [...fixture.nativeElement.querySelectorAll('.site-footer .footer-policies a')].map((link: HTMLAnchorElement) =>
+        link.getAttribute('href'),
+      ),
+    ).toEqual(['/privacy', '/terms', '/copyright-policy', '/contact']);
     expect(fixture.nativeElement.querySelector('app-station-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('audio')).toBeNull();
   });
