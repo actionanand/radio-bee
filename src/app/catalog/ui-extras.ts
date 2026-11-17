@@ -18,6 +18,9 @@ export const extraEnglish = {
   record: 'Record',
   stopRecording: 'Stop recording',
   discard: 'Discard',
+  recordingDiscardConfirm: 'Discard this recording? Any unsaved audio will be permanently lost.',
+  recordingSwitchConfirm:
+    'Switch stations? This will stop the ongoing recording. Captured audio will remain available to export.',
   exportRecording: 'Export recording',
   recording: 'Recording',
   recordingStarting: 'Waiting for stream audio…',
@@ -67,6 +70,9 @@ export const extraTamil: typeof extraEnglish = {
   record: 'பதிவு',
   stopRecording: 'பதிவை நிறுத்து',
   discard: 'நீக்கு',
+  recordingDiscardConfirm: 'இந்தப் பதிவை நீக்கவா? சேமிக்கப்படாத ஒலி நிரந்தரமாக இழக்கப்படும்.',
+  recordingSwitchConfirm:
+    'வேறு நிலையத்திற்கு மாறவா? தற்போதைய பதிவு நிறுத்தப்படும். இதுவரை பதிவான ஒலியை ஏற்றுமதி செய்யலாம்.',
   exportRecording: 'பதிவை ஏற்றுமதி செய்',
   recording: 'பதிவாகிறது',
   recordingStarting: 'ஒலிக்காகக் காத்திருக்கிறது…',
@@ -117,6 +123,9 @@ export const extraSanskrit: typeof extraEnglish = {
   record: 'ध्वनिमुद्रणम्',
   stopRecording: 'मुद्रणं स्थगय',
   discard: 'त्यज',
+  recordingDiscardConfirm: 'एतत् मुद्रणं परित्यज्यताम् वा? अरक्षितध्वनिः स्थायिरूपेण नश्यति।',
+  recordingSwitchConfirm:
+    'अन्यं केन्द्रं परिवर्तयेत् वा? वर्तमानं मुद्रणं स्थगिष्यते। पूर्वं गृहीतः ध्वनिः निर्यातार्थं उपलब्धः भविष्यति।'
   exportRecording: 'मुद्रणं निर्यातय',
   recording: 'मुद्रणं प्रवर्तते',
   recordingStarting: 'ध्वनेः प्रतीक्षा…',
