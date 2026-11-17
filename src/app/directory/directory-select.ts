@@ -69,11 +69,24 @@ export interface DirectoryOption {
       /* Ionic still derives its reactive button name from [label]. Only its visual label is external. */
       display: none;
     }
+    /*
+     * Ionic's internal value container is content-sized by default. Let it
+     * expand to the full outlined field so the caret stays at the far end,
+     * including in narrow Android layouts and right-to-left direction.
+     */
+    ion-select::part(container) {
+      flex: 1 1 0;
+      min-width: 0;
+    }
     ion-select::part(text) {
-      white-space: normal;
-      overflow-wrap: anywhere;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     ion-select::part(icon) {
+      flex-shrink: 0;
+      margin-inline-start: 12px;
       color: var(--ink);
       opacity: 1;
     }
