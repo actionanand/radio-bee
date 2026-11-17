@@ -284,8 +284,9 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     await page.evaluate(() => (window.__exportFailure = false));
     await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
     await page.waitForFunction(() =>
-      document.querySelector('.recording-panel')?.textContent.includes('Export opened on this device.'),
+      document.querySelector('app-snackbar .message')?.textContent.includes('Export opened on this device.'),
     );
+    assert.equal(await page.locator('.recording-launcher').getByText('Export recording').count(), 0);
     const file = await page.evaluate(async () => {
       for await (const [name, handle] of (
         await (
