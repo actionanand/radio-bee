@@ -194,18 +194,19 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     assert.ok(await action.isEnabled());
     await action.click();
     await page.waitForFunction(
-      () => /Recording\s*-\s*[1-9]/.test(document.querySelector('.recording-panel')?.textContent),
+      () => /[1-9][0-9]* s/.test(document.querySelector('.recording-toggle')?.textContent),
       null,
       { timeout: 20_000 },
     );
   };
   const ready = () =>
     page.waitForFunction(
-      () => !!document.querySelector('.recording-panel .primary-action')?.textContent.includes('Export recording'),
+      () => !!document.querySelector('.recording-launcher .quick-action')?.textContent.includes('Export recording'),
       null,
       { timeout: 10_000 },
     );
   const discard = async () => {
+    if (!(await panel.isVisible())) await page.locator('.recording-toggle').click();
     await panel.locator('button').filter({ hasText: 'Discard' }).click();
   };
   try {
@@ -250,19 +251,19 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     if (await consent.count()) await consent.check();
     await page.evaluate(() => window.__recordingUI.audios[0].dispatchEvent(new Event('waiting')));
     await page.waitForFunction(() => document.querySelector('.recording-toggle')?.disabled);
-    assert.equal(await panel.locator('button').filter({ hasText: 'Start recording' }).count(), 0);
+    assert.ok(await panel.locator('button').filter({ hasText: 'Start recording' }).isDisabled());
     await page.evaluate(() => window.__recordingUI.audios[0].dispatchEvent(new Event('playing')));
     await waitPlaying();
     await mark('first-capture');
     await start();
     await page.evaluate(() => window.__recordingUI.audios[0].dispatchEvent(new Event('waiting')));
     await page.waitForFunction(() =>
-      /Recording\s*-\s*[3-9]/.test(document.querySelector('.recording-panel')?.textContent),
+      /[3-9] s/.test(document.querySelector('.recording-toggle')?.textContent),
     );
     await page.evaluate(() => window.__recordingUI.audios[0].dispatchEvent(new Event('playing')));
     await waitPlaying();
     await page.waitForFunction(
-      () => /Recording\s*-\s*1[0-9]/.test(document.querySelector('.recording-panel')?.textContent),
+      () => /1[0-9] s/.test(document.querySelector('.recording-toggle')?.textContent),
       null,
       { timeout: 20_000 },
     );
@@ -274,13 +275,14 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     await player.getByRole('button', { name: /^Pause/ }).click();
     await ready();
     await page.evaluate(() => (window.__exportFailure = true));
-    await panel.locator('.primary-action').filter({ hasText: 'Export recording' }).click();
+    await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
+    if (!(await panel.isVisible())) await page.locator('.recording-toggle').click();
     await page.waitForFunction(() =>
       document.querySelector('.recording-panel')?.textContent.includes('Your recording is still available to retry'),
     );
-    assert.ok(await panel.locator('.primary-action').filter({ hasText: 'Export recording' }).isEnabled());
+    assert.ok(await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).isEnabled());
     await page.evaluate(() => (window.__exportFailure = false));
-    await panel.locator('.primary-action').filter({ hasText: 'Export recording' }).click();
+    await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
     await page.waitForFunction(() =>
       document.querySelector('.recording-panel')?.textContent.includes('Export opened on this device.'),
     );
@@ -336,14 +338,15 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     await waitPlaying();
     await mark('switch-capture');
     await start();
-    await panel.getByRole('button', { name: 'Close', exact: true }).click();
+    if (await panel.isVisible()) await panel.getByRole('button', { name: 'Close', exact: true }).click();
     await page.locator('[data-station-id=vasantham-srilanka] .play').click();
-    await page.locator('.recording-toggle').click();
+    if (!(await panel.isVisible())) await page.locator('.recording-toggle').click();
     await ready();
     assert.equal(await page.evaluate(() => window.__recordingUI.recorderCount), 3);
     assert.ok((await player.locator('.track strong').innerText()).includes('Vasantham'));
     await player.getByRole('button', { name: /^Stop/ }).click();
-    assert.ok(await panel.locator('.primary-action').filter({ hasText: 'Export recording' }).isVisible());
+    assert.ok(await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).isVisible());
+    assert.equal(await panel.locator('button').filter({ hasText: 'Export recording' }).count(), 0);
     report.scenarios.push('Stop and station switch retain drafts and do not automatically start another recorder');
     report.capture = await page.evaluate(() => {
       const d = window.__recordingUI;
