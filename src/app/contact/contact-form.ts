@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonIcon, IonModal, IonSelect, IonSelectOption } from '@ionic/angular';
+import { IonButton, IonContent, IonIcon, IonModal, IonSelect, IonSelectOption } from '@ionic/angular';
 import { closeOutline, sendOutline } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 import { CatalogService } from '../catalog/catalog.service';
@@ -19,7 +19,7 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
  */
 @Component({
   selector: 'app-contact-form',
-  imports: [ReactiveFormsModule, IonButton, IonIcon, IonModal, IonSelect, IonSelectOption, RouterLink],
+  imports: [ReactiveFormsModule, IonButton, IonContent, IonIcon, IonModal, IonSelect, IonSelectOption, RouterLink],
   template: `
     <div class="contact-entry rb-ui" [attr.lang]="catalog.locale()">
       <p>{{ copy().subtitle }}</p>
@@ -28,6 +28,7 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
     <ion-modal class="rb-contact-modal" [isOpen]="open()" [backdropDismiss]="!sending()"
       [canDismiss]="!sending()" (didDismiss)="open.set(false)">
       <ng-template>
+        <ion-content class="contact-modal-content">
         <div class="contact-dialog rb-ui" [attr.lang]="catalog.locale()">
           <header class="form-heading">
             <div>
@@ -132,11 +133,13 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
             </div>
           </form>
         </div>
+        </ion-content>
       </ng-template>
     </ion-modal>
   `,
   styles: `
     :host { display: block; }
+    ion-content.contact-modal-content { --background: var(--paper); --color: var(--ink); }
     .contact-entry p { margin: 0 0 14px; }
     .open-form { border: 0; border-radius: 9px; min-height: 44px; padding: 9px 16px;
       font: inherit; color: var(--paper); background: var(--ink); cursor: pointer; }
