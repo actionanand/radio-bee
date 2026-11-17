@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { CatalogService } from '../catalog/catalog.service';
 import { SnackbarService } from '../shared/snackbar.service';
 import { ContactFormComponent } from './contact-form';
-import { CONTACT_FORM_SUBMIT } from './contact-google-form';
+import { CONTACT_FORM_SUBMIT, type ContactPayload } from './contact-google-form';
 
 describe('RadioBee contact modal', () => {
   afterEach(() => {
@@ -12,7 +12,7 @@ describe('RadioBee contact modal', () => {
     vi.restoreAllMocks();
   });
 
-  const setup = (submit = vi.fn(async () => undefined)) => {
+  const setup = (submit = vi.fn(async (_payload: ContactPayload) => undefined)) => {
     const locale = signal('en');
     const snackbar = { show: vi.fn() };
     TestBed.configureTestingModule({
