@@ -6,10 +6,11 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { CATALOG_URL } from '../catalog/catalog.service';
 import { radioBeeCopyright } from '../shared/copyright';
 import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
+import { ContactFormComponent } from '../contact/contact-form';
 
 @Component({
   selector: 'app-legal-page',
-  imports: [IonContent, IonIcon, NgTemplateOutlet, RouterLink],
+  imports: [IonContent, IonIcon, NgTemplateOutlet, RouterLink, ContactFormComponent],
   template: `
     @if (isV2) {
       <ng-container [ngTemplateOutlet]="body" />
@@ -31,27 +32,24 @@ import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
           <h1 tabindex="-1">{{ document.title }}</h1>
           <p class="introduction">{{ document.summary }}</p>
         </header>
-        @for (section of document.sections; track section.heading) {
-          <section>
-            <h2>{{ section.heading }}</h2>
-            @for (paragraph of section.paragraphs ?? []; track paragraph) {
-              <p>{{ paragraph }}</p>
-            }
-            @if (section.points?.length) {
-              <ul>
-                @for (point of section.points ?? []; track point) {
-                  <li>{{ point }}</li>
-                }
-              </ul>
-            }
-          </section>
-        }
         @if (pageId === 'contact') {
-          <p class="issues-note">Only use this public issue tracker for non-confidential reports. A private contact form is not yet available.</p>
-          <a class="issue-link" href="https://github.com/actionanand/radio-bee/issues/new" target="_blank" rel="noopener noreferrer">
-            Open RadioBee's public issue tracker
-            <span aria-hidden="true">↗</span>
-          </a>
+          <app-contact-form />
+        } @else {
+          @for (section of document.sections; track section.heading) {
+            <section>
+              <h2>{{ section.heading }}</h2>
+              @for (paragraph of section.paragraphs ?? []; track paragraph) {
+                <p>{{ paragraph }}</p>
+              }
+              @if (section.points?.length) {
+                <ul>
+                  @for (point of section.points ?? []; track point) {
+                    <li>{{ point }}</li>
+                  }
+                }
+              }
+            </section>
+          }
         }
         @if (!isV2) {
           <footer class="legal-end">
