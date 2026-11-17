@@ -73,12 +73,12 @@ import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
     .legal-page { max-width: 890px; margin: 0 auto; padding: 0 0 40px; line-height: 1.65; }
     .back-link {
       display: inline-flex; gap: 8px; min-height: 44px; align-items: center;
-      padding: 8px 12px; border: 1px solid var(--line); border-radius: 9px;
-      background: var(--surface); color: var(--ink); font: inherit;
+      padding: 0; border: 0; border-radius: 0;
+      background: transparent; box-shadow: none; color: var(--ink); font: inherit;
       font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
     }
     .back-link ion-icon { font-size: 18px; }
-    .back-link:hover { background: var(--panel); }
+    .back-link:hover { color: var(--accent-ink); }
     .back-link:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
     header { padding-bottom: 20px; margin-bottom: 26px; border-bottom: 1px solid var(--line); }
     .eyebrow { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
