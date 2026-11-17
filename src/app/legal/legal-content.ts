@@ -15,7 +15,7 @@ export interface LegalDocument {
 /**
  * Public-facing notices. These explain current application behavior but cannot
  * replace legal advice or verified operator contact details. Review when a
- * backend, analytics, advertising, or contact form is introduced.
+ * backend, analytics, advertising, or contact submission handling changes.
  */
 export const legalDocuments: Record<LegalPageId, LegalDocument> = {
   privacy: {
@@ -101,7 +101,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
       {
         heading: '12. Changes and contact',
         paragraphs: [
-          'This policy may be updated when the application changes or legal requirements develop. Material updates will be reflected on this page with a revised effective date. Consult the Contact Us page for the currently available reporting route and the status of the planned private contact form.',
+          'This policy may be updated when the application changes or legal requirements develop. Material updates will be reflected on this page with a revised effective date. Use the available RadioBee Contact Us form for questions or requests about this policy. The form sends entries through Google Forms; a browser submission does not verify delivery or receipt.',
         ],
       },
     ],
@@ -241,7 +241,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
           'The work, trademark, broadcast, or right at issue and a clear description of the concern.',
           'The legal or factual basis for your rights or authority to act, with non-confidential supporting details.',
           'The specific action requested: correction, removal, disabling of playback, or another appropriate remedy.',
-          'A way to follow up through a suitable private channel once one is available.',
+          'A contact email address for follow-up, and a request for an alternative secure channel if sensitive supporting material is required.',
         ],
       },
       {
@@ -288,7 +288,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
   contact: {
     title: 'Contact Us',
     summary:
-      'Questions, station corrections, broadcaster rights concerns or suggestions? Use the RadioBee contact form to share your inquiry with our team.',
+      'Questions, station corrections, broadcaster rights concerns or suggestions? Choose a topic below to send a message to RadioBee.',
     sections: [
       {
         heading: 'Contact RadioBee',
