@@ -21,6 +21,12 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     context = await bridge.browser.newContext({ locale: 'en-US' }),
     page = await context.newPage(),
     report = { browser: bridge.browser.version(), base, errors: [], samples: [], scenarios: [] };
+  page.on('dialog', async dialog => {
+    // Interactive manual UI tests explicitly approve these destructive actions.
+    report.confirmations = report.confirmations || [];
+    report.confirmations.push({ type: dialog.type(), message: dialog.message() });
+    await dialog.accept();
+  });
   page.on('pageerror', e => report.errors.push(String(e)));
   await context.addInitScript(() => {
     window.__mediaTrace = [];
