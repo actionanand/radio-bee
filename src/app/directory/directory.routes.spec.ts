@@ -206,6 +206,33 @@ describe('Routable v2 directory', () => {
     expect(save().disabled).toBe(false);
   });
 
+  it('navigates to the four legal pages from the small footer links', async () => {
+    setup();
+    const h = await RouterTestingHarness.create('/home');
+    const links = [...element(h).querySelectorAll<HTMLAnchorElement>('.directory-shell footer .footer-policies a')];
+    expect(links.map(link => link.getAttribute('href'))).toEqual([
+      '/privacy',
+      '/terms',
+      '/copyright-policy',
+      '/contact',
+    ]);
+    for (const [url, heading] of [
+      ['/privacy', 'Privacy Policy'],
+      ['/terms', 'Terms & Conditions'],
+      ['/copyright-policy', 'Copyright & Removal Policy'],
+      ['/contact', 'Contact Us'],
+    ]) {
+      await h.navigateByUrl(url);
+      h.detectChanges();
+      expect(element(h).querySelector('app-legal-page h1')?.textContent).toBe(heading);
+      expect(element(h).querySelectorAll('.directory-shell footer .footer-policies')).toHaveLength(1);
+      expect(element(h).querySelectorAll('app-legal-page .legal-end')).toHaveLength(0);
+    }
+    const issueLink = element(h).querySelector<HTMLAnchorElement>('app-legal-page .issue-link');
+    expect(issueLink?.href).toBe('https://github.com/actionanand/radio-bee/issues/new');
+    expect(issueLink?.getAttribute('rel')).toContain('noopener');
+  });
+
   it('localizes tuner and footer taglines when UI language changes', async () => {
     const { data } = setup();
     const h = await RouterTestingHarness.create('/home');
