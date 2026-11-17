@@ -1,0 +1,1 @@
+function s(t=(/* @__PURE__ */ new Date()).getFullYear()){let r=Number.isFinite(t)?Math.max(2026,Math.trunc(t)):2026;return`\xA9 ${r===2026?String(2026):`2026 - ${r}`} RadioBee. All rights reserved.`}export{s as t};
