@@ -35,6 +35,7 @@ function setup(
   maxDurationMs = 3_600_000,
   maxBytes = 80 * 1024 * 1024,
 ) {
+  vi.spyOn(window, 'confirm').mockReturnValue(true);
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -345,6 +346,86 @@ describe('Configured recording and explicit source policy', () => {
     expect(root.querySelector('.recording-panel')?.querySelector('button')?.textContent).not.toContain('Export');
     expect(root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')?.disabled).toBe(true);
     expect(view.componentInstance.recorder.file()).toBe(draft);
+    view.destroy();
+  });
+
+  it('requires confirmation before discarding an active recording or a completed draft', async () => {
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const recorder = view.componentInstance.recorder;
+    await recorder.start(true);
+    s.hooks().progress(3, true);
+    const root = view.nativeElement as HTMLElement;
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const discardButton = () => root.querySelector<HTMLButtonElement>('.recording-panel .secondary-action')!;
+    expect(discardButton().querySelector('ion-icon')?.getAttribute('aria-hidden')).toBe('true');
+    const confirm = vi.mocked(window.confirm);
+    confirm.mockReturnValueOnce(false);
+    discardButton().click();
+    view.detectChanges();
+    expect(recorder.state()).toBe('recording');
+    expect(s.stop).not.toHaveBeenCalled();
+    expect(root.querySelector('.recording-panel')).not.toBeNull();
+    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('Discard this recording?'));
+    discardButton().click();
+    view.detectChanges();
+    expect(recorder.state()).toBe('idle');
+    expect(s.stop).toHaveBeenCalledWith(true);
+    expect(root.querySelector('.recording-panel')).toBeNull();
+
+    // The same confirmation also protects unsaved audio after Stop.
+    await recorder.start(true);
+    const draft = new Blob(['audio draft']);
+    s.hooks().finished(draft, 'manual');
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    confirm.mockReturnValueOnce(false);
+    discardButton().click();
+    expect(recorder.file()).toBe(draft);
+    discardButton().click();
+    expect(recorder.file()).toBeNull();
+    view.destroy();
+  });
+
+  it('blocks station switching during recording until approved, then preserves captured audio', async () => {
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const recorder = view.componentInstance.recorder;
+    await recorder.start(true);
+    s.hooks().progress(8, true);
+    const confirm = vi.mocked(window.confirm);
+    confirm.mockReturnValueOnce(false);
+    await s.player.play(s.other);
+    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('Switch stations?'));
+    expect(s.player.station()?.id).toBe(s.station.id);
+    expect(recorder.state()).toBe('recording');
+    expect(s.stop).not.toHaveBeenCalled();
+
+    await s.player.toggle(s.other);
+    expect(s.player.station()?.id).toBe(s.other.id);
+    expect(s.stop).toHaveBeenCalledOnce();
+    expect(recorder.state()).toBe('stopping');
+    const saved = new Blob(['captured audio'], { type: 'audio/webm' });
+    s.hooks().finished(saved, 'manual');
+    expect(recorder.file()).toBe(saved);
+    view.destroy();
+  });
+
+  it('does not request station-switch confirmation when no capture is active', async () => {
+    const s = setup();
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    await s.player.play(s.other);
+    expect(window.confirm).not.toHaveBeenCalled();
+    expect(s.player.station()?.id).toBe(s.other.id);
     view.destroy();
   });
 
