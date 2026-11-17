@@ -172,14 +172,17 @@ export class RecordingService implements OnDestroy {
       /* No background capture is promised on unsupported native platforms. */
     }
   }
-  async start(acknowledged: boolean) {
+  async start(
+    acknowledged: boolean,
+    options: { promptFirstFolder?: boolean; replaceDraft?: boolean } = {},
+  ) {
     const source = this.player.captureSource();
     if (
       !this.config.Enabled ||
       !source ||
       this.destroyed ||
       ['preparing', 'starting', 'recording', 'stopping', 'exporting'].includes(this.state()) ||
-      !!this.file()
+      (!!this.file() && !options.replaceDraft)
     )
       return;
     const permission = recordingPermission(source.stream, this.config.AllowProhibitedRecording === true);
@@ -192,18 +195,30 @@ export class RecordingService implements OnDestroy {
     const request = ++this.generation;
     this.state.set('preparing');
     this.trace('start');
+    const folderRequired = this.destination.requiresSelection || this.config.AutoContinue === true;
+    // Only a deliberate V2 Start gesture opens the folder picker. A previously
+    // chosen folder is managed in Settings; never replace it silently.
+    const firstFolder = folderRequired &&
+      options.promptFirstFolder === true &&
+      this.catalog.catalog()?.manifest.schemaVersion === 2 &&
+      !this.destination.selected() && !this.destination.name();
     let folderReady = true;
     try {
-      if (this.destination.requiresSelection || this.config.AutoContinue === true)
-        folderReady = await this.destination.hasAccess();
+      if (folderRequired) {
+        // First use must call the picker before the first await in this path.
+        // Chrome requires transient user activation for showDirectoryPicker().
+        folderReady = firstFolder
+          ? await this.destination.chooseFolder()
+          : await this.destination.hasAccess();
+      }
     } catch {
       folderReady = false;
     }
     if (request !== this.generation || this.destroyed || this.state() !== 'preparing') return;
     if (!folderReady) {
-      this.state.set('idle');
-      this.message.set('recordingFolderRequired');
-      void this.router?.navigate(['/settings']);
+      this.state.set(this.file() ? 'ready' : 'idle');
+      this.message.set(firstFolder ? 'recordingFolderFirstUse' : 'recordingFolderRequired');
+      if (!firstFolder) void this.router?.navigate(['/settings']);
       return;
     }
     this.discard();
