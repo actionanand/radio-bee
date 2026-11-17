@@ -333,7 +333,7 @@ describe('Configured recording and explicit source policy', () => {
     expect(root.querySelector('.recording-panel')?.textContent).not.toContain('Export recording');
     expect(root.querySelector('.recording-panel')?.querySelector('button')?.textContent).not.toContain('Export');
     expect(root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')?.disabled).toBe(true);
-    expect(TestBed.inject(RecordingService).file()).toBe(draft);
+    expect(view.componentInstance.recorder.file()).toBe(draft);
     view.destroy();
   });
 
@@ -341,11 +341,12 @@ describe('Configured recording and explicit source policy', () => {
     const s = setup();
     s.c.manifest.schemaVersion = 2;
     await playing(s);
-    const recorder = TestBed.inject(RecordingService);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const recorder = view.componentInstance.recorder;
     await recorder.start(true);
     const draft = new Blob(['genuine station audio'], { type: 'audio/webm' });
     s.hooks().finished(draft, 'manual');
-    const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
     const root = view.nativeElement as HTMLElement;
     root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
