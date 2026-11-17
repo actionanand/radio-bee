@@ -1,5 +1,5 @@
 import { Component, DestroyRef, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
-import { IonIcon } from '@ionic/angular';
+import { IonIcon, IonSpinner } from '@ionic/angular';
 import { RecordingService } from './recording.service';
 import { RecordingDestination } from './recording-destination';
 import { PlayerService } from '../player/player.service';
@@ -10,7 +10,7 @@ import { RecordingDurationPipe } from './recording-duration.pipe';
 import { RecordingConfirmationComponent } from './recording-confirmation';
 @Component({
   selector: 'app-recording-controls',
-  imports: [IonIcon, RecordingDurationPipe, RecordingConfirmationComponent],
+  imports: [IonIcon, IonSpinner, RecordingDurationPipe, RecordingConfirmationComponent],
   host: { '(document:pointerdown)': 'outsidePointer($event)' },
   providers: [RecordingService],
   template: `
@@ -42,6 +42,12 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
               <ion-icon [icon]="icons.stop" aria-hidden="true" />
               {{ ui('stopRecording') }}
             </button>
+          }
+          @if (recorder.state() === 'exporting') {
+            <span class="recording-export-progress" role="status" aria-live="polite">
+              <ion-spinner name="crescent" aria-hidden="true" />
+              {{ savingText() }}
+            </span>
           }
           @if (recorder.file()) {
             <button
@@ -174,6 +180,15 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
     .recording-toggle { border-color: var(--accent-ink); }
     .recording-toggle ion-icon { color: var(--accent-ink); }
     .recording-time { font-size: 11px; font-variant-numeric: tabular-nums; }
+    .recording-export-progress {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--accent-ink); font-size: 12px; font-weight: 700;
+      max-width: 100%; min-height: 44px;
+    }
+    .recording-export-progress ion-spinner { width: 21px; height: 21px; flex: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .recording-export-progress ion-spinner { --animation-duration: 0s; }
+    }
     .recording-chevron { font-size: 15px; transition: transform .15s ease; }
     .recording-chevron.open { transform: rotate(180deg); }
     .recording-panel {
@@ -243,6 +258,12 @@ export class RecordingControlsComponent {
       this.acknowledged.set(false);
       this.confirmReplace.set(false);
     });
+  }
+  savingText() {
+    const locale = this.catalog.locale();
+    return locale === 'ta' ? 'பதிவு மாற்றப்பட்டுச் சேமிக்கப்படுகிறது…'
+      : locale === 'sa' ? 'मुद्रणं रूपान्तर्य सञ्चीयते…'
+      : 'Converting / saving recording…';
   }
   ui(key: UiKey) {
     return uiLabel(this.catalog.locale(), key);
