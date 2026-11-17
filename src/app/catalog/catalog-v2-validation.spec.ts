@@ -18,6 +18,23 @@ describe('Strict v2 snapshot validation', () => {
     expect(catalog.stations.flatMap(s => s.streams)).toHaveLength(74);
     expect(JSON.stringify(snapshot)).toBe(before);
   });
+  it('accepts the three reviewed HTTP candidates while rejecting arbitrary HTTP', () => {
+    for (const allowed of [
+      'http://media2.lankasri.fm/;stream.mp3',
+      'http://s2.voscast.com:9370/;',
+      'http://117.241.19.61:88/broadwave.mp3',
+    ]) {
+      const snapshot = structuredClone(v2Fixture) as Snapshot;
+      rows(snapshot, 'stations')[0]['streams'] &&
+        (rows(snapshot, 'stations')[0]['streams'] as Record<string, unknown>[])[0] &&
+        ((rows(snapshot, 'stations')[0]['streams'] as Record<string, unknown>[])[0]['url'] = allowed);
+      expect(() => validateV2(snapshot)).not.toThrow();
+    }
+    const snapshot = structuredClone(v2Fixture) as Snapshot;
+    (rows(snapshot, 'stations')[0]['streams'] as Record<string, unknown>[])[0]['url'] = 'http://unknown.example.org/live';
+    expect(() => validateV2(snapshot)).toThrow(/permitted stream URL/);
+  });
+
   it('does not reject a healthy catalogue because optional artwork uses an unrecognized host', () => {
     const snapshot = structuredClone(v2Fixture) as Snapshot;
     rows(snapshot, 'networks')[0]['logoUrl'] = 'https://new-publisher.example/logo.png';
