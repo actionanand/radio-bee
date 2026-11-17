@@ -117,7 +117,7 @@ describe('Routable v2 directory', () => {
     expect(host().querySelector('app-settings-page h1')?.textContent?.trim()).toBe('Settings');
     expect(host().querySelector('[data-control=settings-locale] ion-select')).not.toBeNull();
     expect(host().querySelector('[data-control=settings-theme] ion-select')).not.toBeNull();
-    expect(host().querySelectorAll('.preferences app-directory-select')).toHaveLength(2);
+    expect(host().querySelectorAll('.setting-card:first-of-type .preferences app-directory-select')).toHaveLength(2);
     const contact = host().querySelector<HTMLButtonElement>('.support-card .support-button')!;
     expect(contact?.textContent?.trim()).toBe('Contact Us');
     expect(contact.getAttribute('aria-haspopup')).toBe('dialog');
