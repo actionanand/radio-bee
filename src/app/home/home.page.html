@@ -20,6 +20,11 @@
     <div class="site-footer">
       <strong>RadioBee<span class="brand-dash">-</span></strong>
       <p>{{ ui('tagline') }}</p>
+      <nav class="footer-policies" aria-label="Legal and contact information">
+        @for (link of legalLinks; track link.path) {
+          <a [routerLink]="link.path">{{ link.label }}</a>
+        }
+      </nav>
       <span>{{ copyright }}</span>
     </div>
   </div></ion-content
