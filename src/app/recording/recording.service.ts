@@ -451,7 +451,7 @@ export class RecordingService implements OnDestroy {
   private async saveAutomatic(blob: Blob, generation: number, dueToLimit: boolean): Promise<void> {
     try {
       const outcome = Capacitor.getPlatform() === 'android'
-        ? await this.destination.save(blob, recordingFilename(this.name, blob.type), true, this.name)
+        ? await this.destination.save(blob, recordingFilename(this.name, blob.type), true, this.name, true)
         : await this.destination.save(blob, recordingFilename(this.name, blob.type), true);
       if (outcome === 'fallback') this.conversionFallback();
       if (generation !== this.generation || this.destroyed) return;
@@ -481,12 +481,16 @@ export class RecordingService implements OnDestroy {
     if (!file || this.state() === 'exporting') return;
     this.state.set('exporting');
     const generation = this.generation;
+    let fellBack = false;
     try {
       if (this.destination.requiresSelection || this.destination.selected()) {
         const outcome = Capacitor.getPlatform() === 'android'
           ? await this.destination.save(file, recordingFilename(this.name, file.type), false, this.name)
           : await this.destination.save(file, recordingFilename(this.name, file.type));
-        if (outcome === 'fallback') this.conversionFallback();
+        if (outcome === 'fallback') {
+          fellBack = true;
+          this.conversionFallback();
+        }
       } else {
         await this.exporter.save(file, recordingFilename(this.name, file.type));
       }
@@ -497,7 +501,7 @@ export class RecordingService implements OnDestroy {
         this.state.set('idle');
         this.message.set(null);
         this.seconds.set(0);
-        this.snackbar.show({ kind: 'localized', key: 'recordingExported' }, 'success');
+        if (!fellBack) this.snackbar.show({ kind: 'localized', key: 'recordingExported' }, 'success');
       }
     } catch {
       if (generation === this.generation && !this.destroyed && this.file() === file) {
