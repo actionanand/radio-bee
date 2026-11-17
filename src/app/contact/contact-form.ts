@@ -190,7 +190,7 @@ export class ContactFormComponent {
   readonly closeIcon = closeOutline;
   readonly sendIcon = sendOutline;
   readonly form = inject(FormBuilder).nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(120)]],
+    name: ['', [Validators.required, Validators.pattern(/.*\\S.*/), Validators.maxLength(120)]],
     email: ['', [Validators.required, Validators.email]],
     phone: [''],
     purpose: [defaultContactPurpose, Validators.required],
@@ -216,10 +216,17 @@ export class ContactFormComponent {
     this.sending.set(true);
     this.snackbar.show({ kind: 'text', message: this.copy().sending }, 'info', 30000);
     // Consent is enforced in the Angular form; Google Forms has no field for it.
-    const { consent: _consent, ...data } = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const data: ContactPayload = {
+      name: raw.name, email: raw.email, phone: raw.phone, purpose: raw.purpose,
+      stationName: raw.stationName, streamUrl: raw.streamUrl, stationWebsite: raw.stationWebsite,
+      frequency: raw.frequency, country: raw.country, city: raw.city,
+      language: raw.language, description: raw.description,
+    };
     try {
-      await this.submit(data as ContactPayload);
+      await this.submit(data);
       this.snackbar.show({ kind: 'text', message: this.copy().sent }, 'success', 6500);
+      this.sending.set(false);
       this.open.set(false);
       this.form.reset({ purpose: defaultContactPurpose, consent: false });
       this.attempted.set(false);
