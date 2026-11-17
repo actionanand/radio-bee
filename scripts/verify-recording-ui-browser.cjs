@@ -44,6 +44,12 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     exportDestination: 'Real OPFS test directory; chooser automation only, not OS folder-picker validation',
   };
   const assetTasks = [];
+  page.on('dialog', async dialog => {
+    // Interactive manual UI tests explicitly approve these destructive actions.
+    report.confirmations = report.confirmations || [];
+    report.confirmations.push({ type: dialog.type(), message: dialog.message() });
+    await dialog.accept();
+  });
   page.on('pageerror', e => report.errors.push(String(e)));
   page.on('response', r => {
     if (r.url().includes('lotustechnologies'))
