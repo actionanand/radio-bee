@@ -112,10 +112,14 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     );
   };
   const exportFile = async name => {
+    const expected = await page.evaluate(() => window.__services.r.file().size);
     await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
-    await page.waitForFunction(() => window.__services.r.message() === 'recordingExported');
-    const file = await page.evaluate(async () => {
-      const expected = window.__services.r.file().size;
+    await page.waitForFunction(() =>
+      window.__services.r.file() === null &&
+      document.querySelector('app-snackbar .message')?.textContent?.includes('Export opened on this device.'),
+    );
+    assert.equal(await page.locator('.recording-launcher').getByText('Export recording').count(), 0);
+    const file = await page.evaluate(async expected => {
       for await (const [name, h] of window.__dir.entries()) {
         const f = await h.getFile();
         if (f.size !== expected) continue;
@@ -139,7 +143,7 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
           await ctx.close();
         }
       }
-    });
+    }, expected);
     assert.ok(file && file.rms >= 0.001 && file.peak >= 0.01);
     const bytes = Buffer.from(file.base64, 'base64');
     delete file.base64;
