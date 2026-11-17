@@ -258,8 +258,7 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     report.export = await exportFile('sooriyan-three-minute');
     assert.ok(report.export.duration >= duration - 1);
     report.scenarios.push('Pause retains and Export decodes the requested duration of real non-silent radio');
-    if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
-    await page.locator('.recording-panel button').filter({ hasText: 'Discard' }).click();
+    // Successful Export already releases the old draft and removes the dock action.
     await page.locator('app-player > section').getByRole('button', { name: /^Play/ }).click();
     await waitPlaying();
     await start();
@@ -311,8 +310,7 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     }
     if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
     report.recoveryExport = await exportFile('sooriyan-recovery-draft');
-    if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
-    await page.locator('.recording-panel button').filter({ hasText: 'Discard' }).click();
+    // No explicit Discard is necessary after a successful Export.
     await start();
     await page.waitForFunction(() => window.__services.r.seconds() >= 3);
     await page.locator('app-player > section').getByRole('button', { name: /^Stop/ }).click();
