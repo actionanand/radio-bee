@@ -304,7 +304,9 @@ const base = process.env.APP_URL || 'http://localhost:36803';
     await waitSeconds(3);
     assert.equal(await page.locator('.recording-panel').count(), 0);
     assert.equal(await page.evaluate(() => window.__diag.recorders.length), before + 1);
-    await play('sooriyan-srilanka');
+    const switching = play('sooriyan-srilanka');
+    await page.locator('ion-modal.recording-confirmation-modal ion-button').last().click();
+    await switching;
     await page.waitForFunction(
       () => ng.getComponent(document.querySelector('app-recording-controls')).recorder.state() === 'ready',
     );
