@@ -67,6 +67,9 @@ function setup(
         useValue: {
           requiresSelection: false,
           selected: signal(autoContinue),
+          name: signal(autoContinue ? 'radio-bee' : ''),
+          ready: signal(true),
+          chooseFolder: vi.fn(async () => true),
           hasAccess: async () => true,
           save: folderSave,
         },
@@ -300,6 +303,147 @@ describe('Configured recording and explicit source policy', () => {
     );
     view.destroy();
   });
+  it('collapses V2 controls after Start and exposes Export only in the bottom dock', async () => {
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const root = view.nativeElement as HTMLElement;
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const consent = root.querySelector<HTMLInputElement>('.consent input')!;
+    consent.checked = true;
+    consent.dispatchEvent(new Event('change'));
+    view.detectChanges();
+    root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    view.detectChanges();
+    expect(root.querySelector('.recording-panel')).toBeNull();
+    expect(s.create).toHaveBeenCalledOnce();
+    s.hooks().progress(4, true);
+    s.player.pause();
+    const draft = new Blob(['previous audio'], { type: 'audio/webm' });
+    s.hooks().finished(draft, 'manual');
+    view.detectChanges();
+    expect(root.querySelectorAll('.recording-launcher .quick-action')).toHaveLength(1);
+    expect(root.querySelector('.recording-launcher')?.textContent).toContain('Export recording');
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    expect(root.querySelector('.recording-panel')?.textContent).toContain('Start recording');
+    expect(root.querySelector('.recording-panel')?.textContent).not.toContain('Export recording');
+    expect(root.querySelector('.recording-panel')?.querySelector('button')?.textContent).not.toContain('Export');
+    expect(root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')?.disabled).toBe(true);
+    expect(TestBed.inject(RecordingService).file()).toBe(draft);
+    view.destroy();
+  });
+
+  it('requires explicit confirmation before replacing a previous draft', async () => {
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    await recorder.start(true);
+    const draft = new Blob(['genuine station audio'], { type: 'audio/webm' });
+    s.hooks().finished(draft, 'manual');
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const root = view.nativeElement as HTMLElement;
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const consent = root.querySelector<HTMLInputElement>('.consent input')!;
+    consent.checked = true;
+    consent.dispatchEvent(new Event('change'));
+    view.detectChanges();
+    root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    view.detectChanges();
+    expect(root.querySelector('.recording-panel')?.textContent).toContain('Starting a new recording');
+    expect(recorder.file()).toBe(draft);
+    expect(s.create).toHaveBeenCalledOnce();
+    root.querySelector<HTMLButtonElement>('.recording-panel .secondary-action')!.click();
+    view.detectChanges();
+    expect(recorder.file()).toBe(draft);
+    root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    view.detectChanges();
+    root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    await view.whenStable();
+    expect(s.create).toHaveBeenCalledTimes(2);
+    expect(recorder.file()).toBeNull();
+    expect(root.querySelector('.recording-panel')).toBeNull();
+    view.destroy();
+  });
+
+  it('opens the first V2 recording folder picker from Start, without navigating to Settings', async () => {
+    const s = setup(true, false, true);
+    s.c.manifest.schemaVersion = 2;
+    const folder = TestBed.inject(RecordingDestination);
+    folder.selected.set(false);
+    folder.name.set('');
+    const choose = vi.spyOn(folder, 'chooseFolder').mockImplementation(async () => {
+      folder.selected.set(true);
+      folder.name.set('first-recordings');
+      return true;
+    });
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const root = view.nativeElement as HTMLElement;
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const consent = root.querySelector<HTMLInputElement>('.consent input')!;
+    consent.checked = true;
+    consent.dispatchEvent(new Event('change'));
+    view.detectChanges();
+    root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    await view.whenStable();
+    expect(choose).toHaveBeenCalledOnce();
+    expect(s.create).toHaveBeenCalledOnce();
+    expect(TestBed.inject(Router).navigate).not.toHaveBeenCalled();
+    expect(root.querySelector('.recording-panel')).toBeNull();
+    view.destroy();
+  });
+
+  it('keeps first-use cancellation in the recording panel without a Settings redirect', async () => {
+    const s = setup(true, false, true);
+    s.c.manifest.schemaVersion = 2;
+    const folder = TestBed.inject(RecordingDestination);
+    folder.selected.set(false);
+    folder.name.set('');
+    vi.spyOn(folder, 'chooseFolder').mockResolvedValue(false);
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const root = view.nativeElement as HTMLElement;
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    const consent = root.querySelector<HTMLInputElement>('.consent input')!;
+    consent.checked = true;
+    consent.dispatchEvent(new Event('change'));
+    view.detectChanges();
+    root.querySelector<HTMLButtonElement>('.recording-panel .primary-action')!.click();
+    await view.whenStable();
+    view.detectChanges();
+    expect(TestBed.inject(Router).navigate).not.toHaveBeenCalled();
+    expect(root.querySelector('.recording-panel')?.textContent).toContain('Choose a recording folder');
+    expect(s.create).not.toHaveBeenCalled();
+    view.destroy();
+  });
+
+  it('does not replace a revoked prior folder from Start', async () => {
+    const s = setup(true, false, true);
+    s.c.manifest.schemaVersion = 2;
+    const folder = TestBed.inject(RecordingDestination);
+    folder.selected.set(false);
+    folder.name.set('previous-folder');
+    vi.spyOn(folder, 'hasAccess').mockResolvedValue(false);
+    const chooser = vi.spyOn(folder, 'chooseFolder');
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    await recorder.start(true, { promptFirstFolder: true });
+    expect(chooser).not.toHaveBeenCalled();
+    expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/settings']);
+    expect(recorder.message()).toBe('recordingFolderRequired');
+  });
+
   it('keeps manual stops exportable instead of auto-saving them in continuation mode', async () => {
     const s = setup(true, false, true);
     await playing(s);
