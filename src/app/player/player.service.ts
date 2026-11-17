@@ -72,6 +72,7 @@ export class PlayerService implements OnDestroy {
   private readonly outcomes = signal<ReadonlyMap<string, 'playing' | 'failed'>>(new Map());
   private readonly selectedStream = signal<Stream | null>(null);
   private readonly playbackBoundaries = new Set<(reason: PlaybackBoundary) => void>();
+  private readonly stationSwitchGuards = new Set<(next: Station) => boolean | Promise<boolean>>();
   readonly captureSource = computed(() => {
     const station = this.station(),
       selected = this.selectedStream();
@@ -81,6 +82,11 @@ export class PlayerService implements OnDestroy {
       ? { station: current, stream, audio: this.engine.audio }
       : null;
   });
+  /** Intercept explicit station changes before any playback or capture state changes. */
+  onStationSwitchRequest(callback: (next: Station) => boolean | Promise<boolean>) {
+    this.stationSwitchGuards.add(callback);
+    return () => this.stationSwitchGuards.delete(callback);
+  }
   onPlaybackBoundary(callback: (reason: PlaybackBoundary) => void) {
     this.playbackBoundaries.add(callback);
     return () => this.playbackBoundaries.delete(callback);
@@ -281,6 +287,16 @@ export class PlayerService implements OnDestroy {
     // Restoration updates the current audio element when the value becomes available.
     const station = this.current(id);
     if (!station || !this.engine || !this.candidates(station, technical, pinned).length) return;
+    const previousId = this.station()?.id;
+    if (previousId && previousId !== id) {
+      for (const guard of [...this.stationSwitchGuards]) {
+        // A synchronous approval must not delay ordinary station changes.
+        const decision = guard(station);
+        if (decision === false || (decision !== true && !(await decision))) return;
+        // Do not apply an outdated approval if another action changed the player.
+        if (this.station()?.id !== previousId) return;
+      }
+    }
     ++this.attempt;
     this.clearTimer();
     this.attempted = new Map();
