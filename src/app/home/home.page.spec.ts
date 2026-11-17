@@ -52,6 +52,9 @@ describe('HomePage', () => {
     data.locale.set('sa');
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('सदा शृणुत। मधुरं गुञ्जत।');
+    expect(fixture.nativeElement.querySelector('.site-footer > span')?.textContent).toBe(
+      `© 2026${new Date().getFullYear() > 2026 ? '–' + new Date().getFullYear() : ''} RadioBee. All rights reserved.`,
+    );
     expect(fixture.nativeElement.querySelector('app-station-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('audio')).toBeNull();
   });
