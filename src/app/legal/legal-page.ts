@@ -48,7 +48,6 @@ import { ContactFormComponent } from '../contact/contact-form';
                   }
                 </ul>
               }
-              }
             </section>
           }
         }
