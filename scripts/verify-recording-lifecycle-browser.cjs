@@ -112,10 +112,8 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     );
   };
   const exportFile = async name => {
-    await page.locator('.recording-panel .primary-action').filter({ hasText: 'Export recording' }).click();
-    await page.waitForFunction(() =>
-      document.querySelector('.recording-panel')?.textContent.includes('Export opened on this device.'),
-    );
+    await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
+    await page.waitForFunction(() => window.__services.r.message() === 'recordingExported');
     const file = await page.evaluate(async () => {
       const expected = window.__services.r.file().size;
       for await (const [name, h] of window.__dir.entries()) {
@@ -256,6 +254,7 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     report.export = await exportFile('sooriyan-three-minute');
     assert.ok(report.export.duration >= duration - 1);
     report.scenarios.push('Pause retains and Export decodes the requested duration of real non-silent radio');
+    if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
     await page.locator('.recording-panel button').filter({ hasText: 'Discard' }).click();
     await page.locator('app-player > section').getByRole('button', { name: /^Play/ }).click();
     await waitPlaying();
@@ -308,6 +307,7 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     }
     if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
     report.recoveryExport = await exportFile('sooriyan-recovery-draft');
+    if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
     await page.locator('.recording-panel button').filter({ hasText: 'Discard' }).click();
     await start();
     await page.waitForFunction(() => window.__services.r.seconds() >= 3);
@@ -315,6 +315,7 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
     await page.waitForFunction(() => window.__services.r.state() === 'ready');
     assert.ok((await sample()).bytes > 256);
     report.scenarios.push('Player Stop retains genuine draft');
+    if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
     await page.locator('.recording-panel button').filter({ hasText: 'Discard' }).click();
     await page.getByRole('link', { name: 'World', exact: true }).first().click();
     await page.locator('[data-station-id=sooriyan-srilanka] .play').click();
@@ -335,13 +336,15 @@ assert.ok(Number.isFinite(duration) && duration >= 45 && duration % 5 === 0);
       'Controlled transient media-error event: real playback automatically reconnects, existing recording remains an exportable draft',
     );
     await page.locator('app-player > section').getByRole('button', { name: /^Stop/ }).click();
+    if (!(await page.locator('.recording-panel').isVisible())) await page.locator('.recording-toggle').click();
     await page.locator('.recording-panel button').filter({ hasText: 'Discard' }).click();
     await page.getByRole('link', { name: 'World', exact: true }).first().click();
     await page.locator('[data-station-id=sooriyan-srilanka] .play').click();
     await waitPlaying();
     await start();
     await page.waitForFunction(() => window.__services.r.seconds() >= 3);
-    await page.locator('.recording-panel').getByRole('button', { name: 'Close', exact: true }).click();
+    if (await page.locator('.recording-panel').isVisible())
+      await page.locator('.recording-panel').getByRole('button', { name: 'Close', exact: true }).click();
     await page.locator('[data-station-id=vasantham-srilanka] .play').click();
     await page.waitForFunction(() => window.__services.r.state() === 'ready');
     assert.ok((await sample()).bytes > 256);
