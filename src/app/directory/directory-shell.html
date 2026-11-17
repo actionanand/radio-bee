@@ -20,13 +20,15 @@
           <ion-icon [icon]="icons.menuOutline" aria-hidden="true" /></button
         ><a routerLink="/home">RadioBee</a>
       </div>
-      <div class="tools">
-        <form (submit)="search($event)">
-          <label>{{text('search')}}<input type="search" [value]="query()" (input)="searchInput($event)" /></label
-          ><button type="submit" [attr.aria-label]="text('search')">
-            <ion-icon [icon]="icons.searchOutline" aria-hidden="true" />
-          </button>
-        </form>
+      <div class="tools" [class.legal-tools]="legalPage()">
+        @if (!legalPage()) {
+          <form (submit)="search($event)">
+            <label>{{text('search')}}<input type="search" [value]="query()" (input)="searchInput($event)" /></label
+            ><button type="submit" [attr.aria-label]="text('search')">
+              <ion-icon [icon]="icons.searchOutline" aria-hidden="true" />
+            </button>
+          </form>
+        }
         <app-directory-select
           data-control="locale"
           [label]="text('uiLanguage')"
