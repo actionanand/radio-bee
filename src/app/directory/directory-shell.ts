@@ -58,6 +58,7 @@ export class DirectoryShellComponent {
   readonly favorites = inject(FavoritesService);
   readonly copyright = radioBeeCopyright();
   readonly legalLinks = legalLinks;
+  readonly legalPage = signal(false);
   readonly theme = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -107,6 +108,7 @@ export class DirectoryShellComponent {
       if (!(event instanceof NavigationEnd)) return;
       const path = event.urlAfterRedirects.split('?')[0],
         position = this.restored === undefined ? undefined : this.positions.get(this.restored);
+      this.legalPage.set(legalLinks.some(link => link.path === path));
       if (position !== undefined) this.cursor = position;
       else if (this.cursor < 0 || path !== this.lastPath) {
         this.entries = this.entries.slice(0, this.cursor + 1);
