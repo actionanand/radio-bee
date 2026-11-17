@@ -125,6 +125,9 @@ footer {
   border-top: 1px solid var(--line);
   font-size: 12px;
 }
+footer .footer-policies { display: flex; flex-wrap: wrap; gap: 5px 12px; align-items: center; }
+footer .footer-policies a { font-size: 11px; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+footer .footer-policies a:hover { color: var(--accent-ink); }
 .mobile-brand {
   display: none;
 }
