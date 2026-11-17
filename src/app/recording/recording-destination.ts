@@ -29,7 +29,9 @@ export class RecordingDestination {
   private readonly recording = inject(RADIO_RECORDING);
   readonly selected = signal(false);
   readonly name = signal('');
-  readonly loaded = this.recording.Enabled ? this.restore() : Promise.resolve();
+  readonly ready = signal(false);
+  readonly loaded = (this.recording.Enabled ? this.restore() : Promise.resolve())
+    .finally(() => this.ready.set(true));
   private directory: FolderHandle | undefined;
 
   get requiresSelection(): boolean {
