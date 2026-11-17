@@ -1,4 +1,5 @@
 import { Station, Stream, Source } from './catalog.models';
+import { allowedStreamUrl } from './stream-url-policy';
 import { environment } from '../../environments/environment';
 import { RadioApiConfig } from '../../environments/radio-api.config';
 
@@ -72,7 +73,7 @@ function streamStatus(stream: Stream, player: PlayerCapabilities, policy: RadioA
     return 'permissionPending';
   try {
     const url = new URL(stream.url);
-    if (url.protocol !== 'https:' || url.username || url.password || !url.hostname) return 'invalidStream';
+    if (!allowedStreamUrl(stream.url)) return 'invalidStream';
   } catch {
     return 'invalidStream';
   }
