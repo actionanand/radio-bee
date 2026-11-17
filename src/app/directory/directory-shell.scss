@@ -37,11 +37,15 @@
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
-.tools {
+ .tools {
   display: grid;
   grid-template-columns: minmax(150px, 1fr) 150px 150px;
   gap: 12px;
   align-items: end;
+}
+.tools.legal-tools {
+  grid-template-columns: repeat(2, minmax(140px, 150px));
+  justify-content: end;
 }
 form {
   display: flex;
@@ -126,7 +130,7 @@ footer {
   font-size: 12px;
 }
 footer .footer-policies { display: flex; flex-wrap: wrap; gap: 5px 12px; align-items: center; }
-footer .footer-policies a { font-size: 11px; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+footer .footer-policies a { font-size: 11px; color: var(--muted); text-decoration: none; }
 footer .footer-policies a:hover { color: var(--accent-ink); }
 .mobile-brand {
   display: none;
@@ -190,6 +194,9 @@ dialog::backdrop {
   .tools {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+  }
+  .tools.legal-tools {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .tools form {
     grid-column: 1/-1;
