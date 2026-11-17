@@ -12,7 +12,7 @@ describe('Public legal notices', () => {
       const document = legalDocuments[link.path.slice(1) as keyof typeof legalDocuments];
       expect(document?.title).toBeTruthy();
       expect(document?.summary).toBeTruthy();
-      expect(document?.sections.length).toBeGreaterThanOrEqual(3);
+      expect(document?.sections.length).toBeGreaterThanOrEqual(link.path === '/contact' ? 1 : 3);
       expect(document?.sections.every(section => !!section.heading)).toBe(true);
     }
   });
@@ -25,8 +25,10 @@ describe('Public legal notices', () => {
     expect(publicText).toContain('Contact Us');
   });
 
-  it('does not misrepresent the planned private contact form as available', () => {
-    expect(legalDocuments.contact.summary).toContain('not yet available');
-    expect(JSON.stringify(legalDocuments.contact)).toContain('public GitHub issue tracker');
+  it('accurately discloses Google Forms handling of contact entries', () => {
+    expect(JSON.stringify(legalDocuments.privacy)).toContain('Google Forms');
+    expect(JSON.stringify(legalDocuments['copyright-policy'])).toContain('Contact Us');
+    expect(legalDocuments.contact.summary).toContain('contact form');
+    expect(JSON.stringify(legalDocuments.contact)).not.toContain('coming soon');
   });
 });
