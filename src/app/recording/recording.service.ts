@@ -11,6 +11,7 @@ import { UiKey } from '../catalog/catalog.ui';
 import { CatalogService } from '../catalog/catalog.service';
 import { CaptureAccessError, checkCaptureAccess } from './capture-access';
 import { RecordingDestination } from './recording-destination';
+import { RecordingExportPreferencesService, recordingBitrate } from './recording-export-preferences';
 import { SnackbarService } from '../shared/snackbar.service';
 export const CAPTURE_FACTORY = new InjectionToken<CaptureFactory>('CAPTURE_FACTORY', {
   providedIn: 'root',
@@ -75,6 +76,7 @@ export class RecordingService implements OnDestroy {
   private readonly support = inject(CAPTURE_SUPPORT);
   private readonly exporter = inject(RECORDING_EXPORT);
   private readonly destination = inject(RecordingDestination);
+  private readonly exportPreferences = inject(RecordingExportPreferencesService);
   private readonly snackbar = inject(SnackbarService);
   private readonly access = inject(CAPTURE_ACCESS);
   private readonly router = inject(Router, { optional: true });
@@ -351,8 +353,8 @@ export class RecordingService implements OnDestroy {
           },
         },
         this.catalog.catalog()?.manifest.schemaVersion === 2
-          ? { ...this.config, retryEmptyCapture: true }
-          : this.config,
+          ? { ...this.config, retryEmptyCapture: true, audioBitrate: recordingBitrate(this.exportPreferences.quality()) }
+          : { ...this.config, audioBitrate: recordingBitrate(this.exportPreferences.quality()) },
       );
       if (generation !== this.generation || this.controller.signal.aborted) handle.stop(true);
       else this.handle = handle;
@@ -437,9 +439,21 @@ export class RecordingService implements OnDestroy {
     this.seconds.set(0);
     this.captureHistory.set([]);
   }
+  private conversionFallback() {
+    const locale = this.catalog.locale();
+    const message = locale === 'ta'
+      ? 'M4A மாற்றம் தோல்வியடைந்தது. அசல் பதிவு பாதுகாப்பாகச் சேமிக்கப்பட்டது.'
+      : locale === 'sa'
+        ? 'M4A रूपान्तरणं विफलम्। मूलमुद्रणं सुरक्षितम् अस्ति।'
+        : 'M4A conversion failed. The original recording was saved safely.';
+    this.snackbar.show({ kind: 'text', message }, 'warning', 7500);
+  }
   private async saveAutomatic(blob: Blob, generation: number, dueToLimit: boolean): Promise<void> {
     try {
-      await this.destination.save(blob, recordingFilename(this.name, blob.type), true);
+      const outcome = Capacitor.getPlatform() === 'android'
+        ? await this.destination.save(blob, recordingFilename(this.name, blob.type), true, this.name)
+        : await this.destination.save(blob, recordingFilename(this.name, blob.type), true);
+      if (outcome === 'fallback') this.conversionFallback();
       if (generation !== this.generation || this.destroyed) return;
       this.file.set(null);
       this.state.set('ready');
@@ -469,7 +483,10 @@ export class RecordingService implements OnDestroy {
     const generation = this.generation;
     try {
       if (this.destination.requiresSelection || this.destination.selected()) {
-        await this.destination.save(file, recordingFilename(this.name, file.type));
+        const outcome = Capacitor.getPlatform() === 'android'
+          ? await this.destination.save(file, recordingFilename(this.name, file.type), false, this.name)
+          : await this.destination.save(file, recordingFilename(this.name, file.type));
+        if (outcome === 'fallback') this.conversionFallback();
       } else {
         await this.exporter.save(file, recordingFilename(this.name, file.type));
       }
