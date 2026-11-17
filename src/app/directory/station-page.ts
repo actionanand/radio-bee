@@ -102,13 +102,6 @@ export class StationPage {
         ? 'retry'
         : 'play',
   );
-  readonly shortLanguages = computed(() =>
-    this.languages()
-      .slice(0, 3)
-      .map(l => l.name)
-      .join(' · '),
-  );
-  readonly languageName = (language: { name: string }) => language.name;
   text(key: DirectoryKey) {
     return directoryText(this.data.locale(), key);
   }
