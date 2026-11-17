@@ -2,7 +2,16 @@ import { Location, NgTemplateOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
-import { arrowBackOutline } from 'ionicons/icons';
+import {
+  arrowBackOutline,
+  arrowForwardOutline,
+  mailOutline,
+  pencilOutline,
+  shieldCheckmarkOutline,
+  radioOutline,
+  chatbubblesOutline,
+  informationCircleOutline,
+} from 'ionicons/icons';
 import { CATALOG_URL } from '../catalog/catalog.service';
 import { radioBeeCopyright } from '../shared/copyright';
 import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
@@ -11,6 +20,7 @@ import { ContactFormComponent } from '../contact/contact-form';
 @Component({
   selector: 'app-legal-page',
   imports: [IonContent, IonIcon, NgTemplateOutlet, RouterLink, ContactFormComponent],
+
   template: `
     @if (isV2) {
       <ng-container [ngTemplateOutlet]="body" />
@@ -22,19 +32,78 @@ import { ContactFormComponent } from '../contact/contact-form';
       </ion-content>
     }
     <ng-template #body>
-      <article class="legal-page" lang="en">
+      <article class="legal-page" [class.contact-page]="pageId === 'contact'" lang="en">
         <button class="back-link" type="button" (click)="goBack()">
           <ion-icon [icon]="backIcon" aria-hidden="true" />
           <span>Back</span>
         </button>
-        <header>
-          <p class="eyebrow">RadioBee · Legal information</p>
-          <h1 tabindex="-1">{{ document.title }}</h1>
-          <p class="introduction">{{ document.summary }}</p>
-        </header>
+        <!-- The same modal is available on every legal page, without a route change. -->
+        <app-contact-form #contactForm />
         @if (pageId === 'contact') {
-          <app-contact-form />
+          <header class="contact-hero">
+            <div class="contact-brand">
+              <img src="assets/icon/radio-bee.png" width="56" height="56" alt="" />
+              <span>RADIOBEE · STAY TUNED. STAY BUZZING.</span>
+            </div>
+            <p class="eyebrow">LET'S CONNECT</p>
+            <h1 tabindex="-1">{{ document.title }}</h1>
+            <p class="introduction">{{ document.summary }}</p>
+            <button class="contact-primary" type="button" aria-haspopup="dialog" (click)="contactForm.show()">
+              <ion-icon [icon]="mailIcon" aria-hidden="true" />
+              Open contact form
+              <ion-icon [icon]="arrowIcon" aria-hidden="true" />
+            </button>
+            <p class="contact-hero-note">The form opens here in RadioBee.</p>
+          </header>
+          <section class="contact-topics" aria-labelledby="contact-topics-title">
+            <p class="eyebrow">HOW CAN WE HELP?</p>
+            <h2 id="contact-topics-title">Choose what you'd like to share</h2>
+            <p class="contact-topics-intro">Pick a topic to open the form with the right category selected.</p>
+            <div class="contact-topic-grid">
+              <button class="contact-topic" type="button" aria-haspopup="dialog" (click)="contactForm.show('Correction in content')">
+                <ion-icon [icon]="editIcon" aria-hidden="true" />
+                <strong>Station corrections</strong>
+                <span>Report incorrect station details, languages, or stream links.</span>
+                <span class="topic-action">Report a correction <ion-icon [icon]="arrowIcon" aria-hidden="true" /></span>
+              </button>
+              <button class="contact-topic" type="button" aria-haspopup="dialog" (click)="contactForm.show('Content-related question')">
+                <ion-icon [icon]="shieldIcon" aria-hidden="true" />
+                <strong>Content &amp; rights</strong>
+                <span>Ask about broadcasts, attribution, ownership, or a removal request.</span>
+                <span class="topic-action">Raise a concern <ion-icon [icon]="arrowIcon" aria-hidden="true" /></span>
+              </button>
+              <button class="contact-topic" type="button" aria-haspopup="dialog" (click)="contactForm.show('Interested in contributing content')">
+                <ion-icon [icon]="radioIcon" aria-hidden="true" />
+                <strong>Contribute a station</strong>
+                <span>Suggest a radio station or help us improve its information.</span>
+                <span class="topic-action">Suggest a station <ion-icon [icon]="arrowIcon" aria-hidden="true" /></span>
+              </button>
+              <button class="contact-topic" type="button" aria-haspopup="dialog" (click)="contactForm.show('Suggestion or feedback')">
+                <ion-icon [icon]="chatIcon" aria-hidden="true" />
+                <strong>Feedback &amp; ideas</strong>
+                <span>Share a suggestion, usability concern, or general feedback.</span>
+                <span class="topic-action">Share feedback <ion-icon [icon]="arrowIcon" aria-hidden="true" /></span>
+              </button>
+            </div>
+          </section>
+          <aside class="contact-guidance" aria-label="Before submitting">
+            <div class="contact-guidance-heading">
+              <ion-icon [icon]="infoIcon" aria-hidden="true" />
+              <h2>Before you send</h2>
+            </div>
+            @for (section of document.sections; track section.heading) {
+              @for (paragraph of section.paragraphs ?? []; track paragraph) {
+                <p>{{ paragraph }}</p>
+              }
+            }
+            <a routerLink="/privacy">Read our Privacy Policy</a>
+          </aside>
         } @else {
+          <header>
+            <p class="eyebrow">RadioBee · Legal information</p>
+            <h1 tabindex="-1">{{ document.title }}</h1>
+            <p class="introduction">{{ document.summary }}</p>
+          </header>
           @for (section of document.sections; track section.heading) {
             <section>
               <h2>{{ section.heading }}</h2>
@@ -50,6 +119,17 @@ import { ContactFormComponent } from '../contact/contact-form';
               }
             </section>
           }
+          <aside class="legal-contact-cta">
+            <div>
+              <h2>Questions about this policy?</h2>
+              <p>Contact RadioBee directly without leaving this page.</p>
+            </div>
+            <button type="button" aria-haspopup="dialog" (click)="contactForm.show()">
+              <ion-icon [icon]="mailIcon" aria-hidden="true" />
+              Open contact form
+              <ion-icon [icon]="arrowIcon" aria-hidden="true" />
+            </button>
+          </aside>
         }
         @if (!isV2) {
           <footer class="legal-end">
@@ -104,6 +184,13 @@ export class LegalPage {
   private readonly base = inject(CATALOG_URL);
   readonly isV2 = new URL(this.base).pathname.endsWith('/v2/');
   readonly backIcon = arrowBackOutline;
+  readonly arrowIcon = arrowForwardOutline;
+  readonly mailIcon = mailOutline;
+  readonly editIcon = pencilOutline;
+  readonly shieldIcon = shieldCheckmarkOutline;
+  readonly radioIcon = radioOutline;
+  readonly chatIcon = chatbubblesOutline;
+  readonly infoIcon = informationCircleOutline;
   readonly pageId = this.route.snapshot.data['legalPage'] as LegalPageId;
   readonly document = legalDocuments[this.pageId];
   readonly routePath = `/${this.pageId}`;
