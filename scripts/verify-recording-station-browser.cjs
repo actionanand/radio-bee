@@ -16,6 +16,12 @@ const base = process.env.APP_URL || 'http://localhost:36803';
     context = await bridge.browser.newContext(),
     page = await context.newPage(),
     report = { browser: bridge.browser.version(), network: [], console: [], attempts: [] };
+  page.on('dialog', async dialog => {
+    // Interactive manual UI tests explicitly approve these destructive actions.
+    report.confirmations = report.confirmations || [];
+    report.confirmations.push({ type: dialog.type(), message: dialog.message() });
+    await dialog.accept();
+  });
   page.on('response', async r => {
     if (/asurahosting|lotustechnologies/.test(r.url()))
       report.network.push({
