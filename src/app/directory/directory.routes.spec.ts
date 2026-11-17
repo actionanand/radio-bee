@@ -234,9 +234,9 @@ describe('Routable v2 directory', () => {
       expect(element(h).querySelectorAll('.directory-shell footer .footer-policies')).toHaveLength(1);
       expect(element(h).querySelectorAll('app-legal-page .legal-end')).toHaveLength(0);
     }
-    const issueLink = element(h).querySelector<HTMLAnchorElement>('app-legal-page .issue-link');
-    expect(issueLink?.href).toBe('https://github.com/actionanand/radio-bee/issues/new');
-    expect(issueLink?.getAttribute('rel')).toContain('noopener');
+    expect(element(h).querySelector('app-contact-form ion-modal')).not.toBeNull();
+    expect(element(h).querySelector('app-contact-form .open-form')).not.toBeNull();
+    expect(element(h).querySelector('app-legal-page .issue-link')).toBeNull();
   });
 
   it('shows the station search on ordinary pages and returns from a direct legal URL to Home', async () => {
