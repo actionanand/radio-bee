@@ -569,8 +569,19 @@ describe('Routable v2 directory', () => {
     expect(summary).not.toContain(' · ');
     expect(element(h).querySelector('.language-summary app-ellipsis-text')).not.toBeNull();
     await h.navigateByUrl('/radios/' + station.id);
-    expect(element(h).querySelectorAll('.languages li')).toHaveLength(station.broadcastLanguages.length);
-    expect(element(h).querySelector('app-station-page details summary')).not.toBeNull();
+    const chips = [...element(h).querySelectorAll<HTMLAnchorElement>('app-station-page .languages a.language-chip')];
+    expect(chips).toHaveLength(station.broadcastLanguages.length);
+    expect(chips.map(chip => chip.getAttribute('href'))).toEqual(
+      station.broadcastLanguages.map(code => '/languages/' + code),
+    );
+    expect(element(h).querySelector('app-station-page details summary')).toBeNull();
+    expect(element(h).querySelector('app-station-page .languages')?.textContent).not.toContain(' · ');
+    const language = station.broadcastLanguages.at(-1)!;
+    chips.at(-1)!.click();
+    await h.fixture.whenStable();
+    h.detectChanges();
+    expect(TestBed.inject(Router).url).toBe('/languages/' + language);
+    expect(element(h).querySelector(`[data-station-id="${station.id}"]`)).not.toBeNull();
   });
   it('displays only editorial About content, never internal stream review notes', async () => {
     const { data } = setup();
