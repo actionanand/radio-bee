@@ -76,23 +76,11 @@
 </section>
 <section>
   <h2>{{text('documentedLanguages')}}</h2>
-  @if(languages().length>3){
-  <p>{{shortLanguages()}}</p>
-  <details>
-    <summary>{{text('moreLanguages')}} ({{languages().length}})</summary>
-    <ul class="languages">
-      @for(language of languages();track language.code){
-      <li><a class="language-chip" [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
-      }
-    </ul>
-  </details>
-  } @else{
   <ul class="languages">
     @for(language of languages();track language.code){
     <li><a class="language-chip" [routerLink]="['/languages',language.code]">{{language.name}}</a></li>
     }
   </ul>
-  }
 </section>
 @if(related().length){
 <section>
