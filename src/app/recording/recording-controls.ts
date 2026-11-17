@@ -45,7 +45,7 @@ import { radioIcons } from '../shared/radio-icons';
               class="quick-action"
               type="button"
               (click)="recorder.save()"
-              [disabled]="recorder.state() === 'exporting'">
+              [disabled]="recorder.state() !== 'ready' && recorder.state() !== 'error'">
               <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
               {{ ui('exportRecording') }}
             </button>
