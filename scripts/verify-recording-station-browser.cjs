@@ -288,32 +288,34 @@ const base = process.env.APP_URL || 'http://localhost:36803';
     await page.waitForFunction(
       () => document.querySelector('app-player > section [role=status]')?.textContent.trim() === 'Playing',
     );
+    // A successful manual Export removes Murugan's draft; recording can start
+    // again directly, without a replacement confirmation.
     await open();
     const checkbox = page.locator('.consent input');
     if (await checkbox.count()) await checkbox.check();
-    const old = (await control()).size,
-      before = await page.evaluate(() => window.__diag.recorders.length);
+    const before = await page.evaluate(() => window.__diag.recorders.length);
     await page.locator('.primary-action').filter({ hasText: 'Start recording' }).click();
-    assert.equal((await control()).size, old);
-    await page.getByRole('button', { name: 'Keep previous recording', exact: true }).click();
-    assert.equal((await control()).size, old);
-    assert.equal(await page.evaluate(() => window.__diag.recorders.length), before);
-    report.draftCancel = true;
-    await page.locator('.primary-action').filter({ hasText: 'Start recording' }).click();
-    await page.getByRole('button', { name: 'Discard previous and start', exact: true }).click();
     await waitSeconds(3);
     assert.equal(await page.locator('.recording-panel').count(), 0);
+    assert.equal(await page.evaluate(() => window.__diag.recorders.length), before + 1);
     await play('sooriyan-srilanka');
     await page.waitForFunction(
       () => ng.getComponent(document.querySelector('app-recording-controls')).recorder.state() === 'ready',
     );
     assert.ok((await control()).size > 256);
-    assert.equal(await page.evaluate(() => window.__diag.recorders.length), before + 1);
+    const old = (await control()).size;
+    const afterSwitch = await page.evaluate(() => window.__diag.recorders.length);
+    assert.equal(afterSwitch, before + 1);
     report.stationSwitch = 'old draft retained; no recorder starts for new station';
     await open();
     await page.locator('.consent input').check();
     await page.locator('.primary-action').filter({ hasText: 'Start recording' }).click();
-    assert.ok((await control()).size > 256);
+    assert.equal((await control()).size, old);
+    await page.getByRole('button', { name: 'Keep previous recording', exact: true }).click();
+    assert.equal((await control()).size, old);
+    assert.equal(await page.evaluate(() => window.__diag.recorders.length), afterSwitch);
+    report.draftCancel = true;
+    await page.locator('.primary-action').filter({ hasText: 'Start recording' }).click();
     await page.getByRole('button', { name: 'Discard previous and start', exact: true }).click();
     await waitSeconds(process.env.RADIOBEE_STALL_FIRST_CAPTURE === '1' ? 20 : 17);
     await page.locator('app-player > section').getByRole('button', { name: /^Stop/ }).click();
