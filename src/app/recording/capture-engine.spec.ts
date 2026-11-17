@@ -8,7 +8,7 @@ import {
 describe('Bounded output-only capture adapter (controlled API unit tests)', () => {
   let recorder: FakeRecorder,
     samples = 0.05;
-  const track = { kind: 'audio', readyState: 'live', stop: vi.fn() };
+  const track = { kind: 'audio', readyState: 'live', enabled: true, muted: false, stop: vi.fn() };
   const callbacks = (): CaptureCallbacks => ({ progress: vi.fn(), finished: vi.fn(), failed: vi.fn() });
   class FakeRecorder {
     static isTypeSupported(type: string) {
@@ -117,6 +117,142 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     recorder.stop();
     handle.stop();
     expect(cb.finished).toHaveBeenCalledExactlyOnceWith(expect.any(Blob), 'source-ended');
+    expect(track.stop).toHaveBeenCalled();
+  });
+  it('reports real pre-cleanup silence diagnostics without weakening the eight-second rejection', async () => {
+    samples = 0;
+    const element = audio(),
+      cb = callbacks(),
+      diagnostic = vi.fn();
+    await captureRadio(element, new AbortController().signal, { ...cb, diagnostic });
+    recorder.data();
+    await vi.advanceTimersByTimeAsync(8000);
+    expect(cb.finished).toHaveBeenCalledWith(null, 'no-audio');
+    expect(diagnostic).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        phase: 'finished',
+        reason: 'no-audio',
+        contextState: 'running',
+        recorderState: 'recording',
+        rms: 0,
+        maxRms: 0,
+        bytes: 512,
+        heard: false,
+        tracks: [{ readyState: 'live', muted: false, enabled: true }],
+      }),
+    );
+  });
+  it('never lets an observer exception abort genuine capture or cleanup', async () => {
+    const element = audio(),
+      cb = callbacks();
+    const handle = await captureRadio(element, new AbortController().signal, {
+      ...cb,
+      diagnostic: () => {
+        throw Error('Observer failed');
+      },
+    });
+    recorder.data();
+    element.currentTime = 11;
+    await vi.advanceTimersByTimeAsync(800);
+    handle.stop();
+    expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'manual');
+    expect(track.stop).toHaveBeenCalled();
+  });
+  it('re-acquires a zero-frame V2 capture once without extending the validation deadline', async () => {
+    const element = audio(),
+      cb = callbacks();
+    Object.defineProperty(element, 'paused', { value: false });
+    Object.defineProperty(element, 'readyState', { value: 4 });
+    const capture = vi.spyOn(element, 'captureStream');
+    samples = 0;
+    const handle = await captureRadio(element, new AbortController().signal, cb, {
+      MaxDurationMs: MAX_RECORDING_MS,
+      MaxBytes: MAX_RECORDING_BYTES,
+      retryEmptyCapture: true,
+    });
+    const obsolete = recorder,
+      lateData = obsolete.ondataavailable,
+      lateStop = obsolete.onstop;
+    await vi.advanceTimersByTimeAsync(2200);
+    expect(capture).toHaveBeenCalledTimes(2);
+    expect(obsolete.state).toBe('inactive');
+    lateData?.({ data: new Blob([new Uint8Array(2048)]) } as BlobEvent);
+    lateStop?.();
+    expect(cb.finished).not.toHaveBeenCalled();
+    samples = 0.1;
+    recorder.data();
+    await vi.advanceTimersByTimeAsync(800);
+    expect(cb.progress).toHaveBeenLastCalledWith(3, true);
+    handle.stop();
+    expect(cb.finished).toHaveBeenCalledExactlyOnceWith(expect.any(Blob), 'manual');
+  });
+  it('rejects two starved attempts at the original eight seconds and never loops', async () => {
+    const element = audio(),
+      cb = callbacks();
+    Object.defineProperty(element, 'paused', { value: false });
+    Object.defineProperty(element, 'readyState', { value: 4 });
+    const capture = vi.spyOn(element, 'captureStream');
+    samples = 0;
+    await captureRadio(element, new AbortController().signal, cb, {
+      MaxDurationMs: MAX_RECORDING_MS,
+      MaxBytes: MAX_RECORDING_BYTES,
+      retryEmptyCapture: true,
+    });
+    await vi.advanceTimersByTimeAsync(8000);
+    expect(capture).toHaveBeenCalledTimes(2);
+    expect(cb.finished).toHaveBeenCalledExactlyOnceWith(null, 'no-audio');
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(capture).toHaveBeenCalledTimes(2);
+  });
+  for (const retry of [false, true])
+    it(`does not reacquire encoded silent audio or affect V1 (retry=${retry})`, async () => {
+      const element = audio(),
+        cb = callbacks();
+      Object.defineProperty(element, 'paused', { value: false });
+      Object.defineProperty(element, 'readyState', { value: 4 });
+      const capture = vi.spyOn(element, 'captureStream');
+      samples = 0;
+      await captureRadio(element, new AbortController().signal, cb, {
+        MaxDurationMs: MAX_RECORDING_MS,
+        MaxBytes: MAX_RECORDING_BYTES,
+        retryEmptyCapture: retry,
+      });
+      if (retry) recorder.data();
+      await vi.advanceTimersByTimeAsync(8000);
+      expect(capture).toHaveBeenCalledOnce();
+      expect(cb.finished).toHaveBeenCalledWith(null, 'no-audio');
+    });
+  it('cancels a pending replacement context without starting another recorder', async () => {
+    const element = audio(),
+      cb = callbacks();
+    Object.defineProperty(element, 'paused', { value: false });
+    Object.defineProperty(element, 'readyState', { value: 4 });
+    samples = 0;
+    const abort = new AbortController();
+    await captureRadio(element, abort.signal, cb, {
+      MaxDurationMs: MAX_RECORDING_MS,
+      MaxBytes: MAX_RECORDING_BYTES,
+      retryEmptyCapture: true,
+    });
+    let resume!: () => void;
+    const nativeContext = AudioContext;
+    vi.stubGlobal(
+      'AudioContext',
+      class extends nativeContext {
+        override resume = () =>
+          new Promise<void>(resolve => {
+            resume = resolve;
+          });
+      },
+    );
+    const original = recorder;
+    await vi.advanceTimersByTimeAsync(2200);
+    abort.abort();
+    resume();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(recorder).toBe(original);
+    expect(cb.finished).toHaveBeenCalledExactlyOnceWith(null, 'manual');
     expect(track.stop).toHaveBeenCalled();
   });
   it('excludes and stops HLS video tracks before constructing an audio recorder', async () => {

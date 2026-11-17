@@ -1,3 +1,4 @@
+import { uiLabel } from '../catalog/catalog.ui';
 import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { CaptureAccessError } from './capture-access';
@@ -17,7 +18,7 @@ import {
   RecordingService,
   recordingPermission,
 } from './recording.service';
-import { CaptureCallbacks, CaptureFactory } from './capture-engine';
+import { CaptureCallbacks, CaptureFactory, CaptureDiagnostic } from './capture-engine';
 import { recordingFilename } from './export-recording';
 import { RecordingDestination } from './recording-destination';
 import { PlayerComponent } from '../player/player';
@@ -880,5 +881,84 @@ describe('V2 persistent recording lifecycle', () => {
     expect(recorder.message()).toBe('recordingInterrupted');
     expect(s.create).toHaveBeenCalledOnce();
     expect(recorder.diagnostics().some(row => row.event === 'stop' && row.reason === 'failure')).toBe(true);
+  });
+});
+
+describe('Capture evidence isolation', () => {
+  for (const version of [1, 2])
+    it(`keeps bounded evidence for V2 only, ignoring obsolete capture callbacks (schema ${version})`, async () => {
+      const s = setup();
+      s.c.manifest.schemaVersion = version;
+      await playing(s);
+      const recorder = TestBed.inject(RecordingService);
+      await recorder.start(true);
+      const event = vi.fn();
+      window.addEventListener('radiobee-recording-diagnostic', event);
+      try {
+        const snapshot: CaptureDiagnostic = {
+          at: 1,
+          phase: 'capturing',
+          contextState: 'running',
+          tracks: [{ readyState: 'live', muted: false, enabled: true }],
+          recorderState: 'recording',
+          mimeType: 'audio/webm',
+          bytes: 1024,
+          seconds: 1,
+          rms: 0.1,
+          maxRms: 0.2,
+          signalWindows: 3,
+          heard: true,
+          captureAttempt: 1,
+        };
+        for (let index = 0; index < 20; index++) s.hooks().diagnostic?.({ ...snapshot, at: index });
+        expect(recorder.captureDiagnostics()).toHaveLength(version === 2 ? 12 : 0);
+        expect(event).toHaveBeenCalledTimes(version === 2 ? 20 : 0);
+        if (version === 2) expect((event.mock.calls[0][0] as CustomEvent).detail.stationId).toBe(s.station.id);
+        recorder.discard();
+        const before = event.mock.calls.length;
+        s.hooks().diagnostic?.(snapshot);
+        expect(event).toHaveBeenCalledTimes(before);
+      } finally {
+        window.removeEventListener('radiobee-recording-diagnostic', event);
+      }
+    });
+});
+
+describe('Zero-frame browser capture status', () => {
+  for (const version of [1, 2])
+    it(`opts only V2 into one recovery and reports the correct failure (schema ${version})`, async () => {
+      const s = setup();
+      s.c.manifest.schemaVersion = version;
+      await playing(s);
+      const recorder = TestBed.inject(RecordingService);
+      await recorder.start(true);
+      expect(s.create.mock.calls[0][3]?.retryEmptyCapture).toBe(version === 2 ? true : undefined);
+      vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      s.hooks().diagnostic?.({
+        at: 1,
+        phase: 'finished',
+        reason: 'no-audio',
+        contextState: 'running',
+        tracks: [{ readyState: 'live', muted: false, enabled: true }],
+        recorderState: 'recording',
+        mimeType: 'audio/webm',
+        bytes: 0,
+        seconds: 8,
+        rms: 0,
+        maxRms: 0,
+        signalWindows: 0,
+        heard: false,
+        captureAttempt: 2,
+      });
+      s.hooks().finished(null, 'no-audio');
+      expect(recorder.message()).toBe(version === 2 ? 'recordingCaptureUnavailable' : 'recordingEmpty');
+      expect(recorder.file()).toBeNull();
+      expect(s.player.state()).toBe('playing');
+    });
+  it('localizes the browser capture-unavailable status for all supported locales', () => {
+    for (const locale of ['en', 'ta', 'sa'])
+      expect(uiLabel(locale, 'recordingCaptureUnavailable')).not.toBe('recordingCaptureUnavailable');
+    expect(uiLabel('ta', 'recordingCaptureUnavailable')).toMatch(/[\u0b80-\u0bff]/);
+    expect(uiLabel('sa', 'recordingCaptureUnavailable')).toMatch(/[\u0900-\u097f]/);
   });
 });
