@@ -47,8 +47,14 @@ jobs:
           git fetch origin gh-pages
           mkdir -p "$RUNNER_TEMP/radiobee-pages"
           git worktree add -B gh-pages "$RUNNER_TEMP/radiobee-pages" origin/gh-pages
-          # Keep old fingerprinted bundles for browsers that cached older HTML.
-          rsync -a --exclude=.git www/ "$RUNNER_TEMP/radiobee-pages/"
+          # Keep prior fingerprinted bundles for clients holding old HTML, but
+          # compare file bytes rather than mtime+size. A cached Angular index
+          # can have the same size/timestamp yet reference a different main JS.
+          rsync -a --checksum --exclude=.git www/ "$RUNNER_TEMP/radiobee-pages/"
+          # Fail closed if the outgoing GitHub Pages HTML is stale, even if
+          # every referenced historical bundle still exists in the worktree.
+          cmp www/index.html "$RUNNER_TEMP/radiobee-pages/index.html"
+          cmp www/404.html "$RUNNER_TEMP/radiobee-pages/404.html"
           touch "$RUNNER_TEMP/radiobee-pages/.nojekyll"
           cd "$RUNNER_TEMP/radiobee-pages"
           git config user.name "github-actions[bot]"
@@ -71,6 +77,10 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "deploy: RadioBee web from ${GITHUB_SHA}"
           fi
+          # Confirm the checked-out deployment commit contains THIS build's
+          # entrypoint and fallback before pushing, not just any old entrypoint.
+          cmp www/index.html <(git show HEAD:index.html)
+          cmp www/404.html <(git show HEAD:404.html)
           # Check the outgoing tree, not just the worktree.
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
