@@ -11,6 +11,7 @@ import { UiKey } from '../catalog/catalog.ui';
 import { CatalogService } from '../catalog/catalog.service';
 import { CaptureAccessError, checkCaptureAccess } from './capture-access';
 import { RecordingDestination } from './recording-destination';
+import { SnackbarService } from '../shared/snackbar.service';
 export const CAPTURE_FACTORY = new InjectionToken<CaptureFactory>('CAPTURE_FACTORY', {
   providedIn: 'root',
   factory: () => captureRadio,
@@ -74,6 +75,7 @@ export class RecordingService implements OnDestroy {
   private readonly support = inject(CAPTURE_SUPPORT);
   private readonly exporter = inject(RECORDING_EXPORT);
   private readonly destination = inject(RecordingDestination);
+  private readonly snackbar = inject(SnackbarService);
   private readonly access = inject(CAPTURE_ACCESS);
   private readonly router = inject(Router, { optional: true });
   readonly state = signal<
@@ -471,12 +473,17 @@ export class RecordingService implements OnDestroy {
       } else {
         await this.exporter.save(file, recordingFilename(this.name, file.type));
       }
-      if (generation === this.generation) {
-        this.state.set('ready');
-        this.message.set('recordingExported');
+      if (generation === this.generation && !this.destroyed && this.file() === file) {
+        // Only a completed export action consumes the draft. Failed exports
+        // remain available in the dock for an explicit retry.
+        this.file.set(null);
+        this.state.set('idle');
+        this.message.set(null);
+        this.seconds.set(0);
+        this.snackbar.show({ kind: 'localized', key: 'recordingExported' }, 'success');
       }
     } catch {
-      if (generation === this.generation) {
+      if (generation === this.generation && !this.destroyed && this.file() === file) {
         this.state.set('ready');
         this.message.set('recordingSaveError');
       }
