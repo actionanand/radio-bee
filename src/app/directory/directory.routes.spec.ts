@@ -234,6 +234,11 @@ describe('Routable v2 directory', () => {
       expect(back?.querySelector('ion-icon[aria-hidden="true"]')).not.toBeNull();
       expect(element(h).querySelectorAll('.directory-shell footer .footer-policies')).toHaveLength(1);
       expect(element(h).querySelectorAll('app-legal-page .legal-end')).toHaveLength(0);
+      if (url !== '/contact') {
+        const formButton = element(h).querySelector<HTMLButtonElement>('app-legal-page .legal-contact-cta button');
+        expect(formButton?.textContent).toContain('Open contact form');
+        expect(formButton?.getAttribute('aria-haspopup')).toBe('dialog');
+      }
     }
     expect(element(h).querySelector('app-contact-form ion-modal')).not.toBeNull();
     expect(element(h).querySelector('app-contact-form .open-form')).toBeNull();
