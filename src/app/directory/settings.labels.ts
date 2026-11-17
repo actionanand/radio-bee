@@ -2,6 +2,9 @@
 const en = {
   settings: 'Settings',
   appearance: 'Appearance & language',
+  supportHeading: 'Help & support',
+  supportHelp: 'Have a question, station correction, or suggestion? Send RadioBee a message.',
+  contactUs: 'Contact Us',
   chooseLanguage: 'App language',
   chooseTheme: 'App theme',
   homeSection: 'Home stations',
@@ -34,6 +37,9 @@ export type SettingsKey = keyof typeof en;
 const ta: Record<SettingsKey, string> = {
   settings: 'அமைப்புகள்',
   appearance: 'தோற்றமும் மொழியும்',
+  supportHeading: 'உதவி மற்றும் ஆதரவு',
+  supportHelp: 'கேள்வி, வானொலி நிலையத் திருத்தம் அல்லது பரிந்துரை உள்ளதா? RadioBee-க்கு செய்தி அனுப்புங்கள்.',
+  contactUs: 'தொடர்புகொள்ளுங்கள்',
   chooseLanguage: 'செயலி மொழி',
   chooseTheme: 'செயலி தோற்றம்',
   homeSection: 'முகப்பு வானொலிகள்',
@@ -65,6 +71,9 @@ const ta: Record<SettingsKey, string> = {
 const sa: Record<SettingsKey, string> = {
   settings: 'सेटिङ्ग्स्',
   appearance: 'रूपं भाषा च',
+  supportHeading: 'साहाय्यं समर्थनं च',
+  supportHelp: 'प्रश्नः, केन्द्रसंशोधनं वा परामर्शः अस्ति वा? RadioBee प्रति सन्देशं प्रेषयतु।',
+  contactUs: 'सम्पर्कं करोतु',
   chooseLanguage: 'अनुप्रयोगभाषा',
   chooseTheme: 'अनुप्रयोगरूपम्',
   homeSection: 'मुखपृष्ठस्य केन्द्राणि',
