@@ -199,7 +199,7 @@ export class ContactFormComponent {
   readonly closeIcon = closeOutline;
   readonly sendIcon = sendOutline;
   readonly form = inject(FormBuilder).nonNullable.group({
-    name: ['', [Validators.required, Validators.pattern(/.*\\S.*/), Validators.maxLength(120)]],
+    name: ['', [Validators.required, control => String(control.value).trim() ? null : { whitespace: true }, Validators.maxLength(120)]],
     email: ['', [Validators.required, Validators.email]],
     phone: [''],
     purpose: [defaultContactPurpose, Validators.required],
