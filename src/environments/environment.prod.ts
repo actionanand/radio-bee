@@ -14,6 +14,7 @@ export const environment = {
   // V2 only: maximum for user-selected Home stations (3–10); API Featured Radios are uncapped.
   maxHomeStations: 10,
   liveStreamTests: false,
+  contactGoogleFormId: '1FAIpQLSe_ybw31svEQ62xaAx1dnvSA7JQPwbf7jVWbZbYsfURJDe60Q',
   production: true,
   catalogSeedUrl: null,
   // Catalogue URL selects both the schema and the UI:
