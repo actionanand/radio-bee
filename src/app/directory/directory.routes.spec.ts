@@ -554,7 +554,7 @@ describe('Routable v2 directory', () => {
     const host = () => element(h);
     const entries = () => [...host().querySelectorAll<HTMLAnchorElement>('.destinations > a')].map(a => ({
       name: a.querySelector('strong')?.textContent?.trim() ?? '',
-      count: Number(a.querySelector('span')?.textContent?.match(/\\d+/)?.[0] ?? -1),
+      count: Number(a.querySelector('span')?.textContent?.match(/\d+/)?.[0] ?? -1),
       href: a.getAttribute('href'),
     }));
     const original = entries();
