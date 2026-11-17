@@ -10,6 +10,7 @@ import {
   contactPurposes,
   defaultContactPurpose,
   type ContactPayload,
+  type ContactPurpose,
 } from './contact-google-form';
 import { contactCopy, contactPurposeOptions } from './contact-copy';
 
@@ -21,10 +22,6 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
   selector: 'app-contact-form',
   imports: [ReactiveFormsModule, IonButton, IonContent, IonIcon, IonModal, IonSelect, IonSelectOption, RouterLink],
   template: `
-    <div class="contact-entry rb-ui" [attr.lang]="catalog.locale()">
-      <p>{{ copy().subtitle }}</p>
-      <button class="open-form" type="button" (click)="open.set(true)">{{ copy().open }}</button>
-    </div>
     <ion-modal class="rb-contact-modal" [isOpen]="open()" [backdropDismiss]="!sending()"
       [canDismiss]="!sending()" (didDismiss)="open.set(false)">
       <ng-template>
@@ -143,9 +140,6 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
   styles: `
     :host { display: block; }
     ion-content.contact-modal-content { --background: var(--paper); --color: var(--ink); }
-    .contact-entry p { margin: 0 0 14px; }
-    .open-form { border: 0; border-radius: 9px; min-height: 44px; padding: 9px 16px;
-      font: inherit; color: var(--paper); background: var(--ink); cursor: pointer; }
     .contact-dialog { min-height: 100%; box-sizing: border-box; background: var(--paper); color: var(--ink);
       padding: clamp(18px, 3vw, 32px); }
     .form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;
@@ -198,7 +192,7 @@ export class ContactFormComponent {
   private readonly submit = inject(CONTACT_FORM_SUBMIT);
   readonly copy = computed(() => contactCopy(this.catalog.locale()));
   readonly purposes = computed(() => contactPurposeOptions(this.catalog.locale(), contactPurposes));
-  readonly open = signal(true);
+  readonly open = signal(false);
   readonly sending = signal(false);
   readonly attempted = signal(false);
   readonly failed = signal(false);
@@ -219,6 +213,15 @@ export class ContactFormComponent {
     description: [''],
     consent: [false, Validators.requiredTrue],
   });
+
+  /** Open the form from any legal page without navigating away. */
+  show(purpose?: ContactPurpose) {
+    if (this.sending()) return;
+    if (purpose) this.form.controls.purpose.setValue(purpose);
+    this.failed.set(false);
+    this.attempted.set(false);
+    this.open.set(true);
+  }
 
   async send() {
     if (this.sending()) return;
