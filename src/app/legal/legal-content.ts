@@ -54,15 +54,15 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
       {
         heading: '5. Information you choose to submit',
         paragraphs: [
-          'A built-in Contact Us submission form is planned but is not currently active. Do not assume that a message entered anywhere in RadioBee has been delivered to an operator. For now, the Contact Us page explains the available public GitHub issue-reporting channel.',
-          'If you contact the project through a third-party platform, that platform may process the information you provide. Public issue submissions are visible to others, so do not post private addresses, identification documents, personal phone numbers, passwords, or confidential ownership evidence.',
+          'RadioBee provides a Contact Us form that submits through a third-party service, Google Forms. If you submit it, the details you enter (such as name, email, optional phone number, inquiry purpose, message, and optional station information) are transmitted to Google for processing and made available to the RadioBee form operator. The form does not store its entries as RadioBee browser preferences.',
+          'Google processes form submissions under its own terms and privacy practices. Providing an inquiry and agreeing to submission are voluntary; do not send passwords, identity documents, sensitive contractual information, or other confidential material unless an appropriate secure channel has been agreed separately.',
         ],
       },
       {
         heading: '6. Cookies, analytics and advertising',
         paragraphs: [
           'RadioBee uses device and browser storage for application functionality, as described above. This policy does not promise that every third-party streaming host, browser, operating system, or hosting provider operates without cookies, analytics, advertising technologies, or logs.',
-          'If RadioBee later adds its own analytics, advertising integrations, authentication, or a server-hosted contact form, this policy must be reviewed and updated to describe those features and any choices or notices legally required.',
+          'If RadioBee later adds its own analytics, advertising integrations, authentication, or another server-hosted contact system, this policy must be reviewed and updated to describe those features and any choices or notices legally required.',
         ],
       },
       {
@@ -76,7 +76,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
         heading: '8. Retention and control',
         paragraphs: [
           'You can usually remove stored RadioBee preferences and cached catalogue data by clearing the app or browser’s site data, subject to the platform. RadioBee does not control deletion or retention of information held by broadcasters, streaming providers, or other independent services.',
-          'Storage and retention of future contact submissions will be described when a functional form is introduced. Do not submit sensitive material through an unverified channel.',
+          'Contact form entries may be stored and retained by Google Forms and by the form operator according to their respective settings and applicable legal obligations. RadioBee does not currently provide a user-facing deletion workflow for submitted Google Forms responses. Use the Contact Us form for inquiries or requests about submitted information, and do not send sensitive documents through it.',
         ],
       },
       {
@@ -210,7 +210,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
         heading: '15. Changes, severability and contact',
         paragraphs: [
           'RadioBee may revise these terms as features, external services, and legal requirements change. The date on this page identifies the version in effect. If one provision is held invalid, other provisions remain effective to the extent lawful.',
-          'A Contact Us form is planned and is not yet live. Review the Contact Us page for the current public reporting channel. No statement on that page should be interpreted as confirmation that a private message has been received.',
+          'Use the Contact Us form for inquiries and corrections. Because the browser sends the request to Google Forms without access to Google's private receipt confirmation, an on-screen submission message indicates that the browser request completed, not that the message was delivered to or read by the RadioBee operator.',
         ],
       },
     ],
@@ -247,8 +247,8 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
       {
         heading: '4. Reporting channel',
         paragraphs: [
-          'A private Contact Us form is planned but is not currently available. Until it is launched, the Contact Us page links to a public GitHub issue tracker that can be used to flag a specific entry without publishing confidential documentation.',
-          'Do not post identity documents, addresses, private contracts, unpublished works, or sensitive evidence in public issues. If sensitive material is necessary, request a private channel first; there is presently no private submission form in RadioBee.',
+          'Use RadioBee's Contact Us form to report concerns, identify the specific listing and describe the requested remedy. The form submits details to Google Forms for access by the project operator; it is not a confidential legal-notice portal or a guaranteed receipt system.',
+          'Do not submit identity documents, addresses, private contracts, unpublished works, credentials, or sensitive evidence through the contact form. If sensitive evidence is necessary, request a suitable secure channel first.',
         ],
       },
       {
@@ -280,7 +280,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
       {
         heading: '9. Repeat issues and updates',
         paragraphs: [
-          'Where recurring issues involve the same source, RadioBee may block or remove related listings or features as appropriate. This policy may be updated to reflect a working contact form, better rights verification, or legal obligations. Any legally required grievance or notice procedure takes precedence over this general description.',
+          'Where recurring issues involve the same source, RadioBee may block or remove related listings or features as appropriate. This policy may be updated to reflect changes to contact submission, rights verification, or legal obligations. Any legally required grievance or notice procedure takes precedence over this general description.',
         ],
       },
     ],
@@ -288,27 +288,13 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
   contact: {
     title: 'Contact Us',
     summary:
-      'Report incorrect station details, stream failures, broadcaster requests, or rights concerns. A private contact form is planned but is not yet available.',
+      'Questions, station corrections, broadcaster rights concerns or suggestions? Use the RadioBee contact form to share your inquiry with our team.',
     sections: [
       {
-        heading: 'Contact form — coming soon',
+        heading: 'Contact RadioBee',
         paragraphs: [
-          'RadioBee plans to add a dedicated contact form for station corrections, broadcaster requests, privacy questions, and rights-removal concerns. The form is not active yet; this page does not collect or submit messages.',
-          'Until the form becomes available, you may report a non-confidential issue through the project’s public GitHub issue tracker. Please include the station name, relevant link, the nature of the concern, and the requested correction or removal.',
-        ],
-      },
-      {
-        heading: 'Rights holders and broadcasters',
-        paragraphs: [
-          'If you hold rights in a broadcast, station identity, stream, or logo and believe a listing should be corrected or removed, identify the specific listing and explain your legal or factual basis. We intend to review credible, well-supported requests and remove or restrict affected entries where appropriate.',
-          'Do not publish personal identification documents, private contracts, account credentials, confidential legal correspondence, or other sensitive evidence through a public issue. If confidential evidence is needed, please request an appropriate private channel; the RadioBee form is still under development.',
-        ],
-      },
-      {
-        heading: 'Other assistance',
-        paragraphs: [
-          'For playback interruptions, inaccurate station data, or accessibility problems, provide a description, your browser or platform, steps to reproduce, and a relevant public station link. This helps maintainers investigate without unnecessary personal data.',
-          'The public issue tracker is a third-party service operated by GitHub. Creating an issue may require a GitHub account and is subject to GitHub’s terms and privacy policy. RadioBee cannot guarantee a response through that platform.',
+          'Provide your name, email and the purpose of your inquiry. Station details are optional. Submitting the form shares your entries with Google Forms for processing and access by the RadioBee form operator.',
+          'Submitting does not guarantee a response or establish a verified legal-notice channel. Please avoid including confidential documents, passwords or sensitive personal information.',
         ],
       },
     ],
