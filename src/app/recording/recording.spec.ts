@@ -23,6 +23,7 @@ import { recordingFilename } from './export-recording';
 import { RecordingDestination } from './recording-destination';
 import { PlayerComponent } from '../player/player';
 import { RecordingControlsComponent } from './recording-controls';
+import { RecordingConfirmationComponent } from './recording-confirmation';
 import { SnackbarService } from '../shared/snackbar.service';
 import { environment } from '../../environments/environment';
 import { environment as production } from '../../environments/environment.prod';
@@ -35,7 +36,7 @@ function setup(
   maxDurationMs = 3_600_000,
   maxBytes = 80 * 1024 * 1024,
 ) {
-  vi.spyOn(window, 'confirm').mockReturnValue(true);
+  vi.spyOn(window, 'confirm').mockImplementation(() => { throw Error('Native confirmation must never be used'); });
   const c = validateCatalog(structuredClone(currentPublishedFixture));
   const station = c.stations.find(s => s.streams.length)!;
   const other = c.stations.find(s => s.id !== station.id && s.streams.length)!;
@@ -349,6 +350,48 @@ describe('Configured recording and explicit source policy', () => {
     view.destroy();
   });
 
+  it('closes only the recording popup when clicking outside, without interrupting capture', async () => {
+    const s = setup();
+    await playing(s);
+    const view = TestBed.createComponent(RecordingControlsComponent);
+    view.detectChanges();
+    const control = view.componentInstance;
+    await control.recorder.start(true);
+    const root = view.nativeElement as HTMLElement;
+    root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
+    view.detectChanges();
+    expect(control.expanded()).toBe(true);
+    root.querySelector<HTMLButtonElement>('.recording-panel .close-panel')!.dispatchEvent(
+      new Event('pointerdown', { bubbles: true, composed: true }),
+    );
+    expect(control.expanded()).toBe(true);
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true, composed: true }));
+    view.detectChanges();
+    expect(control.expanded()).toBe(false);
+    expect(root.querySelector('.recording-panel')).toBeNull();
+    expect(control.recorder.state()).toBe('recording');
+    expect(s.stop).not.toHaveBeenCalled();
+    view.destroy();
+  });
+
+  it('rejects overlapping sheet requests and treats dismissal as Cancel', async () => {
+    setup();
+    const view = TestBed.createComponent(RecordingConfirmationComponent);
+    view.detectChanges();
+    const sheet = view.componentInstance;
+    const first = sheet.ask('discard');
+    expect(sheet.request()).toBe('discard');
+    expect(await sheet.ask('switch')).toBe(false);
+    expect(sheet.request()).toBe('discard');
+    sheet.cancel();
+    expect(await first).toBe(false);
+    expect(sheet.request()).toBeNull();
+    const second = sheet.ask('switch');
+    sheet.confirm();
+    expect(await second).toBe(true);
+    view.destroy();
+  });
+
   it('requires confirmation before discarding an active recording or a completed draft', async () => {
     const s = setup();
     s.c.manifest.schemaVersion = 2;
@@ -363,15 +406,19 @@ describe('Configured recording and explicit source policy', () => {
     view.detectChanges();
     const discardButton = () => root.querySelector<HTMLButtonElement>('.recording-panel .secondary-action')!;
     expect(discardButton().querySelector('ion-icon')?.getAttribute('aria-hidden')).toBe('true');
-    const confirm = vi.mocked(window.confirm);
-    confirm.mockReturnValueOnce(false);
+    const sheet = view.componentInstance.confirmation();
     discardButton().click();
     view.detectChanges();
+    expect(sheet.request()).toBe('discard');
     expect(recorder.state()).toBe('recording');
     expect(s.stop).not.toHaveBeenCalled();
+    sheet.cancel();
+    await view.whenStable();
+    expect(recorder.state()).toBe('recording');
     expect(root.querySelector('.recording-panel')).not.toBeNull();
-    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('Discard this recording?'));
     discardButton().click();
+    sheet.confirm();
+    await view.whenStable();
     view.detectChanges();
     expect(recorder.state()).toBe('idle');
     expect(s.stop).toHaveBeenCalledWith(true);
@@ -383,11 +430,16 @@ describe('Configured recording and explicit source policy', () => {
     s.hooks().finished(draft, 'manual');
     root.querySelector<HTMLButtonElement>('.recording-toggle')!.click();
     view.detectChanges();
-    confirm.mockReturnValueOnce(false);
     discardButton().click();
+    expect(sheet.request()).toBe('discard');
+    sheet.cancel();
+    await view.whenStable();
     expect(recorder.file()).toBe(draft);
     discardButton().click();
+    sheet.confirm();
+    await view.whenStable();
     expect(recorder.file()).toBeNull();
+    expect(window.confirm).not.toHaveBeenCalled();
     view.destroy();
   });
 
@@ -400,17 +452,24 @@ describe('Configured recording and explicit source policy', () => {
     const recorder = view.componentInstance.recorder;
     await recorder.start(true);
     s.hooks().progress(8, true);
-    const confirm = vi.mocked(window.confirm);
-    confirm.mockReturnValueOnce(false);
-    await s.player.play(s.other);
-    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('Switch stations?'));
+    const sheet = view.componentInstance.confirmation();
+    const cancelledSwitch = s.player.play(s.other);
+    expect(sheet.request()).toBe('switch');
+    expect(s.player.station()?.id).toBe(s.station.id);
+    sheet.cancel();
+    await cancelledSwitch;
     expect(s.player.station()?.id).toBe(s.station.id);
     expect(recorder.state()).toBe('recording');
     expect(s.stop).not.toHaveBeenCalled();
 
-    await s.player.toggle(s.other);
+    const approvedSwitch = s.player.toggle(s.other);
+    expect(sheet.request()).toBe('switch');
+    expect(s.player.station()?.id).toBe(s.station.id);
+    sheet.confirm();
+    await approvedSwitch;
     expect(s.player.station()?.id).toBe(s.other.id);
     expect(s.stop).toHaveBeenCalledOnce();
+    expect(window.confirm).not.toHaveBeenCalled();
     expect(recorder.state()).toBe('stopping');
     const saved = new Blob(['captured audio'], { type: 'audio/webm' });
     s.hooks().finished(saved, 'manual');
@@ -424,6 +483,7 @@ describe('Configured recording and explicit source policy', () => {
     const view = TestBed.createComponent(RecordingControlsComponent);
     view.detectChanges();
     await s.player.play(s.other);
+    expect(view.componentInstance.confirmation().request()).toBeNull();
     expect(window.confirm).not.toHaveBeenCalled();
     expect(s.player.station()?.id).toBe(s.other.id);
     view.destroy();
