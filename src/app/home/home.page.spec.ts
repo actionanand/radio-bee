@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { HomePage } from './home.page';
 import { PlayerService } from '../player/player.service';
 import { CATALOG_FETCH, CATALOG_STORAGE } from '../catalog/catalog.service';
+import { radioBeeCopyright } from '../shared/copyright';
 describe('HomePage', () => {
   it('animates the decorative tuner only while the player is actually playing', () => {
     TestBed.configureTestingModule({
@@ -53,7 +54,7 @@ describe('HomePage', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('सदा शृणुत। मधुरं गुञ्जत।');
     expect(fixture.nativeElement.querySelector('.site-footer > span')?.textContent).toBe(
-      `© 2026${new Date().getFullYear() > 2026 ? '–' + new Date().getFullYear() : ''} RadioBee. All rights reserved.`,
+      radioBeeCopyright(),
     );
     expect(fixture.nativeElement.querySelector('app-station-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('audio')).toBeNull();
