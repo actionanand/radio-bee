@@ -1,14 +1,15 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { Location, NgTemplateOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { IonContent, IonIcon } from '@ionic/angular';
+import { arrowBackOutline } from 'ionicons/icons';
 import { CATALOG_URL } from '../catalog/catalog.service';
 import { radioBeeCopyright } from '../shared/copyright';
 import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
 
 @Component({
   selector: 'app-legal-page',
-  imports: [IonContent, NgTemplateOutlet, RouterLink],
+  imports: [IonContent, IonIcon, NgTemplateOutlet, RouterLink],
   template: `
     @if (isV2) {
       <ng-container [ngTemplateOutlet]="body" />
@@ -21,7 +22,10 @@ import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
     }
     <ng-template #body>
       <article class="legal-page" lang="en">
-        <a class="back-link" routerLink="/home">← RadioBee Home</a>
+        <button class="back-link" type="button" (click)="goBack()">
+          <ion-icon [icon]="backIcon" aria-hidden="true" />
+          <span>Back</span>
+        </button>
         <header>
           <p class="eyebrow">RadioBee · Legal information</p>
           <h1 tabindex="-1">{{ document.title }}</h1>
@@ -67,7 +71,15 @@ import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
     ion-content { --background: var(--paper); --color: var(--ink); }
     .legacy-shell { max-width: 960px; padding: 24px clamp(18px, 4vw, 64px) 64px; margin: 0 auto; }
     .legal-page { max-width: 890px; margin: 0 auto; padding: 0 0 40px; line-height: 1.65; }
-    .back-link { display: inline-flex; min-height: 44px; align-items: center; color: var(--accent-ink); font-size: 14px; }
+    .back-link {
+      display: inline-flex; gap: 8px; min-height: 44px; align-items: center;
+      padding: 8px 12px; border: 1px solid var(--line); border-radius: 9px;
+      background: var(--surface); color: var(--ink); font: inherit;
+      font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
+    }
+    .back-link ion-icon { font-size: 18px; }
+    .back-link:hover { background: var(--panel); }
+    .back-link:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
     header { padding-bottom: 20px; margin-bottom: 26px; border-bottom: 1px solid var(--line); }
     .eyebrow { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
     h1 { font-size: clamp(25px, 4vw, 38px); line-height: 1.2; margin: 10px 0 18px; }
@@ -89,11 +101,20 @@ import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
 })
 export class LegalPage {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly base = inject(CATALOG_URL);
   readonly isV2 = new URL(this.base).pathname.endsWith('/v2/');
+  readonly backIcon = arrowBackOutline;
   readonly pageId = this.route.snapshot.data['legalPage'] as LegalPageId;
   readonly document = legalDocuments[this.pageId];
   readonly routePath = `/${this.pageId}`;
   readonly links = legalLinks;
   readonly copyright = radioBeeCopyright();
+
+  goBack() {
+    const state = this.location.getState() as { navigationId?: number };
+    if (typeof state.navigationId === 'number' && state.navigationId > 1) this.location.back();
+    else void this.router.navigateByUrl('/home');
+  }
 }
