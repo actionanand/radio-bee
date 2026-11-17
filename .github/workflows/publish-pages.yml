@@ -79,8 +79,8 @@ jobs:
           fi
           # Confirm the checked-out deployment commit contains THIS build's
           # entrypoint and fallback before pushing, not just any old entrypoint.
-          cmp www/index.html <(git show HEAD:index.html)
-          cmp www/404.html <(git show HEAD:404.html)
+          cmp "$GITHUB_WORKSPACE/www/index.html" <(git show HEAD:index.html)
+          cmp "$GITHUB_WORKSPACE/www/404.html" <(git show HEAD:404.html)
           # Check the outgoing tree, not just the worktree.
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
