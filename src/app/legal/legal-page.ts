@@ -43,7 +43,7 @@ import { ContactFormComponent } from '../contact/contact-form';
               }
               @if (section.points?.length) {
                 <ul>
-                  @for (point of section.points ?? []; track point) {
+                  @for (point of section.points; track point) {
                     <li>{{ point }}</li>
                   }
                 </ul>
