@@ -3,14 +3,16 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import { exportRecording } from './export-recording';
 import { inject } from '@angular/core';
 import { RADIO_RECORDING } from './recording.config';
+import { RecordingExportPreferencesService, recordingBitrate } from './recording-export-preferences';
 
 interface AndroidRecordingStorage {
   getFolder(): Promise<{ selected: boolean; name?: string }>;
   chooseFolder(): Promise<{ selected: boolean; name?: string }>;
-  beginFile(options: { filename: string; mimeType: string }): Promise<{ id: string }>;
+  beginFile(options: { filename: string; mimeType: string }): Promise<{ id: string; name: string }>;
   appendData(options: { id: string; base64: string }): Promise<void>;
   finishFile(options: { id: string }): Promise<void>;
   cancelFile(options: { id: string }): Promise<void>;
+  convertSaved(options: { filename: string; bitrate: number; cover: boolean; station: string }): Promise<{ name: string; converted: boolean }>;
 }
 const androidStorage = registerPlugin<AndroidRecordingStorage>('RadioBeeRecordingStorage');
 type FolderAccess = 'granted' | 'prompt' | 'denied';
@@ -27,6 +29,7 @@ const FOLDER_KEY = 'selected';
 @Injectable({ providedIn: 'root' })
 export class RecordingDestination {
   private readonly recording = inject(RADIO_RECORDING);
+  private readonly preferences = inject(RecordingExportPreferencesService);
   readonly selected = signal(false);
   readonly name = signal('');
   readonly ready = signal(false);
@@ -142,11 +145,11 @@ export class RecordingDestination {
     } catch { this.selected.set(false); return false; }
   }
 
-  async save(blob: Blob, filename: string, requireFolder = false): Promise<void> {
+  async save(blob: Blob, filename: string, requireFolder = false, station = 'RadioBee'): Promise<'original' | 'converted' | 'fallback'> {
     if (!this.recording.Enabled) throw Error('Recording is disabled');
     if (Capacitor.getPlatform() === 'android') {
       if (!await this.hasAccess()) throw Error('Recording folder access was removed');
-      const { id } = await androidStorage.beginFile({ filename, mimeType: blob.type || 'application/octet-stream' });
+      const { id, name } = await androidStorage.beginFile({ filename, mimeType: blob.type || 'application/octet-stream' });
       try {
         const chunkSize = 48 * 1024;
         for (let offset = 0; offset < blob.size; offset += chunkSize) {
@@ -160,7 +163,20 @@ export class RecordingDestination {
         await androidStorage.cancelFile({ id }).catch(() => undefined);
         throw error;
       }
-      return;
+      if (this.preferences.format() !== 'm4a') return 'original';
+      try {
+        const result = await androidStorage.convertSaved({
+          filename: name || filename,
+          bitrate: recordingBitrate(this.preferences.quality()),
+          cover: this.preferences.coverArt(),
+          station,
+        });
+        return result.converted ? 'converted' : 'fallback';
+      } catch {
+        // The original was written successfully before conversion. Preserve it
+        // instead of reporting a save failure or losing an auto-saved segment.
+        return 'fallback';
+      }
     }
     if (await this.hasAccess() && this.directory) {
       const file = await this.directory.getFileHandle(filename, { create: true });
@@ -172,9 +188,10 @@ export class RecordingDestination {
         await writer.abort().catch(() => undefined);
         throw error;
       }
-      return;
+      return 'original';
     }
     if (requireFolder) throw Error('A persistent recording folder is required for auto-save');
     await exportRecording(blob, filename);
+    return 'original';
   }
 }
