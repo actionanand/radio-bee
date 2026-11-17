@@ -130,10 +130,17 @@ test('Capacitor sync injects the SAF recording plugin in the generated package e
   ].join('\n'));
   f.write('scripts/native/RadioBeeRecordingStoragePlugin.java',
     read('scripts/native/RadioBeeRecordingStoragePlugin.java'));
+  f.write('scripts/native/RadioBeeAudioConverter.java',
+    read('scripts/native/RadioBeeAudioConverter.java'));
   patchAndroid(f.root);
   assert.match(f.read(activity), /registerPlugin\(RadioBeeRecordingStoragePlugin\.class\)/);
   assert.match(f.read(native), /package com\.actionanand\.radiobee\.app;/);
   assert.match(f.read(native), /ACTION_OPEN_DOCUMENT_TREE/);
+  assert.match(f.read(native), /convertSaved/);
+  const converter = 'android/app/src/main/java/com/actionanand/radiobee/app/RadioBeeAudioConverter.java';
+  assert.match(f.read(converter), /MediaCodec\.createEncoderByType/);
+  assert.match(f.read(converter), /covr/);
+  assert.match(f.read(converter), /package com\.actionanand\.radiobee\.app;/);
   const first = f.read(activity);
   patchAndroid(f.root);
   assert.equal(f.read(activity), first);
