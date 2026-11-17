@@ -31,10 +31,13 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
         <ion-content class="contact-modal-content">
         <div class="contact-dialog rb-ui" [attr.lang]="catalog.locale()">
           <header class="form-heading">
-            <div>
-              <p class="eyebrow">RadioBee</p>
+            <div class="contact-heading-brand">
+              <img class="contact-brand-icon" src="assets/icon/radio-bee.png" width="42" height="42" alt="RadioBee app icon" />
+              <div>
+                <p class="eyebrow">RadioBee</p>
               <h2 id="contact-title">{{ copy().title }}</h2>
               <p>{{ copy().subtitle }}</p>
+              </div>
             </div>
             <button class="dismiss-form" type="button" [attr.aria-label]="copy().close"
               [disabled]="sending()" (click)="open.set(false)">
@@ -64,7 +67,7 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
                 <div class="field">
                   <label for="contact-purpose">{{ copy().purpose }} <span class="required">*</span></label>
                   <ion-select id="contact-purpose" mode="md" interface="popover"
-                    fill="outline" [label]="copy().purpose" labelPlacement="stacked"
+                    [attr.aria-label]="copy().purpose"
                     [interfaceOptions]="{ header: copy().purpose, showBackdrop: true }"
                     formControlName="purpose" [disabled]="sending()">
                     @for (choice of purposes(); track choice.value) {
@@ -148,6 +151,8 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
     .form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;
       margin-bottom: 26px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
     .eyebrow { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .contact-heading-brand { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+    .contact-brand-icon { width: 42px; height: 42px; flex: none; border-radius: 50%; object-fit: contain; }
     .form-heading h2 { margin: 0 0 8px; font-size: clamp(23px, 4vw, 30px); }
     .form-heading p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
     .dismiss-form { background: transparent; border: 0; color: var(--ink); cursor: pointer; min-width: 44px;
@@ -166,9 +171,10 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
     .field input:focus-visible, .field textarea:focus-visible, .dismiss-form:focus-visible,
     .consent-line input:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; }
     .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: .8; }
-    ion-select { --background: var(--surface); --color: var(--ink); --border-color: var(--line);
-      --border-radius: 7px; --highlight-color-focused: var(--accent-ink); min-height: 44px; }
-    ion-select::part(label) { display: none; }
+    ion-select { box-sizing: border-box; width: 100%; min-height: 44px; padding-inline: 12px;
+      border: 1px solid var(--line); border-radius: 7px; background: var(--surface);
+      color: var(--ink); --highlight-color-focused: var(--accent-ink); }
+    ion-select:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; }
     .required { color: #c53729; }
     .helper { margin: -3px 0 14px; color: var(--muted); font-size: 12px; }
     .consent { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 8px; }
