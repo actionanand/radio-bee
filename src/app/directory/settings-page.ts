@@ -3,6 +3,7 @@ import { CatalogService } from '../catalog/catalog.service';
 import { ThemeService } from '../theme/theme.service';
 import { uiLanguageOptions } from '../catalog/device-language';
 import { DirectorySelectComponent } from './directory-select';
+import { ContactFormComponent } from '../contact/contact-form';
 import { HOME_STATIONS_MAX, HOME_STATIONS_MIN, HomePreferencesService } from './home-preferences.service';
 import { SettingsKey, settingsText } from './settings.labels';
 import { directoryText } from './directory.labels';
@@ -13,7 +14,7 @@ import { recordingLimits } from '../recording/capture-engine';
 /** v2 Settings: a draft selection never changes Home until the user saves it. */
 @Component({
   selector: 'app-settings-page',
-  imports: [DirectorySelectComponent],
+  imports: [DirectorySelectComponent, ContactFormComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss',
 })
