@@ -81,4 +81,16 @@
     @if (saved()) { <p role="status" class="saved">{{ text('saved') }}</p> }
     @if (home.warning()) { <p role="alert">{{ text('storage') }}</p> }
   </section>
+  <section class="setting-card support-card" aria-labelledby="support-heading">
+    <div class="support-row">
+      <div>
+        <h2 id="support-heading">{{ text('supportHeading') }}</h2>
+        <p class="help">{{ text('supportHelp') }}</p>
+      </div>
+      <button class="support-button" type="button" aria-haspopup="dialog" (click)="contactForm.show()">
+        {{ text('contactUs') }}
+      </button>
+    </div>
+    <app-contact-form #contactForm />
+  </section>
 </section>
