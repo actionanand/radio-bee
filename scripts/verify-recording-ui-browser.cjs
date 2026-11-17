@@ -214,6 +214,7 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
   const discard = async () => {
     if (!(await panel.isVisible())) await page.locator('.recording-toggle').click();
     await panel.locator('button').filter({ hasText: 'Discard' }).click();
+    await page.locator('ion-modal.recording-confirmation-modal ion-button').last().click();
   };
   try {
     await page.goto(base + '/settings');
