@@ -66,7 +66,7 @@ export type RecordingConfirmationKind = 'discard' | 'switch';
   `,
 })
 export class RecordingConfirmationComponent {
-  private readonly catalog = inject(CatalogService);
+  readonly catalog = inject(CatalogService);
   readonly request = signal<RecordingConfirmationKind | null>(null);
   readonly breakpoints = [0, 1];
   readonly icons = radioIcons;
