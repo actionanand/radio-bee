@@ -64,6 +64,9 @@ ion-content {
 .site-footer p {
   margin: 0;
 }
+ .site-footer .footer-policies { display: flex; gap: 5px 12px; flex-wrap: wrap; align-items: center; }
+.site-footer .footer-policies a { color: var(--muted); font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+.site-footer .footer-policies a:hover { color: var(--accent-ink); }
 .site-footer > span {
   margin-left: auto;
 }
