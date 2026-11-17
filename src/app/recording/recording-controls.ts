@@ -130,7 +130,7 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
       </div>
       <app-recording-confirmation />
     }
-  `
+  `,
   styles: `
     :host {
       display: block;
