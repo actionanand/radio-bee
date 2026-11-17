@@ -7,7 +7,8 @@ h3 { font-size: 15px; margin: 0 0 5px; }
   background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
   padding: clamp(14px, 3vw, 24px); margin-bottom: 18px;
 }
-.preferences { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; }
+.preferences { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.preferences app-directory-select { min-width: 0; }
 .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .toggle-row p, .help { font-size: 13px; line-height: 1.5; color: var(--muted); margin: 4px 0 12px; }
 .material-switch {
@@ -57,10 +58,28 @@ h3 { font-size: 15px; margin: 0 0 5px; }
 }
 .save-button:disabled, .folder-button:disabled { opacity: .4; cursor: not-allowed; }
 .saved { color: var(--accent-ink); font-weight: 700; }
+.support-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.support-row h2 { margin-bottom: 8px; }
+.support-row .help { margin: 0; max-width: 56ch; }
+.support-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none; min-height: 44px; padding: 10px 18px;
+  border: 1px solid var(--ink); border-radius: 10px;
+  background: var(--ink); color: var(--paper);
+  font: inherit; font-weight: 700; cursor: pointer;
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+.support-button:hover {
+  background: var(--accent-ink); border-color: var(--accent-ink); transform: translateY(-1px);
+}
 :focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
 @media (max-width: 599px) {
+  .preferences { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .station-options { grid-template-columns: 1fr; max-height: 45dvh; }
+  .support-row { align-items: stretch; flex-direction: column; gap: 12px; }
+  .support-button { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .material-switch, .material-switch .thumb { transition: none; }
+  .material-switch, .material-switch .thumb, .support-button { transition: none; }
+  .support-button:hover { transform: none; }
 }
