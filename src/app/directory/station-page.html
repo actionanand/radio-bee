@@ -29,7 +29,7 @@
 <section>
   <h2>{{text('about')}}</h2>
   @if(station.about){
-  <p class="description">{{station.about}}</p>
+  <p class="description">{{data.stationAbout(station)}}</p>
   }
   <dl>
     @for(field of fields();track field.id){
