@@ -1,3 +1,5 @@
+import { NavigationStart, Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { CaptureAccessError } from './capture-access';
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
@@ -49,6 +51,7 @@ function setup(
   const data = { stationName: CatalogService.prototype.stationName, catalog: signal(c), locale: signal('en') };
   TestBed.configureTestingModule({
     providers: [
+      { provide: Router, useValue: { events: new Subject<NavigationStart>(), navigate: vi.fn() } },
       {
         provide: RADIO_RECORDING,
         useValue: {
@@ -622,5 +625,114 @@ describe('Configured recording and explicit source policy', () => {
     expect(s.player.state()).toBe('playing');
     expect(s.audio.getAttribute('crossorigin')).toBeNull();
     expect(s.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('V2 persistent recording lifecycle', () => {
+  it('claims startup before awaiting the folder and ignores duplicate starts', async () => {
+    const s = setup(true, false, true);
+    let allow!: (value: boolean) => void;
+    const folder = TestBed.inject(RecordingDestination);
+    vi.spyOn(folder, 'hasAccess').mockImplementation(
+      () =>
+        new Promise(resolve => {
+          allow = resolve;
+        }),
+    );
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    const pending = recorder.start(true);
+    expect(recorder.state()).toBe('preparing');
+    await recorder.start(true);
+    allow(true);
+    await pending;
+    expect(s.create).toHaveBeenCalledOnce();
+  });
+  it('handles a rejected folder permission request without creating or wedging capture', async () => {
+    const s = setup(true, false, true);
+    vi.spyOn(TestBed.inject(RecordingDestination), 'hasAccess').mockRejectedValue(Error('Folder inaccessible'));
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    await recorder.start(true);
+    expect(recorder.state()).toBe('idle');
+    expect(recorder.message()).toBe('recordingFolderRequired');
+    expect(s.create).not.toHaveBeenCalled();
+  });
+  it('still finishes capture on pagehide instead of promising recording after document exit', async () => {
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    await recorder.start(true);
+    s.hooks().progress(5, true);
+    window.dispatchEvent(new Event('pagehide'));
+    const draft = new Blob(['genuine prior audio']);
+    s.hooks().finished(draft, 'manual');
+    expect(recorder.lastStopReason()).toBe('pagehide');
+    expect(recorder.file()).toBe(draft);
+    expect(recorder.state()).toBe('ready');
+  });
+  it('does not resume a cancelled folder preparation', async () => {
+    const s = setup(true, false, true);
+    let allow!: (value: boolean) => void;
+    vi.spyOn(TestBed.inject(RecordingDestination), 'hasAccess').mockImplementation(
+      () =>
+        new Promise(resolve => {
+          allow = resolve;
+        }),
+    );
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    const pending = recorder.start(true);
+    s.player.stop();
+    allow(true);
+    await pending;
+    expect(s.create).not.toHaveBeenCalled();
+    expect(recorder.state()).toBe('idle');
+  });
+  for (const version of [1, 2]) {
+    it(`retains internal navigation only for V2 (schema ${version})`, async () => {
+      const s = setup();
+      s.c.manifest.schemaVersion = version;
+      const events = TestBed.inject(Router).events as Subject<NavigationStart>;
+      await playing(s);
+      const recorder = TestBed.inject(RecordingService);
+      await recorder.start(true);
+      s.hooks().progress(5, true);
+      events.next(new NavigationStart(1, '/settings'));
+      expect(s.stop).toHaveBeenCalledTimes(version === 2 ? 0 : 1);
+      expect(recorder.state()).toBe(version === 2 ? 'recording' : 'stopping');
+    });
+    it(`retains browser background capture only for V2 (schema ${version})`, async () => {
+      const s = setup();
+      s.c.manifest.schemaVersion = version;
+      await playing(s);
+      const recorder = TestBed.inject(RecordingService);
+      await recorder.start(true);
+      s.hooks().progress(5, true);
+      vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+      document.dispatchEvent(new Event('visibilitychange'));
+      expect(s.stop).toHaveBeenCalledTimes(version === 2 ? 0 : 1);
+    });
+  }
+  it('retains genuine failure audio and explains why recovered playback has not restarted recording', async () => {
+    vi.useFakeTimers();
+    const s = setup();
+    s.c.manifest.schemaVersion = 2;
+    s.station.streams = [s.station.streams[0]];
+    await playing(s);
+    const recorder = TestBed.inject(RecordingService);
+    await recorder.start(true);
+    s.hooks().progress(9, true);
+    Object.defineProperty(s.audio, 'error', { value: { code: 2 } });
+    s.audio.dispatchEvent(new Event('error'));
+    const draft = new Blob(['captured radio']);
+    s.hooks().finished(draft, 'manual');
+    await vi.advanceTimersByTimeAsync(750);
+    s.audio.dispatchEvent(new Event('playing'));
+    expect(recorder.file()).toBe(draft);
+    expect(recorder.message()).toBe('recordingInterrupted');
+    expect(s.create).toHaveBeenCalledOnce();
+    expect(recorder.diagnostics().some(row => row.event === 'stop' && row.reason === 'failure')).toBe(true);
   });
 });

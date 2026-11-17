@@ -21,6 +21,8 @@ export const extraEnglish = {
   exportRecording: 'Export recording',
   recording: 'Recording',
   recordingStarting: 'Waiting for stream audio…',
+  recordingInterrupted:
+    'The stream changed or stopped. Captured audio is ready to export; recording has not restarted.',
   recordingReady: 'Recording ready to export',
   recordingConsent:
     'Recording may be unconfirmed or prohibited by the broadcaster. I confirm I have permission for this experimental recording and will not redistribute it.',
@@ -61,6 +63,8 @@ export const extraTamil: typeof extraEnglish = {
   exportRecording: 'பதிவை ஏற்றுமதி செய்',
   recording: 'பதிவாகிறது',
   recordingStarting: 'ஒலிக்காகக் காத்திருக்கிறது…',
+  recordingInterrupted:
+    'ஒலிபரப்பு மாறியது அல்லது நின்றது. பதிவான ஒலியை ஏற்றுமதி செய்யலாம்; பதிவு மீண்டும் தொடங்கவில்லை.',
   recordingReady: 'பதிவு ஏற்றுமதிக்குத் தயார்',
   recordingConsent:
     'பதிவு அனுமதி உறுதியாகாமலோ ஒலிபரப்பாளரால் தடைசெய்யப்பட்டதாகவோ இருக்கலாம். இந்தச் சோதனைப் பதிவிற்கு எனக்கு அனுமதி உள்ளது என்பதை உறுதிப்படுத்துகிறேன். மறுவிநியோகம் செய்ய மாட்டேன்.',
@@ -101,6 +105,7 @@ export const extraSanskrit: typeof extraEnglish = {
   exportRecording: 'मुद्रणं निर्यातय',
   recording: 'मुद्रणं प्रवर्तते',
   recordingStarting: 'ध्वनेः प्रतीक्षा…',
+  recordingInterrupted: 'प्रसारः परिवर्तितः अथवा स्थितः। गृहीतध्वनिः निर्याताय उपलब्धः; मुद्रणं पुनः न आरब्धम्।',
   recordingReady: 'मुद्रणं निर्याताय सज्जम्',
   recordingConsent:
     'मुद्रणानुमतिः अनिश्चिता अथवा प्रसारकेण निषिद्धा स्यात्। अस्य परीक्षणमुद्रणस्य आवश्यकानुमतिः मम अस्ति इति पुष्णामि। पुनर्वितरणं न करिष्यामि।',

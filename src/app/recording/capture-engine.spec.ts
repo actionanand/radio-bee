@@ -1,4 +1,10 @@
-import { captureRadio, CaptureCallbacks, MAX_RECORDING_BYTES, MAX_RECORDING_MS, recordingLimits } from './capture-engine';
+import {
+  captureRadio,
+  CaptureCallbacks,
+  MAX_RECORDING_BYTES,
+  MAX_RECORDING_MS,
+  recordingLimits,
+} from './capture-engine';
 describe('Bounded output-only capture adapter (controlled API unit tests)', () => {
   let recorder: FakeRecorder,
     samples = 0.05;
@@ -90,7 +96,8 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     expect(track.stop).toHaveBeenCalled();
   });
   it('recognizes audible live streams even when currentTime remains fixed', async () => {
-    const element = audio(), cb = callbacks();
+    const element = audio(),
+      cb = callbacks();
     Object.defineProperty(element, 'readyState', { configurable: true, value: HTMLMediaElement.HAVE_CURRENT_DATA });
     const handle = await captureRadio(element, new AbortController().signal, cb);
     recorder.data();
@@ -99,6 +106,18 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     expect(element.currentTime).toBe(10);
     handle.stop();
     expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'manual');
+  });
+  it('classifies an unexpected native recorder stop and preserves already validated audio', async () => {
+    const element = audio(),
+      cb = callbacks();
+    const handle = await captureRadio(element, new AbortController().signal, cb);
+    element.currentTime = 11;
+    recorder.data();
+    await vi.advanceTimersByTimeAsync(800);
+    recorder.stop();
+    handle.stop();
+    expect(cb.finished).toHaveBeenCalledExactlyOnceWith(expect.any(Blob), 'source-ended');
+    expect(track.stop).toHaveBeenCalled();
   });
   it('excludes and stops HLS video tracks before constructing an audio recorder', async () => {
     const element = audio(),
@@ -126,7 +145,7 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
       element.currentTime = 20;
       await vi.advanceTimersByTimeAsync(8000);
       expect(cb.failed).not.toHaveBeenCalled();
-      expect(cb.finished).toHaveBeenCalledWith(null, 'manual');
+      expect(cb.finished).toHaveBeenCalledWith(null, 'no-audio');
     });
   it('reports an encoder error once without overwriting it with an empty-file outcome', async () => {
     const cb = callbacks();
@@ -165,7 +184,8 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     expect(recorder.state).toBe('inactive');
   });
   it('honors configurable limits and reports automatic segment boundaries', async () => {
-    const cb = callbacks(), element = audio();
+    const cb = callbacks(),
+      element = audio();
     await captureRadio(element, new AbortController().signal, cb, { MaxDurationMs: 1000, MaxBytes: 4096 });
     element.currentTime = 15;
     recorder.data(512);
@@ -173,7 +193,10 @@ describe('Bounded output-only capture adapter (controlled API unit tests)', () =
     expect(recorder.state).toBe('inactive');
     expect(cb.finished).toHaveBeenCalledWith(expect.any(Blob), 'limit');
     expect(recordingLimits({ MaxDurationMs: 2000, MaxBytes: 2048 })).toEqual({ maxMs: 2000, maxBytes: 2048 });
-    expect(recordingLimits({ MaxDurationMs: Number.NaN, MaxBytes: -1 })).toEqual({ maxMs: MAX_RECORDING_MS, maxBytes: MAX_RECORDING_BYTES });
+    expect(recordingLimits({ MaxDurationMs: Number.NaN, MaxBytes: -1 })).toEqual({
+      maxMs: MAX_RECORDING_MS,
+      maxBytes: MAX_RECORDING_BYTES,
+    });
   });
   it('rejects unsupported MIME/security failures without asking for microphone access', async () => {
     const element = audio();
