@@ -1,6 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { IonIcon } from '@ionic/angular';
 import { RecordingService } from './recording.service';
+import { RecordingDestination } from './recording-destination';
 import { PlayerService } from '../player/player.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { UiKey, uiLabel } from '../catalog/catalog.ui';
@@ -19,7 +20,7 @@ import { radioIcons } from '../shared/radio-icons';
             [disabled]="player.state() === 'loading' && !recorder.file() && (recorder.state() === 'idle' || recorder.state() === 'error')"
             aria-controls="radio-recording-panel"
             [attr.aria-expanded]="expanded()"
-            (click)="expanded.update(value => !value)">
+            (click)="togglePanel()">
             <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />
             <span>{{ ui('record') }}</span>
             @if (recorder.state() === 'recording') {
@@ -27,6 +28,7 @@ import { radioIcons } from '../shared/radio-icons';
             } @else if (recorder.file()) {
               <span class="recording-time">{{ ui('recordingReady') }}</span>
             }
+            <ion-icon class="recording-chevron" [class.open]="expanded()" [icon]="icons.chevronDownOutline" aria-hidden="true" />
           </button>
           @if (
             recorder.state() === 'preparing' ||
@@ -60,25 +62,32 @@ import { radioIcons } from '../shared/radio-icons';
                 <ion-icon [icon]="icons.close" aria-hidden="true" />
               </button>
             </header>
-            @if (recorder.state() === 'idle' || recorder.state() === 'error') {
+            @if (recorder.state() === 'idle' || recorder.state() === 'error' || recorder.state() === 'ready') {
               @if (recorder.permission() === 'blocked') {
                 <p>{{ ui('recordingProhibited') }}</p>
-              } @else if (recorder.permission() === 'unavailable') {
-                <p>{{ ui('recordingPlaybackRequired') }}</p>
               } @else {
+                @if (recorder.permission() === 'unavailable') {
+                  <p>{{ ui('recordingPlaybackRequired') }}</p>
+                }
                 @if (recorder.permission() === 'acknowledgment') {
                   <label class="consent">
                     <input type="checkbox" [checked]="acknowledged()" (change)="acknowledge($event)" />
                     <span>{{ ui('recordingConsent') }}</span>
                   </label>
                 }
-                <button
-                  class="primary-action"
-                  type="button"
-                  [disabled]="player.state() !== 'playing' || (recorder.permission() === 'acknowledgment' && !acknowledged())"
-                  (click)="recorder.start(acknowledged())">
-                  <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />{{ ui('recordingStart') }}
-                </button>
+                @if (confirmReplace() && recorder.file()) {
+                  <p role="alert">{{ ui('recordingReplaceConfirm') }}</p>
+                  <button class="primary-action" type="button"
+                    [disabled]="!canStart()"
+                    (click)="begin(true)">{{ ui('recordingReplaceStart') }}</button>
+                  <button class="secondary-action" type="button"
+                    (click)="confirmReplace.set(false)">{{ ui('recordingReplaceCancel') }}</button>
+                } @else {
+                  <button class="primary-action" type="button"
+                    [disabled]="!canStart()" (click)="begin()">
+                    <ion-icon [icon]="icons.radioButtonOn" aria-hidden="true" />{{ ui('recordingStart') }}
+                  </button>
+                }
               }
             }
             @if (
@@ -99,22 +108,17 @@ import { radioIcons } from '../shared/radio-icons';
                 <ion-icon [icon]="icons.stop" aria-hidden="true" />{{ ui('stopRecording') }}
               </button>
             }
-            @if (recorder.file()) {
+            @if (recorder.file() || recorder.state() === 'preparing' ||
+                  recorder.state() === 'starting' || recorder.state() === 'recording' ||
+                  recorder.state() === 'stopping') {
               <button
-                class="primary-action"
+                class="secondary-action"
                 type="button"
-                (click)="recorder.save()"
+                (click)="discard()"
                 [disabled]="recorder.state() === 'exporting'">
-                <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />{{ ui('exportRecording') }}
+                <ion-icon [icon]="icons.close" aria-hidden="true" />{{ ui('discard') }}
               </button>
             }
-            <button
-              class="secondary-action"
-              type="button"
-              (click)="discard()"
-              [disabled]="recorder.state() === 'exporting'">
-              <ion-icon [icon]="icons.close" aria-hidden="true" />{{ ui('discard') }}
-            </button>
             @if (recorder.message(); as message) {
               <p [attr.role]="recorder.state() === 'error' ? 'alert' : 'status'">{{ ui(message) }}</p>
             }
@@ -166,6 +170,8 @@ import { radioIcons } from '../shared/radio-icons';
     .recording-toggle { border-color: var(--accent-ink); }
     .recording-toggle ion-icon { color: var(--accent-ink); }
     .recording-time { font-size: 11px; font-variant-numeric: tabular-nums; }
+    .recording-chevron { font-size: 15px; transition: transform .15s ease; }
+    .recording-chevron.open { transform: rotate(180deg); }
     .recording-panel {
       position: absolute;
       right: clamp(12px, 4vw, 64px);
@@ -213,13 +219,16 @@ export class RecordingControlsComponent {
   readonly recorder = inject(RecordingService);
   readonly player = inject(PlayerService);
   readonly catalog = inject(CatalogService);
+  readonly destination = inject(RecordingDestination);
   readonly icons = radioIcons;
   readonly expanded = signal(false);
   readonly acknowledged = signal(false);
+  readonly confirmReplace = signal(false);
   constructor() {
     effect(() => {
       this.player.station()?.id;
       this.acknowledged.set(false);
+      this.confirmReplace.set(false);
     });
   }
   ui(key: UiKey) {
@@ -228,8 +237,41 @@ export class RecordingControlsComponent {
   acknowledge(event: Event) {
     if (event.target instanceof HTMLInputElement) this.acknowledged.set(event.target.checked);
   }
+  togglePanel() {
+    this.expanded.update(value => !value);
+    if (!this.expanded()) this.confirmReplace.set(false);
+  }
+  canStart() {
+    return this.player.state() === 'playing' &&
+      this.destination.ready() &&
+      this.recorder.permission() !== 'blocked' &&
+      this.recorder.permission() !== 'unavailable' &&
+      (this.recorder.permission() !== 'acknowledgment' || this.acknowledged());
+  }
+  async begin(replaceDraft = false) {
+    if (!this.canStart()) return;
+    if (this.recorder.file() && !replaceDraft) {
+      this.confirmReplace.set(true);
+      return;
+    }
+    this.confirmReplace.set(false);
+    // Begin synchronously inside the user gesture so the first-use
+    // system folder picker retains browser activation.
+    const starting = this.recorder.start(this.acknowledged(), {
+      promptFirstFolder: true,
+      replaceDraft,
+    });
+    this.expanded.set(false);
+    await starting;
+    if (['idle', 'error', 'ready'].includes(this.recorder.state()) &&
+        this.recorder.message() &&
+        this.recorder.message() !== 'recordingReady') {
+      this.expanded.set(true);
+    }
+  }
   discard() {
     this.recorder.discard();
+    this.confirmReplace.set(false);
     this.expanded.set(false);
     this.acknowledged.set(false);
   }
