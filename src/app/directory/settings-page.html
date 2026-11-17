@@ -19,6 +19,35 @@
     <section class="setting-card" aria-labelledby="recording-heading">
       <h2 id="recording-heading">{{ text('recordingFolder') }}</h2>
       <p class="help">{{ text('recordingFolderHelp') }}</p>
+      <div class="recording-preferences" data-recording-export-settings>
+        <div class="preferences">
+          <app-directory-select data-control="recording-format"
+            [label]="text('recordingFormat')"
+            [value]="exportPreferences.format()"
+            [options]="recordingFormats()"
+            (changed)="exportPreferences.setFormat($event)" />
+          <app-directory-select data-control="recording-quality"
+            [label]="text('recordingQuality')"
+            [value]="exportPreferences.quality()"
+            [options]="recordingQualities()"
+            (changed)="exportPreferences.setQuality($event)" />
+        </div>
+        <p class="help">{{ text('recordingFormatHelp') }}</p>
+        @if (androidRecording && exportPreferences.format() === 'm4a') {
+          <div class="toggle-row recording-artwork">
+            <div>
+              <h3 id="recording-cover-label">{{ text('recordingCover') }}</h3>
+              <p class="help">{{ text('recordingCoverHelp') }}</p>
+            </div>
+            <button type="button" class="material-switch" role="switch"
+              aria-labelledby="recording-cover-label"
+              [attr.aria-checked]="exportPreferences.coverArt()"
+              (click)="exportPreferences.setCoverArt(!exportPreferences.coverArt())">
+              <span class="thumb" aria-hidden="true"></span>
+            </button>
+          </div>
+        }
+      </div>
       <p class="help" data-recording-settings-limit>{{ recordingLimitText() }}</p>
       @if (recording.AutoContinue) {
         <p class="help">{{ text('recordingAutoContinue') }}</p>
