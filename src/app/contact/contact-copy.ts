@@ -50,9 +50,7 @@ export const contactCopyEnglish = {
   privacy: 'Privacy Policy',
 } as const;
 
-export type ContactCopy = Omit<typeof contactCopyEnglish, 'purposeOptions'> & {
-  readonly purposeOptions: readonly string[];
-};
+export type ContactCopy = { readonly [K in keyof typeof contactCopyEnglish]: K extends 'purposeOptions' ? readonly string[] : string };
 
 export const contactCopyTamil: ContactCopy = {
   title: 'RadioBee-ஐத் தொடர்புகொள்ளுங்கள்',
