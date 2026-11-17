@@ -213,6 +213,8 @@ describe('Routable v2 directory', () => {
     const footerTagline = () => element(h).querySelector('.directory-shell footer span')?.textContent?.trim();
     expect(tunerTagline()).toBe('Stay tuned. Stay buzzing.');
     expect(footerTagline()).toBe('RadioBee - Stay tuned. Stay buzzing.');
+    expect(element(h).querySelectorAll('.directory-shell footer .copyright')).toHaveLength(1);
+    expect(element(h).querySelector('.directory-shell footer .copyright')?.textContent).toContain('RadioBee. All rights reserved.');
     data.locale.set('ta');
     h.detectChanges();
     expect(tunerTagline()).toBe('இசையில் இணைவோம். இனிமையாய் ஒலிப்போம்.');
