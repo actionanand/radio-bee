@@ -15,6 +15,13 @@ export const worldMatcher: UrlMatcher = segments =>
     : null;
 const page = () => import('./directory/directory-page').then(m => m.DirectoryPage);
 const notFound = () => import('./not-found/not-found-page').then(m => m.NotFoundPage);
+const legal = () => import('./legal/legal-page').then(m => m.LegalPage);
+const legalRoutes: Routes = [
+  { path: 'privacy', loadComponent: legal, data: { legalPage: 'privacy' } },
+  { path: 'terms', loadComponent: legal, data: { legalPage: 'terms' } },
+  { path: 'copyright-policy', loadComponent: legal, data: { legalPage: 'copyright-policy' } },
+  { path: 'contact', loadComponent: legal, data: { legalPage: 'contact' } },
+];
 export const routes: Routes = [
   {
     path: '',
@@ -29,12 +36,14 @@ export const routes: Routes = [
       ]),
       { path: 'favorites', loadComponent: page, data: { mode: 'favorites' } },
       { path: 'settings', loadComponent: () => import('./directory/settings-page').then(m => m.SettingsPage) },
+      ...legalRoutes,
       { path: 'listen-now', loadComponent: page, data: { mode: 'listenNow' } },
       { path: 'radios/:stationId', loadComponent: () => import('./directory/station-page').then(m => m.StationPage) },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: '**', loadComponent: notFound },
     ],
   },
+  ...legalRoutes,
   { path: 'home', loadComponent: () => import('./home/home.page').then(m => m.HomePage) },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', loadComponent: notFound },
