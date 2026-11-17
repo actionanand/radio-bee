@@ -1,6 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { CatalogService } from '../catalog/catalog.service';
-import { SnackbarService } from '../shared/snackbar.service';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { exportRecording } from './export-recording';
 import { inject } from '@angular/core';
@@ -32,8 +30,6 @@ const FOLDER_KEY = 'selected';
 export class RecordingDestination {
   private readonly recording = inject(RADIO_RECORDING);
   private readonly preferences = inject(RecordingExportPreferencesService);
-  private readonly snackbar = inject(SnackbarService);
-  private readonly catalog = inject(CatalogService);
   readonly converting = signal(0);
   readonly selected = signal(false);
   readonly name = signal('');
@@ -150,7 +146,7 @@ export class RecordingDestination {
     } catch { this.selected.set(false); return false; }
   }
 
-  async save(blob: Blob, filename: string, requireFolder = false, station = 'RadioBee', deferConversion = false): Promise<'original' | 'converted' | 'fallback'> {
+  async save(blob: Blob, filename: string, requireFolder = false, station = 'RadioBee', rawOnly = false): Promise<'original' | 'converted' | 'fallback'> {
     if (!this.recording.Enabled) throw Error('Recording is disabled');
     if (Capacitor.getPlatform() === 'android') {
       if (!await this.hasAccess()) throw Error('Recording folder access was removed');
@@ -168,41 +164,24 @@ export class RecordingDestination {
         await androidStorage.cancelFile({ id }).catch(() => undefined);
         throw error;
       }
-      if (this.preferences.format() !== 'm4a') return 'original';
-      const options = {
-        filename: name || filename,
-        bitrate: recordingBitrate(this.preferences.quality()),
-        cover: this.preferences.coverArt(),
-        station,
-      };
-      const convert = async (): Promise<'converted' | 'fallback'> => {
-        this.converting.update(count => count + 1);
-        try {
-          const result = await androidStorage.convertSaved(options);
-          return result.converted ? 'converted' : 'fallback';
-        } catch {
-          // Original document remains safely stored if transcoding/metadata fails.
-          return 'fallback';
-        } finally {
-          this.converting.update(count => Math.max(0, count - 1));
-        }
-      };
-      if (deferConversion) {
-        // Continuous recording must restart as soon as the raw segment is saved;
-        // do not wait for conversion to finish and create a recording gap.
-        void convert().then(outcome => {
-          if (outcome !== 'fallback') return;
-          const locale = this.catalog.locale();
-          const message = locale === 'ta'
-            ? 'M4A மாற்றம் தோல்வியடைந்தது. அசல் பதிவு சேமிக்கப்பட்டது.'
-            : locale === 'sa'
-              ? 'M4A रूपान्तरणं विफलम्। मूलमुद्रणं रक्षितम्।'
-              : 'M4A conversion failed; the original recording was saved.';
-          this.snackbar.show({ kind: 'text', message }, 'warning', 7500);
+      // Continuous segments are stored in the exact captured container. Neither
+      // transcoding nor cover-art processing may delay or compete with capture.
+      if (rawOnly || this.preferences.format() !== 'm4a') return 'original';
+      this.converting.update(count => count + 1);
+      try {
+        const result = await androidStorage.convertSaved({
+          filename: name || filename,
+          bitrate: recordingBitrate(this.preferences.quality()),
+          cover: this.preferences.coverArt(),
+          station,
         });
-        return 'original';
+        return result.converted ? 'converted' : 'fallback';
+      } catch {
+        // The original document was already committed to the chosen folder.
+        return 'fallback';
+      } finally {
+        this.converting.update(count => Math.max(0, count - 1));
       }
-      return convert();
     }
     if (await this.hasAccess() && this.directory) {
       const file = await this.directory.getFileHandle(filename, { create: true });
