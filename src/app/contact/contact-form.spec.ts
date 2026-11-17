@@ -103,6 +103,7 @@ describe('RadioBee contact modal', () => {
   it('keeps the modal open and form filled for retries if request fails', async () => {
     const submit = vi.fn(async () => { throw new Error('network unavailable'); });
     const { component, snackbar, fixture } = setup(submit);
+    component.show();
     component.form.patchValue({ name: 'Example', email: 'someone@example.test', consent: true });
     await component.send();
     expect(component.open()).toBe(true);
