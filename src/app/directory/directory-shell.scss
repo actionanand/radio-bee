@@ -191,6 +191,20 @@ dialog::backdrop {
   .mobile-brand a {
     text-decoration: none;
   }
+  .mobile-brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+  }
+  .mobile-brand-link img {
+    display: block;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border-radius: 50%;
+    object-fit: contain;
+  }
   .tools {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
