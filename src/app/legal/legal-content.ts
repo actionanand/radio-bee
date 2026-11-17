@@ -247,7 +247,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
       {
         heading: '4. Reporting channel',
         paragraphs: [
-          'Use RadioBee's Contact Us form to report concerns, identify the specific listing and describe the requested remedy. The form submits details to Google Forms for access by the project operator; it is not a confidential legal-notice portal or a guaranteed receipt system.',
+          'Use the RadioBee Contact Us form to report concerns, identify the specific listing and describe the requested remedy. The form submits details to Google Forms for access by the project operator; it is not a confidential legal-notice portal or a guaranteed receipt system.',
           'Do not submit identity documents, addresses, private contracts, unpublished works, credentials, or sensitive evidence through the contact form. If sensitive evidence is necessary, request a suitable secure channel first.',
         ],
       },
