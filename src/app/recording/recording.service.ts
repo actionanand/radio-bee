@@ -86,6 +86,10 @@ export class RecordingService implements OnDestroy {
   readonly seconds = signal(0);
   readonly message = signal<UiKey | null>(null);
   readonly file = signal<Blob | null>(null);
+  // Segments remain recoverable if persistence fails while the next capture
+  // has already started. Never confuse a pending save with the active recorder.
+  readonly unsavedAutoSegments = signal<readonly { blob: Blob; filename: string; station: string }[]>([]);
+  readonly automaticSavesInProgress = signal(0);
   readonly permission = computed(() => {
     const source = this.player.captureSource();
     return source ? recordingPermission(source.stream, this.config.AllowProhibitedRecording === true) : 'unavailable';
@@ -324,11 +328,26 @@ export class RecordingService implements OnDestroy {
               !this.stopRequested &&
               !this.continuationCancelled
             ) {
-              // Never discard a segment or start another unless a durable save
-              // has succeeded. External browser downloads cannot be trusted to
-              // complete without a user gesture, so auto mode requires a folder.
-              this.state.set('exporting');
-              void this.saveAutomatic(blob, generation, reason === 'limit');
+              // Start the next capture BEFORE the previous blob is written to
+              // storage. Disk I/O must never be on the capture handoff path.
+              // Keep one in-flight save at most to bound memory consumption.
+              if (this.automaticSavesInProgress() || this.unsavedAutoSegments().length) {
+                this.state.set('ready');
+                this.message.set('recordingSaveError');
+              } else {
+                const pending = {
+                  blob,
+                  filename: recordingFilename(this.name, blob.type),
+                  station: this.name,
+                };
+                this.file.set(null);
+                this.state.set('ready');
+                const acknowledged = this.acknowledgedSession;
+                // Immediately begin capture preparation on the live source;
+                // do not wait for the original segment to be persisted.
+                void this.start(acknowledged);
+                void this.saveAutomatic(pending);
+              }
             } else {
               this.state.set('ready');
               this.message.set(
@@ -448,32 +467,39 @@ export class RecordingService implements OnDestroy {
         : 'M4A conversion failed. The original recording was saved safely.';
     this.snackbar.show({ kind: 'text', message }, 'warning', 7500);
   }
-  private async saveAutomatic(blob: Blob, generation: number, dueToLimit: boolean): Promise<void> {
+  private async saveAutomatic(segment: { blob: Blob; filename: string; station: string }) {
+    this.automaticSavesInProgress.update(n => n + 1);
     try {
-      const outcome = Capacitor.getPlatform() === 'android'
-        ? await this.destination.save(blob, recordingFilename(this.name, blob.type), true, this.name, true)
-        : await this.destination.save(blob, recordingFilename(this.name, blob.type), true);
-      if (outcome === 'fallback') this.conversionFallback();
-      if (generation !== this.generation || this.destroyed) return;
-      this.file.set(null);
-      this.state.set('ready');
-      this.message.set('recordingExported');
-      if (
-        dueToLimit &&
-        !this.stopRequested &&
-        !this.continuationCancelled &&
-        this.player.state() === 'playing' &&
-        this.player.captureSource()
-      ) {
-        // A new capture is never started after user stop, station switch,
-        // paused playback, a policy revocation or unsuccessful export.
-        await this.start(this.acknowledgedSession);
-      }
+      // Continuous mode intentionally stores the original recording. Encoding,
+      // cover art and conversions are for manual exports only.
+      await this.destination.save(segment.blob, segment.filename, true, segment.station, true);
     } catch {
-      if (generation !== this.generation || this.destroyed) return;
-      this.state.set('ready');
+      this.unsavedAutoSegments.update(items => [...items, segment]);
+      // Stop the replacement recorder so we do not silently accumulate more
+      // uncaught segments on a destination that is failing.
+      if (['preparing', 'starting', 'recording'].includes(this.state())) this.stop('failure');
       this.message.set('recordingSaveError');
-      // Keep the completed Blob available for a deliberate Export retry.
+      this.snackbar.show(
+        { kind: 'text', message: 'Automatic recording could not be saved. A segment is available to retry.' },
+        'warning',
+        9000,
+      );
+    } finally {
+      this.automaticSavesInProgress.update(n => Math.max(0, n - 1));
+    }
+  }
+  async retryUnsavedSegment() {
+    const segment = this.unsavedAutoSegments()[0];
+    if (!segment || this.automaticSavesInProgress()) return;
+    this.automaticSavesInProgress.update(n => n + 1);
+    try {
+      await this.destination.save(segment.blob, segment.filename, true, segment.station, true);
+      this.unsavedAutoSegments.update(items => items.filter(item => item !== segment));
+      this.snackbar.show({ kind: 'localized', key: 'recordingExported' }, 'success');
+    } catch {
+      this.message.set('recordingSaveError');
+    } finally {
+      this.automaticSavesInProgress.update(n => Math.max(0, n - 1));
     }
   }
   async save() {
