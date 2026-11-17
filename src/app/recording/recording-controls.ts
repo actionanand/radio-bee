@@ -1,5 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Component, DestroyRef, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
 import { IonIcon } from '@ionic/angular';
 import { RecordingService } from './recording.service';
 import { RecordingDestination } from './recording-destination';
@@ -8,9 +7,11 @@ import { CatalogService } from '../catalog/catalog.service';
 import { UiKey, uiLabel } from '../catalog/catalog.ui';
 import { radioIcons } from '../shared/radio-icons';
 import { RecordingDurationPipe } from './recording-duration.pipe';
+import { RecordingConfirmationComponent } from './recording-confirmation';
 @Component({
   selector: 'app-recording-controls',
-  imports: [IonIcon, RecordingDurationPipe],
+  imports: [IonIcon, RecordingDurationPipe, RecordingConfirmationComponent],
+  host: { '(document:pointerdown)': 'outsidePointer($event)' },
   providers: [RecordingService],
   template: `
     @if (player.station() || recorder.state() !== 'idle') {
@@ -127,8 +128,9 @@ import { RecordingDurationPipe } from './recording-duration.pipe';
           </section>
         }
       </div>
+      <app-recording-confirmation />
     }
-  `,
+  `
   styles: `
     :host {
       display: block;
@@ -222,7 +224,8 @@ export class RecordingControlsComponent {
   readonly player = inject(PlayerService);
   readonly catalog = inject(CatalogService);
   readonly destination = inject(RecordingDestination);
-  private readonly document = inject(DOCUMENT);
+  private readonly hostElement = inject(ElementRef<HTMLElement>);
+  readonly confirmation = viewChild.required(RecordingConfirmationComponent);
   readonly icons = radioIcons;
   readonly expanded = signal(false);
   readonly acknowledged = signal(false);
@@ -232,7 +235,7 @@ export class RecordingControlsComponent {
       // The recording controls are the single authority for in-progress
       // capture. Deny a change unless the user explicitly approves it.
       if (!['preparing', 'starting', 'recording', 'stopping'].includes(this.recorder.state())) return true;
-      return this.document.defaultView?.confirm(this.ui('recordingSwitchConfirm')) ?? false;
+      return this.confirmation().ask('switch');
     });
     inject(DestroyRef).onDestroy(unguard);
     effect(() => {
@@ -250,6 +253,12 @@ export class RecordingControlsComponent {
   togglePanel() {
     this.expanded.update(value => !value);
     if (!this.expanded()) this.confirmReplace.set(false);
+  }
+  outsidePointer(event: PointerEvent) {
+    if (this.expanded() && !event.composedPath().includes(this.hostElement.nativeElement)) {
+      this.expanded.set(false);
+      this.confirmReplace.set(false);
+    }
   }
   canStart() {
     return this.player.state() === 'playing' &&
@@ -279,8 +288,8 @@ export class RecordingControlsComponent {
       this.expanded.set(true);
     }
   }
-  discard() {
-    if (!this.document.defaultView?.confirm(this.ui('recordingDiscardConfirm'))) return;
+  async discard() {
+    if (!(await this.confirmation().ask('discard'))) return;
     this.recorder.discard();
     this.confirmReplace.set(false);
     this.expanded.set(false);
