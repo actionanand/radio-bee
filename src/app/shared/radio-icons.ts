@@ -17,6 +17,7 @@ import {
   volumeMute,
   radioButtonOn,
   downloadOutline,
+  trashOutline,
 } from 'ionicons/icons';
 
 // Genuine Ionicons SVGs, passed directly to IonIcon; no character-based icon substitutes.
@@ -39,4 +40,5 @@ export const radioIcons = {
   volumeMute,
   radioButtonOn,
   downloadOutline,
+  trashOutline,
 };
