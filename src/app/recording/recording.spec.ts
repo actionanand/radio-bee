@@ -73,6 +73,7 @@ function setup(
           selected: signal(autoContinue),
           name: signal(autoContinue ? 'radio-bee' : ''),
           ready: signal(true),
+          converting: signal(0),
           chooseFolder: vi.fn(async () => true),
           hasAccess: async () => true,
           save: folderSave,
