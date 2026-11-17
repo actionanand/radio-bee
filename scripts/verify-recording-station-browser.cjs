@@ -209,16 +209,21 @@ const base = process.env.APP_URL || 'http://localhost:36803';
       for await (const [name] of window.__folder.entries()) names.push(name);
       return names;
     });
-    await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
-    await page.waitForFunction(
-      () =>
-        ng.getComponent(document.querySelector('app-recording-controls')).recorder.message() === 'recordingExported',
+    const expectedSize = await page.evaluate(
+      () => ng.getComponent(document.querySelector('app-recording-controls')).recorder.file().size,
     );
-    const exportedFile = await page.evaluate(async existing => {
+    await page.locator('.recording-launcher .quick-action').filter({ hasText: 'Export recording' }).click();
+    await page.waitForFunction(() => {
       const r = ng.getComponent(document.querySelector('app-recording-controls')).recorder;
+      return r.file() === null && document.querySelector('app-snackbar .message')?.textContent?.includes(
+        'Export opened on this device.',
+      );
+    });
+    assert.equal(await page.locator('.recording-launcher').getByText('Export recording').count(), 0);
+    const exportedFile = await page.evaluate(async ({ existing, expectedSize }) => {
       for await (const [name, h] of window.__folder.entries()) {
         const f = await h.getFile();
-        if (existing.includes(name) || f.size !== r.file().size) continue;
+        if (existing.includes(name) || f.size !== expectedSize) continue;
         const c = new AudioContext();
         try {
           const b = await c.decodeAudioData(await f.arrayBuffer()),
@@ -239,7 +244,7 @@ const base = process.env.APP_URL || 'http://localhost:36803';
           await c.close();
         }
       }
-    }, existing);
+    }, { existing, expectedSize });
     assert.ok(exportedFile && exportedFile.rms >= 0.001 && exportedFile.peak >= 0.01);
     fs.writeFileSync(`${output}/${label}.webm`, Buffer.from(exportedFile.base64, 'base64'));
     delete exportedFile.base64;
