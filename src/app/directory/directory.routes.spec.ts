@@ -117,6 +117,17 @@ describe('Routable v2 directory', () => {
     expect(host().querySelector('app-settings-page h1')?.textContent?.trim()).toBe('Settings');
     expect(host().querySelector('[data-control=settings-locale] ion-select')).not.toBeNull();
     expect(host().querySelector('[data-control=settings-theme] ion-select')).not.toBeNull();
+    expect(host().querySelectorAll('.preferences app-directory-select')).toHaveLength(2);
+    const contact = host().querySelector<HTMLButtonElement>('.support-card .support-button')!;
+    expect(contact?.textContent?.trim()).toBe('Contact Us');
+    expect(contact.getAttribute('aria-haspopup')).toBe('dialog');
+    const contactComponent = h.fixture.debugElement.query(By.directive(ContactFormComponent))
+      .componentInstance as ContactFormComponent;
+    expect(contactComponent.open()).toBe(false);
+    contact.click();
+    h.detectChanges();
+    expect(contactComponent.open()).toBe(true);
+    contactComponent.open.set(false);
     const on = host().querySelector<HTMLButtonElement>('.material-switch')!;
     expect(on.getAttribute('role')).toBe('switch');
     expect(on.getAttribute('aria-checked')).toBe('false');
