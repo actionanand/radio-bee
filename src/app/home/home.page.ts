@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { CatalogService } from '../catalog/catalog.service';
 import { UiKey, uiLabel } from '../catalog/catalog.ui';
 import { LIVE_TEST_ENABLED } from '../live-test/live-test.config';
+import { radioBeeCopyright } from '../shared/copyright';
 import { IonContent } from '@ionic/angular';
 import { StationBrowserComponent } from '../catalog/station-browser';
 import { LiveStreamLabComponent } from '../live-test/live-stream-lab';
@@ -24,6 +25,7 @@ import { LiveStreamLabComponent } from '../live-test/live-stream-lab';
 export class HomePage {
   readonly data = inject(CatalogService);
   readonly liveTests = inject(LIVE_TEST_ENABLED);
+  readonly copyright = radioBeeCopyright();
   ui(key: UiKey) {
     return uiLabel(this.data.locale(), key);
   }
