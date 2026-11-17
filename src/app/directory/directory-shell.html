@@ -53,7 +53,7 @@
       }
       <router-outlet />
       <footer>
-        <span>RadioBee - {{tagline()}}</span
+        <span>RadioBee - {{tagline()}}</span><span class="copyright">{{ copyright }}</span
         ><button type="button" (click)="data.refresh()" [disabled]="data.loading()">{{text('refresh')}}</button>
       </footer>
     </main>
