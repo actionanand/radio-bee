@@ -1,4 +1,5 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { IonIcon } from '@ionic/angular';
 import { RecordingService } from './recording.service';
 import { RecordingDestination } from './recording-destination';
@@ -117,7 +118,7 @@ import { RecordingDurationPipe } from './recording-duration.pipe';
                 type="button"
                 (click)="discard()"
                 [disabled]="recorder.state() === 'exporting'">
-                <ion-icon [icon]="icons.close" aria-hidden="true" />{{ ui('discard') }}
+                <ion-icon [icon]="icons.trashOutline" aria-hidden="true" />{{ ui('discard') }}
               </button>
             }
             @if (recorder.message(); as message) {
@@ -221,11 +222,19 @@ export class RecordingControlsComponent {
   readonly player = inject(PlayerService);
   readonly catalog = inject(CatalogService);
   readonly destination = inject(RecordingDestination);
+  private readonly document = inject(DOCUMENT);
   readonly icons = radioIcons;
   readonly expanded = signal(false);
   readonly acknowledged = signal(false);
   readonly confirmReplace = signal(false);
   constructor() {
+    const unguard = this.player.onStationSwitchRequest(() => {
+      // The recording controls are the single authority for in-progress
+      // capture. Deny a change unless the user explicitly approves it.
+      if (!['preparing', 'starting', 'recording', 'stopping'].includes(this.recorder.state())) return true;
+      return this.document.defaultView?.confirm(this.ui('recordingSwitchConfirm')) ?? false;
+    });
+    inject(DestroyRef).onDestroy(unguard);
     effect(() => {
       this.player.station()?.id;
       this.acknowledged.set(false);
@@ -271,6 +280,7 @@ export class RecordingControlsComponent {
     }
   }
   discard() {
+    if (!this.document.defaultView?.confirm(this.ui('recordingDiscardConfirm'))) return;
     this.recorder.discard();
     this.confirmReplace.set(false);
     this.expanded.set(false);
