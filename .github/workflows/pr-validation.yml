@@ -38,6 +38,11 @@ jobs:
         run: npm run test:ci
       - name: Check PR, preview and playback evidence contracts
         run: node --test scripts/pr-validation.test.mjs scripts/web-preview.test.cjs scripts/playback-evidence.test.cjs scripts/recording-config.test.mjs scripts/integration-contract.test.cjs
+      - name: Generate Open Graph image from official app icon
+        run: |
+          python3 -m venv "$RUNNER_TEMP/radiobee-og-venv"
+          "$RUNNER_TEMP/radiobee-og-venv/bin/pip" install --disable-pip-version-check Pillow==11.3.0
+          "$RUNNER_TEMP/radiobee-og-venv/bin/python" scripts/generate-og-image.py
       - name: Build production Pages output
         run: npm run build:gh -- --configuration=production
       - name: Check Pages base href and routing fallback
