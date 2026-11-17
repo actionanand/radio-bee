@@ -94,8 +94,8 @@ export class RecordingDestination {
   /** Call only from a user gesture; it opens the system folder picker once per setup. */
   async chooseFolder(): Promise<boolean> {
     if (!this.recording.Enabled) return false;
-    await this.loaded;
     if (Capacitor.getPlatform() === 'android') {
+      await this.loaded;
       try {
         const result = await androidStorage.chooseFolder();
         if (!result.selected) return false;
@@ -104,6 +104,8 @@ export class RecordingDestination {
         return true;
       } catch { return false; }
     }
+    // Invoke the web picker directly in the click gesture. Awaiting IndexedDB
+    // restoration first can lose the transient activation required by Chrome.
     const picker = (window as DirectoryWindow).showDirectoryPicker;
     if (!picker) return false;
     try {
