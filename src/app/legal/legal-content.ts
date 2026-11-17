@@ -210,7 +210,7 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
         heading: '15. Changes, severability and contact',
         paragraphs: [
           'RadioBee may revise these terms as features, external services, and legal requirements change. The date on this page identifies the version in effect. If one provision is held invalid, other provisions remain effective to the extent lawful.',
-          'Use the Contact Us form for inquiries and corrections. Because the browser sends the request to Google Forms without access to Google's private receipt confirmation, an on-screen submission message indicates that the browser request completed, not that the message was delivered to or read by the RadioBee operator.',
+          'Use the Contact Us form for inquiries and corrections. Because the browser sends the request to Google Forms without access to a private receipt confirmation from Google, an on-screen submission message indicates that the browser request completed, not that the message was delivered to or read by the RadioBee operator.',
         ],
       },
     ],
