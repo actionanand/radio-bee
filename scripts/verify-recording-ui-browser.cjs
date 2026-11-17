@@ -326,7 +326,7 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
     report.scenarios.push(
       'Pause retains the genuine draft; Export failure retains it; retry writes and decodes the actual file',
     );
-    await discard();
+    // Export has already consumed the previous recording draft.
     await player.getByRole('button', { name: /^Play/ }).click();
     await waitPlaying();
     await mark('stop-capture');
