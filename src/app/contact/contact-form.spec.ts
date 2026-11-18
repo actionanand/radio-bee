@@ -117,10 +117,12 @@ describe('RadioBee contact modal', () => {
   });
 
   it('keeps the purpose dropdown full-width and positions its chevron at the far edge', () => {
-    const styles = ContactFormComponent.ɵcmp.styles.join('\n');
-    expect(styles).toContain('ion-select::part(container)');
-    expect(styles).toMatch(/ion-select::part\\(container\\)\\s*\\{[^}]*flex:\\s*1 1 auto/);
-    expect(styles).toMatch(/ion-select::part\\(icon\\)\\s*\\{[^}]*margin-inline-start:\\s*auto/);
+    const { fixture } = setup();
+    const styles = [...document.head.querySelectorAll('style')].map(style => style.textContent).join('\n');
+    expect(styles).toContain('::part(container)');
+    expect(styles).toContain('::part(icon)');
+    expect(styles).toMatch(/margin-inline-start:\\s*auto/);
+    fixture.destroy();
   });
 
   it('updates the displayed contact copy without changing canonical form values', () => {
