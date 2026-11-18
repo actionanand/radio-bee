@@ -8,6 +8,7 @@ import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.media.MediaMetadataRetriever;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -15,7 +16,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
 
 /**
  * Offline WebM/Ogg/MP4 audio -> AAC inside MP4, using platform codecs only.
@@ -172,10 +172,10 @@ public final class RadioBeeAudioConverter {
             muxer.release();
             muxer = null;
             if (cover) {
-                int resId = context.getResources().getIdentifier(
-                    "radiobee_splash_logo", "drawable", context.getPackageName());
-                if (resId == 0) throw new IOException("RadioBee cover artwork missing");
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+                // A direct R reference survives resource shrinking; a dynamic
+                // getIdentifier lookup may be stripped from release APKs.
+                Bitmap bitmap = BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.radiobee_recording_cover);
                 if (bitmap == null) throw new IOException("RadioBee cover cannot be decoded");
                 ByteArrayOutputStream jpg = new ByteArrayOutputStream();
                 try {
@@ -183,6 +183,7 @@ public final class RadioBeeAudioConverter {
                         throw new IOException("RadioBee artwork encoding failed");
                 } finally { bitmap.recycle(); }
                 embedMetadata(output, station, jpg.toByteArray());
+                verifyArtwork(output);
             }
             succeeded = output.length() > 128;
         } finally {
@@ -196,6 +197,21 @@ public final class RadioBeeAudioConverter {
             if (!succeeded) output.delete();
         }
         if (!succeeded) throw new IOException("Empty converted recording");
+    }
+
+    /** Catch malformed metadata before the Android plugin replaces the raw export. */
+    private static void verifyArtwork(File output) throws IOException {
+        MediaMetadataRetriever reader = new MediaMetadataRetriever();
+        try {
+            reader.setDataSource(output.getAbsolutePath());
+            byte[] cover = reader.getEmbeddedPicture();
+            if (cover == null || cover.length < 1024)
+                throw new IOException("M4A cover artwork could not be read back");
+        } catch (RuntimeException error) {
+            throw new IOException("M4A artwork metadata validation failed", error);
+        } finally {
+            reader.release();
+        }
     }
 
     private static byte[] atom(String name, byte[] payload) throws IOException {
