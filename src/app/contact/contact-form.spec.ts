@@ -121,7 +121,7 @@ describe('RadioBee contact modal', () => {
     const styles = [...document.head.querySelectorAll('style')].map(style => style.textContent).join('\n');
     expect(styles).toContain('::part(container)');
     expect(styles).toContain('::part(icon)');
-    expect(styles).toMatch(/margin-inline-start:\\s*auto/);
+    expect(styles).toContain('margin-inline-start: auto');
     fixture.destroy();
   });
 
