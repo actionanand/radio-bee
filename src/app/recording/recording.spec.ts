@@ -138,7 +138,7 @@ describe('Configured recording and explicit source policy', () => {
     expect(s.folderSave).toHaveBeenCalledTimes(1);
     expect(s.folderSave.mock.calls[0][0]).toBe(segment);
     expect(s.folderSave.mock.calls[0][1]).toContain('.webm');
-    expect(s.folderSave.mock.calls[0][2]).toBe(true);
+    expect(s.folderSave.mock.calls[0]).toHaveLength(2);
     expect(service.automaticSavesInProgress()).toBe(1);
     s.hooks().progress(3, true);
     service.stop();
@@ -149,6 +149,27 @@ describe('Configured recording and explicit source policy', () => {
     expect(s.create).toHaveBeenCalledTimes(2);
     expect(service.state()).toBe('ready');
     expect(service.file()).toBe(segment);
+  });
+  it('keeps draft available after M4A failure and permits explicit original export', async () => {
+    const s = setup();
+    await playing(s);
+    const service = TestBed.inject(RecordingService);
+    await service.start(true);
+    const draft = new Blob(['recoverable recording'], { type: 'audio/webm' });
+    s.hooks().finished(draft, 'manual');
+    s.folderSave.mockResolvedValueOnce('fallback' as never);
+    // Native manual M4A path is represented by the destination result. The
+    // browser branch does not call destination without a selected directory.
+    const destination = TestBed.inject(RecordingDestination);
+    destination.selected.set(true);
+    await service.save();
+    expect(service.file()).toBe(draft);
+    expect(service.conversionFailed()).toBe(true);
+    expect(service.state()).toBe('ready');
+    s.folderSave.mockResolvedValueOnce('original' as never);
+    await service.saveOriginal();
+    expect(service.file()).toBeNull();
+    expect(service.conversionFailed()).toBe(false);
   });
   it('retains a failed automatic segment for retry instead of silently dropping it', async () => {
     const s = setup(true, false, true);
