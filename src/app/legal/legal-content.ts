@@ -332,10 +332,25 @@ export const recordingLegalSections: Readonly<Partial<Record<LegalPageId, LegalS
   },
 };
 
-/** Adds the feature's legal notice only when recording is explicitly enabled. */
-export function visibleLegalDocument(id: LegalPageId, recordingEnabled: boolean): LegalDocument {
-  const document = legalDocuments[id];
-  const section = recordingEnabled ? recordingLegalSections[id] : undefined;
+import { legalDocumentsTa, recordingLegalSectionsTa } from './legal-content.ta';
+import { legalDocumentsSa, recordingLegalSectionsSa } from './legal-content.sa';
+
+export type LegalLocale = 'en' | 'ta' | 'sa';
+
+const documentsByLocale: Record<LegalLocale, Record<LegalPageId, LegalDocument>> = {
+  en: legalDocuments, ta: legalDocumentsTa, sa: legalDocumentsSa,
+};
+const noticesByLocale: Record<LegalLocale, Partial<Record<LegalPageId, LegalSection>>> = {
+  en: recordingLegalSections, ta: recordingLegalSectionsTa, sa: recordingLegalSectionsSa,
+};
+
+/** Select the existing app language; keep recording notices behind the feature flag. */
+export function visibleLegalDocument(
+  id: LegalPageId, recordingEnabled: boolean, locale: string = 'en',
+): LegalDocument {
+  const language: LegalLocale = locale === 'ta' || locale === 'sa' ? locale : 'en';
+  const document = documentsByLocale[language][id];
+  const section = recordingEnabled ? noticesByLocale[language][id] : undefined;
   return section ? { ...document, sections: [...document.sections, section] } : document;
 }
 
