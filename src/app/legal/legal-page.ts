@@ -14,7 +14,8 @@ import {
 } from 'ionicons/icons';
 import { CATALOG_URL } from '../catalog/catalog.service';
 import { radioBeeCopyright } from '../shared/copyright';
-import { LegalPageId, legalDocuments, legalLinks } from './legal-content';
+import { LegalPageId, legalLinks, visibleLegalDocument } from './legal-content';
+import { RADIO_RECORDING } from '../recording/recording.config';
 import { ContactFormComponent } from '../contact/contact-form';
 
 @Component({
@@ -192,7 +193,8 @@ export class LegalPage {
   readonly chatIcon = chatbubblesOutline;
   readonly infoIcon = informationCircleOutline;
   readonly pageId = this.route.snapshot.data['legalPage'] as LegalPageId;
-  readonly document = legalDocuments[this.pageId];
+  private readonly recording = inject(RADIO_RECORDING);
+  readonly document = visibleLegalDocument(this.pageId, this.recording.Enabled === true);
   readonly routePath = `/${this.pageId}`;
   readonly links = legalLinks;
   readonly copyright = radioBeeCopyright();
