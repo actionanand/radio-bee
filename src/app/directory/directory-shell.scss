@@ -141,20 +141,21 @@ footer .refresh-catalogue {
   padding: 0;
   border-radius: 10px;
 }
-footer .refresh-catalogue ion-icon { font-size: 22px; }
+footer .refresh-catalogue .refresh-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  transform-origin: center;
+}
+footer .refresh-catalogue .refresh-glyph ion-icon { font-size: 22px; }
 footer .refresh-catalogue:hover:not(:disabled),
 footer .refresh-catalogue.is-refreshing { background: var(--panel); }
 footer .refresh-catalogue:disabled { cursor: not-allowed; }
-@media (prefers-reduced-motion: no-preference) {
-  footer .refresh-catalogue.is-refreshing ion-icon {
-    animation: directory-refresh-spin 850ms linear infinite;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  footer .refresh-catalogue.is-refreshing {
-    box-shadow: inset 0 0 0 2px var(--accent-ink);
-  }
-  footer .refresh-catalogue.is-refreshing ion-icon { animation: none; }
+/* A user-requested exception: this progress indicator rotates even when
+   system reduced motion is enabled. The snackbar supplies a text status. */
+footer .refresh-catalogue.is-refreshing .refresh-glyph {
+  animation: directory-refresh-spin 850ms linear infinite;
 }
 @keyframes directory-refresh-spin {
   to { transform: rotate(360deg); }
