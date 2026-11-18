@@ -1,4 +1,5 @@
 import { legalDocuments, legalLinks, recordingLegalSections, visibleLegalDocument } from './legal-content';
+import { legalPageCopy } from './legal-page-copy';
 
 describe('Public legal notices', () => {
   it('provides a distinct, substantial policy document for every footer destination', () => {
@@ -41,6 +42,49 @@ describe('Public legal notices', () => {
     expect(visibleLegalDocument('contact', true)).toBe(legalDocuments.contact);
     expect(Object.keys(recordingLegalSections)).toEqual(['privacy', 'terms', 'copyright-policy']);
     expect(JSON.stringify(legalDocuments)).not.toMatch(/\brecording\b/i);
+  });
+
+  it('translates every policy, contact section and point in Tamil and Sanskrit with exact structural parity', () => {
+    for (const locale of ['ta', 'sa'] as const) {
+      for (const page of ['privacy', 'terms', 'copyright-policy', 'contact'] as const) {
+        const reference = visibleLegalDocument(page, false, 'en');
+        const localized = visibleLegalDocument(page, false, locale);
+        expect(localized.title).not.toBe(reference.title);
+        expect(localized.summary.trim().length).toBeGreaterThan(40);
+        expect(localized.sections).toHaveLength(reference.sections.length);
+        localized.sections.forEach((section, index) => {
+          const english = reference.sections[index];
+          expect(section.heading).toBeTruthy();
+          expect(section.heading).not.toBe(english.heading);
+          expect(section.paragraphs?.length ?? 0).toBe(english.paragraphs?.length ?? 0);
+          expect(section.points?.length ?? 0).toBe(english.points?.length ?? 0);
+          for (const text of [...section.paragraphs ?? [], ...section.points ?? []]) {
+            expect(text.trim().length).toBeGreaterThan(30);
+          }
+        });
+        const recorded = visibleLegalDocument(page, true, locale);
+        expect(recorded.sections.length).toBe(localized.sections.length + (page === 'contact' ? 0 : 1));
+        if (page !== 'contact') {
+          const last = recorded.sections.at(-1)!;
+          const english = visibleLegalDocument(page, true, 'en').sections.at(-1)!;
+          expect(last.heading).not.toBe(english.heading);
+          expect(last.paragraphs?.length).toBe(english.paragraphs?.length);
+          expect(JSON.stringify(last)).not.toMatch(/https?:\\/\\/|<a\\b/);
+        }
+      }
+    }
+    expect(visibleLegalDocument('privacy', false, 'unknown')).toBe(legalDocuments.privacy);
+  });
+
+  it('includes localized copy for every Contact Us card, action and legal navigation link', () => {
+    const keys = Object.keys(legalPageCopy.en).sort();
+    for (const locale of ['ta', 'sa'] as const) {
+      expect(Object.keys(legalPageCopy[locale]).sort()).toEqual(keys);
+      for (const key of keys as (keyof typeof legalPageCopy.en)[]) {
+        expect(legalPageCopy[locale][key].trim().length).toBeGreaterThan(0);
+        expect(legalPageCopy[locale][key]).not.toBe(legalPageCopy.en[key]);
+      }
+    }
   });
 
   it('accurately discloses Google Forms handling of contact entries', () => {
