@@ -28,6 +28,7 @@ import {
   closeOutline,
   searchOutline,
   settingsOutline,
+  refreshOutline,
 } from 'ionicons/icons';
 import { CatalogService } from '../catalog/catalog.service';
 import { FavoritesService } from '../catalog/favorites.service';
@@ -36,6 +37,7 @@ import { legalLinks } from '../legal/legal-content';
 import { uiLabel } from '../catalog/catalog.ui';
 import { uiLanguageOptions } from '../catalog/device-language';
 import { ThemeService } from '../theme/theme.service';
+import { SnackbarService } from '../shared/snackbar.service';
 import { DirectoryKey, directoryText } from './directory.labels';
 
 @Component({
@@ -60,6 +62,8 @@ export class DirectoryShellComponent {
   readonly legalLinks = legalLinks;
   readonly legalPage = signal(false);
   readonly theme = inject(ThemeService);
+  private readonly snackbar = inject(SnackbarService);
+  readonly refreshing = signal(false);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
@@ -73,7 +77,7 @@ export class DirectoryShellComponent {
   readonly query = linkedSignal(() => this.params().get('q') ?? '');
   readonly canBack = signal(false);
   readonly drawerOpen = signal(false);
-  readonly icons = { menuOutline, closeOutline, searchOutline };
+  readonly icons = { menuOutline, closeOutline, searchOutline, refreshOutline };
   readonly localeOptions = computed(() =>
     uiLanguageOptions(this.data.locale() as 'en' | 'ta' | 'sa'),
   );
@@ -218,6 +222,27 @@ export class DirectoryShellComponent {
       ?.register;
     if (this.drawer()?.nativeElement.open) register?.(1000, () => this.closeMenu());
     else if (this.canBack()) register?.(10, () => this.location.back());
+  }
+  async refreshCatalogue() {
+    if (this.refreshing() || this.data.loading()) return;
+    this.refreshing.set(true);
+    this.snackbar.show({ kind: 'text', message: this.text('refreshing') }, 'info', 60000);
+    try {
+      await this.data.refresh();
+      if (this.data.error()) {
+        this.snackbar.show(
+          { kind: 'text', message: this.text('refreshFailed') + ' ' + this.data.statusText(this.data.error()) },
+          'warning',
+          6500,
+        );
+      } else {
+        this.snackbar.show({ kind: 'text', message: this.text('refreshSuccess') }, 'success');
+      }
+    } catch {
+      this.snackbar.show({ kind: 'text', message: this.text('refreshFailed') }, 'warning', 6500);
+    } finally {
+      this.refreshing.set(false);
+    }
   }
   storageNotice() {
     return this.data.statusText(this.data.storageWarning());
