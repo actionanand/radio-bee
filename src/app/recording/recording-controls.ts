@@ -64,8 +64,18 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
               (click)="recorder.save()"
               [disabled]="recorder.state() !== 'ready' && recorder.state() !== 'error'">
               <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
-              {{ ui('exportRecording') }}
+              {{ recorder.conversionFailed() ? retryM4aText() : ui('exportRecording') }}
             </button>
+            @if (recorder.conversionFailed()) {
+              <button
+                class="quick-action"
+                type="button"
+                (click)="recorder.saveOriginal()"
+                [disabled]="recorder.state() !== 'ready' && recorder.state() !== 'error'">
+                <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
+                {{ exportOriginalText() }}
+              </button>
+            }
           }
         </div>
         @if (expanded()) {
@@ -266,6 +276,18 @@ export class RecordingControlsComponent {
       this.acknowledged.set(false);
       this.confirmReplace.set(false);
     });
+  }
+  retryM4aText() {
+    const locale = this.catalog.locale();
+    return locale === 'ta' ? 'M4A-ஆக மீண்டும் முயலவும்'
+      : locale === 'sa' ? 'M4A पुनः प्रयतताम्'
+      : 'Retry M4A';
+  }
+  exportOriginalText() {
+    const locale = this.catalog.locale();
+    return locale === 'ta' ? 'அசல் ஒலியை ஏற்றுமதி செய்'
+      : locale === 'sa' ? 'मूलध्वनिं निर्यातयतु'
+      : 'Export original audio';
   }
   retryText() {
     const locale = this.catalog.locale();
