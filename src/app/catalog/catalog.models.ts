@@ -184,6 +184,7 @@ export function filterStations(c: Catalog, f: Filters): Station[] {
         [
           s.name,
           ...Object.values(c.localization).map(dictionary => dictionary['stationNames']?.[s.id] ?? ''),
+          ...Object.values(c.localization).map(dictionary => dictionary['discoveryNames']?.[s.id] ?? ''),
           ...(s.aliases ?? []),
           ...(s.artistIds ?? []).flatMap(artistId => {
             const a = c.artists?.find(row => row.id === artistId);
@@ -211,6 +212,8 @@ export function translated(c: Catalog | null, locale: string, section: string, k
 
 /** Presentation only: identities, canonical sorting and playback metadata stay unchanged. */
 export function stationDisplayName(c: Catalog | null, locale: string, station: Pick<Station, 'id' | 'name'>): string {
-  const translated = locale === 'en' ? undefined : c?.localization[locale]?.['stationNames']?.[station.id];
-  return typeof translated === 'string' && translated.trim() ? translated.trim() : station.name;
+  const translatedName = locale === 'en' ? undefined : c?.localization[locale]?.['stationNames']?.[station.id];
+  const discoveryName = c?.localization[locale]?.['discoveryNames']?.[station.id];
+  const displayed = translatedName || discoveryName;
+  return typeof displayed === 'string' && displayed.trim() ? displayed.trim() : station.name;
 }
