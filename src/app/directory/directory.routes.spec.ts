@@ -22,7 +22,7 @@ import { RADIO_RECORDING } from '../recording/recording.config';
 
 @Component({ imports: [RouterOutlet, PlayerComponent], template: '<router-outlet/><app-player/>' })
 class RootPlayerHostComponent {}
-function setup(base = 'https://catalog.test/v2/') {
+function setup(base = 'https://catalog.test/v2/', recordingEnabled?: boolean) {
   const audio = document.createElement('audio');
   vi.spyOn(audio, 'play').mockResolvedValue();
   vi.spyOn(audio, 'pause').mockImplementation(() => undefined);
@@ -33,6 +33,11 @@ function setup(base = 'https://catalog.test/v2/') {
     providers: [
       provideRouter(routes),
       provideIonicAngular({ animated: false }),
+      ...(recordingEnabled === undefined ? [] : [{
+        provide: RADIO_RECORDING,
+        useValue: { Enabled: recordingEnabled, AllowProhibitedRecording: false,
+          MaxDurationMs: 3600000, MaxBytes: 80 * 1024 * 1024, AutoContinue: false },
+      }]),
       { provide: THEME_STORAGE, useValue: { get: async () => ({ value: null }), set: vi.fn(async () => undefined) } },
       { provide: CATALOG_URL, useValue: base },
       { provide: CATALOG_STORAGE, useValue: storage },
@@ -236,11 +241,7 @@ describe('Routable v2 directory', () => {
   });
 
   it('omits all recording disclaimers and settings when recording is disabled', async () => {
-    setup();
-    TestBed.overrideProvider(RADIO_RECORDING, { useValue: {
-      Enabled: false, AllowProhibitedRecording: false, MaxDurationMs: 3600000,
-      MaxBytes: 80 * 1024 * 1024, AutoContinue: false,
-    } });
+    setup('https://catalog.test/v2/', false);
     const h = await RouterTestingHarness.create('/settings');
     const root = () => element(h);
     expect(root().querySelector('[data-recording-disclaimer]')).toBeNull();
