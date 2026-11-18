@@ -138,7 +138,7 @@ describe('Configured recording and explicit source policy', () => {
     expect(s.folderSave).toHaveBeenCalledTimes(1);
     expect(s.folderSave.mock.calls[0][0]).toBe(segment);
     expect(s.folderSave.mock.calls[0][1]).toContain('.webm');
-    expect(s.folderSave.mock.calls[0]).toHaveLength(2);
+    expect(s.folderSave.mock.calls[0]).toHaveLength(5);
     expect(service.automaticSavesInProgress()).toBe(1);
     s.hooks().progress(3, true);
     service.stop();
