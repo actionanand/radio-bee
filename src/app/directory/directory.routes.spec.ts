@@ -315,6 +315,32 @@ describe('Routable v2 directory', () => {
     expect(element(h).querySelector('app-legal-page .issue-link')).toBeNull();
   });
 
+  it('switches all legal and Contact Us page text with the current app language without reloading', async () => {
+    const { data } = setup();
+    const h = await RouterTestingHarness.create('/contact');
+    const root = () => element(h);
+    for (const [locale, heading, action, topic, privacyTitle] of [
+      ['ta', 'தொடர்புகொள்ளுங்கள்', 'தொடர்புப் படிவத்தைத் திறக்கவும்', 'நிலையத் தகவல் திருத்தங்கள்', 'தனியுரிமைக் கொள்கை'],
+      ['sa', 'सम्पर्कं करोतु', 'सम्पर्कप्रपत्रम् उद्घाटयतु', 'केन्द्रविवरणसंशोधनानि', 'गोपनीयतानीतिः'],
+      ['en', 'Contact Us', 'Open contact form', 'Station corrections', 'Privacy Policy'],
+    ]) {
+      data.locale.set(locale);
+      h.detectChanges();
+      expect(root().querySelector('app-legal-page article')?.getAttribute('lang')).toBe(locale);
+      expect(root().querySelector('app-legal-page h1')?.textContent?.trim()).toBe(heading);
+      expect(root().querySelector('app-legal-page .contact-primary')?.textContent).toContain(action);
+      expect(root().querySelector('app-legal-page .contact-topic strong')?.textContent?.trim()).toBe(topic);
+      expect(root().querySelector('app-legal-page .contact-guidance a')?.textContent?.trim()).toBe(
+        locale === 'ta' ? 'எங்கள் தனியுரிமைக் கொள்கையைப் படிக்கவும்' : locale === 'sa' ? 'अस्माकं गोपनीयतानीतिं पठतु' : 'Read our Privacy Policy',
+      );
+      await h.navigateByUrl('/privacy');
+      h.detectChanges();
+      expect(root().querySelector('app-legal-page h1')?.textContent?.trim()).toBe(privacyTitle);
+      expect(root().querySelector('app-legal-page .legal-contact-cta button')?.textContent).toContain(action);
+      await h.navigateByUrl('/contact');
+    }
+  });
+
   it('shows the station search on ordinary pages and returns from a direct legal URL to Home', async () => {
     setup();
     const h = await RouterTestingHarness.create('/privacy');
