@@ -220,6 +220,16 @@ export class CatalogService {
   stationName(station: Pick<Station, 'id' | 'name'>): string {
     return stationDisplayName(this.catalog(), this.locale(), station);
   }
+  /** Localized public display names; canonical catalogue IDs and legal identity remain unchanged. */
+  networkName(network: { id: string; name: string }): string {
+    return this.t('networkNames', network.id, network.name);
+  }
+  broadcasterName(broadcaster: { id: string; name: string }): string {
+    return this.t('broadcasterNames', broadcaster.id, broadcaster.name);
+  }
+  programmeThemeName(theme: { id: string; name: string }): string {
+    return this.t('programmeThemeNames', theme.id, theme.name);
+  }
   artistName(artist: { id: string; name: string }): string {
     const value =
       this.locale() === 'en' ? undefined : this.catalog()?.localization[this.locale()]?.['artistNames']?.[artist.id];
