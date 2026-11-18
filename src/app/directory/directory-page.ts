@@ -27,6 +27,7 @@ import {
   geographicCrumbs,
 } from './directory.model';
 import { DirectoryKey, directoryText } from './directory.labels';
+import { defaultIndexOrder, indexOrder, sortIndexDestinations, type IndexMode } from './directory-index-sort';
 
 @Component({
   selector: 'app-directory-page',
@@ -83,6 +84,27 @@ export class DirectoryPage {
   readonly index = computed(
     () => ['languages', 'genres', 'artists', 'networks', 'broadcasters'].includes(this.mode()) && !this.facet(),
   );
+  readonly sortableIndex = computed(() =>
+    this.index() && (this.mode() === 'languages' || this.mode() === 'artists'),
+  );
+  readonly indexSort = computed(() => {
+    const mode = this.mode() as IndexMode;
+    return indexOrder(mode, this.query().get('order'));
+  });
+  readonly indexSortOptions = computed(() => {
+    const rows = [
+      { id: 'name-asc', name: this.text('nameAsc') },
+      { id: 'name-desc', name: this.text('nameDesc') },
+    ];
+    return this.mode() === 'languages'
+      ? [
+          { id: 'count-desc', name: this.text('countDesc') },
+          { id: 'count-asc', name: this.text('countAsc') },
+          ...rows,
+        ]
+      : rows;
+  });
+
   readonly registry = computed(() => {
     const c = this.data.catalog();
     if (!c) return [];
@@ -202,8 +224,8 @@ export class DirectoryPage {
     const all = allStations(c),
       scope = this.scope(),
       counts = locationMembership(c);
-    if (this.index())
-      return this.registry()
+    if (this.index()) {
+      const entries = this.registry()
         .map(item => ({
           id: item.id,
           name: item.name,
@@ -221,6 +243,10 @@ export class DirectoryPage {
           ).length,
         }))
         .filter(d => d.count > 0 || this.mode() === 'languages');
+      return this.sortableIndex()
+        ? sortIndexDestinations(entries, this.indexSort(), this.data.locale())
+        : entries;
+    }
     if (this.mode() !== 'world') return [];
     if (!scope.continent)
       return ([...new Set(all.map(s => continentFor(s.countryCode)))] as ContinentId[]).map(id => ({
@@ -357,6 +383,15 @@ export class DirectoryPage {
         } as Record<string, string>
       )[this.mode()] === key
     );
+  }
+  sortIndex(value: string) {
+    if (!this.sortableIndex() || !this.indexSortOptions().some(option => option.id === value)) return;
+    const mode = this.mode() as IndexMode;
+    const order = value === defaultIndexOrder(mode) ? null : value;
+    void this.router.navigate([this.router.url.split('?')[0]], {
+      queryParams: { ...this.route.snapshot.queryParams, order },
+      replaceUrl: true,
+    });
   }
   filter(key: string, value: string) {
     void this.router.navigate([this.router.url.split('?')[0]], {
