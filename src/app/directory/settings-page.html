@@ -18,6 +18,10 @@
   @if (recording.Enabled) {
     <section class="setting-card" aria-labelledby="recording-heading">
       <h2 id="recording-heading">{{ text('recordingFolder') }}</h2>
+      <div data-recording-disclaimer role="note" aria-labelledby="recording-disclaimer-heading">
+        <h3 id="recording-disclaimer-heading">{{ text('recordingDisclaimerHeading') }}</h3>
+        <p class="help">{{ text('recordingDisclaimer') }}</p>
+      </div>
       <p class="help">{{ text('recordingFolderHelp') }}</p>
       <div class="recording-preferences" data-recording-export-settings>
         <div class="preferences">
