@@ -21,6 +21,14 @@ a {
   gap: 16px;
   margin-top: 16px;
 }
+.index-sort {
+  width: min(100%, 300px);
+  margin: 4px 0 18px;
+}
+.index-sort app-directory-select { width: 100%; min-width: 0; }
+@media (max-width: 599px) {
+  .index-sort { width: 100%; }
+}
 .destinations {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
