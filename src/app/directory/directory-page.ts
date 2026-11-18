@@ -87,6 +87,31 @@ export class DirectoryPage {
   readonly sortableIndex = computed(() =>
     this.index() && (this.mode() === 'languages' || this.mode() === 'artists'),
   );
+  /** Languages are derived from stations linked to artists, not UI locale options. */
+  readonly artistLanguages = computed(() => {
+    const c = this.data.catalog();
+    if (!c) return [];
+    const artistIds = new Set((c.artists ?? []).map(artist => artist.id));
+    const codes = new Set(
+      allStations(c)
+        .filter(station => station.artistIds?.some(id => artistIds.has(id)))
+        .flatMap(station => station.broadcastLanguages),
+    );
+    return [...codes]
+      .map(code => {
+        const language = c.languages.find(item => item.code === code);
+        return { id: code, name: language ? this.data.languageName(language) : code };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name, this.data.locale()));
+  });
+  readonly artistLanguage = computed(() => {
+    const requested = this.query().get('artistLanguage') ?? '';
+    return this.artistLanguages().some(language => language.id === requested) ? requested : '';
+  });
+  readonly artistLanguageOptions = computed(() => [
+    { id: '', name: this.text('all') },
+    ...this.artistLanguages(),
+  ]);
   readonly indexSort = computed(() => {
     const mode = this.mode() as IndexMode;
     return indexOrder(mode, this.query().get('order'));
@@ -225,13 +250,15 @@ export class DirectoryPage {
       scope = this.scope(),
       counts = locationMembership(c);
     if (this.index()) {
+      const artistLanguage = this.mode() === 'artists' ? this.artistLanguage() : '';
       const entries = this.registry()
         .map(item => ({
           id: item.id,
           name: item.name,
           url: ['/' + this.mode(), item.id],
           count: all.filter(s =>
-            this.mode() === 'languages'
+            (!artistLanguage || s.broadcastLanguages.includes(artistLanguage)) &&
+            (this.mode() === 'languages'
               ? s.broadcastLanguages.includes(item.id)
               : this.mode() === 'genres'
                 ? s.genres.includes(item.id)
@@ -239,7 +266,7 @@ export class DirectoryPage {
                   ? (s.artistIds?.includes(item.id) ?? false)
                   : this.mode() === 'networks'
                     ? s.networkId === item.id
-                    : c.networks.find(n => n.id === s.networkId)?.broadcasterId === item.id,
+                    : c.networks.find(n => n.id === s.networkId)?.broadcasterId === item.id),
           ).length,
         }))
         .filter(d => d.count > 0 || this.mode() === 'languages');
@@ -367,8 +394,63 @@ export class DirectoryPage {
   sortName(key: string) {
     return this.text(key as DirectoryKey);
   }
+  private restoredPath = '';
+  private readonly preferencePrefix = 'radiobee.v2.directory.filters.v1:';
+
+  private preferenceStorage() {
+    try {
+      return this.document.defaultView?.localStorage ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private saveFilters(params: Record<string, string | null>) {
+    const storage = this.preferenceStorage();
+    if (!storage) return;
+    const path = this.router.url.split('?')[0];
+    const values = Object.fromEntries(
+      Object.entries(params).filter((entry): entry is [string, string] =>
+        typeof entry[1] === 'string' && entry[1].length > 0),
+    );
+    try {
+      if (Object.keys(values).length) storage.setItem(this.preferencePrefix + path, JSON.stringify(values));
+      else storage.removeItem(this.preferencePrefix + path);
+    } catch {
+      // Storage may be unavailable or full. URL filters remain functional.
+    }
+  }
+
   constructor() {
     effect(() => this.title.setTitle(this.heading() + ' - RadioBee'));
+    effect(() => {
+      // Restore only on entry to a directory route, not after Clear or a filter change.
+      this.mode();
+      this.facet();
+      this.url();
+      const path = this.router.url.split('?')[0];
+      if (this.restoredPath === path) return;
+      this.restoredPath = path;
+      if (this.route.snapshot.queryParamMap.keys.length) return;
+      const storage = this.preferenceStorage();
+      if (!storage) return;
+      try {
+        const raw = storage.getItem(this.preferencePrefix + path);
+        if (!raw) return;
+        const parsed: unknown = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return;
+        const allowed = new Set([...Object.keys(initialBrowse), 'group', 'order', 'artistLanguage', 'q']);
+        const saved = Object.fromEntries(
+          Object.entries(parsed).filter(([key, value]) =>
+            allowed.has(key) && typeof value === 'string' && value.length < 256),
+        );
+        if (Object.keys(saved).length) {
+          void this.router.navigate([path], { queryParams: saved, replaceUrl: true });
+        }
+      } catch {
+        // Invalid or blocked storage should never prevent browsing.
+      }
+    });
   }
   fixed(key: string) {
     return (
@@ -388,18 +470,23 @@ export class DirectoryPage {
     if (!this.sortableIndex() || !this.indexSortOptions().some(option => option.id === value)) return;
     const mode = this.mode() as IndexMode;
     const order = value === defaultIndexOrder(mode) ? null : value;
+    const params = { ...this.route.snapshot.queryParams, order };
+    this.saveFilters(params);
     void this.router.navigate([this.router.url.split('?')[0]], {
-      queryParams: { ...this.route.snapshot.queryParams, order },
+      queryParams: params,
       replaceUrl: true,
     });
   }
   filter(key: string, value: string) {
+    const params = { ...this.route.snapshot.queryParams, [key]: value || null };
+    this.saveFilters(params);
     void this.router.navigate([this.router.url.split('?')[0]], {
-      queryParams: { ...this.route.snapshot.queryParams, [key]: value || null },
+      queryParams: params,
       replaceUrl: true,
     });
   }
   reset() {
+    this.saveFilters({});
     void this.router
       .navigate([this.router.url.split('?')[0]], { queryParams: {}, replaceUrl: true })
       .then(() => this.document.querySelector<HTMLInputElement>('input[type=search]')?.focus());

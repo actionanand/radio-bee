@@ -21,6 +21,14 @@
     [options]="indexSortOptions()"
     (changed)="sortIndex($event)" />
 </div>
+} @if(mode()==='artists' && index()){
+<div class="index-sort">
+  <app-directory-select data-control="artist-language"
+    [label]="text('language')"
+    [value]="artistLanguage()"
+    [options]="artistLanguageOptions()"
+    (changed)="filter('artistLanguage',$event)" />
+</div>
 } @if(destinations().length){
 <div class="destinations">
   @for(destination of destinations();track destination.id){<a [routerLink]="destination.url"
