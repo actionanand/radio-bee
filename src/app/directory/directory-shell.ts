@@ -228,6 +228,7 @@ export class DirectoryShellComponent {
   async refreshCatalogue() {
     if (this.refreshing() || this.data.loading()) return;
     this.refreshing.set(true);
+    const startedAt = Date.now();
     this.snackbar.show({ kind: 'text', message: this.text('refreshing') }, 'info', 60000);
     try {
       await this.data.refresh();
@@ -243,6 +244,9 @@ export class DirectoryShellComponent {
     } catch {
       this.snackbar.show({ kind: 'text', message: this.text('refreshFailed') }, 'warning', 6500);
     } finally {
+      // Keep the loading indicator perceptible when a cached response is instant.
+      const remainingMs = Math.max(0, 750 - (Date.now() - startedAt));
+      if (remainingMs > 0) await new Promise<void>(resolve => setTimeout(resolve, remainingMs));
       this.refreshing.set(false);
     }
   }
