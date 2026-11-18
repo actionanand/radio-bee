@@ -68,7 +68,7 @@
           [attr.aria-label]="data.loading() ? text('refreshing') : text('refresh')"
           [attr.title]="data.loading() ? text('refreshing') : text('refresh')"
           [attr.aria-busy]="refreshing()">
-          <ion-icon [icon]="icons.refreshOutline" aria-hidden="true" />
+          <span class="refresh-glyph" aria-hidden="true"><ion-icon [icon]="icons.refreshOutline" /></span>
         </button>
       </footer>
     </main>
