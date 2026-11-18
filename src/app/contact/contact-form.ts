@@ -168,6 +168,10 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
     ion-select { box-sizing: border-box; width: 100%; min-height: 44px; padding-inline: 12px;
       border: 1px solid var(--line); border-radius: 7px; background: var(--surface);
       color: var(--ink); --highlight-color-focused: var(--accent-ink); }
+    /* Ionic's value and toggle live in its shadow root. Give the value the
+       available width and keep the chevron against the field's inline end. */
+    ion-select::part(container) { flex: 1 1 auto; min-width: 0; }
+    ion-select::part(icon) { margin-inline-start: auto; flex: none; }
     ion-select:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; }
     .required { color: #c53729; }
     .helper { margin: -3px 0 14px; color: var(--muted); font-size: 12px; }
