@@ -18,6 +18,7 @@ import { MEDIA_ENGINE } from '../player/media-engine';
 import { DirectoryShellComponent } from './directory-shell';
 import { ContactFormComponent } from '../contact/contact-form';
 import { SettingsPage } from './settings-page';
+import { RADIO_RECORDING } from '../recording/recording.config';
 
 @Component({ imports: [RouterOutlet, PlayerComponent], template: '<router-outlet/><app-player/>' })
 class RootPlayerHostComponent {}
@@ -216,6 +217,40 @@ describe('Routable v2 directory', () => {
     expect(options().filter(option => option.getAttribute('aria-pressed') === 'true')).toHaveLength(9);
     expect(host().querySelector('.limit-hint')).toBeNull();
     expect(save().disabled).toBe(false);
+  });
+
+  it('only displays experimental recording notices when the recording feature is enabled', async () => {
+    setup();
+    const h = await RouterTestingHarness.create('/settings');
+    const root = () => element(h);
+    const disclaimer = root().querySelector('[data-recording-disclaimer]');
+    expect(disclaimer?.textContent).toContain('Experimental recording');
+    expect(disclaimer?.querySelector('a')).toBeNull();
+    for (const url of ['/privacy', '/terms', '/copyright-policy']) {
+      await h.navigateByUrl(url);
+      h.detectChanges();
+      const article = root().querySelector('app-legal-page')!;
+      expect(article.textContent).toMatch(/experimental recording|experimental recordings|recording and locally saved audio/i);
+      expect(article.textContent).toMatch(/responsib|permissions/i);
+    }
+  });
+
+  it('omits all recording disclaimers and settings when recording is disabled', async () => {
+    setup();
+    TestBed.overrideProvider(RADIO_RECORDING, { useValue: {
+      Enabled: false, AllowProhibitedRecording: false, MaxDurationMs: 3600000,
+      MaxBytes: 80 * 1024 * 1024, AutoContinue: false,
+    } });
+    const h = await RouterTestingHarness.create('/settings');
+    const root = () => element(h);
+    expect(root().querySelector('[data-recording-disclaimer]')).toBeNull();
+    expect(root().querySelector('[data-recording-export-settings]')).toBeNull();
+    expect(root().querySelector('[data-recording-settings-limit]')).toBeNull();
+    for (const url of ['/privacy', '/terms', '/copyright-policy']) {
+      await h.navigateByUrl(url);
+      h.detectChanges();
+      expect(root().querySelector('app-legal-page')?.textContent).not.toMatch(/experimental recording|user-initiated experimental recordings/i);
+    }
   });
 
   it('navigates to the four legal pages from the small footer links', async () => {
