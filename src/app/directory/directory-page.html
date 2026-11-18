@@ -13,7 +13,15 @@
 @if(data.homeSelectionWarning()){<p role="status">{{data.statusText(data.homeSelectionWarning())}}</p>}
 <h2>{{text('featured')}} ({{rows().length}})</h2>
 <a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>
-<a class="home-settings" routerLink="/settings" [attr.aria-label]="text('settings')" [attr.title]="text('settings')"><ion-icon [icon]="settingsIcon" aria-hidden="true" /></a>} @if(destinations().length){
+<a class="home-settings" routerLink="/settings" [attr.aria-label]="text('settings')" [attr.title]="text('settings')"><ion-icon [icon]="settingsIcon" aria-hidden="true" /></a>} @if(sortableIndex()){
+<div class="index-sort">
+  <app-directory-select data-control="index-sort"
+    [label]="text('sort')"
+    [value]="indexSort()"
+    [options]="indexSortOptions()"
+    (changed)="sortIndex($event)" />
+</div>
+} @if(destinations().length){
 <div class="destinations">
   @for(destination of destinations();track destination.id){<a [routerLink]="destination.url"
     ><strong>{{destination.name}}</strong>@if(mode()==='broadcasters' && broadcasterBrands().get(destination.id); as brands){<span class="broadcaster-brands" [title]="brands">{{brands}}</span>}<span>{{destination.count}} {{text('stations')}}</span></a
