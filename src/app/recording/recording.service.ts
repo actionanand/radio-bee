@@ -86,6 +86,8 @@ export class RecordingService implements OnDestroy {
   readonly seconds = signal(0);
   readonly message = signal<UiKey | null>(null);
   readonly file = signal<Blob | null>(null);
+  /** The previous M4A attempt failed; keep the draft available for original export. */
+  readonly conversionFailed = signal(false);
   // Segments remain recoverable if persistence fails while the next capture
   // has already started. Never confuse a pending save with the active recorder.
   readonly unsavedAutoSegments = signal<readonly { blob: Blob; filename: string; station: string }[]>([]);
@@ -453,6 +455,7 @@ export class RecordingService implements OnDestroy {
     this.handle?.stop(true);
     this.handle = undefined;
     this.file.set(null);
+    this.conversionFailed.set(false);
     this.message.set(null);
     this.state.set('idle');
     this.seconds.set(0);
@@ -461,10 +464,10 @@ export class RecordingService implements OnDestroy {
   private conversionFallback() {
     const locale = this.catalog.locale();
     const message = locale === 'ta'
-      ? 'M4A மாற்றம் தோல்வியடைந்தது. அசல் பதிவு பாதுகாப்பாகச் சேமிக்கப்பட்டது.'
+      ? 'M4A மாற்றம் தோல்வியடைந்தது. அசல் கோப்பு சேமிக்கப்பட்டது. மீண்டும் முயலலாம் அல்லது அசல் வடிவில் ஏற்றுமதி செய்யலாம்.'
       : locale === 'sa'
-        ? 'M4A रूपान्तरणं विफलम्। मूलमुद्रणं सुरक्षितम् अस्ति।'
-        : 'M4A conversion failed. The original recording was saved safely.';
+        ? 'M4A रूपान्तरणं विफलम्। मूलसञ्चिका रक्षिता। पुनः प्रयतताम् अथवा मूलरूपे निर्यातयतु।'
+        : 'M4A conversion failed. Original audio was saved; retry M4A or export another original copy.';
     this.snackbar.show({ kind: 'text', message }, 'warning', 7500);
   }
   private async saveAutomatic(segment: { blob: Blob; filename: string; station: string }) {
@@ -502,33 +505,41 @@ export class RecordingService implements OnDestroy {
       this.automaticSavesInProgress.update(n => Math.max(0, n - 1));
     }
   }
-  async save() {
+  /** Explicit raw export remains available even after a conversion failure. */
+  async saveOriginal() {
+    return this.save(true);
+  }
+  async save(rawOnly = false) {
     const file = this.file();
     if (!file || this.state() === 'exporting') return;
     this.state.set('exporting');
     const generation = this.generation;
-    let fellBack = false;
     try {
+      let outcome: 'original' | 'converted' | 'fallback' | undefined;
       if (this.destination.requiresSelection || this.destination.selected()) {
-        const outcome = Capacitor.getPlatform() === 'android'
-          ? await this.destination.save(file, recordingFilename(this.name, file.type), false, this.name)
+        outcome = Capacitor.getPlatform() === 'android'
+          ? await this.destination.save(file, recordingFilename(this.name, file.type), false, this.name, rawOnly)
           : await this.destination.save(file, recordingFilename(this.name, file.type));
-        if (outcome === 'fallback') {
-          fellBack = true;
-          this.conversionFallback();
-        }
       } else {
         await this.exporter.save(file, recordingFilename(this.name, file.type));
       }
-      if (generation === this.generation && !this.destroyed && this.file() === file) {
-        // Only a completed export action consumes the draft. Failed exports
-        // remain available in the dock for an explicit retry.
-        this.file.set(null);
-        this.state.set('idle');
+      // A stale export cannot clear a newer draft or change its status.
+      if (generation !== this.generation || this.destroyed || this.file() !== file) return;
+      if (outcome === 'fallback') {
+        // The Android destination already committed an original-format file.
+        // Keep the in-memory draft for a deliberate raw export or M4A retry.
+        this.conversionFailed.set(true);
+        this.state.set('ready');
         this.message.set(null);
-        this.seconds.set(0);
-        if (!fellBack) this.snackbar.show({ kind: 'localized', key: 'recordingExported' }, 'success');
+        this.conversionFallback();
+        return;
       }
+      this.file.set(null);
+      this.conversionFailed.set(false);
+      this.state.set('idle');
+      this.message.set(null);
+      this.seconds.set(0);
+      this.snackbar.show({ kind: 'localized', key: 'recordingExported' }, 'success');
     } catch {
       if (generation === this.generation && !this.destroyed && this.file() === file) {
         this.state.set('ready');
