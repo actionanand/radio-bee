@@ -21,13 +21,22 @@ a {
   gap: 16px;
   margin-top: 16px;
 }
-.index-sort {
+.index-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   width: min(100%, 300px);
+  gap: 12px;
+  align-items: end;
   margin: 4px 0 18px;
 }
-.index-sort app-directory-select { width: 100%; min-width: 0; }
+.index-controls.artist-index-controls {
+  width: min(100%, 612px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.index-controls app-directory-select { width: 100%; min-width: 0; }
 @media (max-width: 599px) {
-  .index-sort { width: 100%; }
+  .index-controls,
+  .index-controls.artist-index-controls { width: 100%; }
 }
 .destinations {
   display: grid;

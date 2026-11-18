@@ -14,20 +14,19 @@
 <h2>{{text('featured')}} ({{rows().length}})</h2>
 <a class="browse-all" routerLink="/world">{{text('browseAll')}}</a>
 <a class="home-settings" routerLink="/settings" [attr.aria-label]="text('settings')" [attr.title]="text('settings')"><ion-icon [icon]="settingsIcon" aria-hidden="true" /></a>} @if(sortableIndex()){
-<div class="index-sort">
+<div class="index-controls" [class.artist-index-controls]="mode()==='artists'">
   <app-directory-select data-control="index-sort"
     [label]="text('sort')"
     [value]="indexSort()"
     [options]="indexSortOptions()"
     (changed)="sortIndex($event)" />
-</div>
-} @if(mode()==='artists' && index()){
-<div class="index-sort">
+  @if(mode()==='artists'){
   <app-directory-select data-control="artist-language"
     [label]="text('language')"
     [value]="artistLanguage()"
     [options]="artistLanguageOptions()"
     (changed)="filter('artistLanguage',$event)" />
+  }
 </div>
 } @if(destinations().length){
 <div class="destinations">
