@@ -24,6 +24,9 @@ export function assetPlan() {
     ])
     .concat([
       { file: `${res}/drawable-nodpi/radiobee_splash_logo.png`, size: 512, art: 288, background: 'none' },
+      // Separate opaque album cover: splash art has transparent margins and is
+      // too small on an audio player's Now Playing / lock-screen surface.
+      { file: `${res}/drawable-nodpi/radiobee_recording_cover.png`, size: 512, art: 420, background: '#fff8e7' },
       { file: 'releases/playstore-icon.png', size: 512, art: 420, background: '#fff8e7' },
     ]);
 }
