@@ -140,6 +140,8 @@ test('Capacitor sync injects the SAF recording plugin in the generated package e
   const converter = 'android/app/src/main/java/com/actionanand/radiobee/app/RadioBeeAudioConverter.java';
   assert.match(f.read(converter), /MediaCodec\.createEncoderByType/);
   assert.match(f.read(converter), /covr/);
+  assert.match(f.read(converter), /R\.drawable\.radiobee_recording_cover/);
+  assert.match(f.read(converter), /verifyArtwork\(output\)/);
   assert.match(f.read(converter), /package com\.actionanand\.radiobee\.app;/);
   const first = f.read(activity);
   patchAndroid(f.root);
@@ -175,6 +177,7 @@ test('asset plan uses all densities, padded artwork, splash and 512px store icon
       assert.ok(plan.some(item => item.file.endsWith(`mipmap-${density}/${name}.png`)));
   assert.ok(plan.every(item => item.art < item.size && !item.file.includes('favicon')));
   assert.deepEqual(plan.at(-1), { file: 'releases/playstore-icon.png', size: 512, art: 420, background: '#fff8e7' });
+  assert.ok(plan.some(item => item.file.endsWith('/drawable-nodpi/radiobee_recording_cover.png') && item.size === 512 && item.background !== 'none'));
   const f = fixture(t);
   const png = Buffer.alloc(24);
   Buffer.from('89504e470d0a1a0a', 'hex').copy(png);
