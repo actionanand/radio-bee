@@ -246,6 +246,13 @@ export class DirectoryShellComponent {
       this.refreshing.set(false);
     }
   }
+  footerLinkText(path: string): string {
+    const labels = this.footerLegal();
+    if (path === '/privacy') return labels.privacy;
+    if (path === '/terms') return labels.terms;
+    if (path === '/copyright-policy') return labels.copyright;
+    return labels.contact;
+  }
   storageNotice() {
     return this.data.statusText(this.data.storageWarning());
   }
