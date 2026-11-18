@@ -141,9 +141,9 @@ export class DirectoryPage {
       case 'artists':
         return (c.artists ?? []).map(a => ({ ...a, name: this.data.artistName(a) }));
       case 'networks':
-        return c.networks;
+        return c.networks.map(n => ({ ...n, name: this.data.networkName(n) }));
       case 'broadcasters':
-        return c.broadcasters ?? [];
+        return (c.broadcasters ?? []).map(b => ({ ...b, name: this.data.broadcasterName(b) }));
       default:
         return [];
     }
@@ -237,7 +237,7 @@ export class DirectoryPage {
     for (const broadcaster of c.broadcasters ?? []) {
       const brands = c.networks
         .filter(network => network.broadcasterId === broadcaster.id && occupied.has(network.id))
-        .map(network => network.name)
+        .map(network => this.data.networkName(network))
         .sort((a, b) => a.localeCompare(b));
       if (brands.length) names.set(broadcaster.id, brands.join(' · '));
     }
@@ -320,14 +320,14 @@ export class DirectoryPage {
               label: this.text('genre'),
               options: c.categories.map(g => ({ id: g.id, name: this.data.t('categories', g.id, g.name) })),
             },
-            { key: 'theme', label: this.text('themeFilter'), options: c.programmeThemes ?? [] },
+            { key: 'theme', label: this.text('themeFilter'), options: (c.programmeThemes ?? []).map(t => ({ ...t, name: this.data.programmeThemeName(t) })) },
             {
               key: 'artist',
               label: this.text('artist'),
               options: (c.artists ?? []).map(a => ({ ...a, name: this.data.artistName(a) })),
             },
-            { key: 'network', label: this.text('network'), options: c.networks },
-            { key: 'broadcaster', label: this.text('broadcaster'), options: c.broadcasters ?? [] },
+            { key: 'network', label: this.text('network'), options: c.networks.map(n => ({ ...n, name: this.data.networkName(n) })) },
+            { key: 'broadcaster', label: this.text('broadcaster'), options: (c.broadcasters ?? []).map(b => ({ ...b, name: this.data.broadcasterName(b) })) },
             {
               key: 'classification',
               label: this.text('classification'),
@@ -383,8 +383,8 @@ export class DirectoryPage {
         id === 'all'
           ? ''
           : id.startsWith('broadcaster:')
-            ? (c?.broadcasters?.find(b => b.id === n.broadcasterId)?.name ?? n.name)
-            : n.name;
+            ? (c?.broadcasters?.find(b => b.id === n.broadcasterId) ? this.data.broadcasterName(c!.broadcasters!.find(b => b.id === n.broadcasterId)!) : this.data.networkName(n))
+            : this.data.networkName(n);
       const row = result.get(id) ?? { id, name, stations: [] };
       row.stations.push(s);
       result.set(id, row);

@@ -56,12 +56,12 @@
     } @if(network();as network){
     <div>
       <dt>{{text('network')}}</dt>
-      <dd><a [routerLink]="['/networks',network.id]">{{network.name}}</a></dd>
+      <dd><a [routerLink]="['/networks',network.id]">{{data.networkName(network)}}</a></dd>
     </div>
     } @if(broadcaster();as broadcaster){
     <div>
       <dt>{{text('broadcaster')}}</dt>
-      <dd><a [routerLink]="['/broadcasters',broadcaster.id]">{{broadcaster.name}}</a></dd>
+      <dd><a [routerLink]="['/broadcasters',broadcaster.id]">{{data.broadcasterName(broadcaster)}}</a></dd>
     </div>
     }
     <div>

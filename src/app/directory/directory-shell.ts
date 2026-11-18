@@ -34,6 +34,7 @@ import { CatalogService } from '../catalog/catalog.service';
 import { FavoritesService } from '../catalog/favorites.service';
 import { radioBeeCopyright } from '../shared/copyright';
 import { legalLinks } from '../legal/legal-content';
+import { legalCopy } from '../legal/legal-page-copy';
 import { uiLabel } from '../catalog/catalog.ui';
 import { uiLanguageOptions } from '../catalog/device-language';
 import { ThemeService } from '../theme/theme.service';
@@ -58,7 +59,8 @@ import { DirectoryKey, directoryText } from './directory.labels';
 export class DirectoryShellComponent {
   readonly data = inject(CatalogService);
   readonly favorites = inject(FavoritesService);
-  readonly copyright = radioBeeCopyright();
+  readonly copyright = computed(() => radioBeeCopyright(undefined, this.data.locale()));
+  readonly footerLegal = computed(() => legalCopy(this.data.locale()));
   readonly legalLinks = legalLinks;
   readonly legalPage = signal(false);
   readonly theme = inject(ThemeService);
@@ -243,6 +245,13 @@ export class DirectoryShellComponent {
     } finally {
       this.refreshing.set(false);
     }
+  }
+  footerLinkText(path: string): string {
+    const labels = this.footerLegal();
+    if (path === '/privacy') return labels.privacy;
+    if (path === '/terms') return labels.terms;
+    if (path === '/copyright-policy') return labels.copyright;
+    return labels.contact;
   }
   storageNotice() {
     return this.data.statusText(this.data.storageWarning());

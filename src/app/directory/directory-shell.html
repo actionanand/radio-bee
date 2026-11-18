@@ -56,11 +56,11 @@
       <router-outlet />
       <footer>
         <span>RadioBee - {{tagline()}}</span>
-        <nav class="footer-policies" aria-label="Legal and contact information">
+        <nav class="footer-policies" [attr.aria-label]="footerLegal().policies">
           @for (link of legalLinks; track link.path) {
-            <a [routerLink]="link.path">{{ link.label }}</a>
+            <a [routerLink]="link.path">{{ footerLinkText(link.path) }}</a>
           }
-        </nav><span class="copyright">{{ copyright }}</span
+        </nav><span class="copyright">{{ copyright() }}</span
         ><button class="refresh-catalogue" type="button"
           (click)="refreshCatalogue()"
           [disabled]="data.loading() || refreshing()"
