@@ -1,4 +1,4 @@
-import { legalDocuments, legalLinks } from './legal-content';
+import { legalDocuments, legalLinks, recordingLegalSections, visibleLegalDocument } from './legal-content';
 
 describe('Public legal notices', () => {
   it('provides a distinct, substantial policy document for every footer destination', () => {
@@ -23,6 +23,24 @@ describe('Public legal notices', () => {
     expect(publicText).toContain('does not claim ownership');
     expect(publicText).toContain('rights');
     expect(publicText).toContain('Contact Us');
+  });
+
+  it('includes the testing-only recording disclaimer only when enabled', () => {
+    for (const page of ['privacy', 'terms', 'copyright-policy'] as const) {
+      const disabled = visibleLegalDocument(page, false);
+      const enabled = visibleLegalDocument(page, true);
+      expect(disabled).toBe(legalDocuments[page]);
+      expect(disabled.sections).toHaveLength(legalDocuments[page].sections.length);
+      expect(enabled.sections).toHaveLength(disabled.sections.length + 1);
+      const disclaimer = enabled.sections.at(-1)!;
+      const notice = [disclaimer.heading, ...(disclaimer.paragraphs ?? [])].join(' ');
+      expect(notice).toMatch(/recording/i);
+      expect(notice).toMatch(/responsib|permissions|law/i);
+      expect(notice).not.toMatch(/https?:\/\/|<a\b|radio-bee\.app/i);
+    }
+    expect(visibleLegalDocument('contact', true)).toBe(legalDocuments.contact);
+    expect(Object.keys(recordingLegalSections)).toEqual(['privacy', 'terms', 'copyright-policy']);
+    expect(JSON.stringify(legalDocuments)).not.toMatch(/\brecording\b/i);
   });
 
   it('accurately discloses Google Forms handling of contact entries', () => {
