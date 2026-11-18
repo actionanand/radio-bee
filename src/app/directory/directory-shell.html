@@ -61,7 +61,15 @@
             <a [routerLink]="link.path">{{ link.label }}</a>
           }
         </nav><span class="copyright">{{ copyright }}</span
-        ><button type="button" (click)="data.refresh()" [disabled]="data.loading()">{{text('refresh')}}</button>
+        ><button class="refresh-catalogue" type="button"
+          (click)="refreshCatalogue()"
+          [disabled]="data.loading() || refreshing()"
+          [class.is-refreshing]="refreshing()"
+          [attr.aria-label]="data.loading() ? text('refreshing') : text('refresh')"
+          [attr.title]="data.loading() ? text('refreshing') : text('refresh')"
+          [attr.aria-busy]="refreshing()">
+          <ion-icon [icon]="icons.refreshOutline" aria-hidden="true" />
+        </button>
       </footer>
     </main>
   </div>
