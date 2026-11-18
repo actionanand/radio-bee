@@ -301,6 +301,44 @@ export const legalDocuments: Record<LegalPageId, LegalDocument> = {
   },
 };
 
+
+/**
+ * Recording notices are deliberately separate from the default legalDocuments:
+ * a build with RadioRecording.Enabled=false must never display a recording notice.
+ * This content is informational text only; it contains no links to the app.
+ */
+export const recordingLegalSections: Readonly<Partial<Record<LegalPageId, LegalSection>>> = {
+  privacy: {
+    heading: '13. Experimental recording and locally saved audio',
+    paragraphs: [
+      'When the optional experimental recording feature is enabled, audio is captured on the user’s device and files are saved or exported to storage chosen by that user. RadioBee does not upload or host these recordings on its own servers. The user controls the saved files; device backups, storage providers, and apps used to share them may process copies under their own terms and settings.',
+      'Recordings may contain copyrighted broadcasts or personal information carried in a programme. The person making a recording is responsible for its lawful creation, retention, protection, deletion, and any subsequent sharing or use.',
+    ],
+  },
+  terms: {
+    heading: '16. Experimental recording feature and user responsibility',
+    paragraphs: [
+      'The optional audio recording capability is an experimental testing feature, provided to evaluate local audio capture, saving, conversion, and device compatibility. It is not a licensed recording service, a guarantee of uninterrupted capture or file recovery, or permission to record any third-party broadcast.',
+      'The person who chooses to record is solely responsible for starting the recording, choosing what to retain or share, securing any permissions required from broadcasters or other rights holders, and complying with copyright, privacy, broadcaster terms, and applicable laws. Do not record, copy, distribute, or otherwise use content where those activities are prohibited.',
+      'RadioBee, its owner, developers, contributors, and operators do not initiate, direct, supervise, host, or distribute recordings made by users. To the maximum extent permitted by applicable law, they disclaim responsibility and liability for recordings created, retained, shared, or misused by a user, including claims arising from that user’s conduct. Nothing in this notice excludes or limits responsibility that cannot legally be excluded.',
+    ],
+  },
+  'copyright-policy': {
+    heading: '10. User-initiated experimental recordings',
+    paragraphs: [
+      'The optional recording capability is provided for testing on-device audio capture and export. Its availability does not give users any licence or authorization to record, reproduce, distribute, publish, or commercially exploit radio broadcasts or other copyrighted material.',
+      'Any recording is initiated and controlled by the individual user, who is solely responsible for obtaining required permissions and complying with applicable rights, laws, and broadcaster restrictions. RadioBee, its owner, and its operators are not the maker or distributor of user recordings and, to the extent permitted by law, do not accept liability for unauthorized recording or use by individuals. Mandatory legal responsibilities and rights remain unaffected.',
+    ],
+  },
+};
+
+/** Adds the feature's legal notice only when recording is explicitly enabled. */
+export function visibleLegalDocument(id: LegalPageId, recordingEnabled: boolean): LegalDocument {
+  const document = legalDocuments[id];
+  const section = recordingEnabled ? recordingLegalSections[id] : undefined;
+  return section ? { ...document, sections: [...document.sections, section] } : document;
+}
+
 export const legalLinks: ReadonlyArray<{ path: '/privacy' | '/terms' | '/copyright-policy' | '/contact'; label: string }> = [
   { path: '/privacy', label: 'Privacy Policy' },
   { path: '/terms', label: 'Terms & Conditions' },
