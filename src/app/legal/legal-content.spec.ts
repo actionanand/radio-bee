@@ -69,7 +69,9 @@ describe('Public legal notices', () => {
           const english = visibleLegalDocument(page, true, 'en').sections.at(-1)!;
           expect(last.heading).not.toBe(english.heading);
           expect(last.paragraphs?.length).toBe(english.paragraphs?.length);
-          expect(JSON.stringify(last)).not.toMatch(/https?:\\/\\/|<a\\b/);
+          expect(JSON.stringify(last)).not.toContain('http://');
+          expect(JSON.stringify(last)).not.toContain('https://');
+          expect(JSON.stringify(last)).not.toContain('<a');
         }
       }
     }
