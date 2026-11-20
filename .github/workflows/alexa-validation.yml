@@ -1,0 +1,29 @@
+name: Validate RadioBee Alexa skill
+
+on:
+  pull_request:
+    paths:
+      - 'alexa/**'
+      - '.github/workflows/alexa-validation.yml'
+  push:
+    branches: [master, main-github]
+    paths:
+      - 'alexa/**'
+      - '.github/workflows/alexa-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-alexa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.16.0'
+      - name: Validate Alexa interaction model JSON
+        run: node -e "const m=require('./alexa/skill-package/interactionModels/custom/en-IN.json'); if(m.interactionModel.languageModel.invocationName!=='radio bee') process.exit(1)"
+      - name: Test Alexa skill handlers
+        run: node --test alexa/tests/*.test.cjs
