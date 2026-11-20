@@ -1,0 +1,110 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "radio bee",
+      "intents": [
+        {
+          "name": "PlayChannelIntent",
+          "slots": [
+            {
+              "name": "channelNumber",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "play channel {channelNumber}",
+            "play number {channelNumber}",
+            "channel {channelNumber}",
+            "play station number {channelNumber}",
+            "tune to channel {channelNumber}"
+          ]
+        },
+        {
+          "name": "PlayStationIntent",
+          "slots": [
+            {
+              "name": "stationName",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "play {stationName}",
+            "listen to {stationName}",
+            "tune to {stationName}"
+          ]
+        },
+        {
+          "name": "StationNumberIntent",
+          "slots": [
+            {
+              "name": "stationName",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "what is the channel number for {stationName}",
+            "find the channel for {stationName}"
+          ]
+        },
+        {
+          "name": "NextChannelIntent",
+          "slots": [],
+          "samples": [
+            "next channel",
+            "change to next channel"
+          ]
+        },
+        {
+          "name": "PreviousChannelIntent",
+          "slots": [],
+          "samples": [
+            "previous channel",
+            "change to previous channel"
+          ]
+        },
+        {
+          "name": "CurrentChannelIntent",
+          "slots": [],
+          "samples": [
+            "what channel is this",
+            "which radio station is this",
+            "current channel"
+          ]
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    }
+  }
+}
