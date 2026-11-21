@@ -113,9 +113,9 @@ test('identity, native patch idempotency and preservation of custom native chang
   assert.match(f.read('android/app/build.gradle'), /versionCode 2/);
   assert.match(f.read('android/app/build.gradle'), /debug \{ minifyEnabled false \}/);
   assert.match(f.read('android/app/build.gradle'), /shrinkResources true/);
-  assert.match(f.read('android/app/build.gradle'), /implementation 'androidx\\.documentfile:documentfile:1\\.1\\.0'/);
-  assert.match(f.read('android/app/build.gradle'), /implementation 'com\\.example:custom-native:1\\.0'/);
-  assert.equal((f.read('android/app/build.gradle').match(/androidx\\.documentfile:documentfile:/g) ?? []).length, 1);
+  assert.ok(f.read('android/app/build.gradle').includes("implementation 'androidx.documentfile:documentfile:1.1.0'"));
+  assert.ok(f.read('android/app/build.gradle').includes("implementation 'com.example:custom-native:1.0'"));
+  assert.equal(f.read('android/app/build.gradle').split('androidx.documentfile:documentfile:').length - 1, 1);
   assert.match(f.read('android/variables.gradle'), /custom = 7/);
   assert.match(f.read('android/app/src/main/res/values/styles.xml'), /<item name="custom">keep<\/item>/);
   const manifest = f.read('android/app/src/main/AndroidManifest.xml');
@@ -134,14 +134,15 @@ test('native patch preserves an existing AndroidX DocumentFile dependency withou
   f.write('android/app/build.gradle', gradle);
   patchAndroid(f.root);
   const result = f.read('android/app/build.gradle');
-  assert.match(result, /androidx\\.documentfile:documentfile:1\\.0\\.1/);
-  assert.equal((result.match(/androidx\\.documentfile:documentfile:/g) ?? []).length, 1);
+  assert.ok(result.includes("androidx.documentfile:documentfile:1.0.1"));
+  assert.equal(result.split('androidx.documentfile:documentfile:').length - 1, 1);
 });
 
 test('native patch fails clearly if a future template lacks an app dependencies block', t => {
   const f = nativeFixture(t);
   const gradle = f.read('android/app/build.gradle');
-  f.write('android/app/build.gradle', gradle.replace(/dependencies\\s*\\{[\\s\\S]*?\\}/, ''));
+  assert.ok(gradle.includes('  dependencies {'));
+  f.write('android/app/build.gradle', gradle.slice(0, gradle.indexOf('  dependencies {')));
   assert.throws(() => patchAndroid(f.root), /app dependencies block for AndroidX DocumentFile/);
 });
 
