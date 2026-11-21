@@ -97,7 +97,7 @@ A push, merge, or fast-forward to `main-alexa` automatically launches this workf
 
 ## Playback limits
 
-The existing handler intentionally refuses to stream unless the catalogue marks the stream **verified**, rights **permission-granted** and direct listening **allowed**. It additionally restricts codec and HTTPS requirements. A deployed skill can respond to voice commands while still refusing audio playback. Verify streaming rights and compatibility before release.
+The current `main-alexa` handler allows direct trial playback from suitable HTTPS port 443 streams without requiring catalogue `verified` / `permission-granted` flags. This does **not** change broadcaster authorization or verify stream compatibility: review permissions and test on real Alexa hardware before public distribution. Unsupported ports, codecs and playlists can still fail.
 
 ## Security and rollback
 
