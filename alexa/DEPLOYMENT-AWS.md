@@ -1,6 +1,6 @@
 # Radio Bee Alexa — deploy from GitHub
 
-**Architecture:** `radio-bee` owns the Alexa code and GitHub Actions; `radio-bee-data` publishes `alexa/station-numbers.json` and `v2/stations.json` on GitHub Pages. Lambda downloads the two data files at runtime. It does not proxy audio.
+**Architecture:** `radio-bee` owns the Alexa code and GitHub Actions. The release branch is `main-alexa`: every push, merge or fast-forward to that branch triggers Lambda tests and, once AWS is configured, Lambda deployment. Updates to `master` never deploy Lambda. Do not force-push `main-alexa`. To release changes from `master`, selectively merge or cherry-pick reviewed Alexa changes into `main-alexa`.  `radio-bee-data` publishes `alexa/station-numbers.json` and `v2/stations.json` on GitHub Pages. Lambda downloads the two data files at runtime. It does not proxy audio.
 
 **Important:** This setup deploys to an **AWS Lambda function you own** and an Alexa Custom Skill using **Provision your own** endpoint. If you already created an **Alexa-hosted** skill, that is a different hosting model: create a separate self-managed Custom Skill or use the Alexa-hosted deployment procedure instead. Never attach a separate AWS Lambda deployment workflow to an Alexa-hosted skill without explicitly migrating its endpoint.
 
@@ -40,7 +40,7 @@ Create an IAM role `RadioBeeAlexaDeploy` with the following trust policy. Replac
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:actionanand/radio-bee:ref:refs/heads/master"
+          "token.actions.githubusercontent.com:sub": "repo:actionanand/radio-bee:ref:refs/heads/main-alexa"
         }
       }
     }
@@ -81,8 +81,8 @@ Use the real ARN from IAM. These variables are not secret credentials. GitHub Ac
 
 ## Deploy and test
 
-1. Merge the workflow PR after its checks pass.
-2. Go to https://github.com/actionanand/radio-bee/actions/workflows/deploy-alexa-lambda.yml , choose **Run workflow**, branch **master**. It runs Alexa unit tests first, builds a ZIP from `index.js`, `catalogue.js` and `package.json`, and updates the existing Lambda function.
+1. Merge the workflow PR after its checks pass, then use the dedicated `main-alexa` release branch. GitHub's workflow file must be on the default `master` branch for manual `workflow_dispatch` discovery; the actual deployment always checks out `main-alexa`. Every new commit on `main-alexa` triggers deployment, not just Alexa-file changes.
+2. Go to https://github.com/actionanand/radio-bee/actions/workflows/deploy-alexa-lambda.yml , choose **Run workflow**, branch **main-alexa**. It runs Alexa unit tests first, builds a ZIP from `index.js`, `catalogue.js` and `package.json`, and updates the existing Lambda function.
 3. Ensure the GitHub Actions run ends with successful `LastUpdateStatus`. If the AWS variables have not been set, the test runs but deploy is **skipped** with a warning.
 4. In the Alexa Developer Console's **Test** tab enable development testing, try **open radio bee**, **play channel one**, **play channel two**, and **stop**. Check Lambda CloudWatch logs if the invocation fails.
 5. This workflow deploys **Lambda code only**. Interaction model edits must be saved and rebuilt manually in the Alexa Console. The data repository publishes channel changes separately, so channel registry updates do not require Lambda redeployment.
@@ -93,4 +93,4 @@ The existing handler intentionally refuses to stream unless the catalogue marks 
 
 ## Security and rollback
 
-Avoid AWS administrator permissions for the deploy role. Review workflow edits in pull requests. To roll back, revert the offending Lambda change on `master` and rerun the workflow; Lambda versions/aliases may be added later for more robust rollback. Review AWS CloudWatch logs and costs after the first test.
+Avoid AWS administrator permissions for the deploy role. Review workflow edits in pull requests. To roll back, revert the offending Lambda change on `main-alexa` and rerun the workflow; Lambda versions/aliases may be added later for more robust rollback. Review AWS CloudWatch logs and costs after the first test.
