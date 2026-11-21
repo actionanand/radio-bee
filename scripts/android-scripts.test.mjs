@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync, chmodSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -274,20 +274,86 @@ test('JKS retains its separate key password; non-private aliases are rejected', 
   assert.throws(() => signAndroid(invalidAlias), /private key entry/);
   assert.ok(!existsSync(path.join(invalidAlias.root, 'radiobee-signing')));
 });
-test('keystore generation refuses existing identities and password arguments', t => {
+test('keystore generation refuses to replace an existing signing identity', t => {
   const f = fixture(t);
   f.write('release-keystore.jks', 'fixture-existing-identity');
   const generator = path.resolve('scripts/generate-keystore.mjs');
-  assert.throws(
-    () => execFileSync(process.execPath, [generator], { cwd: f.root, stdio: 'pipe' }),
-    /Refusing to overwrite/,
-  );
+  for (const args of [[], ['--password', 'fixture-long-password-2026']]) {
+    assert.throws(
+      () => execFileSync(process.execPath, [generator, ...args], { cwd: f.root, stdio: 'pipe' }),
+      /Refusing to overwrite/,
+    );
+  }
   assert.equal(f.read('release-keystore.jks'), 'fixture-existing-identity');
-  assert.throws(
-    () => execFileSync(process.execPath, [generator, '--password', 'fixture-only'], { cwd: f.root, stdio: 'pipe' }),
-    /password arguments are prohibited/,
-  );
 });
+
+test('keystore CLI validates missing, repeated, weak and unsupported password options', t => {
+  const f = fixture(t);
+  const generator = path.resolve('scripts/generate-keystore.mjs');
+  const run = args => execFileSync(process.execPath, [generator, ...args], {
+    cwd: f.root,
+    stdio: 'pipe',
+    env: { ...process.env, KEYSTORE_PASSWORD: '', ANDROID_KEYSTORE_PASSWORD: '' },
+  });
+  for (const args of [
+    [],
+    ['--password'],
+    ['--password', '--other'],
+    ['--password='],
+    ['--password', 'short'],
+    ['--password', 'valid-password-2026', '--password', 'second-password-2026'],
+    ['--random', 'valid-password-2026'],
+  ]) assert.throws(() => run(args));
+  assert.equal(existsSync(path.join(f.root, 'release-keystore.jks')), false);
+});
+
+test('keystore accepts Office Orbit-style CLI password, environment fallback and secure keytool invocation', t => {
+  const generator = path.resolve('scripts/generate-keystore.mjs');
+  const password = 'fixture-long-password-2026';
+  const setUp = () => {
+    const f = fixture(t);
+    const keytool = `#!/usr/bin/env node
+const fs = require('node:fs');
+const args = process.argv.slice(2);
+const option = name => args[args.indexOf(name) + 1];
+if (process.env.KEYSTORE_PASSWORD !== process.env.RADIOBEE_TEST_PASSWORD ||
+    !args.includes('-genkeypair') || !args.includes('-storepass:env') ||
+    !args.includes('-keypass:env') || !args.includes('PKCS12') ||
+    option('-alias') !== 'radiobee' || option('-keysize') !== '3072' ||
+    args.includes(process.env.KEYSTORE_PASSWORD)) process.exit(20);
+fs.writeFileSync(option('-keystore'), 'fixture-pkcs12', { mode: 0o600 });
+`;
+    f.write('bin/keytool', keytool);
+    chmodSync(path.join(f.root, 'bin/keytool'), 0o755);
+    return f;
+  };
+  for (const [args, credentials] of [
+    [['--password', password], { KEYSTORE_PASSWORD: 'different-env-password' }],
+    [['--password=' + password], {}],
+    [[], { KEYSTORE_PASSWORD: password }],
+    [[], { ANDROID_KEYSTORE_PASSWORD: password }],
+  ]) {
+    const f = setUp();
+    const env = {
+      ...process.env,
+      KEYSTORE_PASSWORD: '',
+      ANDROID_KEYSTORE_PASSWORD: '',
+      ...credentials,
+      RADIOBEE_TEST_PASSWORD: password,
+      PATH: path.join(f.root, 'bin') + path.delimiter + process.env.PATH,
+    };
+    const output = execFileSync(process.execPath, [generator, ...args], {
+      cwd: f.root, env, encoding: 'utf8', stdio: 'pipe',
+    });
+    assert.match(output, /PKCS12.*radiobee/);
+    assert.ok(!output.includes(password));
+    assert.equal(f.read('release-keystore.jks'), 'fixture-pkcs12');
+    if (process.platform !== 'win32') {
+      assert.equal(statSync(path.join(f.root, 'release-keystore.jks')).mode & 0o777, 0o600);
+    }
+  }
+});
+
 test('version reservations persist monotonically and reject stale branch reads', t => {
   const f = fixture(t);
   const remote = path.join(f.root, 'remote.git');

@@ -79,7 +79,16 @@ Download `radiobee-android-1.0.0-2` from the completed Actions run's **Artifacts
 
 ## Keystore creation and secure backup
 
-Generate a signing identity **once**, only when needed, on a trusted machine with Java keytool. `npm run generate-keystore` reads `KEYSTORE_PASSWORD` from the environment, requires at least 12 characters and refuses password arguments or an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format.
+Generate a signing identity **once**, only when needed, on a trusted machine with Java 21 `keytool`. Matching the Office Orbit command style, Radio Bee now accepts a `--password` argument as well as environment variables. Passwords must be at least 12 characters, contain no line breaks, and the generator refuses to overwrite an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format. **Radio Bee still requires Java keytool** (unlike Office Orbit's OpenSSL generator), because this avoids writing an unencrypted private-key PEM file.
+
+To use the requested command from WSL2/Bash (replace the placeholder with your actual strong password):
+
+```bash
+npm run generate-keystore -- --password 'KEYSTORE_PASSWORD'
+npm run keystore:type
+```
+
+This syntax works with `--password value` or `--password=value`. An explicit CLI password takes precedence over `KEYSTORE_PASSWORD` and `ANDROID_KEYSTORE_PASSWORD` environment variables. Keytool receives the password through its environment, never in its command-line arguments. **However, passing a secret to npm on the command line exposes it to shell history, process listings and possibly npm/CI logs.** Use this convenience syntax only on a private trusted machine; do not use it in automation or shared terminal sessions. The safer method below avoids password arguments entirely.
 
 For Bash, enter the password without echo or shell-history exposure:
 
@@ -104,6 +113,8 @@ try {
   $securePassword.Dispose()
 }
 ```
+
+Alternatively, the generator also reads `ANDROID_KEYSTORE_PASSWORD` from the environment when `KEYSTORE_PASSWORD` is unset. The existing `keystore:type` helper reads `KEYSTORE_PASSWORD`; use the primary variable when checking the generated file.
 
 Keep encrypted offline backups of the keystore, alias and password in separate secure storage. Reuse the signing identity for updates. Do not generate an identity during CI or replace an existing app's signing key casually.
 
@@ -174,4 +185,4 @@ CI does not publish to Google Play or create a GitHub Release. Set up the applic
 
 Release WebViews disable debugging, mixed content and Capacitor logging. HTTPS and the INTERNET permission remain available for authorized radio streaming. Cleartext HTTP streams are blocked intentionally. The manifest disables app backups, preserves unrelated native settings and permissions, and introduces no microphone, SMS, contacts, location or storage permission. Recording and Media3 playback are outside this change. Existing JavaScript functionality and locked dependencies remain intact.
 
-`test:android-scripts` uses temporary native/Git fixtures and mocked signing tools. It checks version transitions/limits, persisted reservations and stale reads, patch idempotency, asset paths, filenames, branch isolation, signing verification ordering and failure cleanup. These tests do not prove real cryptographic signatures or Android runtime behavior. See [validation results](ANDROID-VALIDATION.md) for the checks actually performed in the implementation environment; the first Actions run must establish native compilation and real signing success.
+`test:android-scripts` uses temporary native/Git fixtures and mocked signing tools. It checks version transitions/limits, persisted reservations and stale reads, patch idempotency, asset paths, filenames, branch isolation, signing verification ordering and failure cleanup. The generator tests now additionally cover the `--password` CLI, environment fallbacks, non-overwrite behavior, minimum password policy and password-free keytool arguments using a mocked keytool executable. These tests do not prove real cryptographic signatures or Android runtime behavior. See [validation results](ANDROID-VALIDATION.md) for the checks actually performed in the implementation environment; the first Actions run must establish native compilation and real signing success.
