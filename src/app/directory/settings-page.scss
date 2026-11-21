@@ -71,7 +71,7 @@ h3 { font-size: 15px; margin: 0 0 5px; }
   font: inherit; font-weight: 700; cursor: pointer;
   transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
 }
-.support-button:hover {
+.support-button:hover:not(.is-disabled) {
   background: var(--accent-ink); border-color: var(--accent-ink); transform: translateY(-1px);
 }
 :focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }

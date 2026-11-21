@@ -114,6 +114,26 @@
     @if (saved()) { <p role="status" class="saved">{{ text('saved') }}</p> }
     @if (home.warning()) { <p role="alert">{{ text('storage') }}</p> }
   </section>
+  @if (alexaSkillEnabled) {
+    <section class="setting-card support-card" aria-labelledby="alexa-heading" data-alexa-skill-settings>
+      <div class="support-row">
+        <div>
+          <h2 id="alexa-heading">{{ text('alexaHeading') }}</h2>
+          <p class="help">{{ text('alexaHelp') }}</p>
+          @if (!alexaSkillUrl) {
+            <p class="help" role="status">{{ text('alexaNotAvailable') }}</p>
+          }
+        </div>
+        @if (alexaSkillUrl) {
+          <a class="support-button" style="text-decoration: none" [href]="alexaSkillUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="text('alexaEnable')">
+            {{ text('alexaEnable') }}
+          </a>
+        } @else {
+          <span class="support-button is-disabled" style="opacity: .55; cursor: default" aria-disabled="true">{{ text('alexaEnable') }}</span>
+        }
+      </div>
+    </section>
+  }
   <section class="setting-card support-card" aria-labelledby="support-heading">
     <div class="support-row">
       <div>

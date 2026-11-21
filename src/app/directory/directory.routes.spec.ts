@@ -124,7 +124,11 @@ describe('Routable v2 directory', () => {
     expect(host().querySelector('[data-control=settings-locale] ion-select')).not.toBeNull();
     expect(host().querySelector('[data-control=settings-theme] ion-select')).not.toBeNull();
     expect(host().querySelectorAll('.setting-card:first-of-type .preferences app-directory-select')).toHaveLength(2);
-    const contact = host().querySelector<HTMLButtonElement>('.support-card .support-button')!;
+    const alexa = host().querySelector('[data-alexa-skill-settings]');
+    expect(alexa?.textContent).toContain('Listen on Alexa');
+    expect(alexa?.querySelector('a[href]')).toBeNull();
+    expect(alexa?.querySelector('[aria-disabled="true"]')).not.toBeNull();
+    const contact = host().querySelector<HTMLButtonElement>('[aria-labelledby="support-heading"] .support-button')!;
     expect(contact?.textContent?.trim()).toBe('Contact Us');
     expect(contact.getAttribute('aria-haspopup')).toBe('dialog');
     const contactComponent = h.fixture.debugElement.query(By.directive(ContactFormComponent))

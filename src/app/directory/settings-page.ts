@@ -12,6 +12,8 @@ import { RecordingDestination } from '../recording/recording-destination';
 import { recordingLimits } from '../recording/capture-engine';
 import { RecordingExportPreferencesService } from '../recording/recording-export-preferences';
 import { Capacitor } from '@capacitor/core';
+import { environment } from '../../environments/environment';
+import { validatedAlexaSkillUrl } from '../../environments/alexa-skill.config';
 
 /** v2 Settings: a draft selection never changes Home until the user saves it. */
 @Component({
@@ -28,6 +30,8 @@ export class SettingsPage {
   readonly recordingFolder = inject(RecordingDestination);
   readonly exportPreferences = inject(RecordingExportPreferencesService);
   readonly androidRecording = Capacitor.getPlatform() === 'android';
+  readonly alexaSkillEnabled = environment.AlexaSkill.Enabled;
+  readonly alexaSkillUrl = validatedAlexaSkillUrl(environment.AlexaSkill.Url);
   readonly recordingFormats = computed(() => this.androidRecording
     ? [{ id: 'm4a', name: this.text('recordingM4a') }, { id: 'original', name: this.text('recordingOriginal') }]
     : [{ id: 'original', name: this.text('recordingOriginal') }]);
