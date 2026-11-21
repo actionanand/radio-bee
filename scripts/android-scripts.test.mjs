@@ -309,33 +309,35 @@ test('keystore CLI validates missing, repeated, weak and unsupported password op
   assert.equal(existsSync(path.join(f.root, 'release-keystore.jks')), false);
 });
 
-test('keystore accepts Office Orbit-style CLI password, environment fallback and secure keytool invocation', t => {
+test('keystore uses Office Orbit OpenSSL flow, accepts exactly 10 characters, and isolates key files', t => {
   const generator = path.resolve('scripts/generate-keystore.mjs');
-  const password = 'Abcdefg12!'; // exactly 10 characters must succeed
-  const setUp = () => {
-    const f = fixture(t);
-    const keytool = `#!/usr/bin/env node
-const fs = require('node:fs');
-const args = process.argv.slice(2);
-const option = name => args[args.indexOf(name) + 1];
-if (process.env.KEYSTORE_PASSWORD !== process.env.RADIOBEE_TEST_PASSWORD ||
-    !args.includes('-genkeypair') || !args.includes('-storepass:env') ||
-    !args.includes('-keypass:env') || !args.includes('PKCS12') ||
-    option('-alias') !== 'radiobee' || option('-keysize') !== '3072' ||
-    args.includes(process.env.KEYSTORE_PASSWORD)) process.exit(20);
-fs.writeFileSync(option('-keystore'), 'fixture-pkcs12', { mode: 0o600 });
-`;
-    f.write('bin/keytool', keytool);
-    chmodSync(path.join(f.root, 'bin/keytool'), 0o755);
-    return f;
-  };
+  const password = 'Abcdefg12!';
   for (const [args, credentials] of [
     [['--password', password], { KEYSTORE_PASSWORD: 'different-env-password' }],
     [['--password=' + password], {}],
     [[], { KEYSTORE_PASSWORD: password }],
     [[], { ANDROID_KEYSTORE_PASSWORD: password }],
   ]) {
-    const f = setUp();
+    const f = fixture(t);
+    const mock = `#!/usr/bin/env node
+const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+const option = name => args[args.indexOf(name) + 1];
+if (args.includes(process.env.RADIOBEE_TEST_PASSWORD)) process.exit(10);
+if (args[0] === 'version') process.exit(0);
+if (args[0] === 'genrsa' && args.includes('3072')) {
+  fs.writeFileSync(option('-out'), 'ephemeral-key', { mode: 0o600 });
+} else if (args[0] === 'req' && args.includes('/CN=RadioBee/OU=Mobile/O=RadioBee/C=IN')) {
+  fs.writeFileSync(option('-out'), 'ephemeral-cert');
+} else if (args[0] === 'pkcs12' && option('-name') === 'radiobee' &&
+  option('-passout') === 'env:OPENSSL_PASS' &&
+  process.env.OPENSSL_PASS === process.env.RADIOBEE_TEST_PASSWORD) {
+  fs.writeFileSync(option('-out'), 'fixture-pkcs12');
+} else process.exit(20);
+`;
+    f.write('bin/openssl', mock);
+    chmodSync(path.join(f.root, 'bin/openssl'), 0o755);
     const env = {
       ...process.env,
       KEYSTORE_PASSWORD: '',
@@ -344,18 +346,44 @@ fs.writeFileSync(option('-keystore'), 'fixture-pkcs12', { mode: 0o600 });
       RADIOBEE_TEST_PASSWORD: password,
       PATH: path.join(f.root, 'bin') + path.delimiter + process.env.PATH,
     };
-    const output = execFileSync(process.execPath, [generator, ...args], {
+    const out = execFileSync(process.execPath, [generator, ...args], {
       cwd: f.root, env, encoding: 'utf8', stdio: 'pipe',
     });
-    assert.match(output, /PKCS12.*radiobee/);
-    assert.ok(!output.includes(password));
+    assert.match(out, /PKCS12.*radiobee/);
+    assert.ok(!out.includes(password));
     assert.equal(f.read('release-keystore.jks'), 'fixture-pkcs12');
+    assert.deepEqual(readdirSync(f.root).sort(), ['bin', 'release-keystore.jks']);
     if (process.platform !== 'win32') {
       assert.equal(statSync(path.join(f.root, 'release-keystore.jks')).mode & 0o777, 0o600);
     }
   }
 });
 
+test('keystore reports missing OpenSSL and redacts subprocess error output', t => {
+  const generator = path.resolve('scripts/generate-keystore.mjs');
+  const password = 'Abcdefg12!';
+  const f = fixture(t);
+  mkdirSync(path.join(f.root, 'empty-bin'));
+  const env = { ...process.env, KEYSTORE_PASSWORD: password, PATH: path.join(f.root, 'empty-bin') };
+  const run = () => execFileSync(process.execPath, [generator], { cwd: f.root, env, stdio: 'pipe' });
+  assert.throws(run, /OpenSSL not found/);
+  const failureTool = `#!/usr/bin/env node
+if (process.argv[2] === 'version') process.exit(0);
+process.stderr.write('SSL failed: ' + process.env.KEYSTORE_PASSWORD + '\\n');
+process.exit(19);
+`;
+  f.write('bin/openssl', failureTool);
+  chmodSync(path.join(f.root, 'bin/openssl'), 0o755);
+  env.PATH = path.join(f.root, 'bin') + path.delimiter + process.env.PATH;
+  let failure;
+  try { run(); } catch (error) { failure = error; }
+  assert.ok(failure);
+  const output = String(failure.stderr);
+  assert.match(output, /Generating RSA private key failed/);
+  assert.match(output, /\[REDACTED\]/);
+  assert.equal(output.includes(password), false);
+  assert.equal(existsSync(path.join(f.root, 'release-keystore.jks')), false);
+});
 test('version reservations persist monotonically and reject stale branch reads', t => {
   const f = fixture(t);
   const remote = path.join(f.root, 'remote.git');
