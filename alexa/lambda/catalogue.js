@@ -43,11 +43,15 @@ async function getJson(file,{fetcher,now=Date.now()}={}){
   }finally{clearTimeout(timer);}
 }
 const normalize=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+// Alexa trial playback uses direct broadcaster URLs; it does not change the
+// catalogue's technical-verification, rights or recording/redistribution status.
+// Alexa itself requires publicly reachable HTTPS media on port 443. Unknown-format
+// Zeno feeds may be attempted but are not guaranteed to decode on every device.
 function allowedStream(stream){
-  if(stream?.verificationStatus!=='verified'||stream.rightsStatus!=='permission-granted'||
-    stream.directListening?.status!=='allowed'||!['mp3','aac','hls'].includes(stream.format))return false;
+  if(!stream||!['mp3','aac','hls','unknown'].includes(stream.format))return false;
   try{
     const u=new URL(stream.url);
+    if(stream.format==='unknown'&&u.hostname!=='stream.zeno.fm')return false;
     return u.protocol==='https:'&&(!u.port||u.port==='443')&&
       !u.username&&!u.password&&!u.hash&&u.hostname.includes('.')&&
       !/^(?:\d{1,3}\.){3}\d{1,3}$/.test(u.hostname)&&

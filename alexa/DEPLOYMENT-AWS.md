@@ -1,6 +1,6 @@
 # Radio Bee Alexa — deploy from GitHub
 
-**Architecture:** `radio-bee` owns the Alexa code and GitHub Actions. The release branch is `main-alexa`: every push, merge or fast-forward to that branch triggers Lambda tests and, once AWS is configured, Lambda deployment. Updates to `master` never deploy Lambda. Do not force-push `main-alexa`. To release changes from `master`, selectively merge or cherry-pick reviewed Alexa changes into `main-alexa`.  `radio-bee-data` publishes `alexa/station-numbers.json` and `v2/stations.json` on GitHub Pages. Lambda downloads the two data files at runtime. It does not proxy audio.
+**Architecture:** `radio-bee` owns the Alexa code and GitHub Actions. The release branch is `main-alexa`: every push, merge or fast-forward to that branch triggers Lambda tests and, once AWS is configured, Lambda deployment. Updates to `master` never deploy Lambda. Do not force-push `main-alexa`. To release changes from `master`, selectively merge or cherry-pick reviewed Alexa changes into `main-alexa`. The `radio-bee-data` repository publishes `alexa/station-numbers.json` and `v2/stations.json` on GitHub Pages. Lambda downloads the two data files at runtime. It does not proxy audio.
 
 **Important:** This setup deploys to an **AWS Lambda function you own** and an Alexa Custom Skill using **Provision your own** endpoint. If you already created an **Alexa-hosted** skill, that is a different hosting model: create a separate self-managed Custom Skill or use the Alexa-hosted deployment procedure instead. Never attach a separate AWS Lambda deployment workflow to an Alexa-hosted skill without explicitly migrating its endpoint.
 
@@ -17,6 +17,12 @@
 2. Open **Build → Interaction Model → JSON Editor**. Copy the complete JSON from `alexa/skill-package/interactionModels/custom/en-IN.json`, save it and select **Build Model**. Fix any console validation errors before proceeding.
 3. Under **Endpoint**, select **AWS Lambda ARN** and paste the function ARN into the matching geographic endpoint field (e.g. Europe for `eu-west-1`). Save endpoints. Record your skill ID (like `amzn1.ask.skill....`).
 4. Add a Lambda **Alexa Skills Kit** trigger and restrict it to that exact skill ID. Verify Lambda's resource-based policy grants `alexa-appkit.amazon.com` permission to invoke that function, scoped to the Alexa Skill ID. Do not enable a public Lambda Function URL.
+
+## Alexa trial playback eligibility
+
+Radio Bee attempts direct AudioPlayer playback from catalogue stream candidates on HTTPS port 443, using supported listed formats MP3, AAC and HLS. Zeno feeds with an unknown catalogue format may be attempted as a trial, not asserted to have a verified codec. AWS Lambda does **not** proxy, record, cache or redistribute station audio. URLs that require another port (or fail Alexa's TLS, codec or playlist requirements) cannot be made playable by relaxing catalogue flags.
+
+For trial playback, Lambda does not use `verificationStatus`, `rightsStatus` or `directListening.status` as an eligibility gate; the published catalogue values are **not changed** and still represent unverified technical status and unconfirmed rights. This is not broadcaster authorization or a guarantee of playback. Before public publication, obtain any required stream permissions and confirm device playback. Changing the release branch `main-alexa` automatically deploys the Alexa Lambda code, while station catalogue metadata remains in `radio-bee-data`.
 
 ## One-time step 3 — GitHub OIDC (no long-lived AWS keys)
 
@@ -80,6 +86,8 @@ Go to https://github.com/actionanand/radio-bee/settings/variables/actions and ad
 Use the real ARN from IAM. These variables are not secret credentials. GitHub Actions gets short-lived AWS credentials through OIDC.
 
 ## Deploy and test
+
+A push, merge, or fast-forward to `main-alexa` automatically launches this workflow. A one-time manual run is optional when testing AWS credentials or retrying after configuration changes; updates to IAM trust policies and GitHub Actions variables do **not** themselves produce a GitHub push event.
 
 1. Merge the workflow PR after its checks pass, then use the dedicated `main-alexa` release branch. GitHub's workflow file must be on the default `master` branch for manual `workflow_dispatch` discovery; the actual deployment always checks out `main-alexa`. Every new commit on `main-alexa` triggers deployment, not just Alexa-file changes.
 2. Go to https://github.com/actionanand/radio-bee/actions/workflows/deploy-alexa-lambda.yml , choose **Run workflow**, branch **main-alexa**. It runs Alexa unit tests first, builds a ZIP from `index.js`, `catalogue.js` and `package.json`, and updates the existing Lambda function.
