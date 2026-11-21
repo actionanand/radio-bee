@@ -6,6 +6,34 @@ RadioBee — Stay tuned. Stay buzzing.
 
 The application has the branded RadioBee home, station-discovery browser and [Stage 3 Web player](PLAYER.md). Playback controls are enabled only for eligible, approved streams on a supported platform. Catalogue availability is independent of client deployment; see the [catalogue integration guide](CATALOGUE.md) for data-host configuration and development fallback behavior.
 
+## Sharing primary app URLs
+
+GitHub Pages returns HTTP 404 for an Angular-only route even when `404.html` contains correct static Open Graph tags and the app subsequently renders. That was the demonstrated reason `/radio-bee/home` failed to preview while `/radio-bee/` worked. A crawler user-agent string alone cannot reproduce Meta's cache or a WhatsApp client, so actual client rendering still needs a manual check after deployment.
+
+The Pages build copies the compiled shell to `www/<route>/index.html` for these primary sections only:
+
+`home`, `world`, `languages`, `genres`, `artists`, `networks`, `broadcasters`, `favorites`, `settings`, `listen-now`, `privacy`, `terms`, `copyright-policy`, `contact`.
+
+GitHub Pages redirects the slashless directory URL to its trailing-slash URL, which then returns **HTTP 200**. Query-string filters retain the same brand preview. Every copy has the identical RadioBee title, description and existing logo; these are normal app entry pages, not redirects or content shown only to crawlers. The absolute `/radio-bee/` base continues to load the existing JS/CSS and Angular routes normally. `404.html` remains an exact copy of the original compiled shell.
+
+As requested, station-detail URLs (`radios/:stationId`), individual artist/language/network facets, nested geographic scopes and unknown URLs are **not** generated. They retain the Angular 404 fallback and are not guaranteed a WhatsApp preview. Share a primary section or the root for consistent branding. GitHub Pages cannot return HTTP 200 for every arbitrary client URL without generating an entry or changing hosting/routing strategy.
+
+The authoritative route allowlist is `SHARE_ROUTES` in `scripts/social-preview.mjs`. A regression test compares it with primary sidebar links. No catalogue records are copied into the client or the artifact generator.
+
+Local production preparation, matching both workflows:
+
+```bash
+npm run build:gh -- --configuration=production
+npm run copy-error-page
+node scripts/generate-social-pages.mjs
+node scripts/check-web-artifact.mjs
+node --test scripts/social-preview.test.mjs
+```
+
+The artifact check validates the actual `www/index.html`, `www/404.html`, every generated primary entry, absolute OG/Twitter/canonical consistency, PNG signature/type/dimensions/size, the image's existence inside `www`, and a route manifest. It rejects missing/duplicate/dynamic-only metadata, escaped image paths, conflicting titles/images and mismatched fallback pages. No app-icon change or replacement social image is needed: live inspection found the existing 1254×1254 PNG valid at 288,514 bytes.
+
+Meta's Sharing Debugger requires a Facebook login in the inspected session. If a previously shared URL retains an old preview, its cache can be re-scraped manually using [Sharing Debugger](https://developers.facebook.com/tools/debug/). This does not guarantee that existing WhatsApp messages will refresh. Also check [WhatsApp's Disable link previews setting](https://faq.whatsapp.com/445453537819972/) for the sending client. Do not infer client success solely from a curl request.
+
 ## Build and deployment
 
 The build job checks out the triggering commit, configures Node **24.16.0**, installs the unchanged lockfile with `npm ci`, and runs:

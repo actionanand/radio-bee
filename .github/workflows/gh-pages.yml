@@ -44,6 +44,9 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
+      - name: Social metadata and route regression tests
+        run: node --test scripts/social-preview.test.mjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
@@ -56,8 +59,10 @@ jobs:
           test -s www/index.html
           grep -Fq '<base href="/radio-bee/">' www/index.html
           npm run copy-error-page
+          node scripts/generate-social-pages.mjs
           test -s www/404.html
           cmp www/index.html www/404.html
+          node scripts/check-web-artifact.mjs
 
       - name: Upload Pages artifact
         id: artifact
