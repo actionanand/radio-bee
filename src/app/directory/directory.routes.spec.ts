@@ -126,6 +126,10 @@ describe('Routable v2 directory', () => {
     expect(host().querySelectorAll('.setting-card:first-of-type .preferences app-directory-select')).toHaveLength(2);
     const alexa = host().querySelector('[data-alexa-skill-settings]');
     expect(alexa?.textContent).toContain('Listen on Alexa');
+    const alexaIcon = alexa?.querySelector<HTMLImageElement>('.alexa-brand img');
+    expect(alexaIcon?.getAttribute('src')).toBe('assets/icon/alexa.svg');
+    expect(alexaIcon?.getAttribute('alt')).toBe('');
+    expect(alexaIcon?.getAttribute('aria-hidden')).toBe('true');
     expect(alexa?.querySelector('a[href]')).toBeNull();
     expect(alexa?.querySelector('[aria-disabled="true"]')).not.toBeNull();
     const contact = host().querySelector<HTMLButtonElement>('[aria-labelledby="support-heading"] .support-button')!;

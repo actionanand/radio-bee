@@ -13,3 +13,5 @@ AlexaSkill: { Enabled: true, Url: '' } satisfies AlexaSkillConfig,
 After Amazon publishes the skill, copy the **actual public Skill Store detail link** from the Alexa app/Store. Before public release, use the official **beta invitation link**, but only invited accounts can enable it. A developer-console URL, Lambda ARN, or Alexa Skill ID isn't an installation URL. Never invent an Amazon ASIN from the skill ID.
 
 Changes to this compile-time environment config require a Web App rebuild/redeployment (GitHub Pages workflow on `main-github`); these changes do not deploy the Alexa Lambda because that runs exclusively on `main-alexa`.
+
+The Settings card displays a local Amazon Alexa SVG mark from `src/assets/icon/alexa.svg` next to the localized heading. The glyph originates from Simple Icons (CC0 1.0) and is used to identify the Alexa integration. It is decorative to screen readers because the adjacent heading names Alexa; the asset is served by the app and does not require external image hosting.

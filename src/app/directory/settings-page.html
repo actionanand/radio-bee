@@ -117,12 +117,15 @@
   @if (alexaSkillEnabled) {
     <section class="setting-card support-card" aria-labelledby="alexa-heading" data-alexa-skill-settings>
       <div class="support-row">
-        <div>
-          <h2 id="alexa-heading">{{ text('alexaHeading') }}</h2>
+        <div class="alexa-brand" style="display: flex; align-items: flex-start; gap: 14px; min-width: 0">
+          <img src="assets/icon/alexa.svg" width="48" height="48" alt="" aria-hidden="true" style="flex: none" />
+          <div>
+            <h2 id="alexa-heading">{{ text('alexaHeading') }}</h2>
           <p class="help">{{ text('alexaHelp') }}</p>
-          @if (!alexaSkillUrl) {
-            <p class="help" role="status">{{ text('alexaNotAvailable') }}</p>
-          }
+            @if (!alexaSkillUrl) {
+              <p class="help" role="status">{{ text('alexaNotAvailable') }}</p>
+            }
+          </div>
         </div>
         @if (alexaSkillUrl) {
           <a class="support-button" style="text-decoration: none" [href]="alexaSkillUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="text('alexaEnable')">
