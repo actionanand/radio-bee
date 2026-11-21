@@ -125,11 +125,11 @@
           }
         </div>
         @if (alexaSkillUrl) {
-          <a class="support-button" [href]="alexaSkillUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="text('alexaEnable')">
+          <a class="support-button" style="text-decoration: none" [href]="alexaSkillUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="text('alexaEnable')">
             {{ text('alexaEnable') }}
           </a>
         } @else {
-          <span class="support-button is-disabled" aria-disabled="true">{{ text('alexaEnable') }}</span>
+          <span class="support-button is-disabled" style="opacity: .55; cursor: default" aria-disabled="true">{{ text('alexaEnable') }}</span>
         }
       </div>
     </section>
