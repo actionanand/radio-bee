@@ -79,7 +79,7 @@ Download `radiobee-android-1.0.0-2` from the completed Actions run's **Artifacts
 
 ## Keystore creation and secure backup
 
-Generate a signing identity **once**, only when needed, on a trusted machine with Java 21 `keytool`. Matching the Office Orbit command style, Radio Bee accepts the local `--password` option for one-time keystore creation. **Android CI/release signing uses GitHub Actions repository secrets, not a checked-in application environment file or a locally configured variable.** Passwords must be at least 10 characters, contain no line breaks, and the generator refuses to overwrite an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format. **Radio Bee still requires Java keytool** (unlike Office Orbit's OpenSSL generator), because this avoids writing an unencrypted private-key PEM file.
+Generate a signing identity **once**, only when needed, on a trusted machine with **OpenSSL**, following the Office Orbit `scripts/generate-keystore.mjs` implementation. The generator uses RSA 3072, a self-signed certificate, and a PKCS12 keystore with alias `radiobee`. The filename is `release-keystore.jks` (PKCS12 despite its extension). It requires a password of at least 10 characters and refuses to overwrite an existing identity. The temporary PEM key and certificate are generated in a private temporary directory and removed after export (even on failure); protect your system's temporary directory. **Android CI/release signing uses GitHub Actions repository secrets, not checked-in application environment files.**
 
 To use the requested command from WSL2/Bash (replace the placeholder with your actual strong password):
 
@@ -88,7 +88,7 @@ npm run generate-keystore -- --password 'KEYSTORE_PASSWORD'
 npm run keystore:type
 ```
 
-A 10-character password is accepted; passwords of 9 characters or fewer are rejected. This syntax works with `--password value` or `--password=value`. An explicit CLI password takes precedence over `KEYSTORE_PASSWORD` and `ANDROID_KEYSTORE_PASSWORD` environment variables. Keytool receives the password through its environment, never in its command-line arguments. **However, passing a secret to npm on the command line exposes it to shell history, process listings and possibly npm/CI logs.** Use this convenience syntax only on a private trusted machine; do not use it in automation or shared terminal sessions. The safer method below avoids password arguments entirely.
+A 10-character password is accepted; passwords of 9 characters or fewer are rejected. This syntax works with `--password value` or `--password=value`. An explicit CLI password takes precedence over `KEYSTORE_PASSWORD` and `ANDROID_KEYSTORE_PASSWORD` environment variables. OpenSSL receives the password through `OPENSSL_PASS` in its subprocess environment (the `-passout env:OPENSSL_PASS` option), never as a literal OpenSSL argument. **However, passing a secret to npm on the command line exposes it to shell history, process listings and possibly npm/CI logs.** Use this convenience syntax only on a private trusted machine; do not use it in automation or shared terminal sessions. The safer method below avoids password arguments entirely.
 
 For Bash, enter the password without echo or shell-history exposure:
 
@@ -116,15 +116,16 @@ try {
 
 Alternatively, the generator also reads `ANDROID_KEYSTORE_PASSWORD` from the environment when `KEYSTORE_PASSWORD` is unset. The existing `keystore:type` helper reads `KEYSTORE_PASSWORD`; use the primary variable when checking the generated file.
 
-If generation fails after accepting a valid password, the script now reports whether Java `keytool` is missing, which diagnostic Java returned, or whether copying/changing file permissions failed. In **WSL2**, check the Linux-side JDK installation first:
+If generation fails after accepting a valid password, check OpenSSL inside **WSL2**:
 
 ```bash
-command -v keytool
-keytool -version
-java -version
+command -v openssl
+openssl version
+# For Ubuntu/Debian if OpenSSL is missing:
+sudo apt-get update && sudo apt-get install openssl
 ```
 
-The generated signing identity is not replaced on failure, and the script redacts the supplied password from reported Java output. If `keytool` is missing, install OpenJDK 21 inside your WSL2 distribution (for Debian/Ubuntu systems where available: `sudo apt-get update && sudo apt-get install openjdk-21-jdk`). Windows-installed Java is not a substitute for a working WSL2 `keytool`. If the script reports a project write-permission or WSL mount error, check the permissions of the directory containing the Radio Bee checkout. Do not paste signing passwords into bug reports.
+The generator reports the failing OpenSSL step and redacts the supplied password from reported diagnostics. An existing keystore is never overwritten. Java `keytool` is still used by `npm run keystore:type` and the CI signing verification, but **not** for keystore generation. Avoid pasting real passwords into terminal history or support messages.
 
 Keep encrypted offline backups of the keystore, alias and password in separate secure storage. Reuse the signing identity for updates. Do not generate an identity during CI or replace an existing app's signing key casually.
 
