@@ -34,7 +34,7 @@ jobs:
         run: |
           node --check alexa/lambda/index.js
           node --check alexa/lambda/catalogue.js
-          node -e 'JSON.parse(require("fs").readFileSync("alexa/skill-package/interactionModels/custom/en-IN.json", "utf8"))'
+          node -e 'for(const locale of ["en-IN","en-US"]){const m=require("./alexa/skill-package/interactionModels/custom/"+locale+".json"); if(m.interactionModel.languageModel.invocationName!=="radio bee") throw Error("Wrong invocation for "+locale)}'
           node -e 'const p=require("./alexa/lambda/package.json"); if(Object.keys(p.dependencies||{}).length){throw Error("Update the Lambda packaging step to include production dependencies.")}'
       - name: Run Alexa unit tests
         run: npm --prefix alexa/lambda test

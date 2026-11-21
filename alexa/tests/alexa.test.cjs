@@ -2,7 +2,10 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {dispatch,channelFromToken}=require('../lambda/index');
 const {allowedStream,validateDirectory,normalize,resetCache}=require('../lambda/catalogue');
-const model=require('../skill-package/interactionModels/custom/en-IN.json');
+const models = {
+ 'en-IN': require('../skill-package/interactionModels/custom/en-IN.json'),
+ 'en-US': require('../skill-package/interactionModels/custom/en-US.json'),
+};
 const registry={schemaVersion:1,locale:'en-IN',supportedBroadcastLanguages:['ta','en'],channels:[
  {number:1,stationId:'stage29-tamil-kadavul-murugan-fm',spokenNames:['murugan radio']},
  {number:2,stationId:'stage39-mugugan-songs-fm',spokenNames:['murugan songs fm']},
@@ -18,12 +21,22 @@ const fetcher=async url=>({ok:true,headers:{get:()=> 'application/json'},text:as
 const options={fetcher,now:Date.now()};
 const event=(name,slots={},token)=>({request:{type:'IntentRequest',intent:{name,slots:Object.fromEntries(Object.entries(slots).map(([k,value])=>[k,{value}]))}},context:token?{AudioPlayer:{token}}:{}});
 const token='radiobee:channel:1:stage29-tamil-kadavul-murugan-fm';
-test('English India model supports station names and numeric channels',()=>{
- assert.equal(model.interactionModel.languageModel.invocationName,'radio bee');
- const intents=model.interactionModel.languageModel.intents;
- assert.equal(intents.find(i=>i.name==='PlayChannelIntent').slots[0].type,'AMAZON.NUMBER');
- assert.equal(intents.find(i=>i.name==='PlayStationIntent').slots[0].type,'AMAZON.SearchQuery');
-});
+for (const [locale, model] of Object.entries(models)) {
+ test(`${locale} model supports the existing invocation, intents, and slot types`,()=>{
+  const language = model.interactionModel.languageModel;
+  assert.equal(language.invocationName,'radio bee');
+  const intents = language.intents;
+  for (const name of ['PlayChannelIntent','PlayStationIntent','StationNumberIntent',
+    'NextChannelIntent','PreviousChannelIntent','CurrentChannelIntent']) {
+    assert.ok(intents.some(i=>i.name===name), `${locale} missing ${name}`);
+  }
+  assert.equal(intents.find(i=>i.name==='PlayChannelIntent').slots[0].type,'AMAZON.NUMBER');
+  assert.equal(intents.find(i=>i.name==='PlayStationIntent').slots[0].type,'AMAZON.SearchQuery');
+  assert.equal(intents.find(i=>i.name==='StationNumberIntent').slots[0].type,'AMAZON.SearchQuery');
+  assert.ok(intents.find(i=>i.name==='PlayChannelIntent').samples.includes('play channel {channelNumber}'));
+  assert.ok(intents.find(i=>i.name==='PlayStationIntent').samples.includes('play {stationName}'));
+ });
+}
 test('registry rejects non-Tamil/English stations and ambiguous aliases',()=>{
  assert.equal(validateDirectory(registry,stations).channels.size,3);
  assert.equal(normalize('  Murugan Songs FM!! '),'murugan songs fm');

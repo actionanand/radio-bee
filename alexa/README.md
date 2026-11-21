@@ -1,40 +1,37 @@
-# RadioBee Alexa custom skill (English India)
+# Radio Bee — Alexa Custom Skill (English India and English US)
 
-This is **source code**, not a deployed or published Alexa skill. It lives separately from the Angular/Ionic web app and Android build. The existing data repository remains the single source for stations.
+Radio Bee uses a self-managed AWS Lambda (Node.js 22.x) with the same custom skill ID for **English (India), `en-IN`**, and **English (United States), `en-US`**. It does not need two separate skills, Lambda functions, or station catalogues.
 
-## Architecture
+## Source files and deployments
 
-- Alexa-hosted Node.js Lambda: `alexa/lambda/index.js` (handler: `index.handler`).
-- en-IN interaction model: `alexa/skill-package/interactionModels/custom/en-IN.json`.
-- Published channel registry: https://actionanand.github.io/radio-bee-data/alexa/station-numbers.json
-- Published stations: https://actionanand.github.io/radio-bee-data/v2/stations.json
-- Echo AudioPlayer fetches the broadcaster's URL directly. Lambda never proxies audio.
+- Alexa voice models: `alexa/skill-package/interactionModels/custom/en-IN.json` and `en-US.json`.
+- AWS Lambda handler: `alexa/lambda/index.js` (`index.handler`).
+- Shared Alexa channel list: https://actionanand.github.io/radio-bee-data/alexa/station-numbers.json
+- Shared V2 stations: https://actionanand.github.io/radio-bee-data/v2/stations.json
+- Both models use the **radio bee** invocation name, channel numbers and station names.
+- The station-number registry has a legacy `locale: "en-IN"` field for its original catalogue schema. **Do not change it** to `en-US` or duplicate the registry; the runtime uses the same numbering for both locales.
+- Stream playback is issued directly to the Alexa AudioPlayer interface. Lambda never relays the audio itself.
 
-The handler supports Alexa-hosted Node.js 16 using an HTTPS fallback when global fetch is unavailable. The station data has a five-minute in-memory cache. It remains authoritative at GitHub Pages; editing channel numbers alone does not require a Lambda deployment. The invocation name “radio bee” and utterances must still be accepted by the Alexa interaction-model validator.
+## Enable en-US in the existing Alexa skill
 
-## Channel policy
+1. Sign in to the [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask), open the **existing Radio Bee skill** (don't create a second skill).
+2. Under **Build**, open the locale selector (currently **English (IN)**), then **Language Settings → Add new language → English (US)** and save. Amazon's **Copy from an existing locale** option may let you copy the en-IN model and store metadata directly.
+3. Under **English (US) → Build → Interaction Model → JSON Editor**, import the full `en-US.json` model from this repository. Click **Save Model** and **Build Model**.
+4. Confirm the **Audio Player** interface is enabled for en-US. In **Endpoint**, verify the same Radio Bee AWS Lambda ARN is selected for en-US (you can reuse the existing function). Save if needed.
+5. Under **Distribution → Skill Preview → English (US)**, complete or copy the store listing, icon, example phrases and any required locale-specific details, then save. Revisit validation/certification when adding en-US to a published or submitted skill.
+6. Under **Test**, select **English (US)** and try `open radio bee` and `ask radio bee to play channel one`. For mobile beta testing, set **Alexa on This Phone → Language** to **English (United States)**. Test live sound on a compatible Alexa device.
 
-English (India) for voice recognition. Only catalogue entries exclusively tagged Tamil (`ta`), English (`en`), or both are eligible. **Channel 1** is Tamil Kadavul Murugan and **channel 2** is Mugugan Songs FM (“Murugan Songs FM” is a recognized alias). All assigned channel numbers are permanent; never renumber existing station IDs after release.
+**Important:** A GitHub push or AWS Lambda deployment does **not** create a locale in Amazon's console, build the Alexa voice model, or publish changes to an already-certified skill. These console steps remain manual unless you configure ASK CLI / SMAPI access.
 
-## Safety and availability
-
-**A listed station is not necessarily Alexa-playable.** The skill refuses streams unless all three conditions are satisfied: `verificationStatus=verified`, `rightsStatus=permission-granted`, and `directListening.status=allowed`. It also requires HTTPS on port 443 and an MP3/AAC/HLS candidate. The current catalogue generally has unverified, unapproved candidates, so do **not** advertise the skill as ready for radio playback yet. Confirm permissions, codecs, TLS, redirects, and playback on a real Echo for each channel before launch. An HTTP or non-443 URL must not be relayed through AWS without explicit approval and cost assessment.
-
-## Test locally
+## Tests
 
 ```bash
 cd alexa/lambda
 npm test
 ```
 
-Tests use Node's built-in test runner; there are no extra npm dependencies. The root Angular build and dependencies are unchanged.
+The repository CI validates both locale JSON models and exercises the Alexa backend. Changes pushed to `main-alexa` run tests and update the deployed AWS Lambda. Source updates must be merged separately to `master` and fast-forwarded to `main-github` for repository synchronization; the Web App does not host the Alexa model.
 
-## Deploy manually when ready
+## Playback and restrictions
 
-1. Open the [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask), create a **Custom / Alexa-hosted (Node.js)** skill, and choose **English (India)**.
-2. Copy/build the `en-IN` interaction model and validate it. The skill must use the invocation name approved by Amazon.
-3. Deploy `alexa/lambda/index.js` and `alexa/lambda/catalogue.js` to the Alexa-hosted Lambda function. Set the handler to `index.handler`. The deployed Lambda function must be able to fetch HTTPS from GitHub Pages.
-4. Use the developer console test interface and an Echo to verify name matching, number matching, session handling, streaming formats, permissions, and next/stop/resume. Resume depends on Alexa retaining AudioPlayer context; no persistent history store is implemented.
-5. Only after rights and playback verification, prepare store metadata, privacy materials, certification, and publication. This repository does not contain Amazon authentication credentials or an automatic deployment workflow.
-
-Changes to the voice model require deploying/rebuilding the Alexa interaction model. Changes to Alexa Lambda logic require redeploying the Lambda. Changes to the station registry or V2 streams require only the existing data site's GitHub Pages deployment.
+The handler currently attempts trial playback for configured HTTPS port-443 MP3/AAC/HLS streams and some Zeno candidates with unknown format, irrespective of metadata approval flags. Catalogue rights and verification status remain unchanged. Public HTTPS does not establish broadcast permissions, and actual device playback is not guaranteed. Confirm technical compatibility and broadcaster authorization before public release. Existing channel numbers are permanent; **1 is Tamil Kadavul Murugan** and **2 is Mugugan Songs FM**.

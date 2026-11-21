@@ -24,6 +24,6 @@ jobs:
         with:
           node-version: '24.16.0'
       - name: Validate Alexa interaction model JSON
-        run: node -e "const m=require('./alexa/skill-package/interactionModels/custom/en-IN.json'); if(m.interactionModel.languageModel.invocationName!=='radio bee') process.exit(1)"
+        run: node -e "for(const locale of ['en-IN','en-US']){const m=require('./alexa/skill-package/interactionModels/custom/'+locale+'.json'); if(m.interactionModel.languageModel.invocationName!=='radio bee') process.exit(1)}"
       - name: Test Alexa skill handlers
         run: node --test alexa/tests/*.test.cjs
