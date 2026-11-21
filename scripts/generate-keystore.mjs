@@ -19,7 +19,7 @@ function resolvePassword(args) {
     value = option === '--password' ? args[++i] : option.slice('--password='.length);
     if (!value || value.startsWith('--')) throw new Error('--password requires a non-empty value.');
   }
-  return value ?? process.env.KEYSTORE_PASSWORD ?? process.env.ANDROID_KEYSTORE_PASSWORD;
+  return value ?? (process.env.KEYSTORE_PASSWORD || process.env.ANDROID_KEYSTORE_PASSWORD);
 }
 
 if (existsSync(outputFile)) {

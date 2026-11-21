@@ -171,7 +171,7 @@ test('release collection rejects stale/empty Gradle outputs and preserves approv
 });
 test('asset plan uses all densities, padded artwork, splash and 512px store icon', t => {
   const plan = assetPlan();
-  assert.equal(plan.length, 17);
+  assert.equal(plan.length, 18); // 15 density assets + splash, recording cover, store icon
   for (const density of ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'])
     for (const name of ['ic_launcher', 'ic_launcher_round', 'ic_launcher_foreground'])
       assert.ok(plan.some(item => item.file.endsWith(`mipmap-${density}/${name}.png`)));
@@ -445,7 +445,8 @@ test('workflow isolates Android from web, persists before compilation and publis
   assert.doesNotMatch(web, /main-android|android:version|android-version.json/);
   const implementation =
     readdirSync('scripts')
-      .map(file => read(`scripts/${file}`))
+      .filter(file => /\.(?:mjs|cjs|js)$/.test(file))
+       .map(file => read(`scripts/${file}`))
       .join('') +
     read('capacitor.config.ts') +
     workflow;
