@@ -356,6 +356,39 @@ fs.writeFileSync(option('-keystore'), 'fixture-pkcs12', { mode: 0o600 });
   }
 });
 
+test('keystore reports missing keytool and redacts tool errors without writing a key', t => {
+  const generator = path.resolve('scripts/generate-keystore.mjs');
+  const password = 'Abcdefg12!';
+  const f = fixture(t);
+  mkdirSync(path.join(f.root, 'empty-bin'));
+  const env = {
+    ...process.env,
+    PATH: path.join(f.root, 'empty-bin'),
+    KEYSTORE_PASSWORD: password,
+  };
+  const run = () => execFileSync(process.execPath, [generator], { cwd: f.root, env, stdio: 'pipe' });
+  assert.throws(run, /Java keytool not found on PATH/);
+  assert.equal(existsSync(path.join(f.root, 'release-keystore.jks')), false);
+
+  // A broken keytool must expose the reason but not any secret it echoed.
+  const failureTool = `#!/usr/bin/env node
+process.stderr.write('Unsupported option: ' + process.env.KEYSTORE_PASSWORD + '\\n');
+process.exit(19);
+`;
+  f.write('bin/keytool', failureTool);
+  chmodSync(path.join(f.root, 'bin/keytool'), 0o755);
+  env.PATH = path.join(f.root, 'bin') + path.delimiter + process.env.PATH;
+  let failure;
+  try { run(); } catch (error) { failure = error; }
+  assert.ok(failure);
+  const output = String(failure.stderr);
+  assert.match(output, /Java keytool failed \(exit 19\)/);
+  assert.match(output, /Unsupported option:/);
+  assert.match(output, /\[REDACTED\]/);
+  assert.equal(output.includes(password), false);
+  assert.equal(existsSync(path.join(f.root, 'release-keystore.jks')), false);
+});
+
 test('version reservations persist monotonically and reject stale branch reads', t => {
   const f = fixture(t);
   const remote = path.join(f.root, 'remote.git');

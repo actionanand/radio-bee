@@ -40,6 +40,7 @@ if (!password || password.length < 10 || /[\r\n\0]/.test(password)) {
 
 const temporary = mkdtempSync(path.join(tmpdir(), 'radiobee-keystore-'));
 let createdOutput = false;
+let stage = 'Java keytool';
 try {
   // Java generates PKCS12 directly; no unencrypted private-key PEM intermediate.
   // The secret is passed to keytool via its environment, never its argv.
@@ -68,13 +69,33 @@ try {
     ],
     { stdio: 'pipe', env: { ...process.env, KEYSTORE_PASSWORD: password } },
   );
+  stage = 'Copying the generated keystore into the project';
   copyFileSync(path.join(temporary, output), output, constants.COPYFILE_EXCL);
   createdOutput = true;
+  stage = 'Setting keystore file permissions';
   chmodSync(output, 0o600);
   console.log('Created release-keystore.jks (PKCS12), alias radiobee. Back it up securely.');
-} catch {
+} catch (error) {
   if (createdOutput) rmSync(output, { force: true });
-  throw new Error('Keystore generation failed. Check Java keytool and password policy; no credentials were logged.');
+
+  if (stage === 'Java keytool') {
+    if (error.code === 'ENOENT') {
+      throw new Error('Java keytool not found on PATH. In WSL2 run: command -v keytool; java -version. Install JDK 21 inside WSL2 and retry.');
+    }
+    // Java sometimes rejects options, keystore algorithms or the runtime itself.
+    // Preserve its real diagnostic without leaking the password or printing argv.
+    const detail = String(error.stderr || error.stdout || '')
+      .replaceAll(password, '[REDACTED]')
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
+      .trim()
+      .slice(0, 1500);
+    throw new Error(
+      `Java keytool failed (exit ${error.status ?? 'unknown'}).${detail ? ` ${detail}` : ''} Verify the JDK version and keytool installation inside WSL2.`,
+    );
+  }
+
+  // Never include a raw system exception, which might contain process arguments.
+  throw new Error(`${stage} failed (${error.code || 'unknown error'}). Check write permissions for the project directory and WSL2 mount.`);
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }
