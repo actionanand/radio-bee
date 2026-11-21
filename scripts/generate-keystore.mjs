@@ -34,8 +34,8 @@ const password =
   passwordFromArguments(process.argv.slice(2)) ??
   (process.env.KEYSTORE_PASSWORD || process.env.ANDROID_KEYSTORE_PASSWORD);
 
-if (!password || password.length < 12 || /[\r\n\0]/.test(password)) {
-  throw new Error('Provide a password of at least 12 characters without line breaks using --password or KEYSTORE_PASSWORD.');
+if (!password || password.length < 10 || /[\r\n\0]/.test(password)) {
+  throw new Error('Provide a password of at least 10 characters without line breaks using --password or KEYSTORE_PASSWORD.');
 }
 
 const temporary = mkdtempSync(path.join(tmpdir(), 'radiobee-keystore-'));
