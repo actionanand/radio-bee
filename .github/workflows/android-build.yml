@@ -58,6 +58,8 @@ jobs:
       - run: npm run build -- --configuration=production --base-href=/
       - name: Generate, sync, patch and brand Android
         run: npm run android:sync:only
+      - name: Verify generated AndroidX DocumentFile dependency
+        run: grep -Fq 'androidx.documentfile:documentfile:1.1.0' android/app/build.gradle
       - name: Build unsigned APK, AAB and R8 mapping
         run: node scripts/build-android.mjs
       - name: Sign and verify APK and AAB

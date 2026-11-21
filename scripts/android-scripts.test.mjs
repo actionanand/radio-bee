@@ -78,7 +78,10 @@ function nativeFixture(t) {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     } }
   }
-  // custom native configuration retained`,
+  // custom native configuration retained
+  dependencies {
+    implementation 'com.example:custom-native:1.0'
+  }`,
   );
   f.write(
     'android/variables.gradle',
@@ -110,6 +113,9 @@ test('identity, native patch idempotency and preservation of custom native chang
   assert.match(f.read('android/app/build.gradle'), /versionCode 2/);
   assert.match(f.read('android/app/build.gradle'), /debug \{ minifyEnabled false \}/);
   assert.match(f.read('android/app/build.gradle'), /shrinkResources true/);
+  assert.match(f.read('android/app/build.gradle'), /implementation 'androidx\\.documentfile:documentfile:1\\.1\\.0'/);
+  assert.match(f.read('android/app/build.gradle'), /implementation 'com\\.example:custom-native:1\\.0'/);
+  assert.equal((f.read('android/app/build.gradle').match(/androidx\\.documentfile:documentfile:/g) ?? []).length, 1);
   assert.match(f.read('android/variables.gradle'), /custom = 7/);
   assert.match(f.read('android/app/src/main/res/values/styles.xml'), /<item name="custom">keep<\/item>/);
   const manifest = f.read('android/app/src/main/AndroidManifest.xml');
@@ -119,6 +125,26 @@ test('identity, native patch idempotency and preservation of custom native chang
   f.write('capacitor.config.ts', "appId: 'wrong.identity'");
   assert.throws(() => patchAndroid(f.root), /app ID/);
 });
+test('native patch preserves an existing AndroidX DocumentFile dependency without duplication', t => {
+  const f = nativeFixture(t);
+  const gradle = f.read('android/app/build.gradle').replace(
+    "implementation 'com.example:custom-native:1.0'",
+    "implementation 'com.example:custom-native:1.0'\n    implementation 'androidx.documentfile:documentfile:1.0.1'",
+  );
+  f.write('android/app/build.gradle', gradle);
+  patchAndroid(f.root);
+  const result = f.read('android/app/build.gradle');
+  assert.match(result, /androidx\\.documentfile:documentfile:1\\.0\\.1/);
+  assert.equal((result.match(/androidx\\.documentfile:documentfile:/g) ?? []).length, 1);
+});
+
+test('native patch fails clearly if a future template lacks an app dependencies block', t => {
+  const f = nativeFixture(t);
+  const gradle = f.read('android/app/build.gradle');
+  f.write('android/app/build.gradle', gradle.replace(/dependencies\\s*\\{[\\s\\S]*?\\}/, ''));
+  assert.throws(() => patchAndroid(f.root), /app dependencies block for AndroidX DocumentFile/);
+});
+
 test('Capacitor sync injects the SAF recording plugin in the generated package exactly once', t => {
   const f = nativeFixture(t);
   const activity = 'android/app/src/main/java/com/actionanand/radiobee/app/MainActivity.java';

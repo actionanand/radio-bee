@@ -73,7 +73,7 @@ releases/RadioBee-1-0-0-2-mapping.txt
 releases/playstore-icon.png
 ```
 
-The store icon is opaque 512 × 512 PNG. R8 and resource shrinking are enabled, with Capacitor bridge/plugin and JavaScript-interface keep rules. Retain the exact matching mapping for each published version to deobfuscate crash reports in Play Console. Generated native patches do not add plugins or permissions.
+The store icon is opaque 512 × 512 PNG. R8 and resource shrinking are enabled, with Capacitor bridge/plugin and JavaScript-interface keep rules. Retain the exact matching mapping for each published version to deobfuscate crash reports in Play Console. Generated native patches do not add plugins or permissions. The recording Storage Access Framework bridge requires AndroidX DocumentFile; the idempotent native patch inserts `implementation 'androidx.documentfile:documentfile:1.1.0'` in the generated `android/app/build.gradle` without replacing other dependencies. The Android workflow checks that it is present after Capacitor sync and before Gradle compilation.
 
 Download `radiobee-android-1.0.0-2` from the completed Actions run's **Artifacts** section (30-day retention). Only exact verified current-version files are uploaded, not historical or unsigned files. Approved outputs are also committed to `releases/` on `main-android` with `[skip ci]`. The release-output commit alone may be rebased onto unrelated branch updates; conflicts or rejected pushes fail safely without force-pushing. A failed output commit can leave a verified downloadable Actions artifact; fix branch permissions and run a new build, which reserves a new code. The job summary records the actual reserved build SHA, versions, branch, filenames, signature status, mapping and artwork result.
 

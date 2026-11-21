@@ -44,6 +44,18 @@ export function patchAndroid(root = process.cwd()) {
   gradle = /buildToolsVersion\s+['"][^'"]+['"]/.test(gradle)
     ? gradle.replace(/buildToolsVersion\s+['"][^'"]+['"]/, 'buildToolsVersion "36.0.0"')
     : replace(gradle, /android\s*\{/, 'android {\n    buildToolsVersion "36.0.0"', 'android block');
+  // The generated Storage Access Framework recording plugin imports
+  // androidx.documentfile.provider.DocumentFile. Capacitor does not supply
+  // DocumentFile transitively, so declare it in the generated app Gradle file.
+  // Keep custom dependencies and don't duplicate declarations after cap sync.
+  if (!/\b(?:implementation|api)\s*\(?\s*['"]androidx\.documentfile:documentfile:[^'"]+['"]/m.test(gradle)) {
+    gradle = replace(
+      gradle,
+      /\bdependencies\s*\{/,
+      "dependencies {\n    implementation 'androidx.documentfile:documentfile:1.1.0'",
+      'app dependencies block for AndroidX DocumentFile',
+    );
+  }
   let manifest = read('android/app/src/main/AndroidManifest.xml');
   manifest = replace(
     manifest,
