@@ -3,99 +3,80 @@ import { existsSync, mkdtempSync, copyFileSync, chmodSync, rmSync, constants } f
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-// Compatible with Office Orbit's "npm run generate-keystore -- --password <value>".
-// Prefer the environment variable in normal use: CLI secrets can appear in shell
-// history, process listings and npm output. Never forward a password as a keytool arg.
-function passwordFromArguments(args) {
+// Adapted from office-orbit/scripts/generate-keystore.mjs: OpenSSL key, self-signed
+// certificate and PKCS12 export. Keep Radio Bee's signing identity and safety checks.
+const outputFile = 'release-keystore.jks';
+const alias = 'radiobee';
+
+function resolvePassword(args) {
   let value;
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === '--password' || arg.startsWith('--password=')) {
-      if (value !== undefined) throw new Error('Specify --password only once.');
-      if (arg === '--password') {
-        value = args[++i];
-        if (!value || value.startsWith('--')) throw new Error('--password requires a non-empty value.');
-      } else {
-        value = arg.slice('--password='.length);
-        if (!value) throw new Error('--password requires a non-empty value.');
-      }
-    } else {
-      // Do not interpolate an unknown argument: it might contain a secret.
-      throw new Error('Unsupported keystore generator option. Use --password <value> or KEYSTORE_PASSWORD.');
+    const option = args[i];
+    if (option !== '--password' && !option.startsWith('--password=')) {
+      throw new Error('Unsupported option. Use --password <value> or KEYSTORE_PASSWORD.');
     }
+    if (value !== undefined) throw new Error('Specify --password only once.');
+    value = option === '--password' ? args[++i] : option.slice('--password='.length);
+    if (!value || value.startsWith('--')) throw new Error('--password requires a non-empty value.');
   }
-  return value;
+  return value ?? process.env.KEYSTORE_PASSWORD ?? process.env.ANDROID_KEYSTORE_PASSWORD;
 }
 
-const output = 'release-keystore.jks';
-if (existsSync(output)) throw new Error('Keystore already exists. Refusing to overwrite your signing identity.');
+if (existsSync(outputFile)) {
+  throw new Error('Keystore already exists. Refusing to overwrite your signing identity.');
+}
 
-const password =
-  passwordFromArguments(process.argv.slice(2)) ??
-  (process.env.KEYSTORE_PASSWORD || process.env.ANDROID_KEYSTORE_PASSWORD);
-
+const password = resolvePassword(process.argv.slice(2));
 if (!password || password.length < 10 || /[\r\n\0]/.test(password)) {
   throw new Error('Provide a password of at least 10 characters without line breaks using --password or KEYSTORE_PASSWORD.');
 }
 
-const temporary = mkdtempSync(path.join(tmpdir(), 'radiobee-keystore-'));
+function runOpenSSL(args, env = {}) {
+  return execFileSync('openssl', args, {
+    env: { ...process.env, ...env },
+    stdio: 'pipe',
+  });
+}
+
+const workingDirectory = mkdtempSync(path.join(tmpdir(), 'radiobee-keygen-'));
+const keyFile = path.join(workingDirectory, 'radio-bee-key.pem');
+const certFile = path.join(workingDirectory, 'radio-bee-cert.pem');
+const pkcs12File = path.join(workingDirectory, outputFile);
 let createdOutput = false;
-let stage = 'Java keytool';
+let stage = 'Checking OpenSSL';
 try {
-  // Java generates PKCS12 directly; no unencrypted private-key PEM intermediate.
-  // The secret is passed to keytool via its environment, never its argv.
-  execFileSync(
-    'keytool',
-    [
-      '-genkeypair',
-      '-keystore',
-      path.join(temporary, output),
-      '-storetype',
-      'PKCS12',
-      '-storepass:env',
-      'KEYSTORE_PASSWORD',
-      '-keypass:env',
-      'KEYSTORE_PASSWORD',
-      '-alias',
-      'radiobee',
-      '-keyalg',
-      'RSA',
-      '-keysize',
-      '3072',
-      '-validity',
-      '10000',
-      '-dname',
-      'CN=RadioBee,OU=Mobile,O=RadioBee,C=IN',
-    ],
-    { stdio: 'pipe', env: { ...process.env, KEYSTORE_PASSWORD: password } },
-  );
-  stage = 'Copying the generated keystore into the project';
-  copyFileSync(path.join(temporary, output), output, constants.COPYFILE_EXCL);
+  runOpenSSL(['version']);
+  stage = 'Generating RSA private key';
+  runOpenSSL(['genrsa', '-out', keyFile, '3072']);
+  chmodSync(keyFile, 0o600);
+  stage = 'Generating signing certificate';
+  runOpenSSL([
+    'req', '-new', '-x509', '-key', keyFile, '-out', certFile, '-days', '10000',
+    '-subj', '/CN=RadioBee/OU=Mobile/O=RadioBee/C=IN',
+  ]);
+  stage = 'Creating PKCS12 keystore';
+  runOpenSSL([
+    'pkcs12', '-export', '-in', certFile, '-inkey', keyFile, '-out', pkcs12File,
+    '-name', alias, '-passout', 'env:OPENSSL_PASS',
+  ], { OPENSSL_PASS: password });
+  stage = 'Copying keystore into project';
+  copyFileSync(pkcs12File, outputFile, constants.COPYFILE_EXCL);
   createdOutput = true;
-  stage = 'Setting keystore file permissions';
-  chmodSync(output, 0o600);
-  console.log('Created release-keystore.jks (PKCS12), alias radiobee. Back it up securely.');
+  chmodSync(outputFile, 0o600);
+  console.log(`Created ${outputFile} (PKCS12), alias ${alias}. Back it up securely.`);
+  console.log(`Encode: base64 -w 0 ${outputFile} > keystore.b64.txt`);
 } catch (error) {
-  if (createdOutput) rmSync(output, { force: true });
-
-  if (stage === 'Java keytool') {
-    if (error.code === 'ENOENT') {
-      throw new Error('Java keytool not found on PATH. In WSL2 run: command -v keytool; java -version. Install JDK 21 inside WSL2 and retry.');
-    }
-    // Java sometimes rejects options, keystore algorithms or the runtime itself.
-    // Preserve its real diagnostic without leaking the password or printing argv.
-    const detail = String(error.stderr || error.stdout || '')
-      .replaceAll(password, '[REDACTED]')
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
-      .trim()
-      .slice(0, 1500);
-    throw new Error(
-      `Java keytool failed (exit ${error.status ?? 'unknown'}).${detail ? ` ${detail}` : ''} Verify the JDK version and keytool installation inside WSL2.`,
-    );
+  if (createdOutput) rmSync(outputFile, { force: true });
+  if (error.code === 'ENOENT' && stage === 'Checking OpenSSL') {
+    throw new Error('OpenSSL not found. In WSL2 install it with: sudo apt-get install openssl');
   }
-
-  // Never include a raw system exception, which might contain process arguments.
-  throw new Error(`${stage} failed (${error.code || 'unknown error'}). Check write permissions for the project directory and WSL2 mount.`);
+  const diagnostic = String(error.stderr || error.stdout || '')
+    .replaceAll(password, '[REDACTED]')
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
+    .trim()
+    .slice(0, 1200);
+  throw new Error(`${stage} failed${diagnostic ? ': ' + diagnostic : ' (' + (error.code || 'unknown') + ')'}.`);
 } finally {
-  rmSync(temporary, { recursive: true, force: true });
+  // Private key and cert are ephemeral, never placed in the project directory.
+  rmSync(workingDirectory, { recursive: true, force: true });
 }
