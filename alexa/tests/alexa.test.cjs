@@ -29,11 +29,15 @@ test('registry rejects non-Tamil/English stations and ambiguous aliases',()=>{
  assert.equal(normalize('  Murugan Songs FM!! '),'murugan songs fm');
  assert.throws(()=>validateDirectory(registry,stations.map(s=>s.id==='air-nagercoil'?{...s,broadcastLanguages:['ta','si']}:s)),/Ineligible/);
 });
-test('strict playback gate requires HTTPS port 443, verified format and broadcaster approval',()=>{
+test('Alexa trial playback accepts direct candidates without falsifying approval metadata',()=>{
  assert.equal(allowedStream(approved('https://radio.example.com/live.mp3')),true);
  for(const url of ['http://radio.example.com/live.mp3','https://radio.example.com:8000/live.mp3','https://127.0.0.1/live.mp3'])assert.equal(allowedStream(approved(url)),false,url);
- assert.equal(allowedStream({...approved('https://radio.example.com/live.mp3'),rightsStatus:'unconfirmed'}),false);
- assert.equal(allowedStream({...approved('https://radio.example.com/live.mp3'),verificationStatus:'unverified'}),false);
+ const candidate={...approved('https://radio.example.com/live.mp3'),verificationStatus:'unverified',rightsStatus:'unconfirmed',directListening:{status:'needs-review'}};
+ assert.equal(allowedStream(candidate),true);
+ assert.equal(allowedStream({...candidate,format:'unknown'}),false);
+ assert.equal(allowedStream({...candidate,url:'https://stream.zeno.fm/example',format:'unknown'}),true);
+ assert.equal(allowedStream({...candidate,format:'wav'}),false);
+ assert.equal(allowedStream({...candidate,url:'https://radio.example.com:2020/live'}),false);
 });
 test('plays channel one with AudioPlayer and returns immediately',async()=>{
  resetCache();const r=await dispatch(event('PlayChannelIntent',{channelNumber:'1'}),options);
@@ -41,10 +45,10 @@ test('plays channel one with AudioPlayer and returns immediately',async()=>{
  assert.equal(r.response.directives[0].audioItem.stream.url,'https://radio.example.com/murugan.mp3');
  assert.equal(r.response.shouldEndSession,true);
 });
-test('unapproved channel 2 is listed but not playable',async()=>{
+test('channel 2 attempts trial playback from its existing Zeno candidate',async()=>{
  const r=await dispatch(event('PlayChannelIntent',{channelNumber:'2'}),options);
- assert.match(r.response.outputSpeech.text,/not approved/);
- assert.equal(r.response.directives,undefined);
+ assert.equal(r.response.directives[0].type,'AudioPlayer.Play');
+ assert.equal(r.response.directives[0].audioItem.stream.url,'https://stream.zeno.fm/abc');
 });
 test('station lookup resolves aliases and channel numbers',async()=>{
  const a=await dispatch(event('PlayStationIntent',{stationName:'air nagercoil'}),options);
@@ -55,11 +59,22 @@ test('station lookup resolves aliases and channel numbers',async()=>{
 test('next and previous use fixed numbers; playback lifecycle event is silent',async()=>{
  assert.equal(channelFromToken(token),1);
  const next=await dispatch(event('NextChannelIntent',{},token),options);
- assert.match(next.response.outputSpeech.text,/not approved/);
+ assert.equal(next.response.directives[0].audioItem.stream.url,'https://stream.zeno.fm/abc');
  const prev=await dispatch(event('PreviousChannelIntent',{},token),options);
  assert.equal(prev.response.directives[0].audioItem.stream.url,'https://radio.example.com/air.mp3');
  const lifecycle=await dispatch({request:{type:'AudioPlayer.PlaybackNearlyFinished',token}},options);
  assert.equal(lifecycle.response.directives,undefined);
+});
+
+test('channels without Alexa-compatible HTTPS:443 media keep a clear response',async()=>{
+ resetCache();
+ const restrictedStations=stations.map(s=>s.id===registry.channels[1].stationId?
+   {...s,streams:[{...s.streams[0],url:'https://radio.example.com:8006/live.mp3',format:'mp3'}]}:s);
+ const trialFetcher=async url=>({ok:true,headers:{get:()=> 'application/json'},text:async()=>JSON.stringify(url.includes('station-numbers.json')?registry:restrictedStations)});
+ const r=await dispatch(event('PlayChannelIntent',{channelNumber:'2'}),{fetcher:trialFetcher,now:Date.now()});
+ assert.match(r.response.outputSpeech.text,/no Alexa-compatible HTTPS stream on port 443/);
+ assert.equal(r.response.directives,undefined);
+ resetCache();
 });
 test('stop and pause use AudioPlayer.Stop; launch welcomes',async()=>{
  for(const name of ['AMAZON.StopIntent','AMAZON.PauseIntent'])

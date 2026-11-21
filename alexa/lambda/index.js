@@ -9,7 +9,7 @@ const current=event=>tokenNumber(event?.context?.AudioPlayer?.token||event?.requ
 function play(row,offset=0){
   if(!row)return say('That channel is not listed in Radio Bee. Try another channel number.');
   const stream=row.station.streams?.find(allowedStream);
-  if(!stream)return say('Channel '+row.number+', '+row.station.name+', is not approved for Alexa playback yet. Please try another station.');
+  if(!stream)return say('Channel '+row.number+', '+row.station.name+', has no Alexa-compatible HTTPS stream on port 443 yet. Please try another station.');
   return {version:'1.0',response:{
     outputSpeech:{type:'PlainText',text:'Playing '+row.station.name+'.'},
     directives:[{type:'AudioPlayer.Play',playBehavior:'REPLACE_ALL',audioItem:{

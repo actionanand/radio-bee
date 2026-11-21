@@ -18,6 +18,12 @@
 3. Under **Endpoint**, select **AWS Lambda ARN** and paste the function ARN into the matching geographic endpoint field (e.g. Europe for `eu-west-1`). Save endpoints. Record your skill ID (like `amzn1.ask.skill....`).
 4. Add a Lambda **Alexa Skills Kit** trigger and restrict it to that exact skill ID. Verify Lambda's resource-based policy grants `alexa-appkit.amazon.com` permission to invoke that function, scoped to the Alexa Skill ID. Do not enable a public Lambda Function URL.
 
+## Alexa trial playback eligibility
+
+Radio Bee attempts direct AudioPlayer playback from catalogue stream candidates on HTTPS port 443, using supported listed formats MP3, AAC and HLS. Zeno feeds with an unknown catalogue format may be attempted as a trial, not asserted to have a verified codec. AWS Lambda does **not** proxy, record, cache or redistribute station audio. URLs that require another port (or fail Alexa's TLS, codec or playlist requirements) cannot be made playable by relaxing catalogue flags.
+
+For trial playback, Lambda does not use `verificationStatus`, `rightsStatus` or `directListening.status` as an eligibility gate; the published catalogue values are **not changed** and still represent unverified technical status and unconfirmed rights. This is not broadcaster authorization or a guarantee of playback. Before public publication, obtain any required stream permissions and confirm device playback. Changing the release branch `main-alexa` automatically deploys the Alexa Lambda code, while station catalogue metadata remains in `radio-bee-data`.
+
 ## One-time step 3 — GitHub OIDC (no long-lived AWS keys)
 
 In AWS IAM create an OpenID Connect provider:
