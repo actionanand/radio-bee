@@ -79,7 +79,7 @@ Download `radiobee-android-1.0.0-2` from the completed Actions run's **Artifacts
 
 ## Keystore creation and secure backup
 
-Generate a signing identity **once**, only when needed, on a trusted machine with Java 21 `keytool`. Matching the Office Orbit command style, Radio Bee accepts the local `--password` option for one-time keystore creation. **Android CI/release signing uses GitHub Actions repository secrets, not a checked-in application environment file or a locally configured variable.** Passwords must be at least 12 characters, contain no line breaks, and the generator refuses to overwrite an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format. **Radio Bee still requires Java keytool** (unlike Office Orbit's OpenSSL generator), because this avoids writing an unencrypted private-key PEM file.
+Generate a signing identity **once**, only when needed, on a trusted machine with Java 21 `keytool`. Matching the Office Orbit command style, Radio Bee accepts the local `--password` option for one-time keystore creation. **Android CI/release signing uses GitHub Actions repository secrets, not a checked-in application environment file or a locally configured variable.** Passwords must be at least 10 characters, contain no line breaks, and the generator refuses to overwrite an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format. **Radio Bee still requires Java keytool** (unlike Office Orbit's OpenSSL generator), because this avoids writing an unencrypted private-key PEM file.
 
 To use the requested command from WSL2/Bash (replace the placeholder with your actual strong password):
 
@@ -88,7 +88,7 @@ npm run generate-keystore -- --password 'KEYSTORE_PASSWORD'
 npm run keystore:type
 ```
 
-This syntax works with `--password value` or `--password=value`. An explicit CLI password takes precedence over `KEYSTORE_PASSWORD` and `ANDROID_KEYSTORE_PASSWORD` environment variables. Keytool receives the password through its environment, never in its command-line arguments. **However, passing a secret to npm on the command line exposes it to shell history, process listings and possibly npm/CI logs.** Use this convenience syntax only on a private trusted machine; do not use it in automation or shared terminal sessions. The safer method below avoids password arguments entirely.
+A 10-character password is accepted; passwords of 9 characters or fewer are rejected. This syntax works with `--password value` or `--password=value`. An explicit CLI password takes precedence over `KEYSTORE_PASSWORD` and `ANDROID_KEYSTORE_PASSWORD` environment variables. Keytool receives the password through its environment, never in its command-line arguments. **However, passing a secret to npm on the command line exposes it to shell history, process listings and possibly npm/CI logs.** Use this convenience syntax only on a private trusted machine; do not use it in automation or shared terminal sessions. The safer method below avoids password arguments entirely.
 
 For Bash, enter the password without echo or shell-history exposure:
 

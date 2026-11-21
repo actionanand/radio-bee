@@ -301,6 +301,8 @@ test('keystore CLI validates missing, repeated, weak and unsupported password op
     ['--password', '--other'],
     ['--password='],
     ['--password', 'short'],
+    ['--password', 'Abcdef12!'], // 9 characters must fail
+
     ['--password', 'valid-password-2026', '--password', 'second-password-2026'],
     ['--random', 'valid-password-2026'],
   ]) assert.throws(() => run(args));
@@ -309,7 +311,7 @@ test('keystore CLI validates missing, repeated, weak and unsupported password op
 
 test('keystore accepts Office Orbit-style CLI password, environment fallback and secure keytool invocation', t => {
   const generator = path.resolve('scripts/generate-keystore.mjs');
-  const password = 'fixture-long-password-2026';
+  const password = 'Abcdefg12!'; // exactly 10 characters must succeed
   const setUp = () => {
     const f = fixture(t);
     const keytool = `#!/usr/bin/env node
