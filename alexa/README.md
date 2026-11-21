@@ -10,7 +10,7 @@ This is **source code**, not a deployed or published Alexa skill. It lives separ
 - Published stations: https://actionanand.github.io/radio-bee-data/v2/stations.json
 - Echo AudioPlayer fetches the broadcaster's URL directly. Lambda never proxies audio.
 
-The station data has a five-minute in-memory cache. It remains authoritative at GitHub Pages; editing channel numbers alone does not require a Lambda deployment. The invocation name “radio bee” and utterances must still be accepted by the Alexa interaction-model validator.
+The handler supports Alexa-hosted Node.js 16 using an HTTPS fallback when global fetch is unavailable. The station data has a five-minute in-memory cache. It remains authoritative at GitHub Pages; editing channel numbers alone does not require a Lambda deployment. The invocation name “radio bee” and utterances must still be accepted by the Alexa interaction-model validator.
 
 ## Channel policy
 
