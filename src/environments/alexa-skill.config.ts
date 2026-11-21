@@ -10,7 +10,7 @@ export function validatedAlexaSkillUrl(raw: string): string | null {
   try {
     const url = new URL(raw.trim());
     if (url.protocol !== 'https:' || url.username || url.password || !url.hostname.includes('.') ||
-      url.hostname === 'localhost' || /^(?:\\d{1,3}\\.){3}\\d{1,3}$/.test(url.hostname)) return null;
+      url.hostname === 'localhost' || /^(?:\d{1,3}\.){3}\d{1,3}$/.test(url.hostname)) return null;
     return url.href;
   } catch {
     return null;
