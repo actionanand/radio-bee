@@ -1,13 +1,39 @@
 'use strict';
+const https=require('node:https');
 const ROOT='https://actionanand.github.io/radio-bee-data/';
+// Alexa-hosted skills can run on Node 16, where global fetch is unavailable.
+// This is deliberately a small, bounded HTTPS-only fallback for the two fixed data URLs.
+function nativeFetch(url,{headers,signal}={}){
+  return new Promise((resolve,reject)=>{
+    const req=https.get(url,{headers,signal,timeout:4500},response=>{
+      const status=response.statusCode||0;
+      if(status<200||status>=300){response.resume();reject(Error('Catalogue HTTP status '+status));return;}
+      const type=response.headers['content-type']||'';
+      if(!/json/i.test(type)){response.resume();reject(Error('Expected catalogue JSON'));return;}
+      const chunks=[];let bytes=0;
+      response.on('data',chunk=>{
+        bytes+=chunk.length;
+        if(bytes>5*1024*1024){response.destroy(Error('Catalogue too large'));return;}
+        chunks.push(chunk);
+      });
+      response.on('end',()=>resolve({
+        ok:true,headers:{get:name=>String(response.headers[name.toLowerCase()]||'')},
+        text:async()=>Buffer.concat(chunks).toString('utf8')
+      }));
+      response.on('error',reject);
+    });
+    req.on('timeout',()=>req.destroy(Error('Catalogue timed out')));
+    req.on('error',reject);
+  });
+}
 const cache=new Map(),TTL=300000;
-async function getJson(file,{fetcher=globalThis.fetch,now=Date.now()}={}){
+async function getJson(file,{fetcher,now=Date.now()}={}){
   if(!['alexa/station-numbers.json','v2/stations.json'].includes(file))throw Error('Unsupported catalogue file');
   const url=ROOT+file,cached=cache.get(url);
   if(cached&&cached.until>now)return cached.data;
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4500);
   try{
-    const response=await fetcher(url,{signal:controller.signal,redirect:'error',headers:{Accept:'application/json'}});
+    const response=await (fetcher || globalThis.fetch || nativeFetch)(url,{signal:controller.signal,redirect:'error',headers:{Accept:'application/json'}});
     if(!response.ok||!/json/i.test(response.headers?.get?.('content-type')||''))throw Error('Catalogue response not available as JSON');
     const body=await response.text();
     if(body.length>5*1024*1024)throw Error('Catalogue too large');
