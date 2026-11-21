@@ -6,12 +6,11 @@ on:
       - "alexa/lambda/**"
       - "alexa/skill-package/**"
       - ".github/workflows/deploy-alexa-lambda.yml"
+  # Every push/merge/fast-forward to the Alexa release branch triggers deployment.
+  # Pushing to master does not deploy Lambda.
   push:
     branches:
-      - master
-    paths:
-      - "alexa/lambda/**"
-      - ".github/workflows/deploy-alexa-lambda.yml"
+      - main-alexa
   workflow_dispatch:
 
 permissions:
@@ -49,13 +48,13 @@ jobs:
           if [[ -z "$AWS_REGION" || -z "$AWS_ROLE_ARN" || -z "$FUNCTION_NAME" ]]; then
             echo "::warning::AWS deployment is skipped until ALEXA_AWS_REGION, ALEXA_AWS_ROLE_ARN and ALEXA_LAMBDA_FUNCTION_NAME are set as GitHub Actions variables."
             echo "### AWS deployment not configured" >> "$GITHUB_STEP_SUMMARY"
-            echo "Set the three repository Actions variables, then run this workflow manually on master." >> "$GITHUB_STEP_SUMMARY"
+            echo "Set the three repository Actions variables, then push to main-alexa or run this workflow manually on main-alexa." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   deploy:
     name: Deploy to AWS Lambda
     needs: verify
-    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && vars.ALEXA_AWS_REGION != '' && vars.ALEXA_AWS_ROLE_ARN != '' && vars.ALEXA_LAMBDA_FUNCTION_NAME != '' }}
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main-alexa' && vars.ALEXA_AWS_REGION != '' && vars.ALEXA_AWS_ROLE_ARN != '' && vars.ALEXA_LAMBDA_FUNCTION_NAME != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
