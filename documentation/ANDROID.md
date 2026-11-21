@@ -79,7 +79,7 @@ Download `radiobee-android-1.0.0-2` from the completed Actions run's **Artifacts
 
 ## Keystore creation and secure backup
 
-Generate a signing identity **once**, only when needed, on a trusted machine with Java 21 `keytool`. Matching the Office Orbit command style, Radio Bee now accepts a `--password` argument as well as environment variables. Passwords must be at least 12 characters, contain no line breaks, and the generator refuses to overwrite an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format. **Radio Bee still requires Java keytool** (unlike Office Orbit's OpenSSL generator), because this avoids writing an unencrypted private-key PEM file.
+Generate a signing identity **once**, only when needed, on a trusted machine with Java 21 `keytool`. Matching the Office Orbit command style, Radio Bee accepts the local `--password` option for one-time keystore creation. **Android CI/release signing uses GitHub Actions repository secrets, not a checked-in application environment file or a locally configured variable.** Passwords must be at least 12 characters, contain no line breaks, and the generator refuses to overwrite an existing keystore. It generates RSA 3072 / PKCS12 directly, alias `radiobee`, with no unencrypted PEM intermediate. The filename is `release-keystore.jks`; the extension does not determine its format. **Radio Bee still requires Java keytool** (unlike Office Orbit's OpenSSL generator), because this avoids writing an unencrypted private-key PEM file.
 
 To use the requested command from WSL2/Bash (replace the placeholder with your actual strong password):
 
@@ -120,7 +120,7 @@ Keep encrypted offline backups of the keystore, alias and password in separate s
 
 ## GitHub Actions Secrets
 
-Under **Repository Settings → Secrets and variables → Actions**, add these repository secrets:
+Under **Repository Settings → Secrets and variables → Actions → Repository secrets**, add the four signing secrets. These are the **authoritative CI signing configuration**. The workflow already maps them from `${{ secrets.KEYSTORE_BASE64 }}`, `${{ secrets.KEYSTORE_PASSWORD }}`, `${{ secrets.KEY_ALIAS }}` and `${{ secrets.KEY_PASSWORD }}` into the isolated signing job; no `src/environments/*` change is required:
 
 | Secret              | Value                                                            |
 | ------------------- | ---------------------------------------------------------------- |
