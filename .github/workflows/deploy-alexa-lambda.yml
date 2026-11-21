@@ -1,0 +1,95 @@
+name: Alexa Lambda - test and deploy
+
+on:
+  pull_request:
+    paths:
+      - "alexa/lambda/**"
+      - "alexa/skill-package/**"
+      - ".github/workflows/deploy-alexa-lambda.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "alexa/lambda/**"
+      - ".github/workflows/deploy-alexa-lambda.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alexa-lambda-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Validate Alexa code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check source and interaction model
+        run: |
+          node --check alexa/lambda/index.js
+          node --check alexa/lambda/catalogue.js
+          node -e 'JSON.parse(require("fs").readFileSync("alexa/skill-package/interactionModels/custom/en-IN.json", "utf8"))'
+          node -e 'const p=require("./alexa/lambda/package.json"); if(Object.keys(p.dependencies||{}).length){throw Error("Update the Lambda packaging step to include production dependencies.")}'
+      - name: Run Alexa unit tests
+        run: npm --prefix alexa/lambda test
+      - name: Explain missing deployment setup
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          AWS_REGION: ${{ vars.ALEXA_AWS_REGION }}
+          AWS_ROLE_ARN: ${{ vars.ALEXA_AWS_ROLE_ARN }}
+          FUNCTION_NAME: ${{ vars.ALEXA_LAMBDA_FUNCTION_NAME }}
+        run: |
+          if [[ -z "$AWS_REGION" || -z "$AWS_ROLE_ARN" || -z "$FUNCTION_NAME" ]]; then
+            echo "::warning::AWS deployment is skipped until ALEXA_AWS_REGION, ALEXA_AWS_ROLE_ARN and ALEXA_LAMBDA_FUNCTION_NAME are set as GitHub Actions variables."
+            echo "### AWS deployment not configured" >> "$GITHUB_STEP_SUMMARY"
+            echo "Set the three repository Actions variables, then run this workflow manually on master." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  deploy:
+    name: Deploy to AWS Lambda
+    needs: verify
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && vars.ALEXA_AWS_REGION != '' && vars.ALEXA_AWS_ROLE_ARN != '' && vars.ALEXA_LAMBDA_FUNCTION_NAME != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.ALEXA_AWS_REGION }}
+      AWS_ROLE_ARN: ${{ vars.ALEXA_AWS_ROLE_ARN }}
+      ALEXA_LAMBDA_FUNCTION_NAME: ${{ vars.ALEXA_LAMBDA_FUNCTION_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package Lambda handler at ZIP root
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/radio-bee-alexa"
+          cp alexa/lambda/index.js alexa/lambda/catalogue.js alexa/lambda/package.json "$RUNNER_TEMP/radio-bee-alexa/"
+          (cd "$RUNNER_TEMP/radio-bee-alexa" && zip -q -X "$RUNNER_TEMP/radio-bee-alexa.zip" index.js catalogue.js package.json)
+          unzip -l "$RUNNER_TEMP/radio-bee-alexa.zip"
+      - name: Authenticate to AWS with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Update existing Lambda function
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws lambda update-function-code \
+            --function-name "$ALEXA_LAMBDA_FUNCTION_NAME" \
+            --zip-file "fileb://$RUNNER_TEMP/radio-bee-alexa.zip" \
+            --no-cli-pager > "$RUNNER_TEMP/alexa-deploy.json"
+          aws lambda wait function-updated --function-name "$ALEXA_LAMBDA_FUNCTION_NAME"
+          aws lambda get-function-configuration \
+            --function-name "$ALEXA_LAMBDA_FUNCTION_NAME" \
+            --query '{FunctionName:FunctionName,Runtime:Runtime,Handler:Handler,LastUpdateStatus:LastUpdateStatus}' \
+            --output json
