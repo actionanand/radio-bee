@@ -24,6 +24,18 @@ Radio Bee attempts direct AudioPlayer playback from catalogue stream candidates 
 
 For trial playback, Lambda does not use `verificationStatus`, `rightsStatus` or `directListening.status` as an eligibility gate; the published catalogue values are **not changed** and still represent unverified technical status and unconfirmed rights. This is not broadcaster authorization or a guarantee of playback. Before public publication, obtain any required stream permissions and confirm device playback. Changing the release branch `main-alexa` automatically deploys the Alexa Lambda code, while station catalogue metadata remains in `radio-bee-data`.
 
+## Add English (US) support to this same skill
+
+The skill supports two English locale models in source: `alexa/skill-package/interactionModels/custom/en-IN.json` and `en-US.json`. Do **not** create a separate Alexa skill or Lambda. In the Alexa Developer Console:
+
+1. Open **Build → Language Settings** from the locale dropdown and **Add new language → English (US)**. Optionally copy existing locale content from English (India) if offered.
+2. Select **English (US) → Interaction Model → JSON Editor** and import `en-US.json`. **Save Model**, then **Build Model**.
+3. Verify the **Audio Player** interface and the existing AWS Lambda endpoint `arn:aws:lambda:eu-west-1:915238400460:function:radio-bee-alexa` are applied to en-US. The Skill ID and Lambda remain shared.
+4. Complete **Distribution → Skill Preview → English (US)** and save required details. Use the same brand artwork. Re-run certification validation as needed; an existing submission may require an update submission.
+5. Under **Test**, choose **English (US)** and verify launch and channel playback directives. Set the Alexa phone language to English (US) for device testing. The same `alexa/station-numbers.json` catalogue (which retains `locale: "en-IN"`) powers both locales.
+
+Updating files in GitHub or deploying the Lambda **does not** configure the Alexa locale in Amazon's developer console. The interaction model must be copied/imported and built there.
+
 ## One-time step 3 — GitHub OIDC (no long-lived AWS keys)
 
 In AWS IAM create an OpenID Connect provider:
@@ -97,7 +109,7 @@ A push, merge, or fast-forward to `main-alexa` automatically launches this workf
 
 ## Playback limits
 
-The current `main-alexa` handler allows direct trial playback from suitable HTTPS port 443 streams without requiring catalogue `verified` / `permission-granted` flags. This does **not** change broadcaster authorization or verify stream compatibility: review permissions and test on real Alexa hardware before public distribution. Unsupported ports, codecs and playlists can still fail.
+The existing handler intentionally refuses to stream unless the catalogue marks the stream **verified**, rights **permission-granted** and direct listening **allowed**. It additionally restricts codec and HTTPS requirements. A deployed skill can respond to voice commands while still refusing audio playback. Verify streaming rights and compatibility before release.
 
 ## Security and rollback
 
