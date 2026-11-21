@@ -2,6 +2,10 @@
 const en = {
   settings: 'Settings',
   appearance: 'Appearance & language',
+  alexaHeading: 'Listen on Alexa',
+  alexaHelp: 'Use Radio Bee on your Alexa-enabled devices. Open the skill page to enable it with your Amazon account.',
+  alexaEnable: 'Add Radio Bee to Alexa',
+  alexaNotAvailable: 'Alexa skill installation will be available when its Amazon Skill Store or beta invitation link is ready.',
   supportHeading: 'Help & support',
   supportHelp: 'Have a question, station correction, or suggestion? Send RadioBee a message.',
   contactUs: 'Contact Us',
@@ -49,6 +53,10 @@ export type SettingsKey = keyof typeof en;
 const ta: Record<SettingsKey, string> = {
   settings: 'அமைப்புகள்',
   appearance: 'தோற்றமும் மொழியும்',
+  alexaHeading: 'Alexa-வில் கேளுங்கள்',
+  alexaHelp: 'Alexa வசதியுள்ள சாதனங்களில் Radio Bee-யைக் கேளுங்கள். உங்கள் Amazon கணக்கில் திறனை இயக்க அதன் பக்கத்தைத் திறக்கவும்.',
+  alexaEnable: 'Alexa-வில் Radio Bee-யைச் சேர்க்கவும்',
+  alexaNotAvailable: 'Amazon திறன் அங்காடி அல்லது பீட்டா அழைப்புக்கான இணைப்பு கிடைத்ததும் Alexa திறனைச் சேர்க்கலாம்.',
   supportHeading: 'உதவி மற்றும் ஆதரவு',
   supportHelp: 'கேள்வி, வானொலி நிலையத் திருத்தம் அல்லது பரிந்துரை உள்ளதா? RadioBee-க்கு செய்தி அனுப்புங்கள்.',
   contactUs: 'தொடர்புகொள்ளுங்கள்',
@@ -95,6 +103,10 @@ const ta: Record<SettingsKey, string> = {
 const sa: Record<SettingsKey, string> = {
   settings: 'सेटिङ्ग्स्',
   appearance: 'रूपं भाषा च',
+  alexaHeading: 'Alexa द्वारा शृणोतु',
+  alexaHelp: 'Alexa-समर्थितेषु यन्त्रेषु Radio Bee शृणोतु। स्वस्य Amazon-लेखेन कौशलं सक्रियं कर्तुं कौशलपृष्ठं उद्घाटयतु।',
+  alexaEnable: 'Alexa मध्ये Radio Bee योजयतु',
+  alexaNotAvailable: 'Amazon-कौशलभाण्डागारस्य अथवा बीटा-आमन्त्रणस्य सञ्चिका-सम्बन्धः उपलब्धः भवेत् तदा Alexa-कौशलं योजयितुं शक्यते।',
   supportHeading: 'साहाय्यं समर्थनं च',
   supportHelp: 'प्रश्नः, केन्द्रसंशोधनं वा परामर्शः अस्ति वा? RadioBee प्रति सन्देशं प्रेषयतु।',
   contactUs: 'सम्पर्कं करोतु',
