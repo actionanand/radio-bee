@@ -1,6 +1,6 @@
 import { corruptions } from './testing/v2-invalid.fixture';
 import { TestBed } from '@angular/core/testing';
-import { CATALOG_FETCH, CATALOG_SEED_URL, CATALOG_STORAGE, CATALOG_URL, CatalogService } from './catalog.service';
+import { CATALOG_FETCH, CATALOG_RETRY_DELAYS, CATALOG_SEED_URL, CATALOG_STORAGE, CATALOG_URL, CatalogService } from './catalog.service';
 import { v2Fixture } from './testing/v2.fixture';
 
 describe('v2 snapshot loading', () => {
@@ -10,15 +10,22 @@ describe('v2 snapshot loading', () => {
   let fail: string;
   let requests: string[];
   let snapshot: Record<string, unknown>;
+  let transientHomeFailures: number;
+  let transientManifestFailures: number;
+  let permanentHomeFailure: boolean;
   beforeEach(() => {
     saved = new Map();
     fail = '';
     requests = [];
+    transientHomeFailures = 0;
+    transientManifestFailures = 0;
+    permanentHomeFailure = false;
     snapshot = structuredClone(v2Fixture) as Record<string, unknown>;
     TestBed.configureTestingModule({
       providers: [
         { provide: CATALOG_URL, useValue: base },
         { provide: CATALOG_SEED_URL, useValue: null },
+        { provide: CATALOG_RETRY_DELAYS, useValue: [0, 0, 0] },
         {
           provide: CATALOG_STORAGE,
           useValue: {
@@ -32,6 +39,10 @@ describe('v2 snapshot loading', () => {
           provide: CATALOG_FETCH,
           useValue: async (url: string) => {
             requests.push(url);
+            if (url.endsWith('/index.json') && transientManifestFailures-- > 0) throw Error('Offline');
+            if (url.endsWith('/home-stations.json') && transientHomeFailures-- > 0) throw Error('Offline');
+            if (url.endsWith('/home-stations.json') && permanentHomeFailure)
+              throw Error('Catalogue host is not deployed (404).');
             if (fail === 'malformed-index' && url.endsWith('/browse-index.json'))
               throw new SyntaxError('Bad index JSON');
             if (fail && url.endsWith(fail)) throw Error('Offline');
@@ -69,15 +80,77 @@ describe('v2 snapshot loading', () => {
     expect(service.homeStationIds()).toEqual(ids);
     expect(service.catalog()?.stations).toHaveLength(71);
   });
-  it('shows no fallback when the Home API fails but keeps the full catalogue', async () => {
+  it('retries temporary Home API failures and uses the API order when a retry succeeds', async () => {
+    transientHomeFailures = 2;
     const service = TestBed.inject(CatalogService);
     await service.start();
-    fail = 'home-stations.json';
-    await service.refresh();
+    expect(requests.filter(url => url.endsWith('/home-stations.json'))).toHaveLength(3);
+    expect(service.homeStationIds()).toHaveLength(13);
+    expect(service.homeSelectionWarning()).toBe('');
     expect(service.error()).toBe('');
+  });
+  it('retries a transient catalogue manifest request before reporting an empty Home', async () => {
+    transientManifestFailures = 2;
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    // First manifest: 3 attempts, and the final consistency check: 1.
+    expect(requests.filter(url => url.endsWith('/index.json'))).toHaveLength(4);
+    expect(service.catalog()?.stations).toHaveLength(71);
+    expect(service.homeStationIds()).toHaveLength(13);
+  });
+  it('preserves last validated Home stations after three failed retries', async () => {
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    const priorIds = service.homeStationIds();
+    fail = 'home-stations.json';
+    const priorRequests = requests.filter(url => url.endsWith('/home-stations.json')).length;
+    await service.refresh();
+    expect(requests.filter(url => url.endsWith('/home-stations.json'))).toHaveLength(priorRequests + 4);
+    expect(service.error()).toBe('');
+    expect(service.homeStationIds()).toEqual(priorIds);
+    expect(service.homeSelectionWarning()).toContain('last successfully validated');
+    expect(service.catalog()?.stations).toHaveLength(71);
+    expect(JSON.parse(saved.get(key)!).homeStationIds).toEqual(priorIds);
+  });
+  it('shows no invented Home stations after all attempts fail on first launch', async () => {
+    fail = 'home-stations.json';
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    expect(requests.filter(url => url.endsWith('/home-stations.json'))).toHaveLength(4);
     expect(service.homeStationIds()).toEqual([]);
     expect(service.homeSelectionWarning()).toContain('Home');
     expect(service.catalog()?.stations).toHaveLength(71);
+  });
+  it('does not retry permanent Home HTTP errors', async () => {
+    permanentHomeFailure = true;
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    expect(requests.filter(url => url.endsWith('/home-stations.json'))).toHaveLength(1);
+    expect(service.homeStationIds()).toEqual([]);
+    expect(service.homeSelectionWarning()).toContain('Home');
+  });
+  it('restores last validated Home IDs from cache during an offline Android startup', async () => {
+    const ids = (snapshot['stations'] as { id: string }[]).slice(0, 13).map(s => s.id).reverse();
+    saved.set(key, JSON.stringify({
+      catalog: snapshot, updatedAt: '2026-11-10T12:00:00Z', homeStationIds: ids,
+    }));
+    fail = 'index.json';
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    expect(service.cached()).toBe(true);
+    expect(service.homeStationIds()).toEqual(ids);
+    expect(service.catalog()?.stations).toHaveLength(71);
+  });
+  it('ignores invalid cached Home IDs without discarding a valid catalogue', async () => {
+    saved.set(key, JSON.stringify({
+      catalog: snapshot, updatedAt: '2026-11-10T12:00:00Z', homeStationIds: ['made-up-station'],
+    }));
+    fail = 'index.json';
+    const service = TestBed.inject(CatalogService);
+    await service.start();
+    expect(service.catalog()?.stations).toHaveLength(71);
+    expect(service.homeStationIds()).toEqual([]);
+    expect(service.storageWarning()).toBe('');
   });
   it('retains the complete previous snapshot when one advertised file fails', async () => {
     const service = TestBed.inject(CatalogService);

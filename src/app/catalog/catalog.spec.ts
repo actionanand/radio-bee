@@ -5,7 +5,7 @@ import { streamEligibility as configuredEligibility } from './stream-eligibility
 import { fixture } from './catalog.fixture';
 import { Catalog, emptyFilters, filterStations, groups, translated } from './catalog.models';
 import { validateCatalog, validateManifest, relativePath } from './catalog.validation';
-import { CatalogService, CATALOG_FETCH, CATALOG_STORAGE, CATALOG_URL, CATALOG_SEED_URL } from './catalog.service';
+import { CatalogService, CATALOG_FETCH, CATALOG_RETRY_DELAYS, CATALOG_STORAGE, CATALOG_URL, CATALOG_SEED_URL } from './catalog.service';
 import { environment as production } from '../../environments/environment.prod';
 import { StationBrowserComponent } from './station-browser';
 const catalog = () => validateCatalog(structuredClone(fixture));
@@ -101,6 +101,7 @@ describe('Catalogue loading and cache', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: CATALOG_URL, useValue: 'https://catalog.test/v1/' },
+        { provide: CATALOG_RETRY_DELAYS, useValue: [0, 0, 0] },
         {
           provide: CATALOG_STORAGE,
           useValue: {
