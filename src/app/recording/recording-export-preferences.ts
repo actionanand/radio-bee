@@ -1,5 +1,4 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
 import { RADIO_RECORDING } from './recording.config';
 
 export type RecordingFormat = 'm4a' | 'original';
@@ -11,7 +10,7 @@ export type RecordingExportPreferences = {
 };
 
 const STORAGE_KEY = 'radiobee-recording-export-v1';
-const DEFAULTS: RecordingExportPreferences = { format: 'm4a', quality: 'balanced', coverArt: true };
+const DEFAULTS: RecordingExportPreferences = { format: 'original', quality: 'balanced', coverArt: true };
 export const recordingBitrate = (quality: RecordingQuality): number =>
   ({ space: 64_000, balanced: 96_000, high: 128_000 })[quality];
 
@@ -20,9 +19,7 @@ export const recordingBitrate = (quality: RecordingQuality): number =>
 export class RecordingExportPreferencesService {
   private readonly recording = inject(RADIO_RECORDING);
   private readonly values = signal<RecordingExportPreferences>(this.load());
-  readonly format = computed(() =>
-    Capacitor.getPlatform() === 'android' ? this.values().format : 'original',
-  );
+  readonly format = computed((): RecordingFormat => 'original');
   readonly quality = computed(() => this.values().quality);
   readonly coverArt = computed(() => this.values().coverArt);
   readonly embedCover = computed(() =>
@@ -35,7 +32,7 @@ export class RecordingExportPreferencesService {
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Partial<RecordingExportPreferences> | null;
       if (!stored || typeof stored !== 'object') return DEFAULTS;
       return {
-        format: stored.format === 'original' ? 'original' : 'm4a',
+        format: 'original',
         quality: stored.quality === 'space' || stored.quality === 'high' ? stored.quality : 'balanced',
         coverArt: stored.coverArt !== false,
       };
@@ -49,8 +46,7 @@ export class RecordingExportPreferencesService {
   }
 
   setFormat(value: string) {
-    if (value !== 'original' && value !== 'm4a') return;
-    if (value === 'm4a' && Capacitor.getPlatform() !== 'android') return;
+    if (value !== 'original') return;
     this.update({ ...this.values(), format: value });
   }
   setQuality(value: string) {

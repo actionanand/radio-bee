@@ -64,18 +64,9 @@ import { RecordingConfirmationComponent } from './recording-confirmation';
               (click)="recorder.save()"
               [disabled]="recorder.state() !== 'ready' && recorder.state() !== 'error'">
               <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
-              {{ recorder.conversionFailed() ? retryM4aText() : ui('exportRecording') }}
+              {{ ui('exportRecording') }}
             </button>
-            @if (recorder.conversionFailed()) {
-              <button
-                class="quick-action"
-                type="button"
-                (click)="recorder.saveOriginal()"
-                [disabled]="recorder.state() !== 'ready' && recorder.state() !== 'error'">
-                <ion-icon [icon]="icons.downloadOutline" aria-hidden="true" />
-                {{ exportOriginalText() }}
-              </button>
-            }
+
           }
         </div>
         @if (expanded()) {
@@ -277,18 +268,6 @@ export class RecordingControlsComponent {
       this.confirmReplace.set(false);
     });
   }
-  retryM4aText() {
-    const locale = this.catalog.locale();
-    return locale === 'ta' ? 'M4A-ஆக மீண்டும் முயலவும்'
-      : locale === 'sa' ? 'M4A पुनः प्रयतताम्'
-      : 'Retry M4A';
-  }
-  exportOriginalText() {
-    const locale = this.catalog.locale();
-    return locale === 'ta' ? 'அசல் ஒலியை ஏற்றுமதி செய்'
-      : locale === 'sa' ? 'मूलध्वनिं निर्यातयतु'
-      : 'Export original audio';
-  }
   retryText() {
     const locale = this.catalog.locale();
     return locale === 'ta' ? 'சேமிப்பை மீண்டும் முயலவும்'
@@ -297,9 +276,9 @@ export class RecordingControlsComponent {
   }
   savingText() {
     const locale = this.catalog.locale();
-    return locale === 'ta' ? 'பதிவு மாற்றப்பட்டுச் சேமிக்கப்படுகிறது…'
-      : locale === 'sa' ? 'मुद्रणं रूपान्तर्य सञ्चीयते…'
-      : 'Converting / saving recording…';
+    return locale === 'ta' ? 'பதிவு சேமிக்கப்படுகிறது…'
+      : locale === 'sa' ? 'मुद्रणं सञ्चीयते…'
+      : 'Saving recording…';
   }
   ui(key: UiKey) {
     return uiLabel(this.catalog.locale(), key);
