@@ -1,0 +1,53 @@
+name: RadioBee TV PR Validation
+on:
+  pull_request:
+    paths:
+      - 'android-tv/**'
+      - 'tv-version.json'
+      - 'scripts/*tv*'
+      - 'scripts/android-version.cjs'
+      - '.github/workflows/tv-*.yml'
+permissions:
+  contents: read
+concurrency:
+  group: radiobee-tv-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.16.0'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Validate release and range contracts without reservation or secrets
+        run: |
+          node -e 'if(process.platform!=="linux")process.exit(1)'
+          node --test scripts/tv-release.test.mjs
+          python3 -B -m unittest discover -s scripts -p tv_artifacts_test.py
+      - name: Compile, lint, test and build native TV debug APK
+        working-directory: android-tv
+        run: ./gradlew --no-daemon --max-workers=2 lintDebug testDebugUnitTest assembleDebug assembleDebugAndroidTest
+      - name: Validate TV identity, targeting, signatures and native page alignment
+        run: python3 scripts/validate-tv-artifacts.py --apk android-tv/app/build/outputs/apk/debug/app-debug.apk --debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: radiobee-tv-debug-${{ github.sha }}
+          path: |
+            android-tv/app/build/outputs/apk/debug/app-debug.apk
+            android-tv/app/build/reports/
+          if-no-files-found: error
+          retention-days: 14
