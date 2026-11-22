@@ -494,10 +494,10 @@ test('workflow isolates Android from web, persists before compilation and publis
 });
 
 test('Android safe-area and original-audio export contracts', () => {
-  const css = read('src/app/directory/directory-shell.scss');
+  const css = read('src/global.scss');
   assert.match(css, /--safe-area-inset-top/);
   assert.match(css, /env\(safe-area-inset-top/);
-  assert.match(css, /padding: calc\(10px \+ var\(--rb-safe-top\)\)/);
+  assert.match(css, /padding-top: calc\(10px \+ var\(--rb-safe-top\)\)/);
   assert.match(read('capacitor.config.ts'), /insetsHandling: 'css'/);
   const destination = read('src/app/recording/recording-destination.ts');
   assert.doesNotMatch(destination, /androidStorage\.convertSaved/);
