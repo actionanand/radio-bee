@@ -22,9 +22,7 @@ export class RecordingExportPreferencesService {
   readonly format = computed((): RecordingFormat => 'original');
   readonly quality = computed(() => this.values().quality);
   readonly coverArt = computed(() => this.values().coverArt);
-  readonly embedCover = computed(() =>
-    this.format() === 'm4a' && this.values().coverArt && Capacitor.getPlatform() === 'android',
-  );
+  readonly embedCover = computed(() => false);
 
   private load(): RecordingExportPreferences {
     if (!this.recording.Enabled) return DEFAULTS;
