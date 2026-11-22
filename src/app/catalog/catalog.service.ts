@@ -1,4 +1,5 @@
-import { Language, stationDisplayName, Station } from './catalog.models';
+import { Catalog, Language, stationDisplayName, Station, translated } from './catalog.models';
+import { defer, firstValueFrom, retry, throwError, timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { effectiveLocale, resolveDeviceLanguage, UiLanguagePreference } from './device-language';
 import { validateV2, v2Manifest } from './catalog-v2';
@@ -7,7 +8,6 @@ import { languageDisplayName } from './language-label';
 import { InjectionToken, Service, inject, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { environment } from '../../environments/environment';
-import { Catalog, translated } from './catalog.models';
 import { relativePath, validateCatalog, validateManifest } from './catalog.validation';
 export const CATALOG_URL = new InjectionToken<string>('CATALOG_URL', {
   providedIn: 'root',
@@ -26,6 +26,26 @@ export const CATALOG_FETCH = new InjectionToken<(url: string) => Promise<unknown
     return response.json() as Promise<unknown>;
   },
 });
+/** Three bounded retries after the first request; test overrides use zero delay. */
+export const CATALOG_RETRY_DELAYS = new InjectionToken<readonly number[]>('CATALOG_RETRY_DELAYS', {
+  providedIn: 'root',
+  factory: () => [300, 800, 1600],
+});
+
+/** Retry only transport and service-availability failures, not invalid JSON or permanent HTTP errors. */
+function retryableCatalogFailure(error: unknown): boolean {
+  if (error instanceof SyntaxError) return false;
+  if (error instanceof Error) {
+    if (error.message === 'Catalogue host is not deployed (404).') return false;
+    const status = /^Catalogue request failed \((\d{3})\)\.$/.exec(error.message);
+    if (status) {
+      const code = Number(status[1]);
+      return code === 408 || code === 429 || code >= 500;
+    }
+  }
+  return true;
+}
+
 export const CATALOG_STORAGE = new InjectionToken('CATALOG_STORAGE', {
   providedIn: 'root',
   factory: () => ({
@@ -43,6 +63,7 @@ export class CatalogService {
   readonly deviceLocale = resolveDeviceLanguage(inject(DOCUMENT).defaultView?.navigator.language);
   readonly localePreference = signal<UiLanguagePreference>('device');
   private readonly fetchJson = inject(CATALOG_FETCH);
+  private readonly retryDelays = inject(CATALOG_RETRY_DELAYS);
   private readonly storage = inject(CATALOG_STORAGE);
   private readonly seedUrl = inject(CATALOG_SEED_URL);
   readonly developmentSeed = signal(false);
@@ -54,6 +75,29 @@ export class CatalogService {
   private manifest(value: unknown) {
     return this.version === 2 ? v2Manifest(value) : validateManifest(value);
   }
+  private requestJson(url: string): Promise<unknown> {
+    return firstValueFrom(defer(() => this.fetchJson(url)).pipe(
+      retry({
+        count: this.retryDelays.length,
+        delay: (error: unknown, attempt: number) =>
+          retryableCatalogFailure(error)
+            ? timer(this.retryDelays[attempt - 1] ?? 0)
+            : throwError(() => error),
+      }),
+    ));
+  }
+
+  /** A cached/previous Home selection is usable only for known catalogue station IDs. */
+  private validHomeIds(value: unknown, catalog: Catalog): string[] | null {
+    if (!Array.isArray(value) || value.some(id => typeof id !== 'string') ||
+        new Set(value).size !== value.length) return null;
+    const known = new Set([
+      ...catalog.stations.map(station => station.id),
+      ...(catalog.discoveryStations ?? []).map(station => station.id),
+    ]);
+    return value.every(id => known.has(id)) ? [...value] as string[] : null;
+  }
+
   private started = false;
   readonly catalog = signal<Catalog | null>(null);
   readonly loading = signal(false);
@@ -90,7 +134,12 @@ export class CatalogService {
           !Number.isFinite(Date.parse(stored.updatedAt))
         )
           throw new Error('Invalid cached snapshot');
-        this.catalog.set(this.validate(stored.catalog));
+        const validated = this.validate(stored.catalog);
+        this.catalog.set(validated);
+        if (this.version === 2) {
+          const ids = this.validHomeIds('homeStationIds' in stored ? stored.homeStationIds : undefined, validated);
+          if (ids) this.homeStationIds.set(ids);
+        }
         this.updatedAt.set(stored.updatedAt);
         this.cached.set(true);
       }
@@ -105,7 +154,7 @@ export class CatalogService {
     this.loading.set(true);
     this.error.set('');
     try {
-      const manifest = this.manifest(await this.fetchJson(relativePath(this.base, 'index.json')));
+      const manifest = this.manifest(await this.requestJson(relativePath(this.base, 'index.json')));
       const names = ['networks', 'stations', 'locations', 'languages', 'categories', 'sources'];
       if (manifest.files['discoveryStations']) names.push('discoveryStations');
       if (this.version === 2)
@@ -114,7 +163,7 @@ export class CatalogService {
       const values = await Promise.all(
         names.map(async name => {
           try {
-            return await this.fetchJson(relativePath(this.base, manifest.files[name]));
+            return await this.requestJson(relativePath(this.base, manifest.files[name]));
           } catch (error) {
             // A retrieved but malformed optional index must not invalidate canonical data.
             // Missing advertised files and other transport failures still fail atomically.
@@ -125,7 +174,7 @@ export class CatalogService {
       );
       const dictionaries = await Promise.all(
         ['en', 'ta', 'sa'].map(locale =>
-          this.fetchJson(relativePath(this.base, `${manifest.localizationRoot}${locale}.json`)),
+          this.requestJson(relativePath(this.base, `${manifest.localizationRoot}${locale}.json`)),
         ),
       );
       const next = this.validate({
@@ -135,39 +184,37 @@ export class CatalogService {
       });
       // The v2 Home display is governed by its published sidecar, not a local top-ten list.
       // A missing or malformed sidecar never inserts substitute stations.
-      let homeStationIds: string[] = [];
+      // Do not turn a successful previous Home response into zero on a transient
+      // sidecar failure. Keep only IDs that exist in this newly validated catalogue.
+      let homeStationIds = this.version === 2 ? (this.validHomeIds(this.homeStationIds(), next) ?? []) : [];
       let homeSelectionWarning = '';
       if (this.version === 2) {
         try {
-          const home: unknown = await this.fetchJson(relativePath(this.base, 'home-stations.json'));
+          const home: unknown = await this.requestJson(relativePath(this.base, 'home-stations.json'));
           if (!home || typeof home !== 'object' || Array.isArray(home)) throw Error('Invalid Home selection');
           const selection = home as Record<string, unknown>;
-          const ids = selection['stationIds'];
-          const known = new Set([
-            ...next.stations.map(station => station.id),
-            ...(next.discoveryStations ?? []).map(station => station.id),
-          ]);
+          const ids = this.validHomeIds(selection['stationIds'], next);
           if (
             selection['schemaVersion'] !== 2 ||
-            !Array.isArray(ids) ||
+            !ids ||
             !Number.isSafeInteger(selection['count']) ||
             selection['count'] !== ids.length ||
-            Object.keys(selection).sort().join(',') !== 'count,schemaVersion,stationIds' ||
-            ids.some(id => typeof id !== 'string' || !known.has(id)) ||
-            new Set(ids).size !== ids.length
+            Object.keys(selection).sort().join(',') !== 'count,schemaVersion,stationIds'
           )
             throw Error('Invalid Home station IDs');
-          homeStationIds = ids as string[];
+          homeStationIds = ids;
         } catch {
-          homeSelectionWarning = 'Home selection unavailable. Browse World for all radios.';
+          homeSelectionWarning = homeStationIds.length
+            ? 'Home selection temporarily unavailable. Showing last successfully validated Home stations.'
+            : 'Home selection unavailable. Browse World for all radios.';
         }
       }
-      const confirmed = this.manifest(await this.fetchJson(relativePath(this.base, 'index.json')));
+      const confirmed = this.manifest(await this.requestJson(relativePath(this.base, 'index.json')));
       if (JSON.stringify(confirmed) !== JSON.stringify(manifest))
         throw new Error('Catalogue changed during loading; refresh to request a consistent snapshot.');
       const updatedAt = new Date().toISOString();
       try {
-        await this.storage.set({ key: this.key, value: JSON.stringify({ catalog: next, updatedAt }) });
+        await this.storage.set({ key: this.key, value: JSON.stringify({ catalog: next, updatedAt, ...(this.version === 2 ? { homeStationIds } : {}) }) });
         this.storageWarning.set('');
       } catch {
         this.storageWarning.set('Catalogue loaded, but could not be saved for offline use.');
@@ -187,7 +234,7 @@ export class CatalogService {
             : 'Network request failed.';
       if (!this.catalog() && this.seedUrl) {
         try {
-          this.catalog.set(validateCatalog(await this.fetchJson(this.seedUrl)));
+          this.catalog.set(validateCatalog(await this.requestJson(this.seedUrl)));
           this.developmentSeed.set(true);
         } catch {
           /* A broken development snapshot must not masquerade as live data. */
