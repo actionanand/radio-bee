@@ -125,6 +125,18 @@ describe('RadioBee contact modal', () => {
     fixture.destroy();
   });
 
+  it('keeps the modal title and close button below the Android status-bar safe area', () => {
+    const { fixture } = setup();
+    const styles = [...document.head.querySelectorAll('style')].map(style => style.textContent).join('\\n');
+    // The contact dialog is projected into an Ionic overlay rather than the
+    // directory toolbar, so it must apply the inset independently.
+    expect(styles).toContain('--ion-safe-area-top');
+    expect(styles).toContain('--safe-area-inset-top');
+    expect(styles).toContain('padding-top: calc(clamp(18px, 3vw, 32px) +');
+    expect(styles).toContain('padding-top: calc(18px +');
+    fixture.destroy();
+  });
+
   it('updates the displayed contact copy without changing canonical form values', () => {
     const { component, locale, fixture } = setup();
     locale.set('ta');
