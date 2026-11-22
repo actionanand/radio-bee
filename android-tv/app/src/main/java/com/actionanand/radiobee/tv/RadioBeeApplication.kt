@@ -1,7 +1,6 @@
 package com.actionanand.radiobee.tv
 
 import android.app.Application
-import android.util.AtomicFile
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.actionanand.radiobee.tv.data.*
@@ -38,28 +37,7 @@ class AppGraph(app: Application) {
             BuildConfig.CHECK_RIGHTS_STATUS,
             BuildConfig.ALLOW_HTTP_STREAMS,
         )
-    private val file = AtomicFile(File(app.cacheDir, "catalogue-v2.json"))
-    private val cache =
-        object : CatalogCache {
-            override fun read(): String? =
-                if (file.baseFile.exists()) {
-                    require(file.baseFile.length() <= CatalogParser.MAX_SNAPSHOT_BYTES)
-                    file.openRead().bufferedReader().use { it.readText() }
-                } else null
-
-            override fun write(snapshot: String) {
-                val stream = file.startWrite()
-                try {
-                    stream.write(snapshot.toByteArray())
-                    file.finishWrite(stream)
-                } catch (error: Exception) {
-                    file.failWrite(stream)
-                    throw error
-                }
-            }
-
-            override fun clear() = file.delete()
-        }
+    private val cache = AtomicCatalogCache(File(app.cacheDir, "catalogue-v2.json"))
     val catalog =
         CatalogRepository(
             BuildConfig.CATALOG_URL,
