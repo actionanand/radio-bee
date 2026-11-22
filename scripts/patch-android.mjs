@@ -76,9 +76,9 @@ export function patchAndroid(root = process.cwd()) {
   // Keep the package identifier and all other resource strings unchanged.
   const stringsFile = 'android/app/src/main/res/values/strings.xml';
   let strings = read(stringsFile);
-  strings = replace(strings, /(<string\\s+name="app_name">)[^<]*(<\\/string>)/,
+  strings = replace(strings, /(<string[ ]+name="app_name">)[^<]*(<[/]string>)/,
     '$1Radio Bee$2', 'Android app_name');
-  strings = strings.replace(/(<string\\s+name="title_activity_main">)[^<]*(<\\/string>)/,
+  strings = strings.replace(/(<string[ ]+name="title_activity_main">)[^<]*(<[/]string>)/,
     '$1Radio Bee$2');
   write(stringsFile, strings);
   let rules = read('android/app/proguard-rules.pro');
