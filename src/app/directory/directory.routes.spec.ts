@@ -233,7 +233,7 @@ describe('Routable v2 directory', () => {
   });
 
   it('only displays experimental recording notices when the recording feature is enabled', async () => {
-    setup();
+    setup('https://catalog.test/v2/', true);
     const h = await RouterTestingHarness.create('/settings');
     const root = () => element(h);
     const disclaimer = root().querySelector('[data-recording-disclaimer]');
