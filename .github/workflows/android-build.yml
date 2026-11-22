@@ -88,6 +88,8 @@ jobs:
             echo "- R8 mapping: ${RELEASE_FILE}-mapping.txt"
             echo "- Artwork: Launcher, adaptive and splash generated; playstore-icon.png validated at 512 x 512"
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain only the latest successful release in Git
+        run: node scripts/prune-android-releases.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: radiobee-android-${{ env.VERSION_NAME }}-${{ env.VERSION_CODE }}
@@ -101,7 +103,8 @@ jobs:
       - name: Commit approved release outputs to main-android
         run: |
           set -euo pipefail
-          git add "releases/${RELEASE_FILE}.apk" "releases/${RELEASE_FILE}.aab" "releases/${RELEASE_FILE}-mapping.txt" releases/playstore-icon.png
+          # Include removal of superseded signed files in the same release commit.
+          git add -A -- releases
           git -c core.hooksPath=/dev/null commit -m "build: RadioBee ${VERSION_NAME} (${VERSION_CODE}) [skip ci]"
           # Rebase only the release-output commit; conflicts abort without overwriting changes.
           git fetch origin main-android

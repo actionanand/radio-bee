@@ -10,6 +10,7 @@ import { assetPlan, pngDimensions } from './generate-android-assets.mjs';
 import { signAndroid } from './sign-android.mjs';
 import { reserveVersion } from './reserve-android-version.mjs';
 import { buildAndroid } from './build-android.mjs';
+import { pruneAndroidReleases } from './prune-android-releases.mjs';
 
 const read = file => readFileSync(file, 'utf8');
 function fixture(t) {
@@ -203,6 +204,48 @@ test('release collection rejects stale/empty Gradle outputs and preserves approv
   assert.equal(f.read('releases/RadioBee-1-0-0-2-mapping.txt'), 'fresh');
   assert.ok(!existsSync(path.join(f.root, 'releases/RadioBee-1-0-0-2.apk')));
 });
+test('prunes only superseded, recognized signed Android releases after verifying the new set', t => {
+  const f = fixture(t);
+  f.write('android-version.json', { versionCode: 4, versionName: '1.0.0' });
+  const current = 'RadioBee-1-0-0-4';
+  for (const suffix of ['.apk', '.aab', '-mapping.txt'])
+    f.write(`releases/${current}${suffix}`, `current${suffix}`);
+  for (const name of [
+    'RadioBee-1-0-0-2.apk',
+    'RadioBee-1-0-0-3.apk',
+    'RadioBee-1-0-0-3.aab',
+    'RadioBee-1-0-0-3-mapping.txt',
+  ]) f.write(`releases/${name}`, 'previous');
+  for (const name of ['playstore-icon.png', 'notes.md', 'RadioBee-1-0-0-5-unsigned.apk', 'RadioBee-1-0-0-3.aab.candidate'])
+    f.write(`releases/${name}`, 'keep');
+
+  const removed = pruneAndroidReleases(f.root);
+  assert.deepEqual(removed.sort(), [
+    'RadioBee-1-0-0-2.apk',
+    'RadioBee-1-0-0-3-mapping.txt',
+    'RadioBee-1-0-0-3.aab',
+    'RadioBee-1-0-0-3.apk',
+  ].sort());
+  assert.deepEqual(pruneAndroidReleases(f.root), []);
+  for (const suffix of ['.apk', '.aab', '-mapping.txt'])
+    assert.equal(f.read(`releases/${current}${suffix}`), `current${suffix}`);
+  for (const name of ['playstore-icon.png', 'notes.md', 'RadioBee-1-0-0-5-unsigned.apk', 'RadioBee-1-0-0-3.aab.candidate'])
+    assert.equal(f.read(`releases/${name}`), 'keep');
+});
+
+test('refuses to prune when the current release is incomplete or unsigned', t => {
+  const f = fixture(t);
+  f.write('android-version.json', { versionCode: 4, versionName: '1.0.0' });
+  f.write('releases/RadioBee-1-0-0-3.apk', 'approved-previous');
+  f.write('releases/RadioBee-1-0-0-4.apk', 'current-apk');
+  f.write('releases/RadioBee-1-0-0-4.aab', '');
+  f.write('releases/RadioBee-1-0-0-4-mapping.txt', 'current-mapping');
+  assert.throws(() => pruneAndroidReleases(f.root), /missing or empty signed artifact/);
+  assert.equal(f.read('releases/RadioBee-1-0-0-3.apk'), 'approved-previous');
+  f.write('releases/RadioBee-1-0-0-4.aab', 'current-aab');
+  assert.deepEqual(pruneAndroidReleases(f.root), ['RadioBee-1-0-0-3.apk']);
+});
+
 test('asset plan uses all densities, padded artwork, splash and 512px store icon', t => {
   const plan = assetPlan();
   assert.equal(plan.length, 18); // 15 density assets + splash, recording cover, store icon
@@ -464,6 +507,10 @@ test('workflow isolates Android from web, persists before compilation and publis
   assert.match(workflow, /if: always\(\)/);
   assert.match(workflow, /radiobee-signing/);
   assert.match(workflow, /retention-days: 30/);
+  assert.ok(workflow.indexOf('Sign and verify APK and AAB') < workflow.indexOf('Retain only the latest successful release'));
+  assert.ok(workflow.indexOf('Validate release assets and summarize') < workflow.indexOf('prune-android-releases.mjs'));
+  assert.ok(workflow.indexOf('prune-android-releases.mjs') < workflow.indexOf('actions/upload-artifact@v4'));
+  assert.match(workflow, /git add -A -- releases/);
   for (const secret of ['KEYSTORE_BASE64', 'KEYSTORE_PASSWORD', 'KEY_ALIAS', 'KEY_PASSWORD'])
     assert.ok(workflow.includes(`secrets.${secret}`));
   const reserve = read('scripts/reserve-android-version.mjs');
