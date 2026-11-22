@@ -140,8 +140,11 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
   styles: `
     :host { display: block; }
     ion-content.contact-modal-content { --background: var(--paper); --color: var(--ink); }
+    /* Ionic overlays render outside the directory toolbar: inset the modal's
+       first row below the Android status bar without changing other screens. */
     .contact-dialog { min-height: 100%; box-sizing: border-box; background: var(--paper); color: var(--ink);
-      padding: clamp(18px, 3vw, 32px); }
+      padding: clamp(18px, 3vw, 32px);
+      padding-top: calc(clamp(18px, 3vw, 32px) + var(--safe-area-inset-top, var(--ion-safe-area-top, env(safe-area-inset-top, 0px)))); }
     .form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;
       margin-bottom: 26px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
     .eyebrow { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
@@ -185,7 +188,8 @@ import { contactCopy, contactPurposeOptions } from './contact-copy';
     .form-actions ion-button { min-width: 170px; text-transform: none; font-weight: 700; min-height: 44px; }
     @media (max-width: 600px) {
       .fields.two { grid-template-columns: minmax(0, 1fr); }
-      .contact-dialog { padding: 18px; }
+      .contact-dialog { padding: 18px;
+        padding-top: calc(18px + var(--safe-area-inset-top, var(--ion-safe-area-top, env(safe-area-inset-top, 0px)))); }
       .form-actions ion-button { width: 100%; }
     }
   `,
