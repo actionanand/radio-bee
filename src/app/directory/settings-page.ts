@@ -10,8 +10,6 @@ import { directoryText } from './directory.labels';
 import { RADIO_RECORDING } from '../recording/recording.config';
 import { RecordingDestination } from '../recording/recording-destination';
 import { recordingLimits } from '../recording/capture-engine';
-import { RecordingExportPreferencesService } from '../recording/recording-export-preferences';
-import { Capacitor } from '@capacitor/core';
 import { environment } from '../../environments/environment';
 import { validatedAlexaSkillUrl } from '../../environments/alexa-skill.config';
 
@@ -28,18 +26,8 @@ export class SettingsPage {
   readonly home = inject(HomePreferencesService);
   readonly recording = inject(RADIO_RECORDING);
   readonly recordingFolder = inject(RecordingDestination);
-  readonly exportPreferences = inject(RecordingExportPreferencesService);
-  readonly androidRecording = Capacitor.getPlatform() === 'android';
   readonly alexaSkillEnabled = environment.AlexaSkill.Enabled;
   readonly alexaSkillUrl = validatedAlexaSkillUrl(environment.AlexaSkill.Url);
-  readonly recordingFormats = computed(() => this.androidRecording
-    ? [{ id: 'm4a', name: this.text('recordingM4a') }, { id: 'original', name: this.text('recordingOriginal') }]
-    : [{ id: 'original', name: this.text('recordingOriginal') }]);
-  readonly recordingQualities = computed(() => [
-    { id: 'space', name: this.text('recordingSpaceSaver') },
-    { id: 'balanced', name: this.text('recordingBalanced') },
-    { id: 'high', name: this.text('recordingHigh') },
-  ]);
   readonly folderError = signal(false);
   readonly choosingFolder = signal(false);
   readonly recordingLimitText = computed(() => {

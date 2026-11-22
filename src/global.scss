@@ -65,3 +65,25 @@
     --accent-ink: #cbdf9e;
   }
 }
+
+/* Capacitor 8 Android edge-to-edge: offset the actual toolbar controls below
+   the status bar. The JavaScript-free browser layout keeps its normal padding. */
+app-directory-shell {
+  --rb-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --rb-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+}
+app-directory-shell .directory-shell .toolbar {
+  padding-top: calc(14px + var(--rb-safe-top));
+}
+app-directory-shell .directory-shell .desktop-nav {
+  padding-top: calc(24px + var(--rb-safe-top));
+}
+app-directory-shell #directory-drawer {
+  padding-top: calc(18px + var(--rb-safe-top));
+  padding-bottom: max(18px, var(--rb-safe-bottom));
+}
+@media (max-width: 899px) {
+  app-directory-shell .directory-shell .toolbar {
+    padding-top: calc(10px + var(--rb-safe-top));
+  }
+}

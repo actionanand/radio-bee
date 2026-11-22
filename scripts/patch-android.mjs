@@ -72,6 +72,15 @@ export function patchAndroid(root = process.cwd()) {
   // An existing network policy could override usesCleartextTraffic. Fail for review instead of overwriting it.
   if (/android:networkSecurityConfig=/.test(manifest))
     throw new Error('Review custom networkSecurityConfig before applying the HTTPS-only release policy.');
+  // Use the spaced launcher name even when sync reuses an existing Android tree.
+  // Keep the package identifier and all other resource strings unchanged.
+  const stringsFile = 'android/app/src/main/res/values/strings.xml';
+  let strings = read(stringsFile);
+  strings = replace(strings, /(<string[ ]+name="app_name">)[^<]*(<[/]string>)/,
+    '$1Radio Bee$2', 'Android app_name');
+  strings = strings.replace(/(<string[ ]+name="title_activity_main">)[^<]*(<[/]string>)/,
+    '$1Radio Bee$2');
+  write(stringsFile, strings);
   let rules = read('android/app/proguard-rules.pro');
   if (!rules.includes('# RADIOBEE_CAPACITOR'))
     rules += `

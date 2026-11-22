@@ -20,12 +20,12 @@ describe('Recording export preferences', () => {
     TestBed.configureTestingModule({ providers: [{ provide: RADIO_RECORDING, useValue: config(enabled) }] });
     return TestBed.inject(RecordingExportPreferencesService);
   };
-  it('defaults Android to AAC M4A balanced bitrate with RadioBee cover art', () => {
+  it('defaults Android to original format and does not attempt AAC conversion', () => {
     const p = setup();
-    expect(p.format()).toBe('m4a');
+    expect(p.format()).toBe('original');
     expect(p.quality()).toBe('balanced');
     expect(p.coverArt()).toBe(true);
-    expect(p.embedCover()).toBe(true);
+    expect(p.embedCover()).toBe(false);
     expect(recordingBitrate('space')).toBe(64_000);
     expect(recordingBitrate('balanced')).toBe(96_000);
     expect(recordingBitrate('high')).toBe(128_000);
@@ -39,8 +39,16 @@ describe('Recording export preferences', () => {
     expect(p.format()).toBe('original');
     expect(p.embedCover()).toBe(false);
     p.setFormat('m4a');
-    expect(p.format()).toBe('m4a');
+    expect(p.format()).toBe('original');
     expect(p.coverArt()).toBe(false);
+  });
+  it('ignores a legacy saved M4A preference on Android', () => {
+    localStorage.setItem(key, JSON.stringify({ format: 'm4a', quality: 'high', coverArt: true }));
+    const p = setup();
+    expect(p.format()).toBe('original');
+    expect(p.embedCover()).toBe(false);
+    p.setFormat('m4a');
+    expect(p.format()).toBe('original');
   });
   it('never reads or writes recording storage when recording is disabled', () => {
     localStorage.setItem(key, 'unrelated saved config');

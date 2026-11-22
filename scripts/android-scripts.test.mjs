@@ -93,6 +93,10 @@ function nativeFixture(t) {
     '<manifest><uses-permission android:name="android.permission.INTERNET"/><application android:allowBackup="true" android:label="@string/app_name"><meta-data android:name="custom" android:value="keep"/></application></manifest>',
   );
   f.write(
+    'android/app/src/main/res/values/strings.xml',
+    '<resources><string name="app_name">RadioBee</string><string name="title_activity_main">RadioBee</string><string name="package_name">com.actionanand.radiobee.app</string></resources>',
+  );
+  f.write(
     'android/app/src/main/res/values/styles.xml',
     '<resources><style name="CustomTheme"/><style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen"><item name="custom">keep</item></style></resources>',
   );
@@ -118,6 +122,9 @@ test('identity, native patch idempotency and preservation of custom native chang
   assert.equal(f.read('android/app/build.gradle').split('androidx.documentfile:documentfile:').length - 1, 1);
   assert.match(f.read('android/variables.gradle'), /custom = 7/);
   assert.match(f.read('android/app/src/main/res/values/styles.xml'), /<item name="custom">keep<\/item>/);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="app_name">Radio Bee<\/string>/);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="title_activity_main">Radio Bee<\/string>/);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="package_name">com.actionanand.radiobee.app<\/string>/);
   const manifest = f.read('android/app/src/main/AndroidManifest.xml');
   assert.match(manifest, /usesCleartextTraffic="false"/);
   assert.match(manifest, /android:name="custom"/);
@@ -482,6 +489,21 @@ test('workflow isolates Android from web, persists before compilation and publis
     read('scripts/patch-android.mjs'),
     /RECORD_AUDIO|READ_SMS|READ_CONTACTS|ACCESS_FINE_LOCATION|WRITE_EXTERNAL_STORAGE/,
   );
-  assert.match(read('capacitor.config.ts'), /appName: 'RadioBee'/);
+  assert.match(read('capacitor.config.ts'), /appName: 'Radio Bee'/);
   assert.match(read('capacitor.config.ts'), /allowMixedContent: false/);
+});
+
+test('Android safe-area and original-audio export contracts', () => {
+  const css = read('src/global.scss');
+  assert.match(css, /--safe-area-inset-top/);
+  assert.match(css, /env\(safe-area-inset-top/);
+  assert.match(css, /padding-top: calc\(10px \+ var\(--rb-safe-top\)\)/);
+  assert.match(read('capacitor.config.ts'), /insetsHandling: 'css'/);
+  const destination = read('src/app/recording/recording-destination.ts');
+  assert.doesNotMatch(destination, /androidStorage\.convertSaved/);
+  assert.match(destination, /return 'original';/);
+  const settings = read('src/app/directory/settings-page.html');
+  assert.doesNotMatch(settings, /data-control="recording-format"|data-control="recording-quality"|recording-cover-label/);
+  const actions = read('src/app/recording/recording-controls.ts');
+  assert.doesNotMatch(actions, /Retry M4A|retryM4aText/);
 });

@@ -3,7 +3,6 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import { exportRecording } from './export-recording';
 import { inject } from '@angular/core';
 import { RADIO_RECORDING } from './recording.config';
-import { RecordingExportPreferencesService, recordingBitrate } from './recording-export-preferences';
 
 interface AndroidRecordingStorage {
   getFolder(): Promise<{ selected: boolean; name?: string }>;
@@ -12,7 +11,6 @@ interface AndroidRecordingStorage {
   appendData(options: { id: string; base64: string }): Promise<void>;
   finishFile(options: { id: string }): Promise<void>;
   cancelFile(options: { id: string }): Promise<void>;
-  convertSaved(options: { filename: string; bitrate: number; cover: boolean; station: string }): Promise<{ name: string; converted: boolean }>;
 }
 const androidStorage = registerPlugin<AndroidRecordingStorage>('RadioBeeRecordingStorage');
 type FolderAccess = 'granted' | 'prompt' | 'denied';
@@ -29,7 +27,6 @@ const FOLDER_KEY = 'selected';
 @Injectable({ providedIn: 'root' })
 export class RecordingDestination {
   private readonly recording = inject(RADIO_RECORDING);
-  private readonly preferences = inject(RecordingExportPreferencesService);
   readonly converting = signal(0);
   readonly selected = signal(false);
   readonly name = signal('');
@@ -164,24 +161,9 @@ export class RecordingDestination {
         await androidStorage.cancelFile({ id }).catch(() => undefined);
         throw error;
       }
-      // Continuous segments are stored in the exact captured container. Neither
-      // transcoding nor cover-art processing may delay or compete with capture.
-      if (rawOnly || this.preferences.format() !== 'm4a') return 'original';
-      this.converting.update(count => count + 1);
-      try {
-        const result = await androidStorage.convertSaved({
-          filename: name || filename,
-          bitrate: recordingBitrate(this.preferences.quality()),
-          cover: this.preferences.coverArt(),
-          station,
-        });
-        return result.converted ? 'converted' : 'fallback';
-      } catch {
-        // The original document was already committed to the chosen folder.
-        return 'fallback';
-      } finally {
-        this.converting.update(count => Math.max(0, count - 1));
-      }
+      // Keep the original bytes; AAC conversion is device-codec-dependent.
+      // This path never modifies or removes the just-saved recording.
+      return 'original';
     }
     if (await this.hasAccess() && this.directory) {
       const file = await this.directory.getFileHandle(filename, { create: true });
