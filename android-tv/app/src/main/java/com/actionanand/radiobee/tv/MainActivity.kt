@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.actionanand.radiobee.tv.playback.RadioPlaybackService
+import com.actionanand.radiobee.tv.playback.onAppBackgrounded
 import com.actionanand.radiobee.tv.ui.RadioBeeTv
 import com.google.common.util.concurrent.ListenableFuture
 
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
-        if (!graph.preferences.state.value.background) controller?.pause()
+        onAppBackgrounded(graph.preferences.state.value.background) { controller?.pause() }
         super.onStop()
     }
 

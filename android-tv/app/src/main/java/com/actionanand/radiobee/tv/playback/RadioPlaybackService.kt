@@ -27,6 +27,7 @@ class RadioPlaybackService : MediaSessionService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private lateinit var player: ExoPlayer
     private var session: MediaSession? = null
+    private lateinit var lifecycle: PlaybackLifecycle
     private var selection: String? = null
     private var selectedUrl: String? = null
     private val epoch = PlaybackEpoch()
@@ -56,6 +57,7 @@ class RadioPlaybackService : MediaSessionService() {
                 setHandleAudioBecomingNoisy(true)
                 playWhenReady = false
             }
+        lifecycle = PlaybackLifecycle(player, ::invalidate)
         timer =
             SleepTimer(scope) {
                 stopPlayback()
@@ -81,8 +83,7 @@ class RadioPlaybackService : MediaSessionService() {
                 }
 
                 override fun pause() {
-                    invalidate()
-                    player.pause()
+                    lifecycle.pause()
                     publish("paused")
                 }
 
@@ -278,9 +279,7 @@ class RadioPlaybackService : MediaSessionService() {
         val stream =
             budget.begin(graph.policy.eligible(station))
                 ?: run {
-                    invalidate()
-                    player.stop()
-                    player.clearMediaItems()
+                    stopPlayback()
                     selection = id
                     selectedUrl = null
                     publish("unavailable", true)
@@ -343,11 +342,11 @@ class RadioPlaybackService : MediaSessionService() {
         val step = budget.next(selectedUrl ?: "", transient)
         invalidate()
         if (step == null) {
-            player.stop()
+            stopPlayback()
             publish("failed", true)
             return
         }
-        player.stop()
+        lifecycle.stopForRetry()
         val token = epoch.current()
         publish("reconnecting")
         pending = scope.launch {
@@ -369,23 +368,21 @@ class RadioPlaybackService : MediaSessionService() {
     }
 
     private fun stopPlayback() {
-        invalidate()
-        player.stop()
-        player.clearMediaItems()
+        lifecycle.stop()
         publish("idle")
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = session
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (!graph.preferences.state.value.background || !player.playWhenReady) {
-            stopPlayback()
+        if (lifecycle.onTaskRemoved(graph.preferences.state.value.background)) {
+            publish("idle")
             stopSelf()
         }
     }
 
     override fun onDestroy() {
-        invalidate()
+        stopPlayback()
         timer.cancel()
         scope.cancel()
         session?.release()

@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.actionanand.radiobee.tv.data.*
 import com.actionanand.radiobee.tv.playback.PlaybackViewState
-import java.io.File
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -37,11 +36,12 @@ class AppGraph(app: Application) {
             BuildConfig.CHECK_RIGHTS_STATUS,
             BuildConfig.ALLOW_HTTP_STREAMS,
         )
-    private val cache = AtomicCatalogCache(File(app.cacheDir, "catalogue-v2.json"))
+    private val parser = CatalogParser(BuildConfig.CATALOG_URL, BuildConfig.ALLOW_HTTP_STREAMS)
+    private val cache = PersistentCatalogCache(app.filesDir, app.cacheDir, { parser.parse(it) })
     val catalog =
         CatalogRepository(
             BuildConfig.CATALOG_URL,
-            CatalogParser(BuildConfig.CATALOG_URL, BuildConfig.ALLOW_HTTP_STREAMS),
+            parser,
             HttpsCatalogFetch,
             cache,
         )

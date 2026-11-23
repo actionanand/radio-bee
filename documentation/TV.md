@@ -37,7 +37,7 @@ The package ID is shared with mobile. A debug certificate cannot update an insta
 
 Runtime data comes exclusively from [RadioBee V2](https://actionanand.github.io/radio-bee-data/v2/). No production catalogue is copied into Kotlin. The small JUnit fixture contains two real canonical stations and their referenced contract records; it is not packaged as a runtime seed.
 
-The loader fetches the manifest, referenced canonical tables, English/Tamil/Sanskrit dictionaries and optional Home editorial selection, then rechecks the manifest to detect publication races. Parsing validates identifiers, provenance/references, sparse geographic ancestry, counts, stream contracts, translations and migrations before publishing or replacing an AtomicFile cache. A failed refresh retains the last valid snapshot. AtomicFile backup recovery runs before the cache size/existence check, including legacy interrupted-write recovery. The optional browse index is not needed: membership is derived from canonical records. Discovery-only entries remain unplayable. Source URLs can legitimately be null.
+The loader fetches the manifest, referenced canonical tables, English/Tamil/Sanskrit dictionaries and optional Home editorial selection, then rechecks the manifest to detect publication races. Parsing validates identifiers, provenance/references, sparse geographic ancestry, counts, stream contracts, translations and migrations before publishing or replacing an AtomicFile snapshot in app-private `filesDir/catalogue-v2.json`. Android may reclaim `cacheDir`, so it is no longer the authoritative offline store. A failed refresh retains the last valid snapshot. AtomicFile backup recovery runs before the cache size/existence check, including legacy interrupted-write recovery. A valid legacy `cacheDir/catalogue-v2.json` is validated before atomic migration and deleted only after a successful durable write. Failed migration writes retain the legacy snapshot for offline use. Migration, writes and clearing are serialized so a concurrent Clear Cache cannot be undone by legacy promotion. Explicit Clear Cache removes both snapshot locations without changing loaded data, favorites or settings. The optional browse index is not needed: membership is derived from canonical records. Discovery-only entries remain unplayable. Source URLs can legitimately be null.
 
 Station names use selected-locale dictionaries with canonical English fallback. Search recognizes canonical names, translations and aliases independently of UI language. Broadcaster/network names remain canonical. Home's Featured row uses the data-owned `home-stations.json`; other rows use favorites, recent IDs, actual Tamil language membership and actual devotional genre/theme membership. Browsing filters expose only values represented by loaded stations.
 
@@ -49,11 +49,11 @@ HTTPS is the default for catalogue, artwork, websites and streams. Native HTTP s
 
 Use D-pad arrows, Select/Enter and Back. TV components provide visible focus, scrollable rows/filter dialogs and focus restoration after a station page. Cards expose full station names to accessibility despite two-line visual truncation. Now Playing offers Play/Pause, Stop, Favorite, sleep timer, metadata and connection/retry status. Hardware media Play/Pause/Stop uses the active MediaSession. System/own controllers can control transport; station/sleep custom commands require the application's UID/package, and unknown controllers are rejected.
 
-ExoPlayer owns audio focus and becoming-noisy handling. There is one player and one MediaSession; station switching replaces its media item. Only actual `isPlaying` confirms playback/recent history. Errors/end-of-stream use at most three distinct URLs, three attempts per URL and six total attempts per user selection. Fresh alternatives precede retrying the failing URL; transient repeats back off 500/1000 ms. Permanent HTTP failures do not retry the same URL. Each continuous buffering episode has a 30-second deadline consuming the same budget. Pause, Stop, focus interruption, catalogue revocation and station switching cancel stale delayed work. Retry from the UI is an explicit new user attempt.
+ExoPlayer owns audio focus and becoming-noisy handling. There is one player and one MediaSession; station switching replaces its media item. Only actual `isPlaying` confirms playback/recent history. Errors/end-of-stream use at most three distinct URLs, three attempts per URL and six total attempts per user selection. Fresh alternatives precede retrying the failing URL; transient repeats back off 500/1000 ms. Permanent HTTP failures do not retry the same URL. Each continuous buffering episode has a 30-second deadline consuming the same budget. Pause, Stop, focus interruption, catalogue revocation and station switching cancel stale delayed work. Retry from the UI is an explicit new user attempt. Terminal Stop, sleep expiry, unavailable/revoked selections, exhausted retries and service destruction cancel pending work and call Pause before Stop and Clear Media Items, explicitly clearing `playWhenReady`. The separate retry hold stops loading while retaining play intent and the selected item.
 
 Sleep options are Off/15/30/45/60 minutes. The service owns a persisted wall-clock deadline and stops playback when it expires, without a visible Activity. Replacement/cancellation are tested. It is not an exact alarm and cannot run in a killed/force-stopped process; if restarted after an expired deadline, playback remains stopped. Changing device time affects a wall-clock deadline.
 
-Background playback defaults on. Media3 supplies the foreground media notification/system controls while playing. Turning it off pauses on Activity `onStop`; app navigation within the Activity does not pause. Screensavers are allowed: no KEEP_SCREEN_ON, display power control or indefinite wake lock is used. Ambient Mode/screen-off continuity depends on firmware and OS policy. **Power/standby, force-stop, network suspension and manufacturer battery restrictions can terminate audio.** No universal television Power-button playback guarantee is made. Cold-start media resumption after process death is not implemented; open the app and select Play. No recording is implemented in TV.
+Background playback defaults on. Media3 supplies the foreground media notification/system controls while playing. Turning it off pauses on Activity `onStop`; app navigation within the Activity does not pause. Home invokes Activity `onStop`; recent-task dismissal invokes service `onTaskRemoved`. Active playback and retry backoff survive those boundaries when background playback is enabled; terminated playback has false play intent, so task removal stops the service. Screensavers are allowed: no KEEP_SCREEN_ON, display power control or indefinite wake lock is used. Ambient Mode/screen-off continuity depends on firmware and OS policy. **Power/standby, force-stop, network suspension and manufacturer battery restrictions can terminate audio.** No universal television Power-button playback guarantee is made. Cold-start media resumption after process death is not implemented; open the app and select Play. No recording is implemented in TV.
 
 ## Version allocation and shared Play identity
 
@@ -115,7 +115,7 @@ Before Play submission:
 
 See [MediaSessionService guidance](https://developer.android.com/media/media3/session/background-playback) and [Compose TV focus](https://developer.android.com/develop/ui/compose/touch-input/focus/focus-search) for the underlying platform behavior.
 
-## Verification recorded for this implementation
+## Initial implementation verification
 
 Validated on 23 November 2026 with WSL2 Linux Node 24.16.0, isolated Temurin 21.0.13 and Android SDK 36. No npm dependencies were reinstalled and no lockfile changed.
 
@@ -162,3 +162,39 @@ The debug APK is 26,251,667 bytes; the optimized unsigned APK is 2,907,671 bytes
 No TV is connected (`adb devices` empty), and the WSL user cannot use `/dev/kvm`. No emulator/physical-device install, audible native radio playback, TV screenshots, D-pad instrumentation execution, TalkBack, power/standby or Ambient Mode test is claimed. Those checks and Play Console form-factor/authorization review remain release gates. The real-data check validates parsing, not live audio availability. The production signing secrets were not read; production-signed artifacts and GitHub workflow execution remain unverified until an approved release setup.
 
 Implementation remains on the existing `feature/google-tv-native`; no protected branch, data repository or Web/Android deployment workflow was modified. The only shared mobile change is the documented version-range guard. No main-tv branch, production release, merge or deployment was created.
+
+## PR #105 persistence and shutdown corrections
+
+The [review](https://github.com/actionanand/radio-bee/pull/105#pullrequestreview-6015133727) identified a reclaimable offline snapshot and terminal `stop()` calls retaining playback intent. The production code now shares explicit terminal/pause/retry-hold boundaries, and all affected service paths were reviewed: controller Stop/Pause, sleep expiry, unavailable tuning/loading, catalogue revocation, retry exhaustion/backoff, task removal and destruction. The existing audio-focus/noisy interruption handling, eligibility policy, retry budget, sleep configuration and single-player ownership are preserved.
+
+Seven new JVM persistence regressions use real temporary filesystem directories and the real catalogue parser/repository: offline cold-start after simulated OS cache eviction, valid legacy migration and restart, invalid migration rejection, durable precedence, explicit clearing without resurrection or preference loss, disk-full migration fallback, and malformed-refresh protection. Nine lifecycle regressions exercise the production lifecycle delegate against a controlled Media3 Player interface whose Stop deliberately retains play intent, matching the Media3 contract. They cover Stop → Home, sleep expiry → Home, exhausted retries → Home, active background playback, retry-backoff retention, background-disabled Home/task removal, delayed-retry cancellation and repeated cleanup.
+
+An additional Android instrumentation regression uses actual AtomicFile-backed storage under isolated files/cache test directories. It is compiled with the existing device tests; execution still requires a TV/emulator. JVM tests simulate Home via the same Activity background-policy function used in production and separately test the task-removal delegate; they do not claim physical remote or OS service execution.
+
+Local validation on 23 November 2026:
+
+| Check                                       | Result                                                                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `testDebugUnitTest`                         | 61 passed, zero failures/errors/skips                                                                                |
+| `testReleaseUnitTest`                       | 61 passed, zero failures/errors/skips                                                                                |
+| New JVM regressions                         | 16 unique cases (7 persistence, 9 lifecycle), executed in both variants                                              |
+| `lintDebug`, `lintRelease`                  | Passed: zero errors, 16 existing warnings per variant                                                                |
+| `assembleDebug`, `assembleDebugAndroidTest` | Passed; four device tests compiled, not executed                                                                     |
+| `assembleRelease`, `bundleRelease`          | Passed; optimized unsigned APK/AAB and R8 mapping generated                                                          |
+| TV + Android release-script tests           | 40 passed, zero failures/skips                                                                                       |
+| Native artifact tests                       | 5 passed                                                                                                             |
+| Generated artifact validation               | Passed: application ID, version, TV targeting, debug signature/alignment and APK/AAB native-library/page-size checks |
+
+Commands (JDK 21 and SDK 36 configured in WSL2; Linux Node 24.16.0 verified before Node commands):
+
+```bash
+cd android-tv
+./gradlew --no-daemon --max-workers=2 test lintDebug lintRelease assembleDebug assembleDebugAndroidTest assembleRelease bundleRelease
+cd ..
+node --test scripts/tv-release.test.mjs scripts/android-scripts.test.mjs
+python3 -B -m unittest discover -s scripts -p tv_artifacts_test.py
+python3 scripts/validate-tv-artifacts.py --apk android-tv/app/build/outputs/apk/debug/app-debug.apk --debug
+python3 scripts/validate-tv-artifacts.py --apk android-tv/app/build/outputs/apk/release/app-release-unsigned.apk --aab android-tv/app/build/outputs/bundle/release/app-release.aab --unsigned
+```
+
+No assertions were weakened, tests skipped, timeouts raised or lint failures suppressed. Native device/emulator execution remains pending: adb lists no devices, and KVM is not writable by the WSL user. Physical Home/task-removal behavior, audible playback, standby and production signing remain release gates. Web application behavior, stream URLs, eligibility policy, package versions and signing secrets were not changed or reconfigured for this correction. Existing Web/Android deployment workflows and branches are untouched; no main-tv branch or release is created by this correction.
