@@ -64,7 +64,7 @@ class PlaybackLifecycleTest {
         assertFalse(transport.intent)
         assertEquals(0, transport.items)
         assertEquals(1, cancellations)
-        assertTrue(lifecycle.onTaskRemoved(true))
+        assertTrue(lifecycle.onTaskRemoved(true, foreground = true))
     }
 
     @Test
@@ -79,7 +79,7 @@ class PlaybackLifecycleTest {
         assertFalse(transport.intent)
         assertEquals(0, transport.items)
         assertEquals(0L, timer.remaining.value)
-        assertTrue(lifecycle.onTaskRemoved(true))
+        assertTrue(lifecycle.onTaskRemoved(true, foreground = true))
         advanceTimeBy(10_000)
         runCurrent()
         assertFalse(transport.calls.contains("play"))
@@ -109,7 +109,7 @@ class PlaybackLifecycleTest {
         assertEquals(3, budget.number())
         assertFalse(transport.intent)
         assertEquals(0, transport.items)
-        assertTrue(lifecycle.onTaskRemoved(true))
+        assertTrue(lifecycle.onTaskRemoved(true, foreground = true))
         assertNull(budget.next(stream.url, true))
     }
 
@@ -121,26 +121,28 @@ class PlaybackLifecycleTest {
                 error("Active background playback must not be cancelled")
             }
         onAppBackgrounded(true) { lifecycle.pause() }
-        assertFalse(lifecycle.onTaskRemoved(true))
+        assertFalse(lifecycle.onTaskRemoved(true, foreground = true))
         assertTrue(transport.intent)
         assertEquals(1, transport.items)
         assertTrue(transport.calls.isEmpty())
     }
 
     @Test
-    fun retryBackoffRetainsIntentAndItemWhenHomeAllowsBackgroundAudio() {
+    fun retryBackoffSurvivesHomeButTaskDismissalStopsNonForegroundPlayback() {
         val transport = Media3Transport()
-        val lifecycle =
-            PlaybackLifecycle(transport.player) {
-                error("Retry hold must retain the pending attempt")
-            }
+        var cancelled = 0
+        val lifecycle = PlaybackLifecycle(transport.player) { cancelled++ }
         lifecycle.stopForRetry()
         onAppBackgrounded(true) { lifecycle.pause() }
         assertEquals(Player.STATE_IDLE, transport.state)
         assertTrue(transport.intent)
         assertEquals(1, transport.items)
-        assertFalse(lifecycle.onTaskRemoved(true))
+        assertEquals(0, cancelled)
         assertEquals(listOf("stop(intent=true)"), transport.calls)
+        assertTrue(lifecycle.onTaskRemoved(true, foreground = false))
+        assertFalse(transport.intent)
+        assertEquals(0, transport.items)
+        assertEquals(1, cancelled)
     }
 
     @Test
@@ -152,7 +154,7 @@ class PlaybackLifecycleTest {
         assertFalse(transport.intent)
         assertEquals(1, transport.items) // Pause retains the selected station.
         assertEquals(1, cancelled)
-        assertTrue(lifecycle.onTaskRemoved(false))
+        assertTrue(lifecycle.onTaskRemoved(false, foreground = false))
         assertEquals(0, transport.items)
     }
 
@@ -160,7 +162,7 @@ class PlaybackLifecycleTest {
     fun taskRemovalWithBackgroundDisabledStopsEvenBeforeActivityPauseArrives() {
         val transport = Media3Transport()
         val lifecycle = PlaybackLifecycle(transport.player) {}
-        assertTrue(lifecycle.onTaskRemoved(false))
+        assertTrue(lifecycle.onTaskRemoved(false, foreground = false))
         assertEquals(listOf("pause", "stop(intent=false)", "clear(intent=false)"), transport.calls)
         assertFalse(transport.intent)
     }
@@ -189,7 +191,7 @@ class PlaybackLifecycleTest {
         assertFalse(epoch.accepts(token))
         assertFalse(transport.intent)
         assertFalse(transport.calls.contains("play"))
-        assertTrue(lifecycle.onTaskRemoved(true))
+        assertTrue(lifecycle.onTaskRemoved(true, foreground = true))
     }
 
     @Test
@@ -197,10 +199,40 @@ class PlaybackLifecycleTest {
         val transport = Media3Transport()
         val lifecycle = PlaybackLifecycle(transport.player) {}
         lifecycle.stop()
-        assertTrue(lifecycle.onTaskRemoved(true))
+        assertTrue(lifecycle.onTaskRemoved(true, foreground = true))
         lifecycle.stop() // The service's onDestroy boundary.
         assertFalse(transport.intent)
         assertEquals(0, transport.items)
         assertFalse(transport.calls.contains("stop(intent=true)"))
+    }
+
+    @Test
+    fun foregroundBufferingIsKeptOnTaskRemoval() {
+        val transport = Media3Transport().apply { state = Player.STATE_BUFFERING }
+        val lifecycle = PlaybackLifecycle(transport.player) { error("Buffering is ongoing") }
+        assertFalse(lifecycle.onTaskRemoved(true, foreground = true))
+        assertTrue(transport.intent)
+    }
+
+    @Test
+    fun nonForegroundPlaybackMustStopWhenTaskIsDismissed() {
+        val transport = Media3Transport()
+        assertTrue(PlaybackLifecycle(transport.player) {}.onTaskRemoved(true, foreground = false))
+        assertFalse(transport.intent)
+        assertEquals(0, transport.items)
+    }
+
+    @Test
+    fun endedPlaybackMustStopEvenIfForegroundStateIsStale() {
+        val transport = Media3Transport().apply { state = Player.STATE_ENDED }
+        assertTrue(PlaybackLifecycle(transport.player) {}.onTaskRemoved(true, foreground = true))
+        assertFalse(transport.intent)
+    }
+
+    @Test
+    fun idleRetryCannotRemainAfterTaskDismissalWithStaleForegroundState() {
+        val transport = Media3Transport().apply { state = Player.STATE_IDLE }
+        assertTrue(PlaybackLifecycle(transport.player) {}.onTaskRemoved(true, foreground = true))
+        assertFalse(transport.intent)
     }
 }

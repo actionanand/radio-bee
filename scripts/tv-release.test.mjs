@@ -231,7 +231,27 @@ test('native identity, manifest, sleep ownership and recording restrictions are 
   assert.match(manifest, /android.software.leanback" android:required="true"/);
   assert.match(manifest, /android.hardware.touchscreen" android:required="false"/);
   assert.match(manifest, /foregroundServiceType="mediaPlayback"/);
-  assert.doesNotMatch(manifest, /RECORD_AUDIO|WRITE_EXTERNAL_STORAGE|WAKE_LOCK|android.intent.category.LAUNCHER/);
+  assert.match(manifest, /uses-permission android:name="android.permission.WAKE_LOCK"/);
+  const player = read('android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/RadioPlayer.kt');
+  assert.match(player, /setWakeMode\(C.WAKE_MODE_LOCAL\)/);
+  assert.doesNotMatch(player, /WAKE_MODE_NETWORK|newWakeLock|newWifiLock/);
+  const service = read('android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/RadioPlaybackService.kt');
+  assert.match(service, /setForegroundServiceTimeoutMs\(0\)/);
+  assert.doesNotMatch(service, /WAKE_MODE_NETWORK|newWakeLock|newWifiLock|FLAG_KEEP_SCREEN_ON/);
+  const permissions = [...manifest.matchAll(/uses-permission android:name="([^"]+)"/g)].map(match => match[1]).sort();
+  assert.deepEqual(
+    permissions,
+    ['INTERNET', 'ACCESS_NETWORK_STATE', 'WAKE_LOCK', 'FOREGROUND_SERVICE', 'FOREGROUND_SERVICE_MEDIA_PLAYBACK']
+      .map(name => `android.permission.${name}`)
+      .sort(),
+  );
+
+  assert.doesNotMatch(
+    read('android-tv/app/src/main/java/com/actionanand/radiobee/tv/MainActivity.kt'),
+    /FLAG_KEEP_SCREEN_ON|setKeepScreenOn/,
+  );
+
+  assert.doesNotMatch(manifest, /RECORD_AUDIO|WRITE_EXTERNAL_STORAGE|android.intent.category.LAUNCHER/);
 });
 
 test('wrapper has a separate valid distribution checksum and committed executable JAR', () => {

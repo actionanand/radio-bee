@@ -2,6 +2,7 @@ package com.actionanand.radiobee.tv.playback
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.IBinder
 import androidx.core.net.toUri
 import androidx.media3.common.*
 import androidx.media3.datasource.HttpDataSource
@@ -27,6 +28,8 @@ class RadioPlaybackService : MediaSessionService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private lateinit var player: ExoPlayer
     private var session: MediaSession? = null
+    private val serviceLifetime = MediaServiceLifetime<Intent.FilterComparison> { stopSelf() }
+    private var idleStopCheck: Job? = null
     private lateinit var lifecycle: PlaybackLifecycle
     private var selection: String? = null
     private var selectedUrl: String? = null
@@ -45,18 +48,9 @@ class RadioPlaybackService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-        player =
-            ExoPlayer.Builder(this).build().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(C.USAGE_MEDIA)
-                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                        .build(),
-                    true,
-                )
-                setHandleAudioBecomingNoisy(true)
-                playWhenReady = false
-            }
+        // Android TV must not retain the default ten-minute foreground grace after audio ends.
+        setForegroundServiceTimeoutMs(0)
+        player = createRadioPlayer(this)
         lifecycle = PlaybackLifecycle(player, ::invalidate)
         timer =
             SleepTimer(scope) {
@@ -370,14 +364,48 @@ class RadioPlaybackService : MediaSessionService() {
     private fun stopPlayback() {
         lifecycle.stop()
         publish("idle")
+        scheduleIdleStop()
+    }
+
+    private fun scheduleIdleStop() {
+        idleStopCheck?.cancel()
+        idleStopCheck = scope.launch {
+            // Let Media3's queued notification update finish, then recheck live state and bindings.
+            yield()
+            serviceLifetime.update(
+                player.playWhenReady,
+                player.playbackState,
+                pending?.isActive == true,
+                isPlaybackOngoing,
+            )
+        }
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        val binder = super.onBind(intent)
+        if (binder != null && intent != null) serviceLifetime.bound(Intent.FilterComparison(intent))
+        return binder
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        if (intent != null) serviceLifetime.unbound(Intent.FilterComparison(intent))
+        if (!serviceLifetime.hasBindings && !graph.preferences.state.value.background)
+            stopPlayback()
+        scheduleIdleStop()
+        return super.onUnbind(intent)
+    }
+
+    override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
+        super.onUpdateNotification(session, startInForegroundRequired)
+        scheduleIdleStop()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = session
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (lifecycle.onTaskRemoved(graph.preferences.state.value.background)) {
+        if (lifecycle.onTaskRemoved(graph.preferences.state.value.background, isPlaybackOngoing)) {
+            pauseAllPlayersAndStopSelf()
             publish("idle")
-            stopSelf()
         }
     }
 

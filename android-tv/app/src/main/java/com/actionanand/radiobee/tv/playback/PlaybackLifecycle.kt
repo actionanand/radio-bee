@@ -24,8 +24,11 @@ internal class PlaybackLifecycle(
         player.stop()
     }
 
-    fun onTaskRemoved(background: Boolean): Boolean {
-        if (background && player.playWhenReady) return false
+    fun onTaskRemoved(background: Boolean, foreground: Boolean): Boolean {
+        val active =
+            player.playbackState == Player.STATE_READY ||
+                player.playbackState == Player.STATE_BUFFERING
+        if (background && foreground && player.playWhenReady && active) return false
         stop()
         return true
     }
