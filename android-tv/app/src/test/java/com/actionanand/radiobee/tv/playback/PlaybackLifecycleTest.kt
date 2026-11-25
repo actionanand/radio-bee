@@ -235,4 +235,48 @@ class PlaybackLifecycleTest {
         assertTrue(PlaybackLifecycle(transport.player) {}.onTaskRemoved(true, foreground = true))
         assertFalse(transport.intent)
     }
+
+    @Test
+    fun homeWithBackgroundDisabledPreservesPausedCountdownUntilTerminalExpiry() = runTest {
+        val transport = Media3Transport()
+        val lifecycle = PlaybackLifecycle(transport.player) {}
+        var persisted = 0L
+        val timer =
+            SleepSessionTimer(
+                backgroundScope,
+                backgroundScope,
+                read = { persisted },
+                save = {
+                    persisted = it
+                    true
+                },
+                hasSession = { transport.items > 0 },
+                notice = {},
+                expire = lifecycle::stop,
+                now = { testScheduler.currentTime },
+            )
+        timer.set(15)
+        onAppBackgrounded(false, pause = lifecycle::pause)
+        assertFalse(transport.intent)
+        assertEquals(1, transport.items)
+        assertEquals(900000L, persisted)
+        advanceTimeBy(900000)
+        runCurrent()
+        assertEquals(0, transport.items)
+        assertEquals(0L, persisted)
+        assertFalse(transport.calls.contains("play"))
+    }
+
+    @Test
+    fun homeCancelsUnfinishedFirstPlayBeforeApplyingSavedBackgroundPolicy() {
+        for (background in listOf(true, false)) {
+            val calls = mutableListOf<String>()
+            onAppBackgrounded(background, { calls += "cancel-first-play" }) { calls += "pause" }
+            assertEquals(
+                if (background) listOf("cancel-first-play")
+                else listOf("cancel-first-play", "pause"),
+                calls,
+            )
+        }
+    }
 }

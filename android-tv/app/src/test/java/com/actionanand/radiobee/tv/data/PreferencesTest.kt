@@ -27,6 +27,8 @@ class PreferencesTest {
         assertEquals(setOf("air-nagercoil"), saved.favorites)
         assertEquals(listOf("air-nagercoil", "sooriyan-srilanka"), saved.recent)
         assertFalse(saved.background)
+        assertTrue(saved.backgroundConfigured)
+        assertTrue(saved.loaded)
         assertEquals(12345L, saved.sleepUntil)
         scope.cancel()
         scope.coroutineContext[Job]!!.join()
@@ -38,6 +40,14 @@ class PreferencesTest {
                 "ta",
                 restored[androidx.datastore.preferences.core.stringPreferencesKey("locale")],
             )
+            assertEquals(
+                false,
+                restored[androidx.datastore.preferences.core.booleanPreferencesKey("background")],
+            )
+            val restoredPreferences = UserPreferences(second, backgroundScope)
+            val restoredSettings = restoredPreferences.state.first { it.loaded }
+            assertTrue(restoredSettings.backgroundConfigured)
+            assertFalse(restoredSettings.background)
             assertEquals("air-nagercoil", saved.lastStation)
         } finally {
             secondScope.cancel()

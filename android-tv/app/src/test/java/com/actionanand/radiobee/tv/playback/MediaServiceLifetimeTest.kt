@@ -104,4 +104,16 @@ class MediaServiceLifetimeTest {
         lifetime.update(false, Player.STATE_IDLE, false, false)
         assertEquals(2, stops)
     }
+
+    @Test
+    fun pausedCountdownSurvivesHomeWithoutForegroundAndStopsAfterExpiryOrOff() {
+        var stops = 0
+        val lifetime = MediaServiceLifetime<String> { stops++ }
+        lifetime.bound("ui")
+        lifetime.unbound("ui")
+        lifetime.update(false, Player.STATE_READY, false, false, timedSession = true)
+        assertEquals(0, stops)
+        lifetime.update(false, Player.STATE_READY, false, false, timedSession = false)
+        assertEquals(1, stops)
+    }
 }

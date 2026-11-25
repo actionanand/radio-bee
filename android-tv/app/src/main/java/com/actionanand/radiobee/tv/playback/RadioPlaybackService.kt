@@ -12,8 +12,9 @@ import com.actionanand.radiobee.tv.RadioBeeApplication
 import com.actionanand.radiobee.tv.data.*
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.SettableFuture
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class RadioPlaybackService : MediaSessionService() {
@@ -36,7 +37,7 @@ class RadioPlaybackService : MediaSessionService() {
     private val epoch = PlaybackEpoch()
     private var pending: Job? = null
     private val budget = RetryBudget()
-    private lateinit var timer: SleepTimer
+    private lateinit var timer: SleepSessionTimer
     private val bufferingDeadline =
         BufferingDeadline(scope) {
             if (
@@ -53,12 +54,22 @@ class RadioPlaybackService : MediaSessionService() {
         player = createRadioPlayer(this)
         lifecycle = PlaybackLifecycle(player, ::invalidate)
         timer =
-            SleepTimer(scope) {
-                stopPlayback()
-                graph.scope.launch { graph.preferences.setSleep(0) }
+            SleepSessionTimer(
+                scope,
+                graph.scope,
+                read = { graph.preferences.state.first { it.loaded }.sleepUntil },
+                save = graph.preferences::setSleep,
+                hasSession = { player.mediaItemCount > 0 },
+                notice = { graph.sleepNotice.value = it },
+                expire = { stopPlayback() },
+                mutex = graph.sleepMutex,
+            )
+        scope.launch {
+            timer.remaining.collect {
+                graph.sleepRemaining.value = it
             }
-        scope.launch { timer.remaining.collect { graph.sleepRemaining.value = it } }
-        scope.launch { graph.preferences.state.collectLatest { timer.replace(it.sleepUntil) } }
+        }
+        timer.initialize()
         val controlled =
             object : ForwardingPlayer(player) {
                 override fun play() {
@@ -68,15 +79,19 @@ class RadioPlaybackService : MediaSessionService() {
                                 ?.byId
                                 ?.get(graph.preferences.state.value.lastStation)
                             ?: return
-                    if (player.playbackState == Player.STATE_IDLE || player.playerError != null)
-                        tune(station.id)
-                    else if (allowed()) {
-                        player.play()
-                        if (player.playbackState == Player.STATE_BUFFERING) bufferingDeadline.arm()
+                    graph.firstPlayback.request(station.id) {
+                        if (player.playbackState == Player.STATE_IDLE || player.playerError != null)
+                            tune(station.id)
+                        else if (allowed()) {
+                            player.play()
+                            if (player.playbackState == Player.STATE_BUFFERING)
+                                bufferingDeadline.arm()
+                        }
                     }
                 }
 
                 override fun pause() {
+                    graph.firstPlayback.cancel()
                     lifecycle.pause()
                     publish("paused")
                 }
@@ -133,20 +148,49 @@ class RadioPlaybackService : MediaSessionService() {
                                 )
                             val accepted =
                                 when (command.customAction) {
-                                    TUNE -> tune(args.getString("stationId") ?: "")
-                                    SLEEP -> {
-                                        val minutes = args.getInt("minutes", -1)
-                                        if (minutes in 0..240) {
-                                            graph.scope.launch {
-                                                graph.preferences.setSleep(
-                                                    if (minutes == 0) 0
-                                                    else
-                                                        System.currentTimeMillis() +
-                                                            minutes * 60000L
-                                                )
-                                            }
+                                    TUNE -> {
+                                        val id = args.getString("stationId") ?: ""
+                                        val station =
+                                            graph.catalog.state.value.catalog?.byId?.get(id)
+                                        if (
+                                            station != null &&
+                                                graph.policy.eligible(station).isNotEmpty()
+                                        ) {
+                                            graph.firstPlayback.request(id) { tune(id) }
                                             true
                                         } else false
+                                    }
+                                    SLEEP -> {
+                                        val future = SettableFuture.create<SessionResult>()
+                                        val minutes = args.getInt("minutes", -1)
+                                        val operation = scope.launch {
+                                            try {
+                                                val success = timer.set(minutes)
+                                                scheduleIdleStop()
+                                                future.set(
+                                                    SessionResult(
+                                                        if (success) SessionResult.RESULT_SUCCESS
+                                                        else SessionError.ERROR_INVALID_STATE
+                                                    )
+                                                )
+                                            } catch (error: CancellationException) {
+                                                future.set(
+                                                    SessionResult(
+                                                        SessionError.ERROR_SESSION_DISCONNECTED
+                                                    )
+                                                )
+                                                throw error
+                                            }
+                                        }
+                                        operation.invokeOnCompletion {
+                                            if (!future.isDone)
+                                                future.set(
+                                                    SessionResult(
+                                                        SessionError.ERROR_SESSION_DISCONNECTED
+                                                    )
+                                                )
+                                        }
+                                        return future
                                     }
                                     else -> false
                                 }
@@ -269,6 +313,7 @@ class RadioPlaybackService : MediaSessionService() {
     }
 
     private fun tune(id: String): Boolean {
+        if (!graph.preferences.state.value.backgroundConfigured) return false
         val station = graph.catalog.state.value.catalog?.byId?.get(id) ?: return false
         val stream =
             budget.begin(graph.policy.eligible(station))
@@ -362,6 +407,8 @@ class RadioPlaybackService : MediaSessionService() {
     }
 
     private fun stopPlayback() {
+        graph.firstPlayback.cancel()
+        timer.cancel()
         lifecycle.stop()
         publish("idle")
         scheduleIdleStop()
@@ -377,6 +424,7 @@ class RadioPlaybackService : MediaSessionService() {
                 player.playbackState,
                 pending?.isActive == true,
                 isPlaybackOngoing,
+                timer.remaining.value > 0 && player.mediaItemCount > 0,
             )
         }
     }
@@ -389,8 +437,13 @@ class RadioPlaybackService : MediaSessionService() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         if (intent != null) serviceLifetime.unbound(Intent.FilterComparison(intent))
-        if (!serviceLifetime.hasBindings && !graph.preferences.state.value.background)
-            stopPlayback()
+        if (!serviceLifetime.hasBindings && !graph.preferences.state.value.background) {
+            if (timer.remaining.value > 0 && player.mediaItemCount > 0) {
+                // A paused countdown retains only the bounded session, never foreground or a lock.
+                lifecycle.pause()
+                publish("paused")
+            } else stopPlayback()
+        }
         scheduleIdleStop()
         return super.onUnbind(intent)
     }
@@ -404,6 +457,8 @@ class RadioPlaybackService : MediaSessionService() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         if (lifecycle.onTaskRemoved(graph.preferences.state.value.background, isPlaybackOngoing)) {
+            graph.firstPlayback.cancel()
+            timer.cancel()
             pauseAllPlayersAndStopSelf()
             publish("idle")
         }
@@ -411,7 +466,7 @@ class RadioPlaybackService : MediaSessionService() {
 
     override fun onDestroy() {
         stopPlayback()
-        timer.cancel()
+        timer.close()
         scope.cancel()
         session?.release()
         session = null

@@ -49,7 +49,9 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
-        onAppBackgrounded(graph.preferences.state.value.background) { controller?.pause() }
+        onAppBackgrounded(graph.preferences.state.value.background, graph.firstPlayback::cancel) {
+            controller?.pause()
+        }
         connection.stop()
         super.onStop()
     }

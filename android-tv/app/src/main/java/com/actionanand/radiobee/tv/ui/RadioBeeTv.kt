@@ -52,6 +52,10 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
     val state by graph.catalog.state.collectAsStateWithLifecycle()
     val playback by graph.playback.collectAsStateWithLifecycle()
     val remaining by graph.sleepRemaining.collectAsStateWithLifecycle()
+    val firstStation by graph.firstPlayback.station.collectAsStateWithLifecycle()
+    val savingChoice by graph.firstPlayback.saving.collectAsStateWithLifecycle()
+    val choiceError by graph.firstPlayback.error.collectAsStateWithLifecycle()
+    val sleepNotice by graph.sleepNotice.collectAsStateWithLifecycle()
     val storageError by graph.preferences.writeError.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val baseConfiguration = LocalConfiguration.current
@@ -90,6 +94,28 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
             var legal by remember { mutableStateOf(false) }
             var cacheCleared by remember { mutableStateOf(false) }
             val c = state.catalog
+            val playFocus = remember { FocusRequester() }
+            var hadPrompt by remember { mutableStateOf(false) }
+            LaunchedEffect(firstStation) {
+                if (firstStation != null) hadPrompt = true
+                else if (hadPrompt) {
+                    withFrameNanos {}
+                    runCatching { playFocus.requestFocus() }
+                    hadPrompt = false
+                }
+            }
+            val timerLabel = stringResource(R.string.sleep)
+            val timerOptions =
+                listOf(Named("0", stringResource(R.string.cancel_sleep))) +
+                    listOf(15, 30, 45, 60).map {
+                        Named(it.toString(), pluralStringResource(R.plurals.minutes, it, it))
+                    }
+            val hasSession =
+                controller != null &&
+                    controller.mediaItemCount > 0 &&
+                    playback.stationId != null &&
+                    playback.status in listOf("playing", "paused", "buffering", "reconnecting")
+
             fun tune(id: String) {
                 controller?.sendCustomCommand(
                     SessionCommand(RadioPlaybackService.TUNE, Bundle.EMPTY),
@@ -101,6 +127,9 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                     SessionCommand(RadioPlaybackService.SLEEP, Bundle.EMPTY),
                     Bundle().apply { putInt("minutes", minutes) },
                 )
+            }
+            fun chooseSleep() {
+                choice = Choice(timerLabel, timerOptions, "") { sleep(it.toInt()) }
             }
             fun openStation(station: Station) {
                 returnPage = page
@@ -116,7 +145,7 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                 genre = ""
                 broadcaster = ""
             }
-            BackHandler(page != "home" && choice == null && !legal) {
+            BackHandler(page != "home" && choice == null && !legal && firstStation == null) {
                 page = if (page == "player") returnPage else "home"
             }
             Column(
@@ -170,6 +199,30 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                         color = Accent,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                     )
+                if (sleepNotice.action.isNotEmpty()) {
+                    val message =
+                        when (sleepNotice.action) {
+                            "set",
+                            "replaced" ->
+                                stringResource(
+                                    if (sleepNotice.action == "set") R.string.sleep_set
+                                    else R.string.sleep_replaced,
+                                    pluralStringResource(
+                                        R.plurals.minutes,
+                                        sleepNotice.minutes,
+                                        sleepNotice.minutes,
+                                    ),
+                                )
+                            "expired" -> stringResource(R.string.sleep_expired)
+                            "stopped" -> stringResource(R.string.sleep_stopped)
+                            else -> stringResource(R.string.sleep_cancelled)
+                        }
+                    Text(
+                        message,
+                        color = Accent,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                    )
+                }
                 if (state.error)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -492,6 +545,8 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                                                             else tune(station.id)
                                                         },
                                                         enabled = eligible && controller != null,
+                                                        modifier =
+                                                            Modifier.focusRequester(playFocus),
                                                     ) {
                                                         Icon(
                                                             if (active) Icons.Default.Pause
@@ -509,7 +564,7 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                                                     }
                                                     Button(onClick = { controller?.stop() }) {
                                                         Icon(Icons.Default.Stop, null)
-                                                        Text(stringResource(R.string.stop))
+                                                        Text(stringResource(R.string.stop_radio))
                                                     }
                                                 }
                                                 Button(
@@ -535,39 +590,11 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                                                         )
                                                     )
                                                 }
-                                                val timerLabel = stringResource(R.string.sleep)
-                                                val off = stringResource(R.string.off)
-                                                val timerOptions =
-                                                    listOf(Named("0", off)) +
-                                                        listOf(15, 30, 45, 60).map {
-                                                            Named(
-                                                                it.toString(),
-                                                                pluralStringResource(
-                                                                    R.plurals.minutes,
-                                                                    it,
-                                                                    it,
-                                                                ),
-                                                            )
-                                                        }
-                                                Button(
-                                                    onClick = {
-                                                        choice =
-                                                            Choice(timerLabel, timerOptions, "") {
-                                                                sleep(it.toInt())
-                                                            }
-                                                    }
-                                                ) {
-                                                    Icon(Icons.Default.Timer, null)
-                                                    Text(timerLabel)
-                                                }
-                                                if (remaining > 0)
-                                                    Text(
-                                                        pluralStringResource(
-                                                            R.plurals.remaining,
-                                                            ((remaining + 59999) / 60000).toInt(),
-                                                            ((remaining + 59999) / 60000).toInt(),
-                                                        )
-                                                    )
+                                                SleepTimerControls(
+                                                    remaining,
+                                                    hasSession,
+                                                    ::chooseSleep,
+                                                )
                                                 station.about?.let {
                                                     Text(
                                                         it,
@@ -641,40 +668,13 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                                             )
                                         }
                                         item {
-                                            val label = stringResource(R.string.sleep)
-                                            val off = stringResource(R.string.off)
-                                            val options =
-                                                listOf(Named("0", off)) +
-                                                    listOf(15, 30, 45, 60).map {
-                                                        Named(
-                                                            it.toString(),
-                                                            pluralStringResource(
-                                                                R.plurals.minutes,
-                                                                it,
-                                                                it,
-                                                            ),
-                                                        )
-                                                    }
+                                            SleepTimerControls(remaining, hasSession, ::chooseSleep)
                                             Button(
-                                                onClick = {
-                                                    choice =
-                                                        Choice(label, options, "") {
-                                                            sleep(it.toInt())
-                                                        }
-                                                }
+                                                onClick = { controller?.stop() },
+                                                enabled = hasSession,
                                             ) {
-                                                Text(label)
+                                                Text(stringResource(R.string.stop_radio))
                                             }
-                                        }
-                                        item {
-                                            if (remaining > 0)
-                                                Text(
-                                                    pluralStringResource(
-                                                        R.plurals.remaining,
-                                                        ((remaining + 59999) / 60000).toInt(),
-                                                        ((remaining + 59999) / 60000).toInt(),
-                                                    )
-                                                )
                                         }
                                         item {
                                             Button(
@@ -776,19 +776,18 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                             )
                         }
                         Text(stringResource(statusResource(playback.status)), color = Accent)
-                        if (remaining > 0)
-                            Text(
-                                pluralStringResource(
-                                    R.plurals.remaining,
-                                    ((remaining + 59999) / 60000).toInt(),
-                                    ((remaining + 59999) / 60000).toInt(),
-                                ),
-                                fontSize = 14.sp,
-                            )
+                        if (remaining > 0) Text(sleepStatus(remaining), fontSize = 14.sp)
                     }
                 }
             }
             choice?.let { value -> ChoiceDialog(value) { choice = null } }
+            if (firstStation != null)
+                BackgroundPlaybackDialog(
+                    savingChoice,
+                    choiceError,
+                    graph.firstPlayback::choose,
+                    graph.firstPlayback::cancel,
+                )
             if (legal)
                 Dialog(onDismissRequest = { legal = false }) {
                     Column(

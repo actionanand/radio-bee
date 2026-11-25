@@ -14,6 +14,8 @@ data class UserSettings(
     val recent: List<String> = emptyList(),
     val lastStation: String? = null,
     val sleepUntil: Long = 0,
+    val backgroundConfigured: Boolean = false,
+    val loaded: Boolean = false,
 )
 
 class UserPreferences(private val store: DataStore<Preferences>, scope: CoroutineScope) {
@@ -44,16 +46,20 @@ class UserPreferences(private val store: DataStore<Preferences>, scope: Coroutin
                         .getOrDefault(emptyList()),
                     p[last],
                     p[sleep] ?: 0,
+                    p[background] != null,
+                    true,
                 )
             }
             .stateIn(scope, SharingStarted.Eagerly, UserSettings())
 
-    private suspend fun update(block: (MutablePreferences) -> Unit) {
+    private suspend fun update(block: (MutablePreferences) -> Unit): Boolean {
         try {
             store.edit(block)
             writeError.value = false
+            return true
         } catch (error: IOException) {
             writeError.value = true
+            return false
         }
     }
 

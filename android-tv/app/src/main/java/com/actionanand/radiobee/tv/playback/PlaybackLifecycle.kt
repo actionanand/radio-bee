@@ -37,6 +37,12 @@ internal class PlaybackLifecycle(
 /**
  * Home/onStop preserves background audio; the controller handles cancellation on explicit pause.
  */
-internal fun onAppBackgrounded(background: Boolean, pause: () -> Unit) {
+internal fun onAppBackgrounded(
+    background: Boolean,
+    cancelPending: () -> Unit = {},
+    pause: () -> Unit,
+) {
+    // A delayed preference save must not start a new station after the Activity has left.
+    cancelPending()
     if (!background) pause()
 }

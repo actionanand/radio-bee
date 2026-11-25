@@ -20,7 +20,6 @@
     <string name="search">Search stations</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
-    <string name="stop">Stop</string>
     <string name="retry">Retry</string>
     <string name="add_favorite">Add favorite</string>
     <string name="remove_favorite">Remove favorite</string>
@@ -43,14 +42,9 @@
     <string name="disabled">Disabled</string>
     <string name="background_note">Audio may continue in supported Ambient Mode. Power or standby can stop playback depending on the television.</string>
     <string name="sleep">Sleep timer</string>
-    <string name="off">Off</string>
     <plurals name="minutes">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
-    </plurals>
-    <plurals name="remaining">
-        <item quantity="one">%1$d minute remaining</item>
-        <item quantity="other">%1$d minutes remaining</item>
     </plurals>
     <string name="about">About and legal</string>
     <string name="legal_notice">RadioBee connects directly to broadcaster streams. Names and artwork belong to their owners. Availability does not establish listening or redistribution authorization. No recording is provided. Favorites, settings and catalogue cache stay on this device. Streaming and artwork hosts receive normal network requests. No account or microphone is required.</string>
@@ -61,4 +55,19 @@
     <string name="nothing_selected">Choose a station to listen.</string>
     <string name="connection_error">Could not connect to the player service. Reopen the app.</string>
     <string name="refreshing">Refreshing…</string>
+    <string name="background_question">Keep Radio Bee playing in the background?</string>
+    <string name="background_description">Radio Bee can continue playing when you press Home, switch to another app, or your TV enters a supported screensaver mode. Your television may stop playback during standby.</string>
+    <string name="keep_playing">Keep playing</string>
+    <string name="pause_when_leave">Pause when I leave</string>
+    <string name="saving">Saving preference…</string>
+    <string name="cancel_sleep">Cancel sleep timer</string>
+    <string name="stop_radio">Stop Radio</string>
+    <string name="sleep_active">Sleep timer: %1$s remaining</string>
+    <string name="sleep_off">Sleep timer off</string>
+    <string name="sleep_unavailable">Play a station to set a sleep timer.</string>
+    <string name="sleep_set">Sleep timer set for %1$s.</string>
+    <string name="sleep_replaced">Sleep timer replaced: %1$s.</string>
+    <string name="sleep_cancelled">Sleep timer cancelled. Radio playback is unchanged.</string>
+    <string name="sleep_expired">Sleep timer finished. Radio stopped.</string>
+    <string name="sleep_stopped">Radio stopped. Sleep timer cancelled.</string>
 </resources>

@@ -19,11 +19,17 @@ internal class MediaServiceLifetime<Binding>(private val stopService: () -> Unit
         bindings.remove(key)
     }
 
-    fun update(playWhenReady: Boolean, state: Int, retrying: Boolean, foreground: Boolean) {
+    fun update(
+        playWhenReady: Boolean,
+        state: Int,
+        retrying: Boolean,
+        foreground: Boolean,
+        timedSession: Boolean = false,
+    ) {
         val active =
             playWhenReady &&
                 (state == Player.STATE_READY || state == Player.STATE_BUFFERING || retrying)
-        if (hasBindings || active || foreground) {
+        if (hasBindings || active || foreground || timedSession) {
             stopRequested = false
             return
         }

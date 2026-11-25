@@ -51,9 +51,9 @@ Use D-pad arrows, Select/Enter and Back. TV components provide visible focus, sc
 
 ExoPlayer owns audio focus and becoming-noisy handling. There is one player and one MediaSession; station switching replaces its media item. Only actual `isPlaying` confirms playback/recent history. Errors/end-of-stream use at most three distinct URLs, three attempts per URL and six total attempts per user selection. Fresh alternatives precede retrying the failing URL; transient repeats back off 500/1000 ms. Permanent HTTP failures do not retry the same URL. Each continuous buffering episode has a 30-second deadline consuming the same budget. Pause, Stop, focus interruption, catalogue revocation and station switching cancel stale delayed work. Retry from the UI is an explicit new user attempt. Terminal Stop, sleep expiry, unavailable/revoked selections, exhausted retries and service destruction cancel pending work and call Pause before Stop and Clear Media Items, explicitly clearing `playWhenReady`. The separate retry hold stops loading while retaining play intent and the selected item.
 
-Sleep options are Off/15/30/45/60 minutes. The service owns a persisted wall-clock deadline and stops playback when it expires, without a visible Activity. Replacement/cancellation are tested. It is not an exact alarm and cannot run in a killed/force-stopped process; if restarted after an expired deadline, playback remains stopped. Changing device time affects a wall-clock deadline.
+Sleep options are Cancel sleep timer (Off)/15/30/45/60 minutes. Now Playing and Settings show an active `m:ss` countdown and a separate Stop Radio action. Off cancels the deadline without changing audio; Stop Radio stops audio and clears the deadline. Pause, ordinary in-app navigation, station switching and bounded recovery preserve the countdown. Expiry stops the current session, cancels recovery and clears persisted state. A new service clears stale/orphaned deadlines without autoplay. This is a wall-clock timer, not an exact alarm; process death, standby and device time changes remain limitations. See the first-play and timer follow-up below.
 
-Background playback defaults on. Media3 supplies the foreground media notification/system controls while playing. Turning it off pauses on Activity `onStop`; app navigation within the Activity does not pause. Home invokes Activity `onStop`; recent-task dismissal invokes service `onTaskRemoved`. Active playback and bounded retry backoff survive Home when background playback is enabled. Task dismissal retains only foreground Ready/Buffering playback; idle retry gaps and non-foreground sessions stop using the Media3 shutdown API. Screensavers are allowed: no KEEP_SCREEN_ON, display wake lock, Wi-Fi lock or display power control is used. Media3 alone manages the playback-scoped partial CPU wake lock. Ambient Mode/screen-off continuity depends on firmware and OS policy. **Power/standby, force-stop, network suspension and manufacturer battery restrictions can terminate audio.** No universal television Power-button playback guarantee is made. Cold-start media resumption after process death is not implemented; open the app and select Play. No recording is implemented in TV.
+A fresh installation asks whether to keep playing in the background at its first playback attempt; no audio starts before the choice is durably saved. Existing saved true/false background preferences are retained without prompting. The choice remains changeable in Settings. Media3 supplies the foreground media notification/system controls while playing. Turning it off pauses on Activity `onStop`; app navigation within the Activity does not pause. Home invokes Activity `onStop`; recent-task dismissal invokes service `onTaskRemoved`. Active playback and bounded retry backoff survive Home when background playback is enabled. Task dismissal retains only foreground Ready/Buffering playback; idle retry gaps and non-foreground sessions stop using the Media3 shutdown API. Screensavers are allowed: no KEEP_SCREEN_ON, display wake lock, Wi-Fi lock or display power control is used. Media3 alone manages the playback-scoped partial CPU wake lock. Ambient Mode/screen-off continuity depends on firmware and OS policy. **Power/standby, force-stop, network suspension and manufacturer battery restrictions can terminate audio.** No universal television Power-button playback guarantee is made. Cold-start media resumption after process death is not implemented; open the app and select Play. No recording is implemented in TV.
 
 ## Version allocation and shared Play identity
 
@@ -232,3 +232,91 @@ Native command: `./gradlew --no-daemon --max-workers=2 test lintDebug lintReleas
 
 The SDK XML-version notice and the instrumentation-only deprecated running-service query warning are non-fatal. No assertions were weakened, failures suppressed or dependencies reinstalled to pass tests. No Android device is attached and the WSL user lacks KVM access, so no instrumentation execution, measured wake-lock release, physical-TV standby, native audible playback or production-signing pass is claimed. Run `./gradlew connectedDebugAndroidTest` on a supported TV/emulator, then manually test Ambient Mode versus actual Power/standby, interruptions, Home, task dismissal, sleep expiry, Stop and exhausted retries before release.
 No deployment branch, release version, data repository, stream URL, catalogue schema or playback-eligibility policy is changed by this follow-up.
+
+## First-play confirmation and sleep timer follow-up — 25 November 2026
+
+### First-use background preference
+
+The first eligible card selection or MediaSession Play request uses the app-owned `FirstPlaybackGate`. Launching the app does not prompt or play. The dialog asks **Keep Radio Bee playing in the background?**, explains Home/app switching/supported screensavers versus standby, and offers **Keep playing** or **Pause when I leave**. English, Tamil and Sanskrit resources cover the complete flow.
+
+The existing DataStore `background` key is also the migration signal: any saved Boolean is an existing choice; the former in-memory `true` default is not treated as consent. Settings continues to write this same key. A successful edit must reach durable storage and its observable settings state before the original station callback runs once. Repeated selections while the dialog/save is pending do not enqueue additional streams. Dismissal does not save or start audio; another attempt asks again. Failed writes retain the dialog, show the storage warning and allow retry. Home/Activity Stop, Pause, Stop, terminal failure and service destruction invalidate pending playback callbacks, including an already-running save. Cancellation runs before the saved background policy is applied, so a false choice still being written cannot start audio after Home under the former in-memory true default. Already-playing background audio and recovery are unaffected by cancelling this first-play gate. A saved choice may survive cancellation; its stale playback callback does not.
+
+The gate belongs to the application graph, so UI recomposition does not construct a second play action. Leaving the Activity, including recreation through Stop, cancels unfinished playback intent; the next explicit Play is required. A durably saved preference still prevents another prompt. The service applies the same gate to custom station tuning and the forwarded MediaSession Play/playWhenReady path; the Activity's remote keys already use that controller. No runtime Android permission is requested. Dialog actions have visible focus, D-pad/Enter/Select access and Back dismissal. Focus returns to Play after closing; failed saves refocus an enabled choice.
+
+### Background audio and service ownership
+
+`MainActivity`, `RadioPlayer`, controller connection ownership, the single ExoPlayer, scoped `WAKE_LOCK`/`C.WAKE_MODE_LOCAL`, zero foreground grace, Media3 notification ownership, durable catalogue cache, eligibility and retry budgets are preserved. Home with background enabled retains active playback; background disabled pauses. Audio focus and becoming-noisy handling remain Media3-owned. Nothing listens to Ambient Mode to start audio, intercepts Power, keeps the screen on or adds a network wake lock.
+
+A paused session with an active countdown may retain a bounded **non-foreground** service until expiry or cancellation, without requesting a playback CPU lock. Idle cleanup rechecks this timer alongside bindings, foreground state and retry intent. Once the countdown is removed, the existing unbound idle shutdown applies. Explicit task dismissal still terminates non-foreground sessions as required by Media3; it does not retain a hidden paused service merely for a timer. A TV may terminate a non-foreground paused service under OS background limits; the timer cannot promise execution after process death/force-stop. On next initialization orphaned persisted state is cleared without starting audio.
+
+This follows the [MediaSessionService lifecycle guidance](https://developer.android.com/media/media3/session/background-playback) and [Android TV foreground-service guidance](https://developer.android.com/training/tv/playback/memory#foreground-services). Supported screensaver/screen-off playback is distinct from actual hardware standby, which may stop the process, network or audio output. Physical-device behavior remains a release gate.
+
+### Timer boundaries and persistence
+
+- Only Off/15/30/45/60 are accepted. Non-zero countdowns require a session with media items; the UI does not offer a countdown for an empty/stopped player.
+- Off is labeled **Cancel sleep timer**. It updates persistence before confirming and never pauses/stops audio. Setting/replacing/cancelling produces an inline accessible confirmation, not another modal.
+- Stop Radio and every terminal playback boundary cancel the runtime timer immediately and queue a durable clear. Expiry also calls the terminal playback lifecycle, cancelling delayed retries and clearing play intent/media items. It stops radio, never the television.
+- Pause continues the countdown. Switching eligible stations keeps the same deadline. Temporary buffering/retry does not reset it. On expiry, whichever current station belongs to this one-player session stops; no delayed recovery may restart it.
+- Timer writes are serialized with an app-owned mutex, including across service teardown/recreation. A generation check prevents a delayed successful save from rearming a countdown after Stop. Preference writes survive service-scope cancellation. Storage failures are shown; the app does not claim that an unsuccessful preference write was persisted.
+- New service initialization clears expired and future orphaned deadlines rather than resuming audio to complete them. No exact-alarm permission, alarm, WorkManager task or process-restart workaround is added.
+- The existing wall-clock deadline is retained. A forward device-clock change can expire it at the next running tick; a backward change can extend it. Updates run approximately once per second while the process runs, not at a guaranteed hardware alarm instant. The current remaining value is shown on return from another app. Standby/process suspension can defer execution; process death never triggers autoplay.
+
+### Regression coverage and validation
+
+The production gate is tested with the real `UserPreferences` decoder/writer and controlled DataStore behavior, including durable-save completion, both existing Boolean values, dismissed/retried choices, exactly-once playback, storage errors, delayed saves, settings changes, UI reattachment and stale cancellation. The existing real-file preference test also verifies restoration of the saved background choice.
+
+The production session timer is tested with virtual time for all four durations, Off while playing/paused, replacement, manual Stop, Pause and station switching, expiry during buffering/retry, background return, stale persisted deadlines, orphaned process state, save failures, delayed writes, destruction, clock changes and invalid durations. Additional production lifecycle/lifetime tests cover Home with background disabled and a paused timer, followed by expiry or cancellation. Existing retry, wake-mode, controller and offline-cache regressions remain enabled.
+
+Five additional Compose instrumentation cases cover D-pad selection of both choices, Back dismissal/reopening, disabled duplicate selections/storage warnings, restored focus after a failed save, and English/Tamil/Sanskrit labels with a readable countdown. The existing wake-lock test uses the real player factory; instrumentation still requires a device/emulator and must not be represented as an executed JVM check.
+
+Final local checks on 25 November 2026 (WSL2 Linux Node 24.16.0, JDK 21, SDK 36):
+
+| Check                                                             | Result                                                                                                                      |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Debug Kotlin tests                                                | 114 passed, 0 failures/errors/skips                                                                                         |
+| Release Kotlin tests                                              | 114 passed, 0 failures/errors/skips                                                                                         |
+| New JVM cases                                                     | 33 (12 first-play, 18 session-timer, 2 lifecycle, 1 service lifetime); existing on-disk preference test strengthened        |
+| Native lint                                                       | Debug/release: 0 errors, original 16 dependency/artwork advisories each; no new warnings retained                           |
+| Native builds                                                     | Debug APK, instrumentation APK, optimized unsigned release APK and release AAB passed                                       |
+| Instrumentation                                                   | 11 tests compiled, including 5 new UI cases; not executed (no device/emulator, KVM inaccessible)                            |
+| TV/Android release scripts                                        | 40 passed                                                                                                                   |
+| Shared PR/preview/playback/recording/integration/social contracts | 30 passed                                                                                                                   |
+| Artifact validator tests                                          | 5 passed                                                                                                                    |
+| APK/AAB inspection                                                | Application ID/version/TV filtering, debug signature, unsigned release APK, matching ABIs and 64-bit 16-KB alignment passed |
+| Web lint and TypeScript                                           | Passed; no web/mobile source or configuration changes                                                                       |
+| Angular tests                                                     | All 758 passed across 55 files in a standalone run; no test/config/timeout changes                                          |
+| Production Pages build and artifact assertions                    | Passed; existing 8 component-style budget warnings, unchanged budgets and styles                                            |
+| GitHub workflow                                                   | Local CI-equivalent checks passed; remote PR run is distinct and must be checked after pushing                              |
+
+Native command: `cd android-tv && ./gradlew --no-daemon --max-workers=2 testDebugUnitTest testReleaseUnitTest lintDebug lintRelease assembleDebug assembleDebugAndroidTest assembleRelease bundleRelease`. Root commands: `node --test scripts/tv-release.test.mjs scripts/android-scripts.test.mjs`, the six existing PR contract files listed above, `python3 -B -m unittest discover -s scripts -p tv_artifacts_test.py`, `npm run lint`, `npm run typecheck`, `npm run test:ci`, and `npm run build:gh -- --configuration=production`, followed by the existing routing/social artifact checks.
+
+The first Angular run alongside native compilation had **757 passes and one 5-second timeout** in the unchanged `directory.routes.spec.ts` Home-identity test (5393 ms). The standalone rerun passed all 758 tests in about 65 seconds versus 124 seconds during concurrent native work. No application test, assertion, timeout, isolation setting or dependency was changed to obtain that result. Both logs are retained in ignored local validation output. Existing reactive-form disabled-attribute diagnostics remain in web test output. The SDK XML-version notice and existing instrumentation-only deprecated service query warning remain nonfatal.
+
+An initial zero sleep-remaining value only updates UI state; it does not request service shutdown before the first controller binding. Actual Off/Stop/expiry commands and Media3 notification/binding events own cleanup. This preserves the startup lifecycle covered by the existing device service-visibility regression.
+
+Physical TV/emulator checks remain **pending**: first-use actions/Back/TalkBack/focus, Activity recreation, audible Home/screensaver/audio-focus behavior, actual wake-lock release and hardware standby, and timer expiry while backgrounded/paused on vendor firmware. No device execution or native audible playback is claimed. No production signing credentials were used, no release was published, and recording remains absent from TV. The only tracked changes are the TV sources/tests/resources and this document; web/mobile code, IDs, signing/version settings, dependencies, deployment workflows and catalogue data are unchanged.
+
+Changed-file inventory for this follow-up (all paths relative to the client repository):
+
+```text
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/MainActivity.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/RadioBeeApplication.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/data/UserPreferences.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/FirstPlaybackGate.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/MediaServiceLifetime.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/PlaybackLifecycle.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/RadioPlaybackService.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/playback/SleepSessionTimer.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/ui/PlaybackPreferences.kt
+android-tv/app/src/main/java/com/actionanand/radiobee/tv/ui/RadioBeeTv.kt
+android-tv/app/src/main/res/values/strings.xml
+android-tv/app/src/main/res/values-ta/strings.xml
+android-tv/app/src/main/res/values-sa/strings.xml
+android-tv/app/src/test/java/com/actionanand/radiobee/tv/data/PreferencesTest.kt
+android-tv/app/src/test/java/com/actionanand/radiobee/tv/playback/FirstPlaybackGateTest.kt
+android-tv/app/src/test/java/com/actionanand/radiobee/tv/playback/MediaServiceLifetimeTest.kt
+android-tv/app/src/test/java/com/actionanand/radiobee/tv/playback/PlaybackLifecycleTest.kt
+android-tv/app/src/test/java/com/actionanand/radiobee/tv/playback/SleepSessionTimerTest.kt
+android-tv/app/src/androidTest/java/com/actionanand/radiobee/tv/ui/BackgroundChoiceTest.kt
+documentation/TV.md
+```

@@ -4,9 +4,12 @@ import android.app.Application
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.actionanand.radiobee.tv.data.*
+import com.actionanand.radiobee.tv.playback.FirstPlaybackGate
 import com.actionanand.radiobee.tv.playback.PlaybackViewState
+import com.actionanand.radiobee.tv.playback.SleepNotice
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
 
 class RadioBeeApplication : Application() {
     lateinit var graph: AppGraph
@@ -29,6 +32,9 @@ class AppGraph(app: Application) {
             },
             scope,
         )
+    val firstPlayback = FirstPlaybackGate(preferences, scope)
+    val sleepMutex = Mutex()
+    val sleepNotice = MutableStateFlow(SleepNotice(""))
     val policy =
         PlaybackPolicy(
             BuildConfig.ALLOW_UNVERIFIED,

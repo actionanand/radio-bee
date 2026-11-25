@@ -20,7 +20,6 @@
     <string name="search">நிலையங்களைத் தேடு</string>
     <string name="play">கேளுங்கள்</string>
     <string name="pause">இடைநிறுத்து</string>
-    <string name="stop">நிறுத்து</string>
     <string name="retry">மீண்டும் முயலவும்</string>
     <string name="add_favorite">விருப்பத்தில் சேர்</string>
     <string name="remove_favorite">விருப்பத்திலிருந்து நீக்கு</string>
@@ -43,14 +42,9 @@
     <string name="disabled">முடக்கப்பட்டது</string>
     <string name="background_note">ஆதரிக்கும் தொலைக்காட்சியில் சுற்றுப்புறக் காட்சி முறையிலும் ஒலி தொடரலாம். மின்சார அல்லது காத்திருப்பு நிலை ஒலியை நிறுத்தலாம்.</string>
     <string name="sleep">உறக்க நேரம்</string>
-    <string name="off">வேண்டாம்</string>
     <plurals name="minutes">
         <item quantity="one">%1$d நிமிடங்கள்</item>
         <item quantity="other">%1$d நிமிடங்கள்</item>
-    </plurals>
-    <plurals name="remaining">
-        <item quantity="one">%1$d நிமிடங்கள் மீதம்</item>
-        <item quantity="other">%1$d நிமிடங்கள் மீதம்</item>
     </plurals>
     <string name="about">அறிமுகமும் சட்டத் தகவலும்</string>
     <string name="legal_notice">RadioBee ஒலிபரப்பாளர் இணைப்புகளிலிருந்து நேரடியாக ஒலியைப் பெறுகிறது. பெயர்களும் படங்களும் அவற்றின் உரிமையாளர்களுக்குச் சொந்தமானவை. கிடைப்பது மட்டும் கேட்க அல்லது மறுவிநியோகிக்க அனுமதியாகாது. பதிவு வசதி இல்லை. விருப்பங்கள், அமைப்புகள் மற்றும் பட்டியல் இந்தச் சாதனத்தில் சேமிக்கப்படும். ஒலிபரப்பு மற்றும் படச் சேவையகங்கள் வழக்கமான இணையக் கோரிக்கைகளைப் பெறும். கணக்கும் ஒலிவாங்கியும் தேவையில்லை.</string>
@@ -61,4 +55,19 @@
     <string name="nothing_selected">கேட்க ஒரு நிலையத்தைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="connection_error">ஒலிச் சேவையுடன் இணைய இயலவில்லை. செயலியை மீண்டும் திறக்கவும்.</string>
     <string name="refreshing">புதுப்பிக்கிறது…</string>
+    <string name="background_question">Radio Bee பின்னணியில் தொடர்ந்து ஒலிக்கட்டுமா?</string>
+    <string name="background_description">முகப்புக்குச் செல்லும்போதும், வேறு செயலிக்கு மாறும்போதும், ஆதரிக்கப்படும் திரைக்காப்பு முறையிலும் Radio Bee தொடர்ந்து ஒலிக்கலாம். தொலைக்காட்சி காத்திருப்பு நிலைக்குச் செல்லும்போது ஒலிபரப்பு நிறுத்தப்படலாம்.</string>
+    <string name="keep_playing">தொடர்ந்து ஒலிக்கட்டும்</string>
+    <string name="pause_when_leave">வெளியேறும்போது இடைநிறுத்து</string>
+    <string name="saving">விருப்பம் சேமிக்கப்படுகிறது…</string>
+    <string name="cancel_sleep">உறக்க நேரக்கருவியை ரத்துசெய்</string>
+    <string name="stop_radio">வானொலியை நிறுத்து</string>
+    <string name="sleep_active">உறக்க நேரக்கருவி: மீதம் %1$s</string>
+    <string name="sleep_off">உறக்க நேரக்கருவி அணைக்கப்பட்டுள்ளது</string>
+    <string name="sleep_unavailable">உறக்க நேரக்கருவியை அமைக்க ஒரு நிலையத்தை இயக்கவும்.</string>
+    <string name="sleep_set">உறக்க நேரக்கருவி %1$s நேரத்திற்கு அமைக்கப்பட்டது.</string>
+    <string name="sleep_replaced">உறக்க நேரக்கருவி மாற்றப்பட்டது: %1$s.</string>
+    <string name="sleep_cancelled">உறக்க நேரக்கருவி ரத்துசெய்யப்பட்டது. வானொலி இயக்கத்தில் மாற்றமில்லை.</string>
+    <string name="sleep_expired">உறக்க நேரம் முடிந்தது. வானொலி நிறுத்தப்பட்டது.</string>
+    <string name="sleep_stopped">வானொலி நிறுத்தப்பட்டது. உறக்க நேரக்கருவி ரத்துசெய்யப்பட்டது.</string>
 </resources>
