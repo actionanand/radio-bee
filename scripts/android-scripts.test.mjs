@@ -6,6 +6,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import versioning from './android-version.cjs';
 import { patchAndroid } from './patch-android.mjs';
+import { readCapacitorIdentity } from './capacitor-identity.mjs';
 import { assetPlan, pngDimensions } from './generate-android-assets.mjs';
 import { signAndroid } from './sign-android.mjs';
 import { reserveVersion } from './reserve-android-version.mjs';
@@ -130,9 +131,31 @@ test('identity, native patch idempotency and preservation of custom native chang
   assert.match(manifest, /usesCleartextTraffic="false"/);
   assert.match(manifest, /android:name="custom"/);
   assert.equal((manifest.match(/uses-permission/g) ?? []).length, 1);
-  f.write('capacitor.config.ts', "appId: 'wrong.identity'");
+  f.write('capacitor.config.ts', f.read('capacitor.config.ts').replace("appId: 'com.actionanand.radiobee.app'", "appId: 'wrong.identity'"));
   assert.throws(() => patchAndroid(f.root), /app ID/);
 });
+test('renaming appName in Capacitor config updates generated mobile labels on repeated syncs', t => {
+  const f = nativeFixture(t);
+  f.write('capacitor.config.ts', f.read('capacitor.config.ts').replace("appName: 'Radio Bee'", "appName: 'Bee Waves'"));
+  assert.deepEqual(readCapacitorIdentity(f.root), { appId: 'com.actionanand.radiobee.app', appName: 'Bee Waves' });
+  patchAndroid(f.root);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="app_name">Bee Waves<\/string>/);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="title_activity_main">Bee Waves<\/string>/);
+  f.write('capacitor.config.ts', f.read('capacitor.config.ts').replace("appName: 'Bee Waves'", "appName: 'New Radio'"));
+  patchAndroid(f.root);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="app_name">New Radio<\/string>/);
+  assert.match(f.read('android/app/src/main/res/values/strings.xml'), /<string name="title_activity_main">New Radio<\/string>/);
+});
+test('computed, blank, missing and duplicated common names fail clearly', t => {
+  const config = read('capacitor.config.ts');
+  for (const replacement of ["appName: dynamicName,", "appName: '',", "appName: 'One',\n  appName: 'Two',", "notAName: 'One',"]) {
+    const f = nativeFixture(t);
+    f.write('capacitor.config.ts', config.replace("appName: 'Radio Bee',", replacement));
+    assert.throws(() => readCapacitorIdentity(f.root), /literal appName/);
+    assert.throws(() => patchAndroid(f.root), /literal appName/);
+  }
+});
+
 test('native patch preserves an existing AndroidX DocumentFile dependency without duplication', t => {
   const f = nativeFixture(t);
   const gradle = f.read('android/app/build.gradle').replace(

@@ -4,6 +4,8 @@ on:
     paths:
       - 'android-tv/**'
       - 'tv-version.json'
+      - 'capacitor.config.ts'
+      - 'scripts/capacitor-identity.mjs'
       - 'scripts/*tv*'
       - 'scripts/android-version.cjs'
       - '.github/workflows/tv-*.yml'

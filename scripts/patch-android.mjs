@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import versioning from './android-version.cjs';
+import { readCapacitorIdentity } from './capacitor-identity.mjs';
 
 export function patchAndroid(root = process.cwd()) {
   const read = file => readFileSync(path.join(root, file), 'utf8');
@@ -14,7 +15,8 @@ export function patchAndroid(root = process.cwd()) {
     if (!pattern.test(text)) throw new Error(`Unsupported Android template: missing ${label}`);
     return text.replace(pattern, value);
   };
-  if (!/appId:\s*['"]com\.actionanand\.radiobee\.app['"]/.test(read('capacitor.config.ts')))
+  const { appId, appName } = readCapacitorIdentity(root);
+  if (appId !== 'com.actionanand.radiobee.app')
     throw new Error('RadioBee app ID is missing or invalid.');
   const version = versioning.readVersion(root);
   let gradle = read('android/app/build.gradle');
@@ -72,14 +74,14 @@ export function patchAndroid(root = process.cwd()) {
   // An existing network policy could override usesCleartextTraffic. Fail for review instead of overwriting it.
   if (/android:networkSecurityConfig=/.test(manifest))
     throw new Error('Review custom networkSecurityConfig before applying the HTTPS-only release policy.');
-  // Use the spaced launcher name even when sync reuses an existing Android tree.
-  // Keep the package identifier and all other resource strings unchanged.
+  // Always synchronize the mobile name from the same Capacitor config used by TV.
+  const displayName = appName.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
   const stringsFile = 'android/app/src/main/res/values/strings.xml';
   let strings = read(stringsFile);
   strings = replace(strings, /(<string[ ]+name="app_name">)[^<]*(<[/]string>)/,
-    '$1Radio Bee$2', 'Android app_name');
+    (_match, start, end) => start + displayName + end, 'Android app_name');
   strings = strings.replace(/(<string[ ]+name="title_activity_main">)[^<]*(<[/]string>)/,
-    '$1Radio Bee$2');
+    (_match, start, end) => start + displayName + end);
   write(stringsFile, strings);
   let rules = read('android/app/proguard-rules.pro');
   if (!rules.includes('# RADIOBEE_CAPACITOR'))
