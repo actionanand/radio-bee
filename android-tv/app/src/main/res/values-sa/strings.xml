@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RadioBee</string>
+    <string name="app_name">Radio Bee</string>
     <string name="tagline">श्रवणे संलग्नाः भवन्तु। आनन्देन गुञ्जन्तु।</string>
     <string name="home">गृहपृष्ठम्</string>
     <string name="browse">अन्वेषणम्</string>
@@ -47,10 +47,10 @@
         <item quantity="other">%1$d निमेषाः</item>
     </plurals>
     <string name="about">परिचयः विधिसूचनाश्च</string>
-    <string name="legal_notice">RadioBee प्रसारकस्रोतसां ध्वनिं साक्षात् श्रावयति। नामानि चित्राणि च स्वस्वामिनाम् एव। उपलब्धता श्रवणस्य पुनर्वितरणस्य वा अनुमतिं न स्थापयति। मुद्रणसुविधा नास्ति। प्रियाः विन्यासाः सूचीसञ्चयश्च अस्मिन् उपकरणे एव तिष्ठन्ति। प्रसारणचित्रसेवकाः सामान्यजालानुरोधान् प्राप्नुवन्ति। खाते वा ध्वनिग्राहके वा आवश्यकता नास्ति।</string>
+    <string name="legal_notice">Radio Bee प्रसारकस्रोतसां ध्वनिं साक्षात् श्रावयति। नामानि चित्राणि च स्वस्वामिनाम् एव। उपलब्धता श्रवणस्य पुनर्वितरणस्य वा अनुमतिं न स्थापयति। मुद्रणसुविधा नास्ति। प्रियाः विन्यासाः सूचीसञ्चयश्च अस्मिन् उपकरणे एव तिष्ठन्ति। प्रसारणचित्रसेवकाः सामान्यजालानुरोधान् प्राप्नुवन्ति। खाते वा ध्वनिग्राहके वा आवश्यकता नास्ति।</string>
     <string name="close">पिधातु</string>
     <string name="back">प्रतिगच्छतु</string>
-    <string name="app_version">RadioBee TV %1$s (%2$d)</string>
+    <string name="app_version">Radio Bee TV %1$s (%2$d)</string>
     <string name="storage_error">विन्यासाः न रक्षिताः। उपकरणस्य सञ्चयं परीक्षताम्।</string>
     <string name="nothing_selected">श्रवणाय केन्द्रं चिनोतु।</string>
     <string name="connection_error">प्रसारणसेवा न संयोजिता। अनुप्रयोगं पुनः उद्घाटयतु।</string>

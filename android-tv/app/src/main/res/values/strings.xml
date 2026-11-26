@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RadioBee</string>
+    <string name="app_name">Radio Bee</string>
     <string name="tagline">Stay tuned. Stay buzzing.</string>
     <string name="home">Home</string>
     <string name="browse">Browse</string>
@@ -47,10 +47,10 @@
         <item quantity="other">%1$d minutes</item>
     </plurals>
     <string name="about">About and legal</string>
-    <string name="legal_notice">RadioBee connects directly to broadcaster streams. Names and artwork belong to their owners. Availability does not establish listening or redistribution authorization. No recording is provided. Favorites, settings and catalogue cache stay on this device. Streaming and artwork hosts receive normal network requests. No account or microphone is required.</string>
+    <string name="legal_notice">Radio Bee connects directly to broadcaster streams. Names and artwork belong to their owners. Availability does not establish listening or redistribution authorization. No recording is provided. Favorites, settings and catalogue cache stay on this device. Streaming and artwork hosts receive normal network requests. No account or microphone is required.</string>
     <string name="close">Close</string>
     <string name="back">Back</string>
-    <string name="app_version">RadioBee TV %1$s (%2$d)</string>
+    <string name="app_version">Radio Bee TV %1$s (%2$d)</string>
     <string name="storage_error">Preferences could not be saved. Check device storage.</string>
     <string name="nothing_selected">Choose a station to listen.</string>
     <string name="connection_error">Could not connect to the player service. Reopen the app.</string>
