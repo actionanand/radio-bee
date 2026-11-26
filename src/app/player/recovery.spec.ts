@@ -60,6 +60,64 @@ afterEach(() => {
 });
 
 describe('Bounded recovery sessions', () => {
+  it('does not report buffering or restart a healthy radio on advisory stalled network fetch', async () => {
+    const s = setup();
+    vi.spyOn(s.audio, 'readyState', 'get').mockReturnValue(4);
+    await s.player.play(s.station);
+    s.audio.dispatchEvent(new Event('playing'));
+    s.audio.dispatchEvent(new Event('stalled'));
+    expect(s.player.state()).toBe('playing');
+    expect(s.player.statusLabel()).toBe('playing');
+    await vi.advanceTimersByTimeAsync(RECOVERY_POLICY.bufferingMs + 1500);
+    expect(s.load).toHaveBeenCalledOnce();
+    expect(s.player.diagnostics().filter(row => row.result === 'buffering')).toHaveLength(0);
+  });
+
+  it('restores true playback when media time advances even if the browser omits a second playing event', async () => {
+    const s = setup();
+    let mediaTime = 100;
+    let readyState = 4;
+    vi.spyOn(s.audio, 'currentTime', 'get').mockImplementation(() => mediaTime);
+    vi.spyOn(s.audio, 'readyState', 'get').mockImplementation(() => readyState);
+    vi.spyOn(s.audio, 'paused', 'get').mockReturnValue(false);
+    await s.player.play(s.station);
+    s.audio.dispatchEvent(new Event('playing'));
+    readyState = 2;
+    s.audio.dispatchEvent(new Event('waiting'));
+    expect(s.player.statusLabel()).toBe('buffering');
+    readyState = 4;
+    mediaTime += 1;
+    s.audio.dispatchEvent(new Event('timeupdate'));
+    expect(s.player.state()).toBe('playing');
+    await vi.advanceTimersByTimeAsync(RECOVERY_POLICY.bufferingMs + 1000);
+    expect(s.load).toHaveBeenCalledOnce();
+    expect(s.player.diagnostics().filter(row => row.result === 'playing')).toHaveLength(2);
+  });
+
+  it('still recovers a truly stalled stream when no playable future data is available', async () => {
+    const s = setup();
+    vi.spyOn(s.audio, 'readyState', 'get').mockReturnValue(2);
+    await s.player.play(s.station);
+    s.audio.dispatchEvent(new Event('playing'));
+    s.audio.dispatchEvent(new Event('stalled'));
+    expect(s.player.statusLabel()).toBe('buffering');
+    await vi.advanceTimersByTimeAsync(RECOVERY_POLICY.bufferingMs + 500);
+    expect(s.load).toHaveBeenCalledTimes(2);
+  });
+
+  it('never interprets unchanged media time as recovery from buffering', async () => {
+    const s = setup();
+    vi.spyOn(s.audio, 'readyState', 'get').mockReturnValue(4);
+    vi.spyOn(s.audio, 'paused', 'get').mockReturnValue(false);
+    vi.spyOn(s.audio, 'currentTime', 'get').mockReturnValue(100);
+    await s.player.play(s.station);
+    s.audio.dispatchEvent(new Event('playing'));
+    s.audio.dispatchEvent(new Event('waiting'));
+    s.audio.dispatchEvent(new Event('timeupdate'));
+    expect(s.player.statusLabel()).toBe('buffering');
+    await vi.advanceTimersByTimeAsync(RECOVERY_POLICY.bufferingMs + 500);
+    expect(s.load).toHaveBeenCalledTimes(2);
+  });
   it('cancels a rebuffer watchdog on a native media pause', async () => {
     const s = setup();
     await s.player.play(s.station);
