@@ -248,7 +248,9 @@ test('native identity, manifest, sleep ownership and recording restrictions are 
   const read = file => fs.readFileSync(new URL('../' + file, import.meta.url), 'utf8');
   const manifest = read('android-tv/app/src/main/AndroidManifest.xml'),
     gradle = read('android-tv/app/build.gradle.kts');
-  assert.match(gradle, /applicationId = "com.actionanand.radiobee.app"/);
+  assert.match(gradle, /applicationId = sharedAppId/);
+  assert.match(gradle, /sharedAppId == "com.actionanand.radiobee.app"/);
+  assert.equal(readCapacitorIdentity().appId, "com.actionanand.radiobee.app");
   assert.match(gradle, /namespace = "com.actionanand.radiobee.tv"/);
   assert.match(manifest, /LEANBACK_LAUNCHER/);
   assert.match(manifest, /android.software.leanback" android:required="true"/);
