@@ -32,11 +32,11 @@ internal fun BackgroundPlaybackDialog(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                stringResource(R.string.background_question),
+                stringResource(R.string.background_question, stringResource(R.string.app_name)),
                 fontSize = 26.sp,
                 modifier = Modifier.semantics { heading() },
             )
-            Text(stringResource(R.string.background_description), fontSize = 18.sp)
+            Text(stringResource(R.string.background_description, stringResource(R.string.app_name)), fontSize = 18.sp)
             if (error)
                 Text(
                     stringResource(R.string.storage_error),

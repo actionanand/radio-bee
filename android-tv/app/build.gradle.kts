@@ -9,6 +9,26 @@ plugins {
 val versionData = JsonSlurper().parse(rootProject.file("../tv-version.json")) as Map<*, *>
 val tvCode = (versionData["versionCode"] as Number).toInt()
 
+// Read common identity directly from the existing Capacitor config at build time.
+// Kotlin TV remains fully native; this does not include Capacitor at runtime.
+val capacitorSource = rootProject.file("../capacitor.config.ts").readText(Charsets.UTF_8)
+val capacitorEntries = Regex("""(?m)^[ \t]*(appId|appName)[ \t]*:[ \t]*(['"])([^'"\r\n]+)\2[ \t]*,?[ \t]*$""")
+    .findAll(capacitorSource)
+    .groupBy { it.groupValues[1] }
+fun capacitorLiteral(key: String): String {
+    val entries = capacitorEntries[key].orEmpty()
+    require(entries.size == 1 && entries.single().groupValues[3].isNotBlank() &&
+        entries.single().groupValues[3] == entries.single().groupValues[3].trim()) {
+        "Expected one nonblank literal $key in ../capacitor.config.ts"
+    }
+    return entries.single().groupValues[3]
+}
+val sharedAppId = capacitorLiteral("appId")
+val sharedAppName = capacitorLiteral("appName")
+require(sharedAppId == "com.actionanand.radiobee.app") {
+    "Changing the Play Store application ID requires separate review"
+}
+
 require(tvCode in 1_000_000_000..2_099_999_999) {
     "TV versionCode outside its globally reserved range"
 }
@@ -20,7 +40,8 @@ android {
     namespace = "com.actionanand.radiobee.tv"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.actionanand.radiobee.app"
+        applicationId = sharedAppId
+        resValue("string", "app_name", sharedAppName)
         minSdk = 23
         targetSdk = 36
         versionCode = tvCode
