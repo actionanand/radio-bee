@@ -10,6 +10,8 @@ Stream eligibility and the persistent Web player: [Stage 3 player](documentation
 
 This project was generated using Ionic CLI version 7.2.1 for Angular version 22.0.1 with Ionic Angular version 9.0.0.
 
+Native Google TV / Android TV application, builds and release setup: [RadioBee TV guide](documentation/TV.md).
+
 ## Development server
 
 To start a local development server, run:

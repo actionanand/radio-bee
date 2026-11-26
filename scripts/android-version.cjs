@@ -1,13 +1,15 @@
 const fs = require('node:fs');
+// Same Play identity: codes >= 1,000,000,000 are reserved exclusively for native TV.
+const MOBILE_VERSION_MAX = 999999999;
 
 function validateVersion(version) {
   if (
     !version ||
     !Number.isSafeInteger(version.versionCode) ||
     version.versionCode < 1 ||
-    version.versionCode > 2100000000
+    version.versionCode > MOBILE_VERSION_MAX
   )
-    throw new Error('versionCode must be an integer from 1 to 2100000000.');
+    throw new Error('Mobile versionCode must be an integer from 1 to 999999999; higher codes are reserved for TV.');
   if (
     typeof version.versionName !== 'string' ||
     !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version.versionName) ||
@@ -23,4 +25,4 @@ function releaseName(version) {
   validateVersion(version);
   return `RadioBee-${version.versionName.replaceAll('.', '-')}-${version.versionCode}`;
 }
-module.exports = { validateVersion, readVersion, releaseName };
+module.exports = { validateVersion, readVersion, releaseName, MOBILE_VERSION_MAX };
