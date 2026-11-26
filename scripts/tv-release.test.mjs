@@ -14,6 +14,7 @@ import {
   tvReleaseName,
 } from './tv-version.mjs';
 import mobile from './android-version.cjs';
+import { readCapacitorIdentity } from './capacitor-identity.mjs';
 import { publishTv } from './publish-tv-artifacts.mjs';
 import { reserveTvVersion } from './reserve-tv-version.mjs';
 import { signTv, cleanupTvSigning } from './sign-tv.mjs';
@@ -29,6 +30,28 @@ function write(root, file, value) {
   fs.writeFileSync(target, typeof value === 'string' ? value : JSON.stringify(value));
 }
 const seed = { versionCode: TV_MIN, versionName: '1.0.0' };
+test('native TV and mobile share Capacitor identity without duplicate localized names', () => {
+  const { appId, appName } = readCapacitorIdentity();
+  assert.equal(appId, 'com.actionanand.radiobee.app');
+  assert.ok(appName.length > 0);
+  const gradle = fs.readFileSync('android-tv/app/build.gradle.kts', 'utf8');
+  assert.match(gradle, /rootProject\.file\("\.\.\/capacitor\.config\.ts"\)/);
+  assert.match(gradle, /applicationId = sharedAppId/);
+  assert.match(gradle, /resValue\("string", "app_name", sharedAppName\)/);
+  const tvUi = fs.readFileSync('android-tv/app/src/main/java/com/actionanand/radiobee/tv/ui/RadioBeeTv.kt', 'utf8');
+  const prompts = fs.readFileSync('android-tv/app/src/main/java/com/actionanand/radiobee/tv/ui/PlaybackPreferences.kt', 'utf8');
+  assert.match(tvUi, /stringResource\(R\.string\.app_name\)/);
+  assert.match(prompts, /stringResource\(R\.string\.app_name\)/);
+  for (const locale of ['values', 'values-ta', 'values-sa']) {
+    const xml = fs.readFileSync('android-tv/app/src/main/res/' + locale + '/strings.xml', 'utf8');
+    assert.doesNotMatch(xml, /<string name="app_name">/);
+    assert.ok(!xml.includes(appName), 'localized copy of common name in ' + locale);
+    for (const key of ['legal_notice', 'background_question', 'background_description', 'app_version']) {
+      assert.match(xml, new RegExp('<string name="' + key + '">[^\\n]*%1\\$s'));
+    }
+  }
+});
+
 test('TV codes are globally disjoint from the enforced mobile range', () => {
   assert.equal(mobile.MOBILE_VERSION_MAX, MOBILE_MAX);
   mobile.validateVersion({ versionCode: MOBILE_MAX, versionName: '1.0.0' });
