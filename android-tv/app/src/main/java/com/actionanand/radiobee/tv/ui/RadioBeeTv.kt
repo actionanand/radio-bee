@@ -735,6 +735,7 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                                             Text(
                                                 stringResource(
                                                     R.string.app_version,
+                                                    stringResource(R.string.app_name),
                                                     BuildConfig.VERSION_NAME,
                                                     BuildConfig.VERSION_CODE,
                                                 )
@@ -797,7 +798,7 @@ fun RadioBeeTv(graph: AppGraph, controller: MediaController?, connectionError: B
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Text(stringResource(R.string.about), fontSize = 26.sp)
-                        Text(stringResource(R.string.legal_notice), fontSize = 18.sp)
+                        Text(stringResource(R.string.legal_notice, stringResource(R.string.app_name)), fontSize = 18.sp)
                         Text(
                             "https://actionanand.github.io/radio-bee/privacy\nhttps://actionanand.github.io/radio-bee/terms\nhttps://actionanand.github.io/radio-bee/copyright-policy",
                             fontSize = 14.sp,
