@@ -188,7 +188,8 @@ export class PlayerService implements OnDestroy {
       audio.addEventListener(event, action);
       this.cleanups.push(() => audio.removeEventListener(event, action));
     };
-    listen('playing', () => {
+    // Browser `playing` or independently verified media progress confirms resumption.
+    const confirmPlaying = () => {
       const selected = this.selectedStream();
       if (
         selected &&
@@ -206,19 +207,47 @@ export class PlayerService implements OnDestroy {
         this.startProgressMonitor();
         this.trace('playing');
       }
-    });
+    };
+    listen('playing', confirmPlaying);
     const buffering = () => {
       if (this.state() === 'playing') {
         this.stopProgressMonitor();
+        // Keep a fresh position so a `timeupdate` can confirm recovery if the
+        // browser omits a second `playing` event after rebuffering.
+        this.lastMediaTime = Number.isFinite(audio.currentTime) ? audio.currentTime : null;
         this.state.set('loading');
         this.pendingPhase.set('buffering');
         this.trace('buffering');
         this.watchdog(true);
       }
     };
-    listen('timeupdate', () => this.observeProgress());
+    listen('timeupdate', () => {
+      // Some browsers resume a live stream without dispatching another `playing`.
+      // Only advancing media time with future audio available can clear buffering;
+      // metadata/readyState events alone are not evidence of audible progress.
+      if (
+        this.state() === 'loading' &&
+        this.pendingPhase() === 'buffering' &&
+        this.loaded &&
+        !audio.paused &&
+        audio.readyState >= 3 &&
+        this.lastMediaTime !== null &&
+        Number.isFinite(audio.currentTime) &&
+        audio.currentTime > this.lastMediaTime + 0.05
+      ) {
+        confirmPlaying();
+        return;
+      }
+      this.observeProgress();
+    });
+    // `waiting` means playback stopped for more data; start the bounded watchdog.
     listen('waiting', buffering);
-    listen('stalled', buffering);
+    // `stalled` only means network fetching stalled. Already-buffered audio can
+    // continue normally; don't show buffering or restart a healthy connection.
+    // The progress watchdog independently handles a genuine silent stall.
+    listen('stalled', () => {
+      if (audio.readyState < 3) buffering();
+    });
     listen('error', () => {
       const failure = this.engine?.failure?.();
       if (this.engine?.failure && !failure && !audio.error) return;
